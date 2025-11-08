@@ -1,0 +1,16 @@
+# Omakase Ruby styling for Rails
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
+# Require the RSpec plugin
+require:
+  - rubocop-rspec
+
+# Overwrite or add rules to create your own house style
+AllCops:
+  # The version of Ruby that RuboCop will target.
+  TargetRubyVersion: 3.4
+
+# RSpec rules
+RSpec:
+  Enabled: true
