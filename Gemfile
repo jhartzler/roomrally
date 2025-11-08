@@ -58,7 +58,7 @@ group :development, :test do
   gem "rubocop-rspec", require: false
 
   # Testing framework
-  gem "rspec-rails", "~> 6.0.0"
+  gem "rspec-rails", "~> 8.0.2"
   # System testing
   gem "capybara"
 
