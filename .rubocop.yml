@@ -16,3 +16,7 @@ AllCops:
 # RSpec rules
 RSpec:
   Enabled: true
+
+# Enforce shorthand hash syntax
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always

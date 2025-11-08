@@ -19,7 +19,7 @@ class Room < ApplicationRecord
 
     loop do
       self.code = SecureRandom.alphanumeric(4).upcase
-      break unless self.class.exists?(code: code)
+      break unless self.class.exists?(code:)
     end
   end
 end
