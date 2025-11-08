@@ -2,14 +2,16 @@
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
 
-# Require the RSpec plugin
-require:
+# Load the RSpec plugin
+plugins:
   - rubocop-rspec
 
 # Overwrite or add rules to create your own house style
 AllCops:
   # The version of Ruby that RuboCop will target.
   TargetRubyVersion: 3.4
+  # Enable new cops by default
+  NewCops: enable
 
 # RSpec rules
 RSpec:
