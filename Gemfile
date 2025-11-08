@@ -61,6 +61,9 @@ group :development, :test do
   gem "rspec-rails", "~> 6.0.0"
   # System testing
   gem "capybara"
+
+  # Test factories
+  gem "factory_bot_rails", "~> 6.0"
 end
 
 group :development do
