@@ -19,7 +19,7 @@ All code must pass RuboCop checks based on the configuration in `.rubocop.yml`. 
 ## Code Organization
 - Follow Rails conventions.
 - Place game logic modules in `app/services/` or a similar directory.
-- Namespace all game-specific code under a module (e.g., `QuipKit::Answer`, `QuipKit::Logic`).
+- Namespace all game-specific code under a module (e.g., `WriteAndVote::Answer`, `WriteAndVote::Logic`).
 - Keep classes and methods small and focused on a single responsibility.
 
 ## Key OOD Principles
@@ -30,7 +30,7 @@ All code must pass RuboCop checks based on the configuration in `.rubocop.yml`. 
 
 ## Git Workflow
 - Commit after each successful Red-Green-Refactor cycle.
-- Use clear, conventional commit messages (e.g., `feat: Add voting phase to QuipKit`).
+- Use clear, conventional commit messages (e.g., `feat: Add voting phase to WriteAndVote`).
 - Develop features on separate branches and merge to `main` only when all tests and quality checks are passing.
 
 ## Documentation

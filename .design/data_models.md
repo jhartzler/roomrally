@@ -2,7 +2,7 @@
 
 ## Design Principles
 
-- **Generic Core, Specific Extensions**: Core models (`Room`, `Player`, `Round`) are generic. Game-specific models are namespaced (e.g., `QuipKit::Answer`) to allow different games to have different data needs.
+- **Generic Core, Specific Extensions**: Core models (`Room`, `Player`, `Round`) are generic. Game-specific models are namespaced (e.g., `WriteAndVote::Answer`) to allow different games to have different data needs.
 - **Start Concrete, Refactor When Needed**: Avoid premature abstraction like polymorphic associations. If a model works for the first few games, keep it simple. Refactor only when a new game's requirements force a change.
 
 ## Core Models
@@ -23,7 +23,7 @@ Represents an instance of a game session.
 Represents a participant in a game.
 
 - **Key Attributes**:
-  - `game_id` (integer): The game they belong to.
+  - `room_id` (integer): The room they belong to.
   - `name` (string): Display name.
   - `score` (integer, default: 0): Cumulative points.
   - `session_id` (string, indexed): For reconnection without authentication.
@@ -33,7 +33,7 @@ Represents a participant in a game.
 Represents a single turn/question in a game.
 
 - **Key Attributes**:
-  - `game_id` (integer): The game this belongs to.
+  - `room_id` (integer): The room this belongs to.
   - `prompt_id` (integer): The question being asked.
   - `round_number` (integer): 1, 2, 3, etc.
   - `status` (string): Phase of this round (prompting, voting, complete).
@@ -44,22 +44,22 @@ Stores questions/prompts for games.
 
 - **Key Attributes**:
   - `text` (string): The actual prompt.
-  - `game_type` (string): Which game this is for.
+  - `game_type` (string): Which game type this is for.
   - `game_pack_id` (integer, optional): For grouping themed prompts.
 - **Seeding**: Start with 50-100 prompts in `seeds.rb`.
 
-## Game-Specific Models (Example: QuipKit)
+## Game-Specific Models (Example: WriteAndVote)
 
-### QuipKit::Answer
+### WriteAndVote::Answer
 Player-submitted text answers.
 
 - **Key Attributes**:
   - `round_id`: Which round this is for.
   - `player_id`: Who submitted it.
   - `text` (string): The answer.
-- **Relationships**: Has many `QuipKit::Vote`.
+- **Relationships**: Has many `WriteAndVote::Vote`.
 
-### QuipKit::Vote
+### WriteAndVote::Vote
 Player votes for favorite answers.
 
 - **Key Attributes**:

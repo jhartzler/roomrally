@@ -14,7 +14,7 @@ A single, generic `GameChannel` handles all real-time communication for all game
 The `GameChannel` itself contains **no game-specific logic**. It is purely a router.
 
 ## Game Type Registry
-To securely route messages, the channel uses a registry (a simple Hash) that maps `game_type` strings (e.g., `"QuipKit"`) to the corresponding game logic class (e.g., `QuipKit::Logic`). This avoids unsafe `constantize` calls on user-provided data.
+To securely route messages, the channel uses a registry (a simple Hash) that maps `game_type` strings (e.g., `"WriteAndVote"`) to the corresponding game logic class (e.g., `WriteAndVote::Logic`). This avoids unsafe `constantize` calls on user-provided data.
 
 ## Turbo Streams
 The server communicates UI changes to clients almost exclusively through Turbo Streams.
@@ -29,7 +29,7 @@ The server communicates UI changes to clients almost exclusively through Turbo S
 1. Client sends a message via WebSocket (e.g., a form submission handled by Stimulus).
 2. `GameChannel` receives the action.
 3. Channel identifies the game and player, finds the correct game logic module from the registry.
-4. Channel delegates the message to the game logic module (e.g., `QuipKit::Logic.handle_submission(player, data)`).
+4. Channel delegates the message to the game logic module (e.g., `WriteAndVote::Logic.handle_submission(player, data)`).
 5. Game logic processes the action and publishes an event (e.g., `:answer_submitted`).
 6. A `BroadcastListener` catches the event, renders the appropriate Rails partial into a Turbo Stream message.
 7. The listener broadcasts the Turbo Stream to the relevant stream(s).

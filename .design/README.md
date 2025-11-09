@@ -16,6 +16,7 @@ Create a Rails-based, open-source, real-time party game platform inspired by Jac
 ## Core Experience
 - **Main Screen (TV)**: Displays the game state to all players.
 - **Controllers (Phones/Tablets/Laptops)**: Players use personal devices to join a room and interact.
+- **Core models**: `Room`, `Player`
 - **Room-Based**: Games are accessed via 4-letter room codes (e.g., "ABCD").
 - **Session Length**: 10-15 minutes per game.
 - **Target Audience**: Groups of friends playing together in the same physical space.
@@ -29,7 +30,7 @@ Create a Rails-based, open-source, real-time party game platform inspired by Jac
 - Minimum 2 players to start.
 - First player is host who can start the game.
 
-### QuipKit Game Flow (Example MVP Game)
+### WriteAndVote Game Flow (Example MVP Game)
 1. **Prompting Phase**: Display a prompt, players submit text answers (60s).
 2. **Voting Phase**: Display all answers anonymously, players vote for favorites (30s).
 3. **Results Phase**: Show votes received and update scores (5s display).
