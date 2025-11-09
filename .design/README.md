@@ -10,7 +10,7 @@ Create a Rails-based, open-source, real-time party game platform inspired by Jac
 - **Background Jobs**: Sidekiq
 - **Database**: PostgreSQL
 - **Cache/Pub-Sub**: Redis
-- **Testing**: RSpec, Capybara
+- **Testing**: RSpec, Capybara (with Playwright driver)
 - **Code Quality**: RuboCop
 
 ## Core Experience

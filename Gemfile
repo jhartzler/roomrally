@@ -61,6 +61,7 @@ group :development, :test do
   gem "rspec-rails", "~> 6.0.0"
   # System testing
   gem "capybara"
+  gem "capybara-playwright-driver"
 
   # Test factories
   gem "factory_bot_rails", "~> 6.0"
