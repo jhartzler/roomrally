@@ -36,3 +36,6 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Node modules
+node_modules
+

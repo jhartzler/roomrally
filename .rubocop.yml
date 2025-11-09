@@ -20,3 +20,11 @@ RSpec:
 # Enforce shorthand hash syntax
 Style/HashSyntax:
   EnforcedShorthandSyntax: always
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - 'spec/system/**/*'
+
+RSpec/ExampleLength:
+  Exclude:
+  - 'spec/system/**/*'
