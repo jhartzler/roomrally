@@ -12,6 +12,10 @@ class Room < ApplicationRecord
   # Scopes & Methods
   attribute :status, :string, default: "lobby"
 
+  def to_param
+    code
+  end
+
   private
 
   def generate_code

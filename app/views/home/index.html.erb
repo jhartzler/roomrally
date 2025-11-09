@@ -1,0 +1,9 @@
+<h1>OpenJokeMachine</h1>
+
+<%= button_to "Create Room", rooms_path, method: :post %>
+
+<%= form_with url: "#", method: :get do |form| %>
+  <%= form.label :room_code, "Enter Room Code" %>
+  <%= form.text_field :room_code %>
+  <%= form.submit "Join Room" %>
+<% end %>
