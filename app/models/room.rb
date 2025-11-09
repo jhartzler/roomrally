@@ -1,7 +1,7 @@
 class Room < ApplicationRecord
   # Associations
-  # has_many :players, dependent: :destroy
-  # The host association will be added in a later migration
+  has_many :players, dependent: :destroy
+  belongs_to :host, class_name: "Player", optional: true
 
   # Validations
   validates :code, uniqueness: { case_sensitive: false }
