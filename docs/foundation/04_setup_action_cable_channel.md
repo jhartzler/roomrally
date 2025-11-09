@@ -1,15 +1,15 @@
 # Ticket 04: Setup Action Cable Channel for Real-Time Communication
 
 ## Description
-Create the `GameChannel` that will handle all real-time WebSocket communication for a specific game room. This is the backbone of the real-time updates.
+Create the `GameChannel` that will handle all real-time WebSocket communication for a specific room. This is the backbone of the real-time updates.
 
 - **Channel Generation:**
   - Generate a `GameChannel` using `bin/rails generate channel`.
 
 - **Subscription Logic:**
-  - In the `subscribed` method of `GameChannel`, find the `Game` using the `room_code` from the incoming params.
-  - If the game is found, subscribe the client to a unique stream for that game (e.g., `stream_for @game`).
-  - If the game is not found, reject the subscription.
+  - In the `subscribed` method of `GameChannel`, find the `Room` using the `room_code` from the incoming params.
+  - If the room is found, subscribe the client to a unique stream for that room (e.g., `stream_for @room`).
+  - If the room is not found, reject the subscription.
 
 - **Client-Side Connection:**
   - Create a Stimulus controller (`game-connection-controller.js`) to handle the client-side logic of connecting to the channel.

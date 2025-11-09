@@ -19,5 +19,5 @@ Create the homepage and the flow for a user to create a new room. This will be t
 - A user can visit the root path of the application.
 - The homepage displays a "Create Room" button and a form to enter a room code.
 - Clicking "Create Room" successfully creates a new `room` record in the database.
-- After room creation, the user is redirected to the join page for the newly created game room.
+- After room creation, the user is redirected to the join page for the newly created room.
 - A system test is written to verify this flow.

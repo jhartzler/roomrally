@@ -12,7 +12,7 @@ The timer is implemented using background jobs.
 
 **How it works:**
 1. When a timed phase begins (e.g., "prompting"), the game logic calculates an expiration time.
-2. It stores `timer_expires_at` and a `timer_event` (e.g., `"prompting_timer_expired"`) on the `Game` model.
+2. It stores `timer_expires_at` and a `timer_event` (e.g., `"prompting_timer_expired"`) on the `Room` model.
 3. It schedules a Sidekiq job to run at the `timer_expires_at` time.
 4. When the job executes, it checks if the game is still in the expected state.
 5. If so, it publishes the `timer_event` (e.g., `:prompting_timer_expired`).
@@ -24,7 +24,7 @@ The timer is implemented using background jobs.
 - **Testable**: Sidekiq provides testing helpers to control job execution in tests.
 
 ### Reconnection
-If a player disconnects and reconnects while a timer is active, the server can calculate the remaining time from the `game.timer_expires_at` value and send it to the client so their countdown can start from the correct place.
+If a player disconnects and reconnects while a timer is active, the server can calculate the remaining time from the `room.timer_expires_at` value and send it to the client so their countdown can start from the correct place.
 
 ### Future Complexity
 We will only add more complex timer synchronization (e.g., per-second broadcasts, clock skew detection) if playtesting reveals it to be a significant problem. The current Sidekiq-based approach is sufficient for the MVP.

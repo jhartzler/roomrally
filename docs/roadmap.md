@@ -4,24 +4,24 @@
 **Goal**: Get a basic lobby working with real-time connections.
 - **Tasks**:
   1. Project setup (Rails, gems, RSpec, RuboCop).
-  2. Core models (`Game`, `Player`) with TDD.
-  3. Basic controllers and views for creating/joining a game.
+  2. Core models (`Room`, `Player`) with TDD.
+  3. Basic controllers and views for creating/joining a room.
   4. Action Cable `GameChannel` setup.
   5. Lobby views for TV and Phone.
   6. System test for multiple players joining a lobby.
 - **Definition of Done**: Two people can join a room and see each other in real-time.
 
 ## Phase 2: First Complete Game Loop
-**Goal**: Play one round of QuipKit from start to finish.
+**Goal**: Play one round of WriteAndVote from start to finish.
 - **Tasks**:
   1. `Round` and `Prompt` models.
-  2. `QuipKit::Answer` and `QuipKit::Vote` models.
-  3. `QuipKit::Logic` to handle submissions and votes.
+  2. `WriteAndVote::Answer` and `WriteAndVote::Vote` models.
+  3. `WriteAndVote::Logic` to handle submissions and votes.
   4. Event system setup (Wisper) with `ScoreListener` and `BroadcastListener`.
   5. `TimerService` using Sidekiq.
   6. Views for all game phases (prompting, voting, results).
   7. System test for a complete round with scoring.
-- **Definition of Done**: A single round of QuipKit can be played, and scores are awarded correctly.
+- **Definition of Done**: A single round of WriteAndVote can be played, and scores are awarded correctly.
 
 ## Phase 3: Multiple Rounds & Game Completion
 **Goal**: Play a complete, multi-round game.
@@ -44,12 +44,17 @@
 
 ## Phase 5: Second Game Type
 **Goal**: Prove the architecture is extensible by adding a new game.
+- **Ideas for future games**:
+  - **WriteAndVote**: The initial game (formerly QuipKit).
+  - **DrawAndWrite**: A "telephone" game with drawing and writing.
+  - **GuessTheSpy**: A social deduction game.
+  - **GuessTheAnswer**: A trivia/facts game.
 - **Tasks**:
-  1. Design the second game type (models, flow).
+  1. Design the second game type (e.g., DrawAndWrite).
   2. Implement new game logic with TDD.
   3. Add to the game type registry.
   4. Create game-specific views.
-  5. System test for the new game type, ensuring QuipKit still works.
+  5. System test for the new game type, ensuring WriteAndVote still works.
 - **Definition of Done**: Two distinct game types both work without modifying core components.
 
 ## Future Enhancements (Post-MVP)

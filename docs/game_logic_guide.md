@@ -7,7 +7,7 @@ Each game is a "Strategy" module that encapsulates its own rules and state trans
 
 A game logic module **does**:
 - Validate player actions against game rules (e.g., "Can this player vote right now?").
-- Create and update game-specific models (e.g., `QuipKit::Answer`).
+- Create and update game-specific models (e.g., `WriteAndVote::Answer`).
 - Determine when to transition the game state (e.g., move from "prompting" to "voting").
 - **Publish events** when significant actions occur.
 
@@ -47,7 +47,7 @@ The `Game` and `Round` models have a `status` column (e.g., `lobby`, `prompting`
 
 For the MVP, this is done with manual checks. If state transitions become complex, we may introduce a state machine gem like `aasm`.
 
-## Example: QuipKit Game Flow
+## Example: WriteAndVote Game Flow
 
 - **States**: `lobby` -> `prompting` -> `voting` -> `results` -> `complete`
 - **Transitions**:

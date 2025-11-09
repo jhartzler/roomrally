@@ -1,12 +1,12 @@
 # Ticket 01: Setup Core Room and Player Models
 
 ## Description
-Create the `Room` and `Player` models which are the core foundation for a game session.
+Create the `Room` and `Player` models which are the core foundation for a room session.
 
 - **Room Model:**
   - `code` (string, unique, indexed): A 4-letter code for joining.
   - `status` (string, default: 'lobby'): The current state of the game (e.g., lobby, prompting, etc.).
-  - `host_id` (integer, foreign_key to players): The ID of the player who created the game.
+  - `host_id` (integer, foreign_key to players): The ID of the player who created the room.
   - Associations: `has_many :players`.
 
 - **Player Model:**
