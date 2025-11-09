@@ -2,12 +2,12 @@
 
 ## Design Principles
 
-- **Generic Core, Specific Extensions**: Core models (`Game`, `Player`, `Round`) are generic. Game-specific models are namespaced (e.g., `QuipKit::Answer`) to allow different games to have different data needs.
+- **Generic Core, Specific Extensions**: Core models (`Room`, `Player`, `Round`) are generic. Game-specific models are namespaced (e.g., `QuipKit::Answer`) to allow different games to have different data needs.
 - **Start Concrete, Refactor When Needed**: Avoid premature abstraction like polymorphic associations. If a model works for the first few games, keep it simple. Refactor only when a new game's requirements force a change.
 
 ## Core Models
 
-### Game
+### Room
 Represents an instance of a game session.
 
 - **Key Attributes**:
