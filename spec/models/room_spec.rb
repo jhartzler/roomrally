@@ -8,12 +8,8 @@ RSpec.describe Room, type: :model do
   end
 
   describe 'associations' do
-    subject(:room) { described_class.new }
-
-    it 'is expected to have many players' do
-      pending('Player model does not exist yet')
-      expect(room).to have_many(:players).dependent(:destroy)
-    end
+    it { is_expected.to have_many(:players).dependent(:destroy) }
+    it { is_expected.to belong_to(:host).class_name('Player').optional }
   end
 
   describe 'defaults' do
