@@ -1,13 +1,12 @@
 class PlayersController < ApplicationController
+  before_action :set_room, only: %i[new create]
+
   def new
-    Rails.logger.debug "PlayersController#new: params[:code] = #{params[:code]}"
-    @room = Room.find_by!(code: params[:code])
-    Rails.logger.debug "PlayersController#new: @room = #{@room.inspect}"
+    Rails.logger.info "Player joining room #{@room.code}"
     @player = Player.new
   end
 
   def create
-    @room = Room.find_by!(code: params[:room_code])
     @player = @room.players.build(player_params)
 
     session_id = SecureRandom.uuid
@@ -15,17 +14,22 @@ class PlayersController < ApplicationController
     @player.session_id = session_id
 
     if @player.save
+      Rails.logger.info "Player #{@player.name} created in room #{@room.code}"
       @room.update!(host: @player) if @room.host.nil?
 
       redirect_to hand_room_path(@room)
     else
-      Rails.logger.error "Player save failed: #{@player.errors.full_messages.join(", ")}"
+      Rails.logger.error "Player creation failed for room #{@room.code}: #{@player.errors.full_messages.join(', ')}"
       flash[:error] = @player.errors.full_messages.join(", ")
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
   private
+
+  def set_room
+    @room = Room.find_by!(code: params[:code])
+  end
 
   def player_params
     params.require(:player).permit(:name)

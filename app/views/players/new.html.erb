@@ -1,7 +1,7 @@
 <h1>Joining Room: <%= @room.code %></h1>
 
 <%= form_with model: @player, url: players_path do |form| %>
-  <%= hidden_field_tag :room_code, @room.code %>
+  <%= hidden_field_tag :code, @room.code %>
 
   <div>
     <%= form.label :name %>
