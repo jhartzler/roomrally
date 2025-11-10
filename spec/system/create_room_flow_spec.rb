@@ -20,6 +20,8 @@ RSpec.describe 'Room Creation Flow', type: :system do
     room = Room.find_by!(code: room_code)
 
     # Now that we have the room, we can make specific assertions
-    expect(page).to have_content("Joining Room: #{room.code}\nName")
+    expect(page).to have_content("Join the Fun!")
+    expect(page).to have_content(room.code)
+    expect(page).to have_field("What's your name?")
   end
 end

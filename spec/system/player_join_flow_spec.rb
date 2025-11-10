@@ -8,13 +8,14 @@ RSpec.describe 'Player Join Flow', type: :system do
     visit join_room_path(room)
 
     # 2. Check for the name form
-    expect(page).to have_content("Joining Room: #{room.code}")
-    expect(page).to have_field('Name')
-    expect(page).to have_button('Join')
+    expect(page).to have_content("Join the Fun!")
+    expect(page).to have_content(room.code)
+    expect(page).to have_field("What's your name?")
+    expect(page).to have_button('Join Game')
 
     # 3. Fill in name and submit
-    fill_in 'Name', with: 'Reynard Muldoon'
-    click_on 'Join'
+    fill_in "What's your name?", with: 'Reynard Muldoon'
+    click_on 'Join Game'
     expect(page).to have_current_path("/rooms/#{room.code}/hand", wait: 5)
 
     # 4. Assert player is created correctly
@@ -33,7 +34,7 @@ RSpec.describe 'Player Join Flow', type: :system do
 
     # 7. Assert redirection to lobby
     expect(page).to have_current_path(hand_room_path(room))
-    expect(page).to have_content("Waiting for players...")
+    expect(page).to have_content("Waiting for players to join...")
     expect(page).to have_content("Reynard Muldoon")
   end
 end
