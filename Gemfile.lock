@@ -106,6 +106,10 @@ GEM
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
     crass (1.0.6)
+    database_cleaner-active_record (2.2.2)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0)
+    database_cleaner-core (2.0.1)
     date (3.5.0)
     debug (1.11.0)
       irb (~> 1.10)
@@ -262,6 +266,10 @@ GEM
       activesupport (= 8.1.1)
       bundler (>= 1.15.0)
       railties (= 8.1.1)
+    rails-controller-testing (1.0.5)
+      actionpack (>= 5.0.1.rc1)
+      actionview (>= 5.0.1.rc1)
+      activesupport (>= 5.0.1.rc1)
     rails-dom-testing (2.3.0)
       activesupport (>= 5.0.0)
       minitest
@@ -410,6 +418,7 @@ DEPENDENCIES
   bundler-audit
   capybara
   capybara-playwright-driver
+  database_cleaner-active_record
   debug
   factory_bot_rails (~> 6.0)
   image_processing (~> 1.2)
@@ -420,6 +429,7 @@ DEPENDENCIES
   propshaft
   puma (>= 5.0)
   rails (~> 8.1.1)
+  rails-controller-testing
   redis (>= 4.0)
   rspec-rails (~> 8.0.2)
   rubocop-rails-omakase

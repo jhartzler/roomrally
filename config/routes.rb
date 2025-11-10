@@ -14,7 +14,10 @@ Rails.application.routes.draw do
 
   resources :rooms, only: %i[create show], param: :code do
     member do
-      get :join
+      get :hand
     end
   end
+
+  get "/rooms/:code/join", to: "players#new", as: :join_room
+  resources :players, only: [ :create ]
 end

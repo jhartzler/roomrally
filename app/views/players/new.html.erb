@@ -1,0 +1,14 @@
+<h1>Joining Room: <%= @room.code %></h1>
+
+<%= form_with model: @player, url: players_path do |form| %>
+  <%= hidden_field_tag :code, @room.code %>
+
+  <div>
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.submit "Join" %>
+  </div>
+<% end %>

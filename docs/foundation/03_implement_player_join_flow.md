@@ -4,10 +4,11 @@
 Create the flow for a player to join a room. This covers both the host joining their own room and other players joining an existing room.
 
 - **Routing & Controller:**
-  - A route `GET /games/:room_code/join` should lead to a page (`players#new`) with a form to enter a name.
+  - A route `GET /rooms/:code/join` should lead to a page (`players#new`) with a form to enter a name.
   - The name form should `POST` to `players#create`.
 
 - **Player Creation (`players#create` action):**
+<<<<<<< HEAD:docs/foundation/03_implement_player_join_flow.md
   - This action should find the room by its `code`.
   - It should create a new `Player` record associated with the room.
   - It must generate a unique `session_id` (e.g., `SecureRandom.uuid`), store it in the Rails `session`, and save it on the `Player` record for future identification.
