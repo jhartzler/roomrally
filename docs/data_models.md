@@ -11,7 +11,7 @@
 Represents an instance of a game session.
 
 - **Key Attributes**:
-  - `room_code` (string, unique, indexed): 4-letter join code.
+  - `code` (string, unique, indexed): 4-letter join code.
   - `game_type` (string): Maps to a logic module (e.g., "QuipKit").
   - `status` (string): Current game phase (lobby, prompting, voting, results, complete).
   - `current_round_id` (integer): Reference to the active round.

@@ -20,8 +20,8 @@ A mechanism to generate a unique, random 4-letter `code` must be implemented whe
 ## Acceptance Criteria
 - `Room` and `Player` model files and their corresponding migrations are created.
 - RSpec tests are written to verify:
-  - `Room` model validations (e.g., uniqueness of `room_code`).
+  - `Room` model validations (e.g., uniqueness of `code`).
   - `Player` model validations.
   - The `Room` and `Player` associations.
-  - The automatic generation of a `room_code` on `Room` creation.
+  - The automatic generation of a `code` on `Room` creation.
 - All tests pass.

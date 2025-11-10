@@ -7,7 +7,7 @@
   2. Core models (`Room`, `Player`) with TDD.
   3. Basic controllers and views for creating/joining a room.
   4. Action Cable `GameChannel` setup.
-  5. Lobby views for TV and Phone.
+  5. Lobby views for Stage and Hand.
   6. System test for multiple players joining a lobby.
 - **Definition of Done**: Two people can join a room and see each other in real-time.
 
@@ -38,7 +38,7 @@
   1. Handle timer expirations, player disconnections.
   2. Implement player reconnection.
   3. Add host controls (e.g., skip phase).
-  4. Improve mobile views and add TV fullscreen mode.
+  4. Improve mobile views and add Stage fullscreen mode.
   5. Seed more prompts.
 - **Definition of Done**: The game is robust and handles common edge cases gracefully.
 

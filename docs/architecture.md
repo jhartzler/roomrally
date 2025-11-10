@@ -56,5 +56,5 @@ The system is designed in three distinct layers that communicate through well-de
 The system involves three main actors:
 
 - **Server (Rails)**: The authoritative director. Manages state, enforces rules, and orchestrates the game flow.
-- **TV (Main Screen)**: A display-only subscriber. Receives game-wide broadcasts and shows the public game state.
-- **Phone (Player Controller)**: An input device. Sends player actions (joining, submitting, voting) and receives both game-wide and player-specific UI updates.
+- **Stage (Main Screen)**: A display-only subscriber. Receives game-wide broadcasts and shows the public game state.
+- **Hand (Player Controller)**: An input device. Sends player actions (joining, submitting, voting) and receives both game-wide and player-specific UI updates.

@@ -1,12 +1,12 @@
 # Real-Time Communication Layer
 
-This layer is responsible for managing WebSocket connections and message traffic between the server and clients (TVs and Phones).
+This layer is responsible for managing WebSocket connections and message traffic between the server and clients (Stages and Hands).
 
 ## Core Component: `GameChannel`
 A single, generic `GameChannel` handles all real-time communication for all game types. This avoids channel proliferation and code duplication.
 
 ### Responsibilities
-- **Authentication**: Identifies the connecting client (player or TV) via the Rails session.
+- **Authentication**: Identifies the connecting client (player or Stage) via the Rails session.
 - **Subscription**: Subscribes the client to the correct Turbo Streams for receiving UI updates.
 - **Routing**: Receives incoming messages (e.g., `submit_data`, `start_game`) and routes them to the appropriate Game Logic module based on the game's `game_type`.
 - **Authorization**: Performs basic checks to ensure the player is part of the game they are trying to interact with.
@@ -20,9 +20,9 @@ To securely route messages, the channel uses a registry (a simple Hash) that map
 The server communicates UI changes to clients almost exclusively through Turbo Streams.
 
 ### Stream Naming Convention
-- **Game-wide broadcasts**: Target the `Game` model itself. The TV client subscribes to this stream.
+- **Game-wide broadcasts**: Target the `Game` model itself. The Stage client subscribes to this stream.
   - `stream_for @game`
-- **Player-specific broadcasts**: Target a unique stream combining the game and player. Phone clients subscribe to this in addition to the game-wide stream.
+- **Player-specific broadcasts**: Target a unique stream combining the game and player. Hand clients subscribe to this in addition to the game-wide stream.
   - `stream_for [@game, @player]`
 
 ### Message Flow
