@@ -2,8 +2,8 @@
 
 <%= button_to "Create Room", rooms_path, method: :post %>
 
-<%= form_with url: "javascript:void(0);", method: :get, data: { controller: "join-form", action: "submit->join-form#join" } do |form| %>
+<%= form_with url: "javascript:void(0);", method: :get, data: { controller: "redirect-form", action: "submit->redirect-form#join", "redirect-form-url-template-value": "/rooms/{{value}}/join" } do |form| %>
   <%= form.label :room_code, "Enter Room Code" %>
-  <%= form.text_field :room_code, data: { "join-form-target": "input" } %>
+  <%= form.text_field :room_code, data: { "redirect-form-target": "input" } %>
   <%= form.submit "Join Room" %>
 <% end %>
