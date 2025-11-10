@@ -9,7 +9,7 @@ Create the two primary views for the game lobby: the main TV screen and the play
 
 - **Stage View (`rooms/show_stage.html.erb`):**
   - This is the main screen for all players to look at.
-  - It must prominently display the 4-letter `room_code` so others can join.
+  - It must prominently display the 4-letter `code` so others can join.
   - It needs a designated area, like `<div id="player-list"></div>`, where the list of connected players will be rendered in real-time.
   - It should be visually distinct and designed for a 16:9 display.
 

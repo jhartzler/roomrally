@@ -14,7 +14,7 @@ Use Action Cable and Turbo Streams to update the lobby in real-time as players j
   - This stream should replace the disabled "Start Game" button with an enabled version, allowing the host to start the game.
 
 ## Acceptance Criteria
-- When a new player joins a game, their name instantly appears on the TV screen and all other connected phone screens without a page refresh.
+- When a new player joins a game, their name instantly appears on the Stage screen and all other connected hand screens without a page refresh.
 - The host's "Start Game" button becomes enabled automatically when the second player joins the game.
 - The "Start Game" button remains disabled if there is only one player.
 - A system test is written to verify these real-time updates.

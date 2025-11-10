@@ -11,14 +11,14 @@ The client architecture is based on **Hotwire (Turbo + Stimulus)**, following an
 
 There are two distinct types of clients in any game.
 
-### 1. Stage Client (`/rooms/:room_code/stage`)
+### 1. Stage Client (`/rooms/:code/stage`)
 The main screen that all players look at.
 - **Purpose**: Display-only, showing the public game state.
 - **Characteristics**: Large screen format, receives game-wide broadcasts, minimal to no interaction.
-- **Key Views**: Lobby (room code, player list), Prompting (question), Voting (all answers), Results (scores).
+- **Key Views**: Lobby (code, player list), Prompting (question), Voting (all answers), Results (scores).
 - **Stimulus Controllers**: `stage_controller` (fullscreen, wake lock), `game_connection_controller`, `timer_controller`.
 
-### 2. `Hand Client (`/rooms/:room_code/hand`)
+### 2. `Hand Client (`/rooms/:code/hand`)
 The personal device each player uses to interact with the game.
 - **Purpose**: Input device and personal display.
 - **Characteristics**: Mobile-first, interactive with forms and buttons, shows player-specific state.
@@ -34,8 +34,8 @@ The server drives all UI changes. The pattern is:
 5. The client's browser receives the stream and automatically performs the DOM update.
 
 **Convention**: Broadcast entire screen updates rather than small fragments. This is simpler to reason about. Use consistent DOM IDs for targetable areas.
-- `#stage_screen`: Main content area on the TV.
-- `#hand_screen`: Main content area on the phone.
+- `#stage_screen`: Main content area on the Stage.
+- `#hand_screen`: Main content area on the Hand.
 - `#player_list`: The list of players, present on both clients.
 - `#timer`: The timer display.
 
@@ -46,7 +46,7 @@ The server drives all UI changes. The pattern is:
 
 ## Routing and Sessions
 - `/`: Home page to create or join a room.
-- `/rooms/:code`: A splash page to choose between the TV or Phone view.
+- `/rooms/:code`: A splash page to choose between the Stage or Hand view.
 - `/rooms/:code/stage`: The Stage client.
 - `/rooms/:code/hand`: The Hand client.
 - A `session_id` stored in the Rails session is used to identify a player's browser. If they disconnect and reconnect, this ID allows them to rejoin the room in progress. No user accounts or passwords are required for the MVP.

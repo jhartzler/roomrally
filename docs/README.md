@@ -14,19 +14,18 @@ Create a Rails-based, open-source, real-time party game platform inspired by Jac
 - **Code Quality**: RuboCop
 
 ## Core Experience
-- **Main Screen (TV)**: Displays the game state to all players.
-- **Controllers (Phones/Tablets/Laptops)**: Players use personal devices to join a room and interact.
-- **Core models**: `Room`, `Player`
-- **Room-Based**: Games are accessed via 4-letter room codes (e.g., "ABCD").
+- **Main Screen (Stage)**: Displays the game state to all players.
+- **Controllers (Hands/Tablets/Laptops)**: Players use personal devices to join a room and interact.
+- **Room-Based**: Games are accessed via 4-letter codes (e.g., "ABCD").
 - **Session Length**: 10-15 minutes per game.
 - **Target Audience**: Groups of friends playing together in the same physical space.
 
 ## MVP Features
 
 ### Game Creation & Lobby
-- Generate unique 4-letter room codes.
-- Players join via room code.
-- Display waiting players on TV and phones.
+- Generate unique 4-letter codes.
+- Players join via code.
+- Display waiting players on Stage and hands.
 - Minimum 2 players to start.
 - First player is host who can start the game.
 
