@@ -15,7 +15,7 @@ RSpec.describe 'Player Join Flow', type: :system do
     # 3. Fill in name and submit
     fill_in 'Name', with: 'Reynard Muldoon'
     click_on 'Join'
-    expect(page).to have_current_path("/rooms/#{@room.code}/hand", wait: 5)
+    expect(page).to have_current_path("/rooms/#{room.code}/hand", wait: 5)
 
     # 4. Assert player is created correctly
     player = Player.find_by(name: 'Reynard Muldoon')
