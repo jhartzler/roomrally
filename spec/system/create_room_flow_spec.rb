@@ -10,10 +10,16 @@ RSpec.describe 'Room Creation Flow', type: :system do
 
   it 'allows a user to create a new room and redirects them to the join page' do
     visit root_path
-    expect { click_on 'Create Room' }.to change(Room, :count).by(1)
+    click_on 'Create Room'
 
-    room = Room.last
-    expect(page).to have_current_path("/rooms/#{room.code}/join")
-    expect(page).to have_content("You are the host of room #{room.code}")
+    # Wait for the redirect to the join page and verify the path format
+    expect(page).to have_current_path(/\/rooms\/[A-Z0-9]{4}\/join/, wait: 5)
+
+    # Extract the room code from the URL
+    room_code = page.current_path.split('/')[2]
+    room = Room.find_by!(code: room_code)
+
+    # Now that we have the room, we can make specific assertions
+    expect(page).to have_content("Join Room: #{room.code}\nYou are the host of room #{room.code}")
   end
 end
