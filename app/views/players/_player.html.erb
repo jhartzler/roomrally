@@ -1,0 +1,21 @@
+<%= turbo_frame_tag dom_id(player) do %>
+  <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200 hover:border-purple-400 transition-all hover:shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-full w-12 h-12 flex items-center justify-center text-white font-bold text-xl">
+        <%= player.name[0].upcase %>
+      </div>
+      <div class="flex-1">
+        <p class="font-bold text-gray-800 text-lg"><%= player.name %></p>
+        <% if player == player.room.host %>
+          <p class="text-xs text-purple-600 font-semibold flex items-center gap-1">
+            <span>👑</span>
+            <span>Host</span>
+          </p>
+        <% else %>
+          <p class="text-xs text-gray-500">Player</p>
+        <% end %>
+      </div>
+      <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+    </div>
+  </div>
+<% end %>

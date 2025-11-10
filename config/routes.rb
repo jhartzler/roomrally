@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :rooms, only: %i[create show], param: :code do
     member do
       get :hand
+      post :start_game
     end
   end
 

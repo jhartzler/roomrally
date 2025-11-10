@@ -24,11 +24,15 @@
   </head>
 
   <body>
-    <div id="flash">
-      <% flash.each do |key, value| %>
-        <div class="flash <%= key %>"><%= value %></div>
-      <% end %>
-    </div>
+    <% if flash.any? %>
+      <div id="flash" class="fixed top-4 right-4 z-50 space-y-2">
+        <% flash.each do |key, value| %>
+          <div class="flash <%= key %> <%= key == 'notice' ? 'bg-green-500' : 'bg-red-500' %> text-white px-6 py-4 rounded-xl shadow-lg font-semibold animate-slide-in max-w-md">
+            <%= value %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
     <%= yield %>
   </body>
 </html>

@@ -1,12 +1,47 @@
-<h1>Room: <%= @room.code %></h1>
-<h2>Player: <%= @player.name %></h2>
+<%= turbo_stream_from @room %>
 
-<div id="hand_screen">
-  <p>Waiting for players...</p>
+<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8 mt-8">
+      <div class="inline-block bg-white/20 backdrop-blur-sm rounded-2xl px-8 py-4 mb-4">
+        <p class="text-white text-sm font-semibold mb-1">Room Code</p>
+        <p class="text-4xl font-black text-white font-mono"><%= @room.code %></p>
+      </div>
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 inline-block">
+        <p class="text-white font-semibold">👤 You: <span class="font-black"><%= @player.name %></span></p>
+      </div>
+    </div>
 
-  <div id="player-list">
-    <% @room.players.each do |player| %>
-      <p><%= player.name %></p>
-    <% end %>
+    <!-- Main Content -->
+    <div id="hand_screen" class="bg-white rounded-3xl shadow-2xl p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-black text-gray-800 mb-2">Game Lobby</h2>
+        <p class="text-gray-600 flex items-center justify-center gap-2">
+          <span class="animate-pulse">⏳</span>
+          Waiting for players to join...
+        </p>
+      </div>
+
+      <!-- Player List -->
+      <div id="player-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <%= render @room.players %>
+      </div>
+
+      <!-- Start Game Button (Host Only) -->
+      <% if @player == @room.host %>
+        <div class="border-t-2 border-gray-200 pt-6">
+          <div class="max-w-md mx-auto">
+            <div class="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-yellow-300">
+              <p class="text-center text-sm font-semibold text-gray-700 flex items-center justify-center gap-2">
+                <span>👑</span>
+                <span>You're the host! Start the game when everyone's ready.</span>
+              </p>
+            </div>
+            <%= button_to "Start Game", start_game_room_path(@room.code), method: :post, id: "start-game-btn", class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
