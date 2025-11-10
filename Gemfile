@@ -71,7 +71,7 @@ end
 
 group :test do
   # Simple one-liner tests for common Rails functionality
-  gem "shoulda-matchers", "~> 5.0"
+  gem "shoulda-matchers", "~> 7.0"
   gem "database_cleaner-active_record"
   gem "rails-controller-testing"
 end
