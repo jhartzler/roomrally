@@ -22,7 +22,7 @@ class Room < ApplicationRecord
     return if code.present?
 
     loop do
-      self.code = SecureRandom.alphanumeric(4).upcase
+      self.code = SecureRandom.alphanumeric(4).upcase.tr("O", "0")
       break unless self.class.exists?(code:)
     end
   end
