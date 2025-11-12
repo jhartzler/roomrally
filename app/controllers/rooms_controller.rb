@@ -2,8 +2,8 @@ class RoomsController < ApplicationController
   before_action :set_room, only: %i[hand start_game]
 
   def create
-    room = Room.create!
-    Rails.logger.info "Room #{room.code} created."
+    room = Room.create!(room_params)
+    Rails.logger.info "Room #{room.code} created with game type: #{room.game_type}."
     redirect_to join_room_path(room)
   end
 
@@ -30,5 +30,9 @@ class RoomsController < ApplicationController
 
   def set_room
     @room = Room.find_by!(code: params[:code])
+  end
+
+  def room_params
+    params.permit(:game_type)
   end
 end

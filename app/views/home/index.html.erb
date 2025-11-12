@@ -7,7 +7,13 @@
     </div>
 
     <div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
-      <%= button_to "Create Room", rooms_path, method: :post, class: "w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+      <%= form_with url: rooms_path, method: :post, class: "space-y-4" do |form| %>
+        <div>
+          <%= form.label :game_type, "Select Game", class: "block text-gray-700 font-semibold mb-2" %>
+          <%= form.select :game_type, Room::GAME_TYPES.map { |game| [game, game] }, {}, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all text-lg" %>
+        </div>
+        <%= form.submit "Create Room", class: "w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+      <% end %>
 
       <div class="relative">
         <div class="absolute inset-0 flex items-center">
