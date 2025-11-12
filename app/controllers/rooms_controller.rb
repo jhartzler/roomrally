@@ -1,5 +1,6 @@
 class RoomsController < ApplicationController
-  before_action :set_room, only: %i[hand start_game]
+  before_action :set_room, only: %i[hand start_game claim_host reassign_host]
+  rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
 
   def create
     room = Room.create!(room_params)
@@ -26,6 +27,58 @@ class RoomsController < ApplicationController
     redirect_to hand_room_path(@room.code), notice: "Game started!"
   end
 
+  def claim_host
+    @player = Player.find_by!(session_id: session[:player_session_id])
+
+    # Check if there's already a host
+    if @room.host.present?
+      redirect_to hand_room_path(@room.code), alert: "There is already a host for this room."
+      return
+    end
+
+    # Check cooloff period (30 seconds)
+    if @room.last_host_claim_at.present? && @room.last_host_claim_at > 30.seconds.ago
+      remaining_seconds = (30 - (Time.current - @room.last_host_claim_at)).ceil
+      redirect_to hand_room_path(@room.code), alert: "Host was recently claimed. Please wait #{remaining_seconds} seconds."
+      return
+    end
+
+    # Claim host
+    @room.update!(host: @player, last_host_claim_at: Time.current)
+    Rails.logger.info "Player #{@player.name} claimed host for room #{@room.code}"
+
+    # Broadcast host change to all players in the room
+    broadcast_player_list_update
+
+    redirect_to hand_room_path(@room.code), notice: "You are now the host!"
+  end
+
+  def reassign_host
+    @player = Player.find_by!(session_id: session[:player_session_id])
+
+    # Check if current player is the host
+    unless @player == @room.host
+      redirect_to hand_room_path(@room.code), alert: "Only the host can reassign host privileges."
+      return
+    end
+
+    # Find the target player
+    target_player = @room.players.find_by(id: params[:player_id])
+    unless target_player
+      redirect_to hand_room_path(@room.code), alert: "Player not found in this room."
+      return
+    end
+
+    # Reassign host (no cooloff update)
+    @room.update!(host: target_player)
+    Rails.logger.info "Host reassigned from #{@player.name} to #{target_player.name} in room #{@room.code}"
+
+    # Broadcast host change to all players in the room
+    broadcast_player_list_update
+
+    redirect_to hand_room_path(@room.code), notice: "Host has been reassigned to #{target_player.name}."
+  end
+
   private
 
   def set_room
@@ -34,5 +87,20 @@ class RoomsController < ApplicationController
 
   def room_params
     params.permit(:game_type)
+  end
+
+  def broadcast_player_list_update
+    # Replace the entire player list to update host status indicators
+    @room.broadcast_replace_to(
+      @room,
+      target: "player-list",
+      partial: "rooms/player_list",
+      locals: { room: @room }
+    )
+  end
+
+  def room_not_found
+    Rails.logger.warn "Attempted to access non-existent room: #{params[:code]}"
+    redirect_to root_path, alert: "Room '#{params[:code]}' not found. Please check the room code and try again."
   end
 end

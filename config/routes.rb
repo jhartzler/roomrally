@@ -16,9 +16,11 @@ Rails.application.routes.draw do
     member do
       get :hand
       post :start_game
+      post :claim_host
+      post :reassign_host
     end
   end
 
   get "/rooms/:code/join", to: "players#new", as: :join_room
-  resources :players, only: [ :create ]
+  resources :players, only: [ :create, :destroy ]
 end
