@@ -67,4 +67,85 @@ RSpec.describe PlayersController, type: :controller do
       end
     end
   end
+
+  describe 'invalid room code handling' do
+    it 'redirects to root with alert for GET #new' do
+      get :new, params: { code: 'INVALID' }
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to include("Room 'INVALID' not found")
+    end
+
+    it 'redirects to root with alert for POST #create' do
+      post :create, params: { code: 'INVALID', player: { name: 'Test' } }
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to include("Room 'INVALID' not found")
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let(:room) { create(:room) }
+    let(:host_player) { create(:player, room:) }
+    let(:player_to_kick) { create(:player, room:) }
+
+    before do
+      room.update!(host: host_player)
+    end
+
+    context 'when current player is the host' do
+      before do
+        session[:player_session_id] = host_player.session_id
+      end
+
+      it 'deletes the player' do
+        player_to_kick # ensure player exists
+        expect {
+          delete :destroy, params: { id: player_to_kick.id }
+        }.to change(Player, :count).by(-1)
+      end
+
+      it 'redirects with success notice' do
+        delete :destroy, params: { id: player_to_kick.id }
+        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(flash[:notice]).to include("has been kicked")
+      end
+    end
+
+    context 'when current player is not the host' do
+      before do
+        session[:player_session_id] = player_to_kick.session_id
+      end
+
+      it 'does not delete the player' do
+        host_player # ensure both players exist
+        player_to_kick
+        expect {
+          delete :destroy, params: { id: host_player.id }
+        }.not_to change(Player, :count)
+      end
+
+      it 'redirects with alert' do
+        delete :destroy, params: { id: host_player.id }
+        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(flash[:alert]).to include("Only the host can kick")
+      end
+    end
+
+    context 'when host tries to kick themselves' do
+      before do
+        session[:player_session_id] = host_player.session_id
+      end
+
+      it 'does not delete the host' do
+        expect {
+          delete :destroy, params: { id: host_player.id }
+        }.not_to change(Player, :count)
+      end
+
+      it 'redirects with alert' do
+        delete :destroy, params: { id: host_player.id }
+        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(flash[:alert]).to include("cannot kick yourself")
+      end
+    end
+  end
 end

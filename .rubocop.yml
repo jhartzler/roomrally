@@ -22,6 +22,7 @@ Style/HashSyntax:
   EnforcedShorthandSyntax: always
 
 RSpec/MultipleExpectations:
+  Max: 2
   Exclude:
     - 'spec/system/**/*'
 

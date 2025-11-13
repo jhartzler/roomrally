@@ -1,3 +1,4 @@
+<% current_player = local_assigns[:current_player] || (defined?(session) && session[:player_session_id] ? Player.find_by(session_id: session[:player_session_id]) : nil) %>
 <%= turbo_frame_tag dom_id(player) do %>
   <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200 hover:border-purple-400 transition-all hover:shadow-lg">
     <div class="flex items-center gap-3">
@@ -15,7 +16,15 @@
           <p class="text-xs text-gray-500">Player</p>
         <% end %>
       </div>
-      <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+
+      <% if current_player && current_player == player.room.host && player != current_player %>
+        <div class="flex gap-2">
+          <%= button_to "Make Host", reassign_host_room_path(player.room.code, player_id: player.id), method: :post, class: "text-xs bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded-lg transition-all", title: "Make this player the host" %>
+          <%= button_to "Kick", player_path(player), method: :delete, class: "text-xs bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg transition-all", title: "Remove this player from the room", data: { turbo_confirm: "Are you sure you want to kick #{player.name}?" } %>
+        </div>
+      <% else %>
+        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+      <% end %>
     </div>
   </div>
 <% end %>
