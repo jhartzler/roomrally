@@ -1,12 +1,14 @@
-<h1>Room: <%= @room.code %></h1>
-<h2>Player: <%= @player.name %></h2>
+<div data-controller="game-connection" data-game-connection-code-value="<%= @room.code %>">
+  <h1>Room: <%= @room.code %></h1>
+  <h2>Player: <%= @player.name %></h2>
 
-<div id="hand_screen">
-  <p>Waiting for players...</p>
+  <div id="hand_screen">
+    <p>Waiting for players...</p>
 
-  <div id="player-list">
-    <% @room.players.each do |player| %>
-      <p><%= player.name %></p>
-    <% end %>
+    <div id="player-list">
+      <% @room.players.each do |player| %>
+        <p><%= player.name %></p>
+      <% end %>
+    </div>
   </div>
 </div>
