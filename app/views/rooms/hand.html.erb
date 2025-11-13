@@ -8,8 +8,13 @@
         <p class="text-white text-sm font-semibold mb-1">Room Code</p>
         <p class="text-4xl font-black text-white font-mono"><%= @room.code %></p>
       </div>
-      <div class="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 inline-block">
-        <p class="text-white font-semibold">👤 You: <span class="font-black"><%= @player.name %></span></p>
+      <div class="space-x-3">
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 inline-block">
+          <p class="text-white font-semibold">👤 You: <span class="font-black"><%= @player.name %></span></p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3 inline-block">
+          <p class="text-white font-semibold">🎮 Game: <span class="font-black"><%= @room.game_type %></span></p>
+        </div>
       </div>
     </div>
 

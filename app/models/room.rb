@@ -3,8 +3,12 @@ class Room < ApplicationRecord
   has_many :players, dependent: :destroy
   belongs_to :host, class_name: "Player", optional: true
 
+  # Constants
+  GAME_TYPES = [ "Write And Vote" ].freeze
+
   # Validations
   validates :code, uniqueness: { case_sensitive: false }
+  validates :game_type, presence: true, inclusion: { in: GAME_TYPES }
 
   # Callbacks
   before_create :generate_code
