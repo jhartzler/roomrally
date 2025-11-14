@@ -9,7 +9,7 @@
 
 <!-- Player List -->
 <div id="player-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-  <%= render @room.players %>
+  <%= render partial: "players/player", collection: @room.players, as: :player, locals: { current_player: player } %>
 </div>
 
 <!-- Claim Host Button (No Host) -->

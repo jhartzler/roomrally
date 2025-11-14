@@ -152,6 +152,10 @@ RSpec.describe RoomsController, type: :controller do
     before do
       room.update!(host:)
       session[:player_session_id] = host.session_id
+      # Create some master prompts for the game to use
+      3.times { |i| create(:prompt, text: "Master Prompt #{i + 1}") }
+      # Create other players
+      2.times { create(:player, room:) }
     end
 
     context 'when the current player is the host' do
@@ -177,6 +181,24 @@ RSpec.describe RoomsController, type: :controller do
       it 'redirects to the hand view' do
         post :start_game, params: { code: room.code }
         expect(response).to redirect_to(hand_room_path(room.code))
+      end
+    end
+
+    context 'when there are fewer than 2 players' do
+      before do
+        room.players.where.not(id: host.id).destroy_all
+      end
+
+      it 'does not start the game' do
+        post :start_game, params: { code: room.code }
+        room.reload
+        expect(room.status).not_to eq('playing')
+      end
+
+      it 'redirects with an alert' do
+        post :start_game, params: { code: room.code }
+        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(flash[:alert]).to eq('You need at least 2 players to start the game.')
       end
     end
 

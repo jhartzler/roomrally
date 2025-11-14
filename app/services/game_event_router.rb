@@ -7,12 +7,20 @@ module GameEventRouter
     Rails.logger.info "Registered game handler for #{game_type}"
   end
 
-  def self.publish(event_name, room, *args)
+  def self.method_missing(event_name, *args)
+    room = args.first
+    return super unless room.is_a?(Room)
+
     handler = @game_handlers[room.game_type]
     if handler && handler.respond_to?(event_name)
-      handler.public_send(event_name, room, *args)
+      handler.public_send(event_name, *args)
     else
-      Rails.logger.warn "No handler for event :#{event_name} in game type #{room.game_type}"
+      # Do nothing, just ignore the event
     end
+  end
+
+  def self.respond_to_missing?(method_name, include_private = false)
+    # This is needed for method_missing to work correctly with wisper
+    true
   end
 end

@@ -16,19 +16,24 @@ class RoomsController < ApplicationController
     @player = current_player
   end
 
-  def start_game
-    unless current_player == @room.host
-      redirect_to hand_room_path(@room.code), alert: "Only the host can start the game."
-      return
+    def start_game
+      unless current_player == @room.host
+        redirect_to hand_room_path(@room.code), alert: "Only the host can start the game."
+        return
+      end
+
+      if @room.players.count < 2
+        redirect_to hand_room_path(@room.code), alert: "You need at least 2 players to start the game."
+        return
+      end
+
+      @room.update!(status: "playing")
+      Rails.logger.info "Game started for room #{@room.code} by host #{current_player.name}"
+
+      publish(:game_started, @room)
+
+      redirect_to hand_room_path(@room.code), notice: "Game started!"
     end
-
-    @room.update!(status: "playing")
-    Rails.logger.info "Game started for room #{@room.code} by host #{current_player.name}"
-    publish(:game_started, @room)
-
-    redirect_to hand_room_path(@room.code), notice: "Game started!"
-  end
-
   def claim_host
     # Check if there's already a host
     if @room.host.present?

@@ -47,8 +47,8 @@ RSpec.configure do |config|
   end
 
   # Use transaction strategy by default (fast)
-  config.before do
-    DatabaseCleaner.strategy = :transaction
+  config.before do |example|
+    DatabaseCleaner.strategy = example.metadata[:js] || example.metadata[:type] == :system || example.metadata[:type] == :controller ? :truncation : :transaction
   end
 
   # Use truncation for system/feature tests (so Playwright can see the data)
