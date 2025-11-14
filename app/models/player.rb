@@ -1,4 +1,6 @@
 class Player < ApplicationRecord
+  include Turbo::Broadcastable
+
   belongs_to :room
 
   validates :name, presence: true

@@ -1,0 +1,8 @@
+<%# app/views/games/write_and_vote/_hand.html.erb %>
+<%# This is the main view for a player's hand in the Write and Vote game. %>
+
+<%# For now, we will just render the prompt screen with dummy data. %>
+<%# In the future, this partial will have more logic to show different screens
+    (e.g., waiting for other players, voting, results). %>
+
+<%= render "games/write_and_vote/prompt_screen", player: player, prompts: ["Dummy Prompt 1", "Dummy Prompt 2"] %>
