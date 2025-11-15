@@ -1,0 +1,9 @@
+<%# app/views/games/write_and_vote/_hand.html.erb %>
+<%# This is the main view for a player's hand in the Write and Vote game. %>
+
+<%
+  # Get the player's prompt instances from their responses
+  player_prompt_instances = player.responses.map(&:prompt_instance)
+%>
+
+<%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances %>

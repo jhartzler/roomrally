@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_12_174536) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_14_041552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,32 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_12_174536) do
     t.datetime "updated_at", null: false
     t.index ["room_id"], name: "index_players_on_room_id"
     t.index ["session_id"], name: "index_players_on_session_id", unique: true
+  end
+
+  create_table "prompt_instances", force: :cascade do |t|
+    t.string "body"
+    t.datetime "created_at", null: false
+    t.bigint "prompt_id", null: false
+    t.bigint "room_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prompt_id"], name: "index_prompt_instances_on_prompt_id"
+    t.index ["room_id"], name: "index_prompt_instances_on_room_id"
+  end
+
+  create_table "prompts", force: :cascade do |t|
+    t.string "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "responses", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.bigint "player_id", null: false
+    t.bigint "prompt_instance_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_responses_on_player_id"
+    t.index ["prompt_instance_id"], name: "index_responses_on_prompt_instance_id"
   end
 
   create_table "rooms", force: :cascade do |t|
@@ -38,5 +64,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_12_174536) do
   end
 
   add_foreign_key "players", "rooms"
+  add_foreign_key "prompt_instances", "prompts"
+  add_foreign_key "prompt_instances", "rooms"
+  add_foreign_key "responses", "players"
+  add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "players", column: "host_id"
 end

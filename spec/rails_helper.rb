@@ -29,6 +29,11 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
+# Ensure models pick up schema changes
+Prompt.reset_column_information
+PromptInstance.reset_column_information
+Response.reset_column_information
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = "#{::Rails.root}/spec/fixtures"
@@ -47,8 +52,8 @@ RSpec.configure do |config|
   end
 
   # Use transaction strategy by default (fast)
-  config.before do
-    DatabaseCleaner.strategy = :transaction
+  config.before do |example|
+    DatabaseCleaner.strategy = example.metadata[:js] || example.metadata[:type] == :system || example.metadata[:type] == :controller ? :truncation : :transaction
   end
 
   # Use truncation for system/feature tests (so Playwright can see the data)
@@ -77,9 +82,6 @@ RSpec.configure do |config|
   config.before(:each, :js, type: :system) do
     driven_by :playwright
   end
-
-  # You can uncomment this line to turn off ActiveRecord support entirely.
-  # config.use_active_record = false
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and

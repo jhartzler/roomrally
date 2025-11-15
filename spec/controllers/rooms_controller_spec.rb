@@ -145,6 +145,84 @@ RSpec.describe RoomsController, type: :controller do
     end
   end
 
+  describe 'POST #start_game' do
+    let(:room) { create(:room) }
+    let(:host) { create(:player, room:) }
+
+    before do
+      room.update!(host:)
+      session[:player_session_id] = host.session_id
+      # Create some master prompts for the game to use
+      3.times { |i| create(:prompt, body: "Master Prompt #{i + 1}") }
+      # Create other players
+      2.times { create(:player, room:) }
+    end
+
+    context 'when the current player is the host' do
+      let(:listener) { instance_spy(TestListener) }
+
+      before do
+        stub_const('TestListener', Class.new { def game_started(room); end })
+        allow(listener).to receive(:game_started)
+        controller.subscribe(listener)
+      end
+
+      it 'updates the room status to playing' do
+        post :start_game, params: { code: room.code }
+        room.reload
+        expect(room.status).to eq('playing')
+      end
+
+      it 'publishes the :game_started event' do
+        post :start_game, params: { code: room.code }
+        expect(listener).to have_received(:game_started).with(room)
+      end
+
+      it 'redirects to the hand view' do
+        post :start_game, params: { code: room.code }
+        expect(response).to redirect_to(hand_room_path(room.code))
+      end
+    end
+
+    context 'when there are fewer than 2 players' do
+      before do
+        room.players.where.not(id: host.id).destroy_all
+      end
+
+      it 'does not start the game' do
+        post :start_game, params: { code: room.code }
+        room.reload
+        expect(room.status).not_to eq('playing')
+      end
+
+      it 'redirects with an alert' do
+        post :start_game, params: { code: room.code }
+        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(flash[:alert]).to eq('You need at least 2 players to start the game.')
+      end
+    end
+
+    context 'when the current player is not the host' do
+      let(:other_player) { create(:player, room:) }
+
+      before do
+        session[:player_session_id] = other_player.session_id
+      end
+
+      it 'does not update the room status' do
+        post :start_game, params: { code: room.code }
+        room.reload
+        expect(room.status).not_to eq('playing')
+      end
+
+      it 'redirects with an alert' do
+        post :start_game, params: { code: room.code }
+        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(flash[:alert]).to eq('Only the host can start the game.')
+      end
+    end
+  end
+
   describe 'POST #reassign_host' do
     let(:room) { create(:room) }
     let(:host_player) { create(:player, room:) }

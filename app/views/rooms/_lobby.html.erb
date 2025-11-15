@@ -1,0 +1,43 @@
+<%# app/views/rooms/_lobby.html.erb %>
+<div class="text-center mb-8">
+  <h2 class="text-3xl font-black text-gray-800 mb-2">Game Lobby</h2>
+  <p class="text-gray-600 flex items-center justify-center gap-2">
+    <span class="animate-pulse">⏳</span>
+    Waiting for players to join...
+  </p>
+</div>
+
+<!-- Player List -->
+<div id="player-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+  <%= render partial: "players/player", collection: @room.players, as: :player, locals: { current_player: player } %>
+</div>
+
+<!-- Claim Host Button (No Host) -->
+<% if @room.host.nil? %>
+  <div class="border-t-2 border-gray-200 pt-6 mb-6">
+    <div class="max-w-md mx-auto">
+      <div class="bg-gradient-to-r from-red-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-red-300">
+        <p class="text-center text-sm font-semibold text-gray-700 flex items-center justify-center gap-2">
+          <span>⚠️</span>
+          <span>No host in this room. Claim host to start the game!</span>
+        </p>
+      </div>
+      <%= button_to "Claim Host", claim_host_room_path(@room.code), method: :post, class: "w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Start Game Button (Host Only) -->
+<% if @player == @room.host %>
+  <div class="border-t-2 border-gray-200 pt-6">
+    <div class="max-w-md mx-auto">
+      <div class="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-yellow-300">
+        <p class="text-center text-sm font-semibold text-gray-700 flex items-center justify-center gap-2">
+          <span>👑</span>
+          <span>You're the host! Start the game when everyone's ready.</span>
+        </p>
+      </div>
+      <%= button_to "Start Game", start_game_room_path(@room.code), method: :post, id: "start-game-btn", class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+    </div>
+  </div>
+<% end %>
