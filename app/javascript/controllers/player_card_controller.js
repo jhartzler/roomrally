@@ -6,7 +6,16 @@ export default class extends Controller {
   static targets = [ "actions" ]
 
   connect() {
-    const currentPlayerId = parseInt(document.querySelector("meta[name='current-player-id']").content)
+    const metaTag = document.querySelector("meta[name='current-player-id']")
+    if (!metaTag || !metaTag.content) {
+      return
+    }
+
+    const currentPlayerId = parseInt(metaTag.content)
+    if (isNaN(currentPlayerId)) {
+      return
+    }
+
     if (currentPlayerId === this.hostIdValue && this.playerIdValue !== currentPlayerId) {
       this.actionsTarget.classList.remove("hidden")
     }
