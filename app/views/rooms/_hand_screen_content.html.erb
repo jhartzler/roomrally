@@ -1,0 +1,6 @@
+<%# app/views/rooms/_hand_screen_content.html.erb %>
+<% if room.status == "playing" %>
+  <%= render "games/#{room.game_type.parameterize.underscore}/hand", room: room, player: player %>
+<% else %>
+  <%= render "rooms/lobby", room: room, player: player %>
+<% end %>

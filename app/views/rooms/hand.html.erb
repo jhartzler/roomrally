@@ -21,11 +21,7 @@
 
     <!-- Main Content -->
     <div id="hand_screen" class="bg-white rounded-3xl shadow-2xl p-8">
-      <% if @room.status == "playing" %>
-        <%= render "games/#{@room.game_type.parameterize.underscore}/hand", room: @room, player: @player %>
-      <% else %>
-        <%= render "rooms/lobby", room: @room, player: @player %>
-      <% end %>
+      <%= render "rooms/hand_screen_content", room: @room, player: @player %>
     </div>
   </div>
 </div>

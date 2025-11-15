@@ -11,6 +11,7 @@ RSpec.describe Games::WriteAndVote do
     before do
       # Create some master prompts
       3.times { |i| create(:prompt, body: "Master Prompt #{i + 1}") }
+      allow(room).to receive(:broadcast_replace_to).and_return(true)
     end
 
     it 'creates the correct number of prompt instances' do

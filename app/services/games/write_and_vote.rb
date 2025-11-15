@@ -29,6 +29,16 @@ module Games
         Response.create!(player:, prompt_instance: prompt_instance1)
         Response.create!(player:, prompt_instance: prompt_instance2)
       end
+
+      # 4. Broadcast to all players
+      room.players.each do |player|
+        room.broadcast_replace_to(
+          player,
+          target: "hand_screen",
+          partial: "rooms/hand_screen_content",
+          locals: { room:, player: }
+        )
+      end
     end
   end
 end
