@@ -7,9 +7,9 @@ RSpec.describe "WriteAndVote game flow", type: :system do
     room = FactoryBot.create(:room, game_type: "Write And Vote")
 
     # Create some master prompts
-    master_prompt1 = FactoryBot.create(:prompt, text: "Master Prompt 1")
-    master_prompt2 = FactoryBot.create(:prompt, text: "Master Prompt 2")
-    master_prompt3 = FactoryBot.create(:prompt, text: "Master Prompt 3")
+    master_prompt1 = FactoryBot.create(:prompt, body: "Master Prompt 1")
+    master_prompt2 = FactoryBot.create(:prompt, body: "Master Prompt 2")
+    master_prompt3 = FactoryBot.create(:prompt, body: "Master Prompt 3")
 
     # Create other players in the background.
     # The host will be created via the UI flow.
@@ -46,7 +46,7 @@ RSpec.describe "WriteAndVote game flow", type: :system do
     expect(player3.responses.count).to eq(2)
 
     # Check that the host's prompts are displayed
-    host_prompt_instances = host_player.responses.map { |r| r.prompt_instance.text }
+    host_prompt_instances = host_player.responses.map { |r| r.prompt_instance.body }
     expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     expect(page).to have_content(host_prompt_instances[0])
     expect(page).to have_content(host_prompt_instances[1])

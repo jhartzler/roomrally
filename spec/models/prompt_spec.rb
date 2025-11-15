@@ -6,6 +6,6 @@ RSpec.describe Prompt, type: :model do
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:text) }
+    it { is_expected.to validate_presence_of(:body) }
   end
 end

@@ -29,6 +29,11 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
+# Ensure models pick up schema changes
+Prompt.reset_column_information
+PromptInstance.reset_column_information
+Response.reset_column_information
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = "#{::Rails.root}/spec/fixtures"

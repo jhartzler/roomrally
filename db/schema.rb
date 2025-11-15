@@ -26,23 +26,23 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_041552) do
   end
 
   create_table "prompt_instances", force: :cascade do |t|
+    t.string "body"
     t.datetime "created_at", null: false
     t.bigint "prompt_id", null: false
     t.bigint "room_id", null: false
-    t.string "text"
     t.datetime "updated_at", null: false
     t.index ["prompt_id"], name: "index_prompt_instances_on_prompt_id"
     t.index ["room_id"], name: "index_prompt_instances_on_room_id"
   end
 
   create_table "prompts", force: :cascade do |t|
+    t.string "body"
     t.datetime "created_at", null: false
-    t.string "text"
     t.datetime "updated_at", null: false
   end
 
   create_table "responses", force: :cascade do |t|
-    t.text "content"
+    t.text "body"
     t.datetime "created_at", null: false
     t.bigint "player_id", null: false
     t.bigint "prompt_instance_id", null: false

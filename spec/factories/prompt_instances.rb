@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :prompt_instance do
     room
-    text { "MyString" }
+    body { "MyString" }
   end
 end

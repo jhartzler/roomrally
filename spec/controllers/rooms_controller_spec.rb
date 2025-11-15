@@ -153,7 +153,7 @@ RSpec.describe RoomsController, type: :controller do
       room.update!(host:)
       session[:player_session_id] = host.session_id
       # Create some master prompts for the game to use
-      3.times { |i| create(:prompt, text: "Master Prompt #{i + 1}") }
+      3.times { |i| create(:prompt, body: "Master Prompt #{i + 1}") }
       # Create other players
       2.times { create(:player, room:) }
     end

@@ -3,7 +3,7 @@ class CreateResponses < ActiveRecord::Migration[8.1]
     create_table :responses do |t|
       t.references :player, null: false, foreign_key: true
       t.references :prompt_instance, null: false, foreign_key: true
-      t.text :content
+      t.text :body
 
       t.timestamps
     end

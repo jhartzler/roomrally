@@ -10,7 +10,7 @@ RSpec.describe Games::WriteAndVote do
 
     before do
       # Create some master prompts
-      3.times { |i| create(:prompt, text: "Master Prompt #{i + 1}") }
+      3.times { |i| create(:prompt, body: "Master Prompt #{i + 1}") }
     end
 
     it 'creates the correct number of prompt instances' do

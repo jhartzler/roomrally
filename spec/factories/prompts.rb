@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :prompt do
-    text { "MyString" }
+    body { "MyString" }
   end
 end

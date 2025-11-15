@@ -2,6 +2,6 @@ FactoryBot.define do
   factory :response do
     player
     prompt_instance
-    content { "MyText" }
+    body { "MyText" }
   end
 end

@@ -16,7 +16,7 @@ module Games
 
       # 2. Create PromptInstances from master prompts
       prompt_instances = master_prompts.map do |master_prompt|
-        PromptInstance.new(room:, prompt: master_prompt, text: master_prompt.text)
+        PromptInstance.new(room:, prompt: master_prompt, body: master_prompt.body)
       end
       prompt_instances.each(&:save!)
 

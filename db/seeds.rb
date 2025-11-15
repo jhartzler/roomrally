@@ -21,5 +21,5 @@
   "What's the weirdest thing you've ever eaten?",
   "If you could have any fictional character as your best friend, who would it be and why?"
 ].each do |prompt_text|
-  Prompt.find_or_create_by!(text: prompt_text)
+  Prompt.find_or_create_by!(body: prompt_text)
 end
