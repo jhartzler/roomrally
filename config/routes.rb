@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get "dev/testing", to: "dev_testing#index"
+  post "dev/testing/create_test_game", to: "dev_testing#create_test_game"
+  get "dev/testing/show_test_game/:id", to: "dev_testing#show_test_game", as: :show_test_game
+  get "dev/testing/set_player_session/:id", to: "dev_testing#set_player_session", as: :set_player_session
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
