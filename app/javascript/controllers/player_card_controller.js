@@ -18,6 +18,7 @@ export default class extends Controller {
 
     if (currentPlayerId === this.hostIdValue && this.playerIdValue !== currentPlayerId) {
       this.actionsTarget.classList.remove("hidden")
+      this.actionsTarget.classList.add("flex")
     }
   }
 }
