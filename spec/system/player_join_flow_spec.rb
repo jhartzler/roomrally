@@ -37,4 +37,43 @@ RSpec.describe 'Player Join Flow', type: :system do
     expect(page).to have_content("Waiting for players to join...")
     expect(page).to have_content("Reynard Muldoon")
   end
+
+  it "shows host controls only to the host in a multi-player lobby" do
+    # 1. A host joins the room in their own session
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "What's your name?", with: "Host Player"
+      click_on "Join Game"
+      expect(page).to have_content("Host Player")
+    end
+
+    # 2. A second player joins in another session
+    Capybara.using_session(:other) do
+      visit join_room_path(room)
+      fill_in "What's your name?", with: "Other Player"
+      click_on "Join Game"
+      expect(page).to have_content("Other Player")
+    end
+
+    # 3. Assert host's view: they should see the other player and the action buttons
+    Capybara.using_session(:host) do
+      expect(page).to have_content("Other Player")
+      # The host should see the buttons next to the other player
+      other_player = Player.find_by!(name: "Other Player")
+      within "#player_#{other_player.id}" do
+        expect(page).to have_button("Make Host")
+        expect(page).to have_button("Kick")
+      end
+    end
+
+    # 4. Assert other player's view: they should see the host, but no action buttons
+    Capybara.using_session(:other) do
+      expect(page).to have_content("Host Player")
+      host_player = Player.find_by!(name: "Host Player")
+      within "#player_#{host_player.id}" do
+        # This is the key fix: we assert the buttons' container is in the DOM but hidden.
+        expect(page).to have_selector("[data-player-card-target='actions']", visible: :hidden)
+      end
+    end
+  end
 end

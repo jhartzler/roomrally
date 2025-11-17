@@ -26,22 +26,14 @@ RSpec.describe "Prompt assignment", type: :system do
     # The host starts the game
     Capybara.using_session(:host) do
       click_on "Start Game"
-      sleep 1 # Wait for the broadcast to be received
-    end
-
-    # 3. Assertions
-    # Each player should have 2 responses
-    expect(Player.find_by(name: "Host Player").responses.count).to eq(2)
-    expect(Player.find_by(name: "Other Player").responses.count).to eq(2)
-
-    # The host should see 2 prompts
-    Capybara.using_session(:host) do
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     end
 
-    # The other player should see 2 prompts
     Capybara.using_session(:other) do
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     end
+
+    expect(Player.find_by(name: "Host Player").responses.count).to eq(2)
+    expect(Player.find_by(name: "Other Player").responses.count).to eq(2)
   end
 end

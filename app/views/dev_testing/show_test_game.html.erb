@@ -1,0 +1,26 @@
+<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+    <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Test Game Created</h1>
+
+    <div class="text-center">
+      <p class="text-lg font-medium text-gray-700">Room code: <span class="font-bold text-indigo-600"><%= @room.code %></span></p>
+      <p class="text-lg font-medium text-gray-700">Game type: <span class="font-bold text-indigo-600"><%= @room.game_type %></span></p>
+    </div>
+
+    <div class="mt-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Player Links</h2>
+      <div class="space-y-4">
+        <% @players.each do |player| %>
+          <div class="flex items-center justify-between bg-gray-50 p-4 rounded-md shadow-sm">
+            <span class="text-gray-700 font-medium"><%= player.name %>:</span>
+            <%= link_to "Go to Session", set_player_session_path(player), target: "_blank", class: "inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center">
+      <%= link_to "Create Another Test Game", dev_testing_path, class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
+    </div>
+  </div>
+</div>

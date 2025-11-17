@@ -5,8 +5,13 @@ RSpec.describe Player, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:name) }
-    it { is_expected.to validate_presence_of(:session_id) }
     it { is_expected.to validate_uniqueness_of(:session_id) }
+
+    it 'validates presence of session_id' do
+      player = build(:player, session_id: nil)
+      expect(player).to be_valid # because the before_validation will set it
+      expect(player.session_id).not_to be_nil
+    end
   end
 
   describe 'associations' do

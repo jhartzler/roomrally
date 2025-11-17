@@ -6,9 +6,19 @@ export default class extends Controller {
   static targets = [ "actions" ]
 
   connect() {
-    const currentPlayerId = parseInt(document.querySelector("meta[name='current-player-id']").content)
-    if (currentPlayerId === this.hostIdValue && this.playerIdValue !== currentPlayerId) {
+    const currentPlayerIdSelector = document.querySelector("meta[name='current-player-id']")
+    if (!currentPlayerIdSelector || !currentPlayerIdSelector.content) {
+      this.actionsTarget.classList.add("hidden")
+      return
+    }
+
+    const currentPlayerId = parseInt(currentPlayerIdSelector.content)
+    const shouldShowActions = currentPlayerId === this.hostIdValue && this.playerIdValue !== currentPlayerId
+
+    if (shouldShowActions) {
       this.actionsTarget.classList.remove("hidden")
+    } else {
+      this.actionsTarget.classList.add("hidden")
     }
   }
 }

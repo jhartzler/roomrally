@@ -96,6 +96,9 @@ jobs:
       - name: Install Node.js dependencies
         run: npm install
 
+      - name: Precompile assets
+        run: bin/rails assets:precompile
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
@@ -106,3 +109,10 @@ jobs:
 
       - name: Run tests
         run: bin/rspec
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capybara-screenshots
+          path: tmp/capybara
