@@ -10,7 +10,8 @@ All new functionality must be developed following the Red-Green-Refactor cycle.
 ### Testing Layers
 - **Model Tests (RSpec)**: Test validations, associations, scopes, and simple business logic on models.
 - **Service/Logic Tests (RSpec)**: Test game logic modules in isolation. Stub external dependencies and test for correct state transitions and event publishing.
-- **System Tests (Capybara)**: Test full, end-to-end user flows. Use multiple sessions to simulate multiplayer interactions and verify real-time updates via Action Cable. These are the most important tests.
+- **System Tests (Capybara + Playwright)**: Test full, end-to-end user flows. Use multiple sessions to simulate multiplayer interactions and verify real-time updates via Action Cable. These are the most important tests.
+
 - **Integration Tests**: Test the integration between components, such as event listeners reacting correctly to published events.
 
 ## Code Quality: RuboCop

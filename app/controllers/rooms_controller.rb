@@ -27,6 +27,11 @@ class RoomsController < ApplicationController
         return
       end
 
+      if @room.status == "playing"
+        redirect_to hand_room_path(@room.code), alert: "The game has already started."
+        return
+      end
+
       @room.update!(status: "playing")
       Rails.logger.info "Game started for room #{@room.code} by host #{current_player.name}"
 
