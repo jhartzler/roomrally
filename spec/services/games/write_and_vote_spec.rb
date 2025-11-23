@@ -14,6 +14,11 @@ RSpec.describe Games::WriteAndVote do
       allow(room).to receive(:broadcast_replace_to).and_return(true)
     end
 
+    it 'is idempotent (does not create duplicates if called twice)' do
+      described_class.game_started(room)
+      expect { described_class.game_started(room) }.not_to change(PromptInstance, :count)
+    end
+
     it 'creates the correct number of prompt instances' do
       expect { described_class.game_started(room) }.to change(PromptInstance, :count).by(3)
     end

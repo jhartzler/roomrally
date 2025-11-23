@@ -4,6 +4,8 @@ module Games
     def self.game_started(room)
       Rails.logger.info "Games::WriteAndVote.game_started invoked for room #{room.code}"
 
+      return if PromptInstance.where(room:).any?
+
       players = room.players.to_a
       num_players = players.size
 

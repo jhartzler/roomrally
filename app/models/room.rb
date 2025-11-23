@@ -1,7 +1,7 @@
 class Room < ApplicationRecord
   # Associations
   has_many :players, dependent: :destroy
-  has_many :prompt_instances, dependent: :destroy
+
   belongs_to :host, class_name: "Player", optional: true
 
   # Constants
