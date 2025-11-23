@@ -5,29 +5,28 @@ RSpec.describe "Responses", type: :request do
     let(:room) { FactoryBot.create(:room) }
     let(:player) { FactoryBot.create(:player, room:) }
     let(:prompt_instance) { FactoryBot.create(:prompt_instance, room:) }
-    let!(:response) { FactoryBot.create(:response, player:, prompt_instance:, body: nil) }
+    let!(:player_response) { FactoryBot.create(:response, player:, prompt_instance:, body: nil) }
 
-    it "updates the response and broadcasts a turbo stream" do
-      # 1. Expect the broadcast to happen
-      # We need to use a spy/mock to verify the broadcast is called.
-      expect(Turbo::StreamsChannel).to receive(:broadcast_replace_to)
-        .with(
-          player, # The streamable
-          target: "prompt-instance-#{prompt_instance.id}",
-          partial: "responses/submission_success",
-          locals: { response: }
-        )
+    before do
+      patch response_url(player_response), params: { response: { body: "This is a test answer." } }, as: :turbo_stream
+    end
 
-      # 2. Perform the action
-      patch response_url(response), params: {
-        response: {
-          body: "This is a test answer."
-        }
-      }
+    it "returns a turbo stream media type" do
+      expect(response.media_type).to eq Mime[:turbo_stream]
+    end
 
-      # 3. Assertions
-      expect(response.reload.body).to eq("This is a test answer.")
-      expect(response.prompt_instance.reload.status).to eq("submitted")
+    it "returns the correct turbo stream content" do
+      expect(response.body).to include('<turbo-stream action="replace"',
+                                       "prompt-instance-#{prompt_instance.id}",
+                                       "Your answer has been submitted!")
+    end
+
+    it "updates the response body" do
+      expect(player_response.reload.body).to eq("This is a test answer.")
+    end
+
+    it "updates the prompt instance status" do
+      expect(player_response.prompt_instance.reload.status).to eq("submitted")
     end
   end
 end

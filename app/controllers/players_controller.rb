@@ -18,7 +18,7 @@ class PlayersController < ApplicationController
 
     if @player.save
       Rails.logger.info "Player #{@player.name} created in room #{@room.code}"
-      @room.update!(host: @player) if @room.host.nil?
+
 
       # Broadcast the new player to all clients viewing this room
       @room.broadcast_append_to(

@@ -25,10 +25,12 @@ RSpec.describe 'Player Join Flow', type: :system do
 
     # 5. Assert session_id is stored
     expect(player.session_id).not_to be_nil
-    # Note: We can't directly test the server-side session here,
-    # but we trust that setting it works. The reconnection flow will prove it.
 
-    # 6. Assert player is the host
+    # 6. Claim Host manually
+    click_on 'Claim Host'
+    expect(page).to have_content("You're the host!")
+
+    # 7. Assert player is the host
     room.reload
     expect(room.host).to eq(player)
 
@@ -44,6 +46,7 @@ RSpec.describe 'Player Join Flow', type: :system do
       visit join_room_path(room)
       fill_in "What's your name?", with: "Host Player"
       click_on "Join Game"
+      click_on "Claim Host"
       expect(page).to have_content("Host Player")
     end
 

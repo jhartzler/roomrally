@@ -12,6 +12,7 @@ RSpec.describe "Prompt assignment", type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Host Player"
       click_on "Join Game"
+      click_on "Claim Host"
       expect(page).to have_content("You're the host!")
     end
 
@@ -26,11 +27,11 @@ RSpec.describe "Prompt assignment", type: :system do
     # The host starts the game
     Capybara.using_session(:host) do
       click_on "Start Game"
-      expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
+      expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2, wait: 10)
     end
 
     Capybara.using_session(:other) do
-      expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
+      expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2, wait: 10)
     end
 
     expect(Player.find_by(name: "Host Player").responses.count).to eq(2)

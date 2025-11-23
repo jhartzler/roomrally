@@ -12,6 +12,7 @@ RSpec.describe "Real-time game start", type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Host Player"
       click_on "Join Game"
+      click_on "Claim Host"
       expect(page).to have_content("You're the host!")
     end
 

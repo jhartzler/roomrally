@@ -5,12 +5,16 @@ class ResponsesController < ApplicationController
       # Broadcast success message
       @response.prompt_instance.update(status: "submitted")
 
-      Turbo::StreamsChannel.broadcast_replace_to(
-        @response.player,
-        target: "prompt-instance-#{@response.prompt_instance.id}",
-        partial: "responses/submission_success",
-        locals: { response: @response }
-      )
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "prompt-instance-#{@response.prompt_instance.id}",
+            partial: "responses/submission_success",
+            locals: { response: @response }
+          )
+        end
+        format.html { redirect_to hand_room_path(@response.player.room) }
+      end
     else
       # Handle errors
       # For now, we'll just log them. A more robust implementation

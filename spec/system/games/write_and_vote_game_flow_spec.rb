@@ -7,9 +7,9 @@ RSpec.describe "WriteAndVote game flow", type: :system do
     room = FactoryBot.create(:room, game_type: "Write And Vote")
 
     # Create some master prompts
-    master_prompt1 = FactoryBot.create(:prompt, body: "Master Prompt 1")
-    master_prompt2 = FactoryBot.create(:prompt, body: "Master Prompt 2")
-    master_prompt3 = FactoryBot.create(:prompt, body: "Master Prompt 3")
+    FactoryBot.create(:prompt, body: "Master Prompt 1")
+    FactoryBot.create(:prompt, body: "Master Prompt 2")
+    FactoryBot.create(:prompt, body: "Master Prompt 3")
 
     # Create other players in the background.
     # The host will be created via the UI flow.
@@ -23,7 +23,8 @@ RSpec.describe "WriteAndVote game flow", type: :system do
     click_on "Join Game"
 
     # After joining, they should be on their hand page.
-    # The first player to join becomes the host.
+    # The first player to join must claim host.
+    click_on "Claim Host"
     expect(page).to have_content("You're the host!")
 
     # The host clicks the "Start Game" button

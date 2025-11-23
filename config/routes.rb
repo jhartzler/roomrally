@@ -27,5 +27,7 @@ Rails.application.routes.draw do
 
   get "/rooms/:code/join", to: "players#new", as: :join_room
   resources :players, only: [ :create, :destroy ]
-  resources :responses, only: [:update]
+  resources :responses, only: [ :update ]
+
+  mount ActionCable.server => "/cable"
 end
