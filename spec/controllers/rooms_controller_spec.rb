@@ -198,7 +198,7 @@ RSpec.describe RoomsController, type: :controller do
       it 'redirects with an alert' do
         post :start_game, params: { code: room.code }
         expect(response).to redirect_to(hand_room_path(room.code))
-        expect(flash[:alert]).to eq('You need at least 2 players to start the game.')
+        expect(flash[:alert]).to eq('Could not start game. Ensure there are at least 2 players and the game hasn\'t started yet.')
       end
     end
 

@@ -15,7 +15,22 @@ class Room < ApplicationRecord
   before_create :generate_code
 
   # Scopes & Methods
-  attribute :status, :string, default: "lobby"
+  include AASM
+
+  aasm column: :status, whiny_transitions: false do
+    state :lobby, initial: true
+    state :playing
+
+    event :start_game do
+      transitions from: :lobby, to: :playing, guard: :enough_players?
+    end
+  end
+
+  def enough_players?
+    players.count >= 2
+  end
+
+  # attribute :status, :string, default: "lobby"
 
   def to_param
     code

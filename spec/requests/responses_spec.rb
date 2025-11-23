@@ -12,7 +12,7 @@ RSpec.describe "Responses", type: :request do
       # We need to use a spy/mock to verify the broadcast is called.
       expect(Turbo::StreamsChannel).to receive(:broadcast_replace_to)
         .with(
-          [room, player], # The streamable
+          player, # The streamable
           target: "prompt-instance-#{prompt_instance.id}",
           partial: "responses/submission_success",
           locals: { response: }
