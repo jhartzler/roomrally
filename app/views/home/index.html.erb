@@ -24,7 +24,8 @@
         </div>
       </div>
 
-      <%= form_with url: "javascript:void(0);", method: :get, data: { controller: "redirect-form", action: "submit->redirect-form#join", "redirect-form-url-template-value": "/rooms/{{value}}/join" }, class: "space-y-4" do |form| %>
+      <%= form_with url: "javascript:void(0);", method: :get, data: { turbo: false, controller: "redirect-form", action: "submit->redirect-form#join", "redirect-form-url-template-value": "/rooms/{{value}}/join" }, class: "space-y-4" do |form| %>
+
         <div>
           <%= form.label :room_code, "Enter Room Code", class: "block text-gray-700 font-semibold mb-2" %>
           <%= form.text_field :room_code, data: { "redirect-form-target": "input" }, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all text-center text-2xl font-mono uppercase", placeholder: "ABCD" %>

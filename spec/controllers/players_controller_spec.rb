@@ -32,9 +32,9 @@ RSpec.describe PlayersController, type: :controller do
       end
 
 
-      it 'assigns the player as host if they are the first to join' do
+      it 'does not assign the player as host automatically' do
         room.reload
-        expect(room.host).to eq(Player.last)
+        expect(room.host).to be_nil
       end
 
       it 'redirects to the hand view' do
