@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_19_031407) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_165712) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,11 +29,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_19_031407) do
     t.string "body"
     t.datetime "created_at", null: false
     t.bigint "prompt_id", null: false
-    t.bigint "room_id", null: false
+    t.integer "round", default: 1
     t.string "status"
     t.datetime "updated_at", null: false
+    t.bigint "write_and_vote_game_id"
     t.index ["prompt_id"], name: "index_prompt_instances_on_prompt_id"
-    t.index ["room_id"], name: "index_prompt_instances_on_room_id"
+    t.index ["write_and_vote_game_id"], name: "index_prompt_instances_on_write_and_vote_game_id"
   end
 
   create_table "prompts", force: :cascade do |t|
@@ -55,19 +56,41 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_19_031407) do
   create_table "rooms", force: :cascade do |t|
     t.string "code"
     t.datetime "created_at", null: false
+    t.bigint "current_game_id"
+    t.string "current_game_type"
     t.string "game_type", default: "Write And Vote"
     t.bigint "host_id"
     t.datetime "last_host_claim_at"
     t.string "status"
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_rooms_on_code", unique: true
+    t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
     t.index ["host_id"], name: "index_rooms_on_host_id"
+  end
+
+  create_table "votes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "player_id", null: false
+    t.bigint "response_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_votes_on_player_id"
+    t.index ["response_id"], name: "index_votes_on_response_id"
+  end
+
+  create_table "write_and_vote_games", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "current_prompt_index", default: 0
+    t.integer "round", default: 1
+    t.string "status"
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
-  add_foreign_key "prompt_instances", "rooms"
+  add_foreign_key "prompt_instances", "write_and_vote_games"
   add_foreign_key "responses", "players"
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "players", column: "host_id"
+  add_foreign_key "votes", "players"
+  add_foreign_key "votes", "responses"
 end
