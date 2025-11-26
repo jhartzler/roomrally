@@ -12,6 +12,7 @@ RSpec.describe "Full Game Loop", :js, type: :system do
     # 1. Host joins and claims host
     Capybara.using_session(:host) do
       visit join_room_path(room)
+      # puts page.body # Debugging
       fill_in "player[name]", with: "Host Player"
       click_on "Join Game"
       expect(page).to have_content("Host Player")
@@ -67,6 +68,144 @@ RSpec.describe "Full Game Loop", :js, type: :system do
         click_on "Submit"
       end
       expect(page).to have_content("Your answer has been submitted!")
+
+      # Submit second answer
+      prompt_instance_2 = player2.responses.last.prompt_instance
+      within "#prompt-instance-#{prompt_instance_2.id}" do
+        fill_in "response[body]", with: "Player 2 Answer 2"
+        click_on "Submit"
+      end
+    end
+
+    # 7. Host submits second answer -> Triggers Voting
+    Capybara.using_session(:host) do
+      host_player = Player.find_by(name: "Host Player")
+      prompt_instance_2 = host_player.responses.last.prompt_instance
+
+      within "#prompt-instance-#{prompt_instance_2.id}" do
+        fill_in "response[body]", with: "Host Answer 2"
+        click_on "Submit"
+      end
+
+      # Should transition to voting screen
+      # Should transition to voting screen
+      expect(page).to have_content("Vote for the best answer!", wait: 10)
+      expect(page).to have_button("Vote", count: 2)
+    end
+
+    # 8. Player 2 sees voting screen
+    Capybara.using_session(:player2) do
+      visit hand_room_path(room.code) # Force reload to verify server state
+      expect(page).to have_content("Vote for the best answer!")
+      expect(page).to have_button("Vote", count: 2)
+
+      # Vote for first option (Host Answer 1)
+      # Find the button next to "Host Answer 1"
+      # The structure is: button, then div with text.
+      # We can find the div with text, then find the sibling button?
+      # Or easier: just click the button inside the response card that contains the text.
+      find(".response-card", text: "Host Answer 1").click_button("Vote")
+      expect(page).to have_content("Waiting for other players...")
+    end
+
+    # 9. Host votes -> Triggers next prompt
+    Capybara.using_session(:host) do
+      host_render_time = find(".voting-screen")["data-render-time"]
+
+      # Host votes for Player 2 Answer 2 (which is for Prompt 0)
+      find(".response-card", text: "Player 2 Answer 2").click_button("Vote")
+
+      # Should move to next prompt (Round 1, Prompt 2)
+      expect(page).to have_content("Prompt 2 /")
+      expect(page).to have_selector(".voting-screen:not([data-render-time='#{host_render_time}'])")
+      expect(page).to have_button("Vote", count: 2)
+    end
+
+    player2_render_time = nil
+    Capybara.using_session(:player2) do
+      player2_render_time = find(".voting-screen")["data-render-time"]
+    end
+
+    Capybara.using_session(:host) do
+      # Host votes for Player 2 Answer 1 (which is for Prompt 1)
+      find(".response-card", text: "Player 2 Answer 1").click_button("Vote")
+    end
+
+    # 10. Player 2 votes on second prompt -> Triggers Round 2
+    Capybara.using_session(:player2) do
+      expect(page).to have_content("Prompt 2 /")
+      expect(page).to have_selector(".voting-screen:not([data-render-time='#{player2_render_time}'])")
+
+      # Player 2 votes for Host Answer 2
+      find(".response-card", text: "Host Answer 2").click_button("Vote")
+
+      # Should move to Round 2 (Writing Phase)
+      expect(page).to have_content("Your Prompts")
+      expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
+    end
+
+    # 11. Complete Round 2 (Fast forward)
+    # Both players submit answers for Round 2
+    [ [ :host, "Host Player" ], [ :player2, "Player 2" ] ].each do |session, name|
+      Capybara.using_session(session) do
+        player = Player.find_by(name:)
+        # Reload player to get new responses
+        player.reload
+        # Get the last 2 responses which are for Round 2
+        responses = player.responses.order(:id).last(2)
+
+        responses.each do |response|
+          expect(page).to have_selector("#prompt-instance-#{response.prompt_instance_id}")
+          within "#prompt-instance-#{response.prompt_instance_id}" do
+            fill_in "response[body]", with: "#{name} Round 2 Answer"
+            click_on "Submit"
+          end
+        end
+      end
+    end
+
+    # 12. Vote through Round 2
+    # There are 2 prompts in Round 2.
+    # Prompt 1
+    player2_render_time = nil
+    Capybara.using_session(:player2) do
+      player2_render_time = find(".voting-screen")["data-render-time"]
+    end
+
+    Capybara.using_session(:host) do
+      expect(page).to have_content("Vote for the best answer!")
+      # Host votes for Player 2 Round 2 Answer
+      find(".response-card", text: "Player 2 Round 2 Answer").click_button("Vote")
+    end
+
+    Capybara.using_session(:player2) do
+      expect(page).to have_selector(".voting-screen:not([data-render-time='#{player2_render_time}'])")
+
+      # Player 2 votes for Host Round 2 Answer
+      sleep 1 # remove me when we have a better way to wait for the voting screen to update
+      find(".response-card", text: "Host Player Round 2 Answer").click_button("Vote")
+    end
+
+    # Prompt 2
+    Capybara.using_session(:player2) do
+      player2_render_time = find(".voting-screen")["data-render-time"]
+    end
+
+    Capybara.using_session(:host) do
+      expect(page).to have_content("Prompt 2 /")
+      # Host votes for Player 2 Round 2 Answer
+      find(".response-card", text: "Player 2 Round 2 Answer").click_button("Vote")
+    end
+
+    Capybara.using_session(:player2) do
+      expect(page).to have_selector(".voting-screen:not([data-render-time='#{player2_render_time}'])")
+
+      # Player 2 votes for Host Round 2 Answer
+      sleep 1 # remove me when we have a better way to wait for the voting screen to update
+      find(".response-card", text: "Host Player Round 2 Answer").click_button("Vote")
+
+      # Game should be finished
+      # expect(page).to have_content("Game Over") # Or whatever the finished screen shows
     end
   end
 end
