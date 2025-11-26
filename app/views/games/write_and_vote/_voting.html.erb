@@ -1,0 +1,30 @@
+<%# app/views/games/write_and_vote/_voting.html.erb %>
+<div class="voting-screen" data-render-time="<%= Time.now.to_f %>">
+  <% current_game = room.current_game %>
+  <% current_prompt = current_game.current_round_prompts.order(:id)[current_game.current_prompt_index] %>
+  
+  <h2 class="text-xl font-bold mb-4">Vote for the best answer!</h2>
+  
+  <div class="prompt-display mb-6 p-4 bg-gray-100 rounded">
+    <p class="text-lg"><%= current_prompt.prompt.body %></p>
+  </div>
+
+  <div class="responses-list space-y-4">
+    <% current_prompt.responses.shuffle.each do |response| %>
+      <div class="response-card p-4 border rounded shadow-sm hover:bg-gray-50">
+        <% if Vote.exists?(player: player, response: current_prompt.responses) %>
+           <div class="text-gray-500 italic">Waiting for other players...</div>
+        <% else %>
+          <%= button_to "Vote", votes_path, 
+              params: { vote: { response_id: response.id } }, 
+              class: "w-full text-left font-medium text-blue-600 hover:text-blue-800" %>
+          <div class="mt-2 text-gray-800"><%= response.body %></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="round-info mt-8 text-sm text-gray-500">
+    Round <%= current_game.round %> | Prompt <%= current_game.current_prompt_index + 1 %> / <%= current_game.current_round_prompts.count %>
+  </div>
+</div>
