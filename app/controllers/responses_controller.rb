@@ -5,13 +5,27 @@ class ResponsesController < ApplicationController
       # Broadcast success message
       @response.prompt_instance.update(status: "submitted")
 
+      # Check if all responses are in to start voting
+      game = @response.prompt_instance.write_and_vote_game
+    Games::WriteAndVote.check_all_responses_submitted(game)
+
+    game.reload
+
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "prompt-instance-#{@response.prompt_instance.id}",
-            partial: "responses/submission_success",
-            locals: { response: @response }
-          )
+          if game.reload.voting?
+            render turbo_stream: turbo_stream.update(
+              "hand_screen",
+              partial: "rooms/hand_screen_content",
+              locals: { room: @response.player.room.reload, player: @response.player }
+            )
+          else
+            render turbo_stream: turbo_stream.replace(
+              "prompt-instance-#{@response.prompt_instance.id}",
+              partial: "responses/submission_success",
+              locals: { response: @response }
+            )
+          end
         end
         format.html { redirect_to hand_room_path(@response.player.room) }
       end
