@@ -7,13 +7,11 @@ class ResponsesController < ApplicationController
 
       # Check if all responses are in to start voting
       game = @response.prompt_instance.write_and_vote_game
-    Games::WriteAndVote.check_all_responses_submitted(game)
-
-    game.reload
+      game = Games::WriteAndVote.check_all_responses_submitted(game)
 
       respond_to do |format|
         format.turbo_stream do
-          if game.reload.voting?
+          if game.voting?
             render turbo_stream: turbo_stream.update(
               "hand_screen",
               partial: "rooms/hand_screen_content",
