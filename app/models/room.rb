@@ -3,6 +3,7 @@ class Room < ApplicationRecord
   has_many :players, dependent: :destroy
 
   belongs_to :host, class_name: "Player", optional: true
+  belongs_to :current_game, polymorphic: true, optional: true
 
   # Constants
   GAME_TYPES = [ "Write And Vote" ].freeze
