@@ -3,6 +3,7 @@ class ResponsesController < ApplicationController
     @response = Response.find(params[:id])
     if @response.update(response_params)
       # Broadcast success message
+      Rails.logger.info({ event: "response_submitted", player_id: @response.player.id, prompt_instance_id: @response.prompt_instance.id })
       @response.prompt_instance.update(status: "submitted")
 
       # Check if all responses are in to start voting

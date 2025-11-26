@@ -81,7 +81,7 @@ RSpec.describe Games::WriteAndVote do
     end
 
     def cast_vote(player, prompt)
-      response = prompt.responses.find_by(player:)
+      response = prompt.responses.where.not(player:).first
       create(:vote, player:, response:)
     end
 

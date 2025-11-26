@@ -1,26 +1,20 @@
 class VotesController < ApplicationController
   def create
     @response = Response.find(params[:vote][:response_id])
-    Rails.logger.debug({ current_player_name: current_player.name })
+    Rails.logger.info({ event: "vote_attempt", player_id: current_player.id, response_id: @response.id })
 
-    # Prevent voting for own response
-    if @response.player == current_player
-      head :forbidden
+    @vote = Vote.new(player: current_player, response: @response)
+
+    unless @vote.save
+      if @vote.errors[:base].include?("You cannot vote for your own response")
+        head :forbidden
+      elsif @vote.errors[:base].include?("You have already voted for this prompt")
+        head :unprocessable_content
+      else
+        head :unprocessable_content
+      end
       return
     end
-
-    # Prevent multiple votes for the same prompt instance by the same player
-    existing_vote = Vote.joins(:response)
-                        .where(player: current_player)
-                        .where(responses: { prompt_instance_id: @response.prompt_instance_id })
-                        .first
-
-    if existing_vote
-      head :unprocessable_content
-      return
-    end
-
-    @vote = Vote.create!(player: current_player, response: @response)
 
     # Process the vote in the game service (check for round completion, etc.)
     # We need to find the game associated with this response
