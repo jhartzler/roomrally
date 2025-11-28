@@ -2,8 +2,14 @@
 <%# This is the main view for a player's hand in the Write and Vote game. %>
 
 <%
-  # Get the player's prompt instances from their responses
-  player_prompt_instances = player.responses.map(&:prompt_instance)
+  # Get the player's prompt instances from their responses for the current round
+  player_prompt_instances = player.responses.joins(:prompt_instance)
+                                  .where(prompt_instances: { round: room.current_game.round })
+                                  .map(&:prompt_instance)
 %>
 
-<%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances %>
+<% if room.current_game.status == "voting" %>
+  <%= render "games/write_and_vote/voting", room: room, player: player %>
+<% else %>
+  <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances %>
+<% end %>

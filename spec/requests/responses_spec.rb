@@ -2,12 +2,17 @@ require 'rails_helper'
 
 RSpec.describe "Responses", type: :request do
   describe "PATCH /responses/:id" do
-    let(:room) { FactoryBot.create(:room) }
+    let(:game) { FactoryBot.create(:write_and_vote_game) }
+    let(:room) { FactoryBot.create(:room, current_game: game) }
     let(:player) { FactoryBot.create(:player, room:) }
-    let(:prompt_instance) { FactoryBot.create(:prompt_instance, room:) }
+    let(:prompt_instance) { FactoryBot.create(:prompt_instance, write_and_vote_game: game) }
     let!(:player_response) { FactoryBot.create(:response, player:, prompt_instance:, body: nil) }
 
     before do
+      # Create another player and response to ensure game doesn't transition to voting
+      other_player = FactoryBot.create(:player, room:)
+      FactoryBot.create(:response, player: other_player, prompt_instance:, body: nil)
+
       patch response_url(player_response), params: { response: { body: "This is a test answer." } }, as: :turbo_stream
     end
 
