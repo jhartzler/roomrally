@@ -211,7 +211,10 @@ RSpec.describe "Full Game Loop", :js, type: :system do
       find(".response-card", text: "Host Player Round 2 Answer 2").click_button("Vote")
 
       # Game should be finished
-      # expect(page).to have_content("Game Over") # Or whatever the finished screen shows
+      # Game should be finished
+      expect(page).to have_content("Game Over!")
+      expect(page).to have_content("Thanks for playing!")
+      expect(page).to have_link("Back to Home", href: root_path)
     end
   end
 end
