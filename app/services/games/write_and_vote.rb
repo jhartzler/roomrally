@@ -132,7 +132,8 @@ module Games
       num_players = players.size
 
 
-      master_prompts = Prompt.order("RANDOM()").limit(num_players)
+      used_prompt_ids = PromptInstance.where(write_and_vote_game: game).pluck(:prompt_id)
+      master_prompts = Prompt.where.not(id: used_prompt_ids).order("RANDOM()").limit(num_players)
 
       if master_prompts.count < num_players
         raise "Not enough master prompts to start round #{round_number}."

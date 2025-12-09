@@ -85,6 +85,8 @@ RSpec.describe Games::WriteAndVote do
       end
       # Allow calls to calculate_scores so we can spy on it
       allow(described_class).to receive(:calculate_scores).and_call_original
+      # Create extra prompts for Round 2 logic
+      create_list(:prompt, 3)
     end
 
     def cast_vote(player, prompt, response = nil)
@@ -177,6 +179,33 @@ RSpec.describe Games::WriteAndVote do
       create(:vote, player: second_player, response: create(:response, prompt_instance: prompt, player: first_player))
       2.times { described_class.calculate_scores(game) }
       expect(first_player.reload.score).to eq(500)
+    end
+  end
+
+  describe 'prompt reuse' do
+    let(:room) { create(:room) }
+    let(:game) { create(:write_and_vote_game, room:) }
+
+    before do
+      create_list(:player, 3, room:)
+      Prompt.destroy_all
+      # Create exactly 6 prompts for 3 players.
+      # R1 takes 3. R2 takes 3. With fix, should succeed with 0 intersection.
+      create_list(:prompt, 6)
+      allow(room).to receive(:broadcast_replace_to).and_return(true)
+    end
+
+    it 'does not reuse prompts between rounds' do
+      # Round 1
+      described_class.assign_prompts_for_round(game, 1)
+      round_1_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: 1).pluck(:prompt_id)
+
+      # Round 2
+      described_class.assign_prompts_for_round(game, 2)
+      round_2_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: 2).pluck(:prompt_id)
+
+      # Intersection should be empty
+      expect(round_1_prompt_ids & round_2_prompt_ids).to be_empty
     end
   end
 end
