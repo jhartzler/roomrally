@@ -7,6 +7,8 @@ RSpec.describe "Votes", type: :request do
   let(:prompt_instance) { create(:prompt_instance, write_and_vote_game: game) }
 
   before do
+    # Create master prompts for game logic to avoid running out
+    create_list(:prompt, 5)
     # Simulate player login
     get set_player_session_path(player.id)
   end

@@ -10,17 +10,26 @@
   </div>
 
   <div class="responses-list space-y-4">
-    <% current_prompt.responses.shuffle.each do |response| %>
-      <div class="response-card p-4 border rounded shadow-sm hover:bg-gray-50">
-        <% if Vote.exists?(player: player, response: current_prompt.responses) %>
-           <div class="text-gray-500 italic">Waiting for other players...</div>
-        <% else %>
-          <%= button_to "Vote", votes_path, 
-              params: { vote: { response_id: response.id } }, 
-              class: "w-full text-left font-medium text-blue-600 hover:text-blue-800" %>
-          <div class="mt-2 text-gray-800"><%= response.body %></div>
-        <% end %>
+    <% if current_prompt.responses.exists?(player: player) %>
+      <div class="text-center p-8 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="text-4xl mb-3">🗳️</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Voting in Progress</h3>
+        <p class="text-gray-600">May the best answer win!</p>
+        <p class="text-gray-500 text-sm mt-2 animate-pulse">Waiting for other players...</p>
       </div>
+    <% else %>
+      <% current_prompt.responses.shuffle.each do |response| %>
+        <div class="response-card p-4 border rounded shadow-sm hover:bg-gray-50">
+          <% if Vote.exists?(player: player, response: current_prompt.responses) %>
+             <div class="text-gray-500 italic">Waiting for other players...</div>
+          <% else %>
+            <%= button_to "Vote", votes_path, 
+                params: { vote: { response_id: response.id } }, 
+                class: "w-full text-left font-medium text-blue-600 hover:text-blue-800" %>
+            <div class="mt-2 text-gray-800"><%= response.body %></div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
   

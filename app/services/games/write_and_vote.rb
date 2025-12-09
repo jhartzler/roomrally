@@ -62,9 +62,10 @@ module Games
 
       total_votes = Vote.where(response: current_prompt.responses).count
       players_count = game.room.players.count
+      # Authors cannot vote on the prompt they responded to
+      required_votes = players_count - current_prompt.responses.count
 
-
-      if total_votes >= players_count
+      if total_votes >= required_votes
 
         if game.current_prompt_index < game.current_round_prompts.count - 1
           game.next_voting_round!

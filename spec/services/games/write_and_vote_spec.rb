@@ -69,14 +69,19 @@ RSpec.describe Games::WriteAndVote do
   describe '.process_vote' do
     let(:game) { create(:write_and_vote_game, status: 'voting') }
     let(:room) { create(:room, current_game: game) }
-    let(:players) { create_list(:player, 2, room:) }
-    let!(:prompts) { create_list(:prompt_instance, 2, write_and_vote_game: game) }
+    let(:players) { create_list(:player, 3, room:) }
+    let!(:prompts) { create_list(:prompt_instance, 3, write_and_vote_game: game) }
 
     before do
-      prompts.each do |prompt|
-        players.each do |player|
-          create(:response, prompt_instance: prompt, player:)
-        end
+      # Assign responses so that for each prompt, 2 players are authors and 1 is a voter.
+      # Prompt 0: P0 & P1 are authors. P2 votes.
+      # Prompt 1: P1 & P2 are authors. P0 votes.
+      # Prompt 2: P2 & P0 are authors. P1 votes.
+      prompts.each_with_index do |prompt, index|
+        author1 = players[index]
+        author2 = players[(index + 1) % 3]
+        create(:response, prompt_instance: prompt, player: author1)
+        create(:response, prompt_instance: prompt, player: author2)
       end
       # Allow calls to calculate_scores so we can spy on it
       allow(described_class).to receive(:calculate_scores).and_call_original
@@ -87,65 +92,59 @@ RSpec.describe Games::WriteAndVote do
       create(:vote, player:, response:)
     end
 
-    context 'when all players vote on the first prompt' do
+    context 'when the non-author votes on the first prompt' do
       it 'advances to the next voting round' do
-        cast_vote(players.first, prompts.first)
-
+        voter = players[2] # P2 is the voter for Prompt 0
         expect {
-          described_class.process_vote(game, cast_vote(players.last, prompts.first))
+          described_class.process_vote(game, cast_vote(voter, prompts.first))
         }.to change(game, :current_prompt_index).by(1)
       end
     end
 
-    context 'when all players vote on the last prompt of round 1' do
+    context 'when the non-author votes on the last prompt of round 1' do
       before do
-        game.update!(current_prompt_index: 1) # Last prompt (index 1 of 2)
+        game.update!(current_prompt_index: 2) # Last prompt (index 2 of 3)
       end
 
       it 'advances to the next game round (writing)' do
-        cast_vote(players.first, prompts.last)
+        voter = players[1] # P1 is the voter for Prompt 2
 
         expect {
-          described_class.process_vote(game, cast_vote(players.last, prompts.last))
+          described_class.process_vote(game, cast_vote(voter, prompts.last))
         }.to change(game, :round).by(1)
          .and change(game, :status).to("writing")
       end
 
       it 'calculates scores at the end of the round' do
-        # Player 1 votes for Player 2's response
-        cast_vote(players.first, prompts.last, prompts.last.responses.find_by(player: players.last))
-        # Player 2 votes for Player 1's response
-        cast_vote(players.last, prompts.last, prompts.last.responses.find_by(player: players.first))
-
-        described_class.process_vote(game, Vote.last)
+        voter = players[1]
+        described_class.process_vote(game, cast_vote(voter, prompts.last))
         expect(described_class).to have_received(:calculate_scores).with(game)
       end
     end
 
-    context 'when all players vote on the last prompt of round 2' do
-      let!(:round_2_prompts) { create_list(:prompt_instance, 2, write_and_vote_game: game, round: 2) }
+    context 'when the non-author votes on the last prompt of round 2' do
+      let!(:round_2_prompts) { create_list(:prompt_instance, 3, write_and_vote_game: game, round: 2) }
 
       before do
-        game.update!(round: 2, current_prompt_index: 1)
-        round_2_prompts.each do |prompt|
-          players.each do |player|
-            create(:response, prompt_instance: prompt, player:)
-          end
+        game.update!(round: 2, current_prompt_index: 2)
+        round_2_prompts.each_with_index do |prompt, index|
+          author1 = players[index]
+          author2 = players[(index + 1) % 3]
+          create(:response, prompt_instance: prompt, player: author1)
+          create(:response, prompt_instance: prompt, player: author2)
         end
       end
 
       it 'finishes the game' do
-        cast_vote(players.first, round_2_prompts.last)
-
+        voter = players[1] # P1 is the voter for Prompt 2
         expect {
-          described_class.process_vote(game, cast_vote(players.last, round_2_prompts.last))
+          described_class.process_vote(game, cast_vote(voter, round_2_prompts.last))
         }.to change(game, :status).to("finished")
       end
 
       it 'calculates scores at the end of the game' do
-        # Just finish the game - logic similar to above
-        cast_vote(players.first, round_2_prompts.last)
-        described_class.process_vote(game, cast_vote(players.last, round_2_prompts.last))
+        voter = players[1]
+        described_class.process_vote(game, cast_vote(voter, round_2_prompts.last))
         expect(described_class).to have_received(:calculate_scores).with(game)
       end
     end
