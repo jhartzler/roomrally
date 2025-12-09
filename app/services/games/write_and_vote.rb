@@ -71,10 +71,12 @@ module Games
         else
 
           if game.round < 2
+            calculate_scores(game)
             game.start_next_game_round!
             assign_prompts_for_round(game, 2)
             return
           else
+            calculate_scores(game)
             game.finish_game!
           end
         end
@@ -113,6 +115,15 @@ module Games
       game
     end
 
+    def self.calculate_scores(game)
+      game.room.players.each do |player|
+        score = Response.joins(:votes, :prompt_instance)
+                        .where(player:)
+                        .where(prompt_instances: { write_and_vote_game_id: game.id })
+                        .count * 500
+        player.update!(score:)
+      end
+    end
 
     def self.assign_prompts_for_round(game, round_number)
       room = game.room
