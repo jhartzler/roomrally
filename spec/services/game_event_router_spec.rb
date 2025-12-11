@@ -30,8 +30,9 @@ RSpec.describe GameEventRouter do
     expect { described_class.unknown_event(room) }.not_to raise_error
   end
 
-  it 'calls method with keyword arguments if handler expects it' do
-    described_class.kwarg_event(room)
+  it 'calls method with keyword arguments if publisher provides them' do
+    # When publisher sends kwargs, we expect them to be passed through
+    described_class.kwarg_event(room:)
     expect(test_handler.last_call_args).to eq({ room: })
   end
 

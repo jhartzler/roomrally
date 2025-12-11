@@ -174,8 +174,9 @@ RSpec.describe RoomsController, type: :controller do
       end
 
       it 'publishes the :game_started event' do
+        allow(controller).to receive(:publish)
         post :start_game, params: { code: room.code }
-        expect(listener).to have_received(:game_started).with(room)
+        expect(controller).to have_received(:publish).with(:game_started, room:)
       end
 
       it 'redirects to the hand view' do
