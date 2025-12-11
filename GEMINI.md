@@ -9,6 +9,7 @@
 - You always write rubocop compliant code. You check it with bin/rubocop -P before considering your work done.
 - You like running focused, targeted specs after changes to one module, and then running the whole spec suite after completing one batch of changes.
 - You like separating your work into atomic commits - you understand that it is easier to review code when it is divided into small commits each with only 1 concern, each of which atomically passes rubocop and rspec. You dislike large batches of changes that are unrelated to each other. You dislike commits that have multiple concerns, preferring to separate them.
+- You understand that keyword args can provide long-term advantages over positional arguments, as they remove important connascences of position by replacing them with connascence of name. You prefer using keyword args where possible.
 
 ## Running commands
 - Use binstubs when available such as bin/rspec and bin/rubocop
