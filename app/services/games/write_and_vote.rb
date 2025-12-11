@@ -1,7 +1,8 @@
-
 module Games
   module WriteAndVote
-    def self.game_started(room)
+    MAX_ROUNDS = 2
+
+    def self.game_started(room:)
       Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.count })
 
 
@@ -13,10 +14,10 @@ module Games
       room.update!(current_game: game)
 
       # Delegate prompt assignment and broadcasting to the standard method
-      assign_prompts_for_round(game, 1)
+      assign_prompts_for_round(game:, round_number: 1)
     end
 
-    def self.process_vote(game, vote)
+    def self.process_vote(game:, vote:)
       current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index]
 
       if current_prompt.nil?
@@ -38,22 +39,22 @@ module Games
           game.next_voting_round!
         else
 
-          if game.round < 2
-            calculate_scores(game)
+          calculate_scores(game:)
+          if game.round < MAX_ROUNDS
             game.start_next_game_round!
-            assign_prompts_for_round(game, 2)
+            # After starting next round, game.round will be incremented.
+            assign_prompts_for_round(game:, round_number: game.round)
             return
           else
-            calculate_scores(game)
             game.finish_game!
           end
         end
       end
 
 
-      Games::Broadcaster.broadcast_hand_screen(room: game.room)
+      GameBroadcaster.broadcast_hand_screen(room: game.room)
     end
-    def self.check_all_responses_submitted(game)
+    def self.check_all_responses_submitted(game:)
       all_submitted = !Response.joins(:prompt_instance)
                                .where(prompt_instances: { write_and_vote_game_id: game.id, round: game.round })
                                .where(body: [ nil, "" ])
@@ -63,12 +64,12 @@ module Games
         game.start_voting!
 
 
-        Games::Broadcaster.broadcast_hand_screen(room: game.room)
+        GameBroadcaster.broadcast_hand_screen(room: game.room)
       end
       game
     end
 
-    def self.calculate_scores(game)
+    def self.calculate_scores(game:)
       game.room.players.each do |player|
         score = Response.joins(:votes, :prompt_instance)
                         .where(player:)
@@ -78,7 +79,7 @@ module Games
       end
     end
 
-    def self.assign_prompts_for_round(game, round_number)
+    def self.assign_prompts_for_round(game:, round_number:)
       room = game.room
       players = room.players.to_a
       num_players = players.size
@@ -107,7 +108,7 @@ module Games
       end
 
 
-      Games::Broadcaster.broadcast_hand_screen(room:)
+      GameBroadcaster.broadcast_hand_screen(room:)
     end
   end
 end

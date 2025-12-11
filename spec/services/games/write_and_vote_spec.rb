@@ -15,40 +15,40 @@ RSpec.describe Games::WriteAndVote do
     end
 
     it 'is idempotent (does not create duplicates if called twice)' do
-      described_class.game_started(room)
-      expect { described_class.game_started(room) }.not_to change(WriteAndVoteGame, :count)
+      described_class.game_started(room:)
+      expect { described_class.game_started(room:) }.not_to change(WriteAndVoteGame, :count)
     end
 
     it 'creates a WriteAndVoteGame and associates it with the room' do
-      expect { described_class.game_started(room) }.to change(WriteAndVoteGame, :count).by(1)
+      expect { described_class.game_started(room:) }.to change(WriteAndVoteGame, :count).by(1)
       expect(room.reload.current_game).to be_a(WriteAndVoteGame)
     end
 
     it 'creates the correct number of prompt instances' do
-      expect { described_class.game_started(room) }.to change(PromptInstance, :count).by(3)
+      expect { described_class.game_started(room:) }.to change(PromptInstance, :count).by(3)
     end
 
     it 'creates the correct number of responses' do
-      expect { described_class.game_started(room) }.to change(Response, :count).by(6)
+      expect { described_class.game_started(room:) }.to change(Response, :count).by(6)
     end
 
     it 'assigns two prompts to player one' do
-      described_class.game_started(room)
+      described_class.game_started(room:)
       expect(first_player.responses.count).to eq(2)
     end
 
     it 'assigns two prompts to player two' do
-      described_class.game_started(room)
+      described_class.game_started(room:)
       expect(second_player.responses.count).to eq(2)
     end
 
     it 'assigns two prompts to player three' do
-      described_class.game_started(room)
+      described_class.game_started(room:)
       expect(third_player.responses.count).to eq(2)
     end
 
     it 'assigns each prompt instance to two players' do
-      described_class.game_started(room)
+      described_class.game_started(room:)
       prompt_instance_assignments = Response.group(:prompt_instance_id).count
       prompt_instance_assignments.each_value do |count|
         expect(count).to eq(2)
@@ -61,7 +61,7 @@ RSpec.describe Games::WriteAndVote do
       end
 
       it 'raises an error' do
-        expect { described_class.game_started(room) }.to raise_error("Not enough master prompts to start round 1.")
+        expect { described_class.game_started(room:) }.to raise_error("Not enough master prompts to start round 1.")
       end
     end
   end
@@ -98,7 +98,7 @@ RSpec.describe Games::WriteAndVote do
       it 'advances to the next voting round' do
         voter = players[2] # P2 is the voter for Prompt 0
         expect {
-          described_class.process_vote(game, cast_vote(voter, prompts.first))
+          described_class.process_vote(game:, vote: cast_vote(voter, prompts.first))
         }.to change(game, :current_prompt_index).by(1)
       end
     end
@@ -112,15 +112,15 @@ RSpec.describe Games::WriteAndVote do
         voter = players[1] # P1 is the voter for Prompt 2
 
         expect {
-          described_class.process_vote(game, cast_vote(voter, prompts.last))
+          described_class.process_vote(game:, vote: cast_vote(voter, prompts.last))
         }.to change(game, :round).by(1)
          .and change(game, :status).to("writing")
       end
 
       it 'calculates scores at the end of the round' do
         voter = players[1]
-        described_class.process_vote(game, cast_vote(voter, prompts.last))
-        expect(described_class).to have_received(:calculate_scores).with(game)
+        described_class.process_vote(game:, vote: cast_vote(voter, prompts.last))
+        expect(described_class).to have_received(:calculate_scores).with(game:)
       end
     end
 
@@ -140,14 +140,14 @@ RSpec.describe Games::WriteAndVote do
       it 'finishes the game' do
         voter = players[1] # P1 is the voter for Prompt 2
         expect {
-          described_class.process_vote(game, cast_vote(voter, round_2_prompts.last))
+          described_class.process_vote(game:, vote: cast_vote(voter, round_2_prompts.last))
         }.to change(game, :status).to("finished")
       end
 
       it 'calculates scores at the end of the game' do
         voter = players[1]
-        described_class.process_vote(game, cast_vote(voter, round_2_prompts.last))
-        expect(described_class).to have_received(:calculate_scores).with(game)
+        described_class.process_vote(game:, vote: cast_vote(voter, round_2_prompts.last))
+        expect(described_class).to have_received(:calculate_scores).with(game:)
       end
     end
   end
@@ -163,7 +163,7 @@ RSpec.describe Games::WriteAndVote do
     it 'updates player scores based on votes (500 points per vote)' do
       response = create(:response, prompt_instance: prompt, player: first_player)
       create(:vote, player: second_player, response:)
-      described_class.calculate_scores(game)
+      described_class.calculate_scores(game:)
       expect(first_player.reload.score).to eq(500)
     end
 
@@ -171,13 +171,13 @@ RSpec.describe Games::WriteAndVote do
       resp = create(:response, prompt_instance: prompt, player: first_player)
       [ second_player, create(:player, room:) ].each { |p| create(:vote, player: p, response: resp) }
 
-      described_class.calculate_scores(game)
+      described_class.calculate_scores(game:)
       expect(first_player.reload.score).to eq(1000)
     end
 
     it 'is idempotent' do
       create(:vote, player: second_player, response: create(:response, prompt_instance: prompt, player: first_player))
-      2.times { described_class.calculate_scores(game) }
+      2.times { described_class.calculate_scores(game:) }
       expect(first_player.reload.score).to eq(500)
     end
   end
@@ -197,11 +197,11 @@ RSpec.describe Games::WriteAndVote do
 
     it 'does not reuse prompts between rounds' do
       # Round 1
-      described_class.assign_prompts_for_round(game, 1)
+      described_class.assign_prompts_for_round(game:, round_number: 1)
       round_1_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: 1).pluck(:prompt_id)
 
       # Round 2
-      described_class.assign_prompts_for_round(game, 2)
+      described_class.assign_prompts_for_round(game:, round_number: 2)
       round_2_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: 2).pluck(:prompt_id)
 
       # Intersection should be empty

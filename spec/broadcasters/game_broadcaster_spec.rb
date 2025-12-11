@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Games::Broadcaster do
+RSpec.describe GameBroadcaster do
   describe '.broadcast_hand_screen' do
     let(:room) { create(:room) }
     let(:first_player) { create(:player, room:) }

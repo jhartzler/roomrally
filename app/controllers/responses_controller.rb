@@ -8,7 +8,7 @@ class ResponsesController < ApplicationController
 
       # Check if all responses are in to start voting
       game = @response.prompt_instance.write_and_vote_game
-      game = Games::WriteAndVote.check_all_responses_submitted(game)
+      game = Games::WriteAndVote.check_all_responses_submitted(game:)
 
       respond_to do |format|
         format.turbo_stream do
