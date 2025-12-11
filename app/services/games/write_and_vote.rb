@@ -8,45 +8,12 @@ module Games
 
       return if room.current_game.present?
 
-      players = room.players.to_a
-      num_players = players.size
-
-
-      master_prompts = Prompt.order("RANDOM()").limit(num_players)
-
-      if master_prompts.count < num_players
-        raise "Not enough master prompts to start the game."
-      end
-
-
+      # Create the game first
       game = WriteAndVoteGame.create!
       room.update!(current_game: game)
 
-
-      prompt_instances = master_prompts.map do |master_prompt|
-        PromptInstance.new(write_and_vote_game: game, prompt: master_prompt, body: master_prompt.body)
-      end
-      prompt_instances.each(&:save!)
-
-
-      players.each_with_index do |player, i|
-        prompt_instance1 = prompt_instances[i]
-        prompt_instance2 = prompt_instances[(i + 1) % num_players]
-
-        Response.create!(player:, prompt_instance: prompt_instance1)
-        Response.create!(player:, prompt_instance: prompt_instance2)
-      end
-
-
-      room.players.each do |player|
-        Rails.logger.info({ event: "broadcast_hand_screen", player_id: player.id, room_code: room.code })
-        Turbo::StreamsChannel.broadcast_update_to(
-          player,
-          target: "hand_screen",
-          partial: "rooms/hand_screen_content",
-          locals: { room:, player: }
-        )
-      end
+      # Delegate prompt assignment and broadcasting to the standard method
+      assign_prompts_for_round(game, 1)
     end
 
     def self.process_vote(game, vote)
@@ -84,15 +51,7 @@ module Games
       end
 
 
-      game.room.players.each do |player|
-        Rails.logger.info({ event: "broadcast_hand_screen", player_id: player.id, room_code: game.room.code, context: "process_vote" })
-        Turbo::StreamsChannel.broadcast_update_to(
-          player,
-          target: "hand_screen",
-          partial: "rooms/hand_screen_content",
-          locals: { room: game.room.reload, player: }
-        )
-      end
+      Games::Broadcaster.broadcast_hand_screen(room: game.room)
     end
     def self.check_all_responses_submitted(game)
       all_submitted = !Response.joins(:prompt_instance)
@@ -104,14 +63,7 @@ module Games
         game.start_voting!
 
 
-        game.room.players.each do |player|
-          Turbo::StreamsChannel.broadcast_update_to(
-            player,
-            target: "hand_screen",
-            partial: "rooms/hand_screen_content",
-            locals: { room: game.room.reload, player: }
-          )
-        end
+        Games::Broadcaster.broadcast_hand_screen(room: game.room)
       end
       game
     end
@@ -155,15 +107,7 @@ module Games
       end
 
 
-      room.players.each do |player|
-        Rails.logger.info({ event: "broadcast_hand_screen", player_id: player.id, room_code: room.code, context: "assign_prompts" })
-        Turbo::StreamsChannel.broadcast_update_to(
-          player,
-          target: "hand_screen",
-          partial: "rooms/hand_screen_content",
-          locals: { room:, player: }
-        )
-      end
+      Games::Broadcaster.broadcast_hand_screen(room:)
     end
   end
 end

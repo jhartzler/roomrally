@@ -61,7 +61,7 @@ RSpec.describe Games::WriteAndVote do
       end
 
       it 'raises an error' do
-        expect { described_class.game_started(room) }.to raise_error("Not enough master prompts to start the game.")
+        expect { described_class.game_started(room) }.to raise_error("Not enough master prompts to start round 1.")
       end
     end
   end
