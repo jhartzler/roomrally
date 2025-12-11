@@ -30,6 +30,23 @@ class WriteAndVoteGame < ApplicationRecord
     prompt_instances.where(round:)
   end
 
+  def calculate_scores!
+    room.players.each do |player|
+      score = Response.joins(:votes, :prompt_instance)
+                      .where(player:)
+                      .where(prompt_instances: { write_and_vote_game_id: id })
+                      .count * 500
+      player.update!(score:)
+    end
+  end
+
+  def all_responses_submitted?
+    !Response.joins(:prompt_instance)
+             .where(prompt_instances: { write_and_vote_game_id: id, round: })
+             .where(body: [ nil, "" ])
+             .exists?
+  end
+
   private
 
   def increment_prompt_index

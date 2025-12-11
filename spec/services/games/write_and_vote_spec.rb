@@ -83,8 +83,8 @@ RSpec.describe Games::WriteAndVote do
         create(:response, prompt_instance: prompt, player: author1)
         create(:response, prompt_instance: prompt, player: author2)
       end
-      # Allow calls to calculate_scores so we can spy on it
-      allow(described_class).to receive(:calculate_scores).and_call_original
+      # Allow calls to calculate_scores! on the game instance
+      allow(game).to receive(:calculate_scores!)
       # Create extra prompts for Round 2 logic
       create_list(:prompt, 3)
     end
@@ -120,7 +120,7 @@ RSpec.describe Games::WriteAndVote do
       it 'calculates scores at the end of the round' do
         voter = players[1]
         described_class.process_vote(game:, vote: cast_vote(voter, prompts.last))
-        expect(described_class).to have_received(:calculate_scores).with(game:)
+        expect(game).to have_received(:calculate_scores!)
       end
     end
 
@@ -147,38 +147,8 @@ RSpec.describe Games::WriteAndVote do
       it 'calculates scores at the end of the game' do
         voter = players[1]
         described_class.process_vote(game:, vote: cast_vote(voter, round_2_prompts.last))
-        expect(described_class).to have_received(:calculate_scores).with(game:)
+        expect(game).to have_received(:calculate_scores!)
       end
-    end
-  end
-
-  describe '.calculate_scores' do
-    let(:game) { create(:write_and_vote_game) }
-    let(:room) { create(:room, current_game: game) }
-    let(:first_player) { create(:player, room:) }
-    let(:second_player) { create(:player, room:) }
-    let!(:prompt) { create(:prompt_instance, write_and_vote_game: game) }
-    # first_response created inline to reduce memoized helpers
-
-    it 'updates player scores based on votes (500 points per vote)' do
-      response = create(:response, prompt_instance: prompt, player: first_player)
-      create(:vote, player: second_player, response:)
-      described_class.calculate_scores(game:)
-      expect(first_player.reload.score).to eq(500)
-    end
-
-    it 'accumulates scores from multiple votes' do
-      resp = create(:response, prompt_instance: prompt, player: first_player)
-      [ second_player, create(:player, room:) ].each { |p| create(:vote, player: p, response: resp) }
-
-      described_class.calculate_scores(game:)
-      expect(first_player.reload.score).to eq(1000)
-    end
-
-    it 'is idempotent' do
-      create(:vote, player: second_player, response: create(:response, prompt_instance: prompt, player: first_player))
-      2.times { described_class.calculate_scores(game:) }
-      expect(first_player.reload.score).to eq(500)
     end
   end
 

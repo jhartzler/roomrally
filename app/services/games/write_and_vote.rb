@@ -39,7 +39,7 @@ module Games
           game.next_voting_round!
         else
 
-          calculate_scores(game:)
+          game.calculate_scores!
           if game.round < MAX_ROUNDS
             game.start_next_game_round!
             # After starting next round, game.round will be incremented.
@@ -55,28 +55,13 @@ module Games
       GameBroadcaster.broadcast_hand_screen(room: game.room)
     end
     def self.check_all_responses_submitted(game:)
-      all_submitted = !Response.joins(:prompt_instance)
-                               .where(prompt_instances: { write_and_vote_game_id: game.id, round: game.round })
-                               .where(body: [ nil, "" ])
-                               .exists?
-
-      if all_submitted
+      if game.all_responses_submitted?
         game.start_voting!
 
 
         GameBroadcaster.broadcast_hand_screen(room: game.room)
       end
       game
-    end
-
-    def self.calculate_scores(game:)
-      game.room.players.each do |player|
-        score = Response.joins(:votes, :prompt_instance)
-                        .where(player:)
-                        .where(prompt_instances: { write_and_vote_game_id: game.id })
-                        .count * 500
-        player.update!(score:)
-      end
     end
 
     def self.assign_prompts_for_round(game:, round_number:)
