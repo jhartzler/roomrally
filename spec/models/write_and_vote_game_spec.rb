@@ -71,4 +71,38 @@ RSpec.describe WriteAndVoteGame, type: :model do
       expect(game.status).to eq("finished")
     end
   end
+
+  describe "#calculate_scores!" do
+    let(:game) { create(:write_and_vote_game) }
+    let(:room) { create(:room, current_game: game) }
+    let(:player) { create(:player, room:, score: 0) }
+    let(:prompt) { create(:prompt_instance, write_and_vote_game: game) }
+    let(:response) { create(:response, player:, prompt_instance: prompt) }
+
+    it "updates player scores based on votes" do
+      create(:vote, response:, player: create(:player, room:))
+      create(:vote, response:, player: create(:player, room:))
+
+      game.calculate_scores!
+      expect(player.reload.score).to eq(1000)
+    end
+  end
+
+  describe "#all_responses_submitted?" do
+    it "returns false if outstanding responses exist" do
+      game = create(:write_and_vote_game)
+      prompt = create(:prompt_instance, write_and_vote_game: game, round: game.round)
+      create(:response, prompt_instance: prompt, body: nil)
+
+      expect(game.all_responses_submitted?).to be false
+    end
+
+    it "returns true if all responses have content" do
+      game = create(:write_and_vote_game)
+      prompt = create(:prompt_instance, write_and_vote_game: game, round: game.round)
+      create(:response, prompt_instance: prompt, body: "Answer")
+
+      expect(game.all_responses_submitted?).to be true
+    end
+  end
 end
