@@ -5,8 +5,14 @@ RSpec.describe GameEventRouter do
   let(:room) { FactoryBot.build_stubbed(:room, game_type: 'TestGame') }
   let(:test_handler) do
     Class.new do
-      def self.game_started(room); end
-      def self.some_other_event(room); end
+      class << self
+        attr_accessor :last_call_args
+        def game_started(room); end
+        def some_other_event(room); end
+        def kwarg_event(room:)
+          @last_call_args = { room: }
+        end
+      end
     end
   end
 
@@ -22,6 +28,11 @@ RSpec.describe GameEventRouter do
 
   it 'does not raise an error if the handler does not respond to the event' do
     expect { described_class.unknown_event(room) }.not_to raise_error
+  end
+
+  it 'calls method with keyword arguments if handler expects it' do
+    described_class.kwarg_event(room)
+    expect(test_handler.last_call_args).to eq({ room: })
   end
 
   it 'does not raise an error if no handler is registered for the game type' do

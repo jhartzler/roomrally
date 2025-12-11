@@ -12,7 +12,7 @@ RSpec.describe "WriteAndVote Prompt Display", type: :system do
     3.times { |i| Prompt.create!(body: "Prompt #{i + 1}") }
 
     # Start the game
-    Games::WriteAndVote.game_started(room)
+    Games::WriteAndVote.game_started(room:)
     room.update!(status: "playing")
   end
 

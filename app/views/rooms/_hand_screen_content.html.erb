@@ -1,4 +1,4 @@
-  <% if room.current_game&.status == "playing" || room.current_game&.status == "voting" || room.current_game&.status == "writing" %>
+  <% if room.current_game.present? %>
     <%= render "games/#{room.game_type.parameterize.underscore}/hand", room: room, player: player %>
   <% else %>
     <%= render "rooms/lobby", room: room, player: player %>

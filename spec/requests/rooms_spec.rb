@@ -54,7 +54,7 @@ RSpec.describe "Rooms", type: :request do
     context "when current player is host with enough players" do
       before do
         room.update!(host: player)
-        FactoryBot.create(:player, room:) # other_player
+        FactoryBot.create_list(:player, 2, room:) # adds 2 players, total 3
         # Create enough master prompts for the game logic
         FactoryBot.create_list(:prompt, 5)
       end
@@ -72,7 +72,10 @@ RSpec.describe "Rooms", type: :request do
     end
 
     context "when current player is host without enough players" do
-      before { room.update!(host: player) }
+      before do
+        room.update!(host: player)
+        FactoryBot.create(:player, room:) # Total 2 players (not enough)
+      end
 
       it "does not start the game" do
         post start_game_room_path(room)

@@ -13,7 +13,16 @@ module GameEventRouter
 
     handler = @game_handlers[room.game_type]
     if handler && handler.respond_to?(event_name)
-      handler.public_send(event_name, *args)
+      handler_method = handler.method(event_name)
+      params = handler_method.parameters
+
+      # If the handler method explicitly requires a 'room' keyword argument,
+      # we assume it wants the clean kwarg interface.
+      if params.any? { |type, name| type == :keyreq && name == :room }
+        handler.public_send(event_name, *args.drop(1), room:)
+      else
+        handler.public_send(event_name, *args)
+      end
     else
       # Do nothing, just ignore the event
     end

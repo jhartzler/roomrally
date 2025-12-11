@@ -8,7 +8,9 @@
                                   .map(&:prompt_instance)
 %>
 
-<% if room.current_game.status == "voting" %>
+<% if room.current_game.status == "finished" %>
+  <%= render "games/write_and_vote/game_over", room: room, player: player %>
+<% elsif room.current_game.status == "voting" %>
   <%= render "games/write_and_vote/voting", room: room, player: player %>
 <% else %>
   <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances %>

@@ -30,7 +30,7 @@ class VotesController < ApplicationController
       # Fallback or retry logic if needed, but for now let's log it
       Rails.logger.error "Game is nil for response #{@response.id}"
     end
-    game = Games::WriteAndVote.process_vote(game, @vote)
+    game = Games::WriteAndVote.process_vote(game:, vote: @vote)
 
     respond_to do |format|
       format.turbo_stream { head :ok }
