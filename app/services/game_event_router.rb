@@ -7,21 +7,33 @@ module GameEventRouter
     Rails.logger.info "Registered game handler for #{game_type}"
   end
 
-  def self.method_missing(event_name, *args)
-    room = args.first
+  def self.method_missing(event_name, *args, **kwargs)
+    # Extract room from arguments (either positional first arg or keyword :room)
+    if kwargs.key?(:room)
+      room = kwargs[:room]
+    else
+      room = args.first
+    end
+
     return super unless room.is_a?(Room)
 
     handler = @game_handlers[room.game_type]
     if handler && handler.respond_to?(event_name)
-      handler_method = handler.method(event_name)
-      params = handler_method.parameters
-
-      # If the handler method explicitly requires a 'room' keyword argument,
-      # we assume it wants the clean kwarg interface.
-      if params.any? { |type, name| type == :keyreq && name == :room }
-        handler.public_send(event_name, *args.drop(1), room:)
+      if kwargs.any?
+        # If we received kwargs, pass them through directly.
+        # This assumes the publisher is using the new kwarg interface.
+        handler.public_send(event_name, *args, **kwargs)
       else
-        handler.public_send(event_name, *args)
+        # Legacy positional args path.
+        # Check if the handler expects kwargs (specifically :room) and upgrade the call if needed.
+        handler_method = handler.method(event_name)
+        params = handler_method.parameters
+
+        if params.any? { |type, name| type == :keyreq && name == :room }
+          handler.public_send(event_name, *args.drop(1), room:)
+        else
+          handler.public_send(event_name, *args)
+        end
       end
     else
       # Do nothing, just ignore the event
