@@ -24,7 +24,7 @@ class RoomsController < ApplicationController
 
       if @room.start_game!
         Rails.logger.info "Game started for room #{@room.code} by host #{current_player.name}"
-        publish(:game_started, @room)
+        publish(:game_started, room: @room)
         redirect_to hand_room_path(@room.code), notice: "Game started!"
       else
         redirect_to hand_room_path(@room.code), alert: "Could not start game. Ensure there are at least 2 players and the game hasn't started yet."
