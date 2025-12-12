@@ -56,4 +56,66 @@ RSpec.describe GameBroadcaster do
       expect(Rails.logger).to have_received(:info).with(hash_including(event: "broadcast_stage")).at_least(:once)
     end
   end
+
+  # rubocop:disable RSpec/ExampleLength
+  describe '.broadcast_player_joined' do
+    let(:room) { create(:room) }
+    let(:player) { create(:player, room:) }
+
+    before do
+       allow(Turbo::StreamsChannel).to receive(:broadcast_append_to)
+    end
+
+    it 'broadcasts append to player-list' do
+      described_class.broadcast_player_joined(room:, player:)
+
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_append_to).with(
+        room,
+        target: "player-list",
+        partial: "players/player",
+        locals: { player: }
+      )
+    end
+
+    it 'broadcasts append to stage_player_list' do
+      described_class.broadcast_player_joined(room:, player:)
+
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_append_to).with(
+        room,
+        target: "stage_player_list",
+        partial: "players/stage_player",
+        locals: { player: }
+      )
+    end
+  end
+  # rubocop:enable RSpec/ExampleLength
+
+  # rubocop:disable RSpec/ExampleLength
+  describe '.broadcast_player_left' do
+    let(:room) { create(:room) }
+    let(:player) { create(:player, room:) }
+
+    before do
+      allow(Turbo::StreamsChannel).to receive(:broadcast_remove_to)
+    end
+
+    it 'broadcasts remove to player dom_id' do
+      described_class.broadcast_player_left(room:, player:)
+
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_remove_to).with(
+        room,
+        target: ActionView::RecordIdentifier.dom_id(player)
+      )
+    end
+
+    it 'broadcasts remove to stage_player_id' do
+      described_class.broadcast_player_left(room:, player:)
+
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_remove_to).with(
+        room,
+        target: "stage_player_#{player.id}"
+      )
+    end
+  end
+  # rubocop:enable RSpec/ExampleLength
 end

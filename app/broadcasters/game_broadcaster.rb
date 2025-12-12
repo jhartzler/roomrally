@@ -32,6 +32,38 @@ module GameBroadcaster
     )
   end
 
+  def self.broadcast_player_joined(room:, player:)
+    Rails.logger.info({ event: "broadcast_player_joined", room_code: room.code, player_id: player.id })
+
+    Turbo::StreamsChannel.broadcast_append_to(
+      room,
+      target: "player-list",
+      partial: "players/player",
+      locals: { player: }
+    )
+
+    Turbo::StreamsChannel.broadcast_append_to(
+      room,
+      target: "stage_player_list",
+      partial: "players/stage_player",
+      locals: { player: }
+    )
+  end
+
+  def self.broadcast_player_left(room:, player:)
+    Rails.logger.info({ event: "broadcast_player_left", room_code: room.code, player_id: player.id })
+
+    Turbo::StreamsChannel.broadcast_remove_to(
+      room,
+      target: ActionView::RecordIdentifier.dom_id(player)
+    )
+
+    Turbo::StreamsChannel.broadcast_remove_to(
+      room,
+      target: "stage_player_#{player.id}"
+    )
+  end
+
   def self.game_folder_name(game_type)
     game_type.downcase.gsub(" ", "_")
   end

@@ -30,5 +30,24 @@ RSpec.describe "Stage View Flow", type: :system do
     end
 
     expect(page).to have_content("Bob")
+
+    # Simulate host kicking a player
+    using_session "player1" do
+      if page.has_button?("Claim Host")
+        click_on "Claim Host"
+        expect(page).to have_content("You are now the host!")
+      end
+
+      # Find Bob's card and kick him
+      bob = Player.find_by(name: "Bob")
+      within "#player_#{bob.id}" do
+        accept_confirm do
+          click_on "Kick"
+        end
+      end
+    end
+
+    # Verify Bob is removed from Stage View
+    expect(page).to have_no_content("Bob")
   end
 end

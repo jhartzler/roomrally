@@ -21,20 +21,7 @@ class PlayersController < ApplicationController
 
 
       # Broadcast the new player to all clients viewing this room
-      @room.broadcast_append_to(
-        @room,
-        target: "player-list",
-        partial: "players/player",
-        locals: { player: @player }
-      )
-
-      # Broadcast to Stage View
-      @room.broadcast_append_to(
-        @room,
-        target: "stage_player_list",
-        partial: "players/stage_player",
-        locals: { player: @player }
-      )
+      GameBroadcaster.broadcast_player_joined(room: @room, player: @player)
 
       redirect_to hand_room_path(@room)
     else
@@ -67,10 +54,7 @@ class PlayersController < ApplicationController
     Rails.logger.info "Player #{player_name} was kicked from room #{room.code} by host #{current_player.name}"
 
     # Broadcast removal to all players in the room
-    room.broadcast_remove_to(
-      room,
-      target: dom_id(player_to_kick)
-    )
+    GameBroadcaster.broadcast_player_left(room:, player: player_to_kick)
 
     redirect_to hand_room_path(room.code), notice: "#{player_name} has been kicked from the room."
   end
