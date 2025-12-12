@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   root "home#index"
 
   resources :rooms, only: %i[create show], param: :code do
+    resource :stage, only: :show
     member do
       get :hand
       post :start_game

@@ -28,6 +28,14 @@ class PlayersController < ApplicationController
         locals: { player: @player }
       )
 
+      # Broadcast to Stage View
+      @room.broadcast_append_to(
+        @room,
+        target: "stage_player_list",
+        partial: "players/stage_player",
+        locals: { player: @player }
+      )
+
       redirect_to hand_room_path(@room)
     else
       Rails.logger.error "Player creation failed for room #{@room.code}: #{@player.errors.full_messages.join(', ')}"
