@@ -38,7 +38,7 @@ RSpec.describe PlayersController, type: :controller do
       end
 
       it 'redirects to the hand view' do
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
       end
 
       it 'stores the session_id' do
@@ -105,7 +105,7 @@ RSpec.describe PlayersController, type: :controller do
 
       it 'redirects with success notice' do
         delete :destroy, params: { id: player_to_kick.id }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:notice]).to include("has been kicked")
       end
     end
@@ -125,7 +125,7 @@ RSpec.describe PlayersController, type: :controller do
 
       it 'redirects with alert' do
         delete :destroy, params: { id: host_player.id }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to include("Only the host can kick")
       end
     end
@@ -143,7 +143,7 @@ RSpec.describe PlayersController, type: :controller do
 
       it 'redirects with alert' do
         delete :destroy, params: { id: host_player.id }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to include("cannot kick yourself")
       end
     end

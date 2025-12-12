@@ -97,7 +97,7 @@ RSpec.describe "Full Game Loop", :js, type: :system do
 
     # 8. Player 2 sees voting screen
     Capybara.using_session(:player2) do
-      visit hand_room_path(room.code) # Force reload to verify server state
+      visit room_hand_path(room.code) # Force reload to verify server state
       expect(page).to have_content("Vote for the best answer!")
       expect(page).to have_button("Vote", count: 2)
 

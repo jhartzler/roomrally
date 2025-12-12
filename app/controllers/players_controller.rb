@@ -23,7 +23,7 @@ class PlayersController < ApplicationController
       # Broadcast the new player to all clients viewing this room
       GameBroadcaster.broadcast_player_joined(room: @room, player: @player)
 
-      redirect_to hand_room_path(@room)
+      redirect_to room_hand_path(@room)
     else
       Rails.logger.error "Player creation failed for room #{@room.code}: #{@player.errors.full_messages.join(', ')}"
       flash[:error] = @player.errors.full_messages.join(", ")
@@ -38,13 +38,13 @@ class PlayersController < ApplicationController
 
     # Check if current player is the host
     unless current_player == room.host
-      redirect_to hand_room_path(room.code), alert: "Only the host can kick players."
+      redirect_to room_hand_path(room.code), alert: "Only the host can kick players."
       return
     end
 
     # Prevent host from kicking themselves
     if player_to_kick == current_player
-      redirect_to hand_room_path(room.code), alert: "You cannot kick yourself."
+      redirect_to room_hand_path(room.code), alert: "You cannot kick yourself."
       return
     end
 
@@ -56,7 +56,7 @@ class PlayersController < ApplicationController
     # Broadcast removal to all players in the room
     GameBroadcaster.broadcast_player_left(room:, player: player_to_kick)
 
-    redirect_to hand_room_path(room.code), notice: "#{player_name} has been kicked from the room."
+    redirect_to room_hand_path(room.code), notice: "#{player_name} has been kicked from the room."
   end
 
   private

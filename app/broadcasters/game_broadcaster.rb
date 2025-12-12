@@ -64,6 +64,17 @@ module GameBroadcaster
     )
   end
 
+  def self.broadcast_host_change(room:)
+    Rails.logger.info({ event: "broadcast_host_change", room_code: room.code })
+    # Replace the entire player list to update host status indicators
+    Turbo::StreamsChannel.broadcast_replace_to(
+      room,
+      target: "player-list",
+      partial: "rooms/player_list",
+      locals: { room: }
+    )
+  end
+
   def self.game_folder_name(game_type)
     game_type.downcase.gsub(" ", "_")
   end

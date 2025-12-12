@@ -16,13 +16,13 @@ RSpec.describe "Game Over Screen", type: :system do
   end
 
   it "displays the leaderboard with correct scores" do
-    visit hand_room_path(room.code)
+    visit room_hand_path(room.code)
 
     # Login as one of the players (simulation, since we visit hand_room_path directly usually requires session)
     # The app seems to use session_id cookies or similar.
     # Let's check how other tests populate session.
     # checking create_room_flow_spec.rb or similar...
-    # The `hand_room_path` puts you in the lobby or hand screen.
+    # The `room_hand_path` puts you in the lobby or hand screen.
     # Just simulating "viewing" the component might be easier if we render_inline in a ViewComponent test,
     # but this is a system test.
 
