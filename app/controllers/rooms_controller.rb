@@ -8,7 +8,7 @@ class RoomsController < ApplicationController
   def create
     room = Room.create!(room_params)
     Rails.logger.info "Room #{room.code} created with game type: #{room.game_type}."
-    redirect_to join_room_path(room)
+    redirect_to room_stage_path(room)
   end
 
 

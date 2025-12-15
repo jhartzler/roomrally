@@ -9,7 +9,7 @@ RSpec.describe RoomsController, type: :controller do
     it 'redirects to the join room path' do
       post :create
       room = Room.last
-      expect(response).to redirect_to(join_room_path(room))
+      expect(response).to redirect_to(room_stage_path(room))
     end
   end
 

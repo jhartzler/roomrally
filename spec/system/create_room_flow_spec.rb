@@ -13,15 +13,16 @@ RSpec.describe 'Room Creation Flow', type: :system do
     click_on 'Create Room'
 
     # Wait for the redirect to the join page and verify the path format
-    expect(page).to have_current_path(/\/rooms\/[A-Z0-9]{4}\/join/, wait: 5)
+    expect(page).to have_current_path(/\/rooms\/[A-Z0-9]{4}\/stage/, wait: 5)
 
     # Extract the room code from the URL
     room_code = page.current_path.split('/')[2]
     room = Room.find_by!(code: room_code)
 
     # Now that we have the room, we can make specific assertions
-    expect(page).to have_content("Join the Fun!")
+    expect(page).to have_content("Stage View")
     expect(page).to have_content(room.code)
-    expect(page).to have_field("What's your name?")
+    # The stage lobby should be visible
+    expect(page).to have_selector("#stage_content")
   end
 end
