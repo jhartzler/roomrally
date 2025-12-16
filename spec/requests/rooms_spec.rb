@@ -27,7 +27,7 @@ RSpec.describe "Rooms", type: :request do
 
       it "redirects to the hand page with success message" do
         post claim_host_room_path(room)
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
         expect(flash[:notice]).to eq("You are now the host!")
       end
     end
@@ -44,7 +44,7 @@ RSpec.describe "Rooms", type: :request do
 
       it "redirects with an alert" do
         post claim_host_room_path(room)
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
         expect(flash[:alert]).to eq("There is already a host for this room.")
       end
     end
@@ -66,7 +66,7 @@ RSpec.describe "Rooms", type: :request do
 
       it "redirects with success message" do
         post start_game_room_path(room)
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
         expect(flash[:notice]).to eq("Game started!")
       end
     end
@@ -84,7 +84,7 @@ RSpec.describe "Rooms", type: :request do
 
       it "redirects with error message" do
         post start_game_room_path(room)
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
         expect(flash[:alert]).to include("Could not start game")
       end
     end
@@ -101,7 +101,7 @@ RSpec.describe "Rooms", type: :request do
 
       it "redirects with error message" do
         post start_game_room_path(room)
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
         expect(flash[:alert]).to eq("Only the host can start the game.")
       end
     end

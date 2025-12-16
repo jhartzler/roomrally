@@ -9,30 +9,11 @@ RSpec.describe RoomsController, type: :controller do
     it 'redirects to the join room path' do
       post :create
       room = Room.last
-      expect(response).to redirect_to(join_room_path(room))
+      expect(response).to redirect_to(room_stage_path(room))
     end
   end
 
-  describe 'GET #hand' do
-    let(:player) { create(:player) }
 
-    before do
-      session[:player_session_id] = player.session_id
-      get :hand, params: { code: player.room.code }
-    end
-
-    it 'assigns the correct room' do
-      expect(assigns(:room)).to eq(player.room)
-    end
-
-    it 'assigns the correct player' do
-      expect(assigns(:player)).to eq(player)
-    end
-
-    it 'returns a successful response' do
-      expect(response).to have_http_status(:ok)
-    end
-  end
 
   describe 'POST #claim_host' do
     let(:room) { create(:room, host: nil) }
@@ -57,7 +38,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects to hand view with success notice' do
         post :claim_host, params: { code: room.code }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:notice]).to eq("You are now the host!")
       end
     end
@@ -77,7 +58,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects with alert' do
         post :claim_host, params: { code: room.code }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to include("There is already a host")
       end
     end
@@ -95,7 +76,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects with cooloff message' do
         post :claim_host, params: { code: room.code }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to include("recently claimed")
       end
     end
@@ -120,11 +101,7 @@ RSpec.describe RoomsController, type: :controller do
       session[:player_session_id] = player.session_id
     end
 
-    it 'redirects to root with alert for GET #hand' do
-      get :hand, params: { code: 'INVALID' }
-      expect(response).to redirect_to(root_path)
-      expect(flash[:alert]).to include("Room 'INVALID' not found")
-    end
+
 
     it 'redirects to root with alert for POST #start_game' do
       post :start_game, params: { code: 'INVALID' }
@@ -181,7 +158,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects to the hand view' do
         post :start_game, params: { code: room.code }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
       end
     end
 
@@ -198,7 +175,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects with an alert' do
         post :start_game, params: { code: room.code }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to eq('Could not start game. Ensure there are at least 2 players and the game hasn\'t started yet.')
       end
     end
@@ -218,7 +195,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects with an alert' do
         post :start_game, params: { code: room.code }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to eq('Only the host can start the game.')
       end
     end
@@ -250,7 +227,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects with success notice' do
         post :reassign_host, params: { code: room.code, player_id: target_player.id }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:notice]).to include("Host has been reassigned")
       end
     end
@@ -268,7 +245,7 @@ RSpec.describe RoomsController, type: :controller do
 
       it 'redirects with alert' do
         post :reassign_host, params: { code: room.code, player_id: host_player.id }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to include("Only the host can reassign")
       end
     end
@@ -276,7 +253,7 @@ RSpec.describe RoomsController, type: :controller do
     context 'when target player does not exist in room' do
       it 'redirects with alert' do
         post :reassign_host, params: { code: room.code, player_id: 99999 }
-        expect(response).to redirect_to(hand_room_path(room.code))
+        expect(response).to redirect_to(room_hand_path(room.code))
         expect(flash[:alert]).to include("Player not found")
       end
     end

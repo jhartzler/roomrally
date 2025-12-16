@@ -13,8 +13,9 @@ module Games
       game = WriteAndVoteGame.create!
       room.update!(current_game: game)
 
-      # Delegate prompt assignment and broadcasting to the standard method
       assign_prompts_for_round(game:, round_number: 1)
+      GameBroadcaster.broadcast_stage(room:)
+      GameBroadcaster.broadcast_hand(room:)
     end
 
     def self.process_vote(game:, vote:)
@@ -34,32 +35,29 @@ module Games
       required_votes = players_count - current_prompt.responses.count
 
       if total_votes >= required_votes
-
         if game.current_prompt_index < game.current_round_prompts.count - 1
           game.next_voting_round!
         else
-
           game.calculate_scores!
           if game.round < MAX_ROUNDS
             game.start_next_game_round!
-            # After starting next round, game.round will be incremented.
             assign_prompts_for_round(game:, round_number: game.round)
-            return
           else
             game.finish_game!
           end
         end
       end
 
-
-      GameBroadcaster.broadcast_hand_screen(room: game.room)
+      GameBroadcaster.broadcast_hand(room: game.room)
+      GameBroadcaster.broadcast_stage(room: game.room)
     end
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
         game.start_voting!
 
 
-        GameBroadcaster.broadcast_hand_screen(room: game.room)
+        GameBroadcaster.broadcast_hand(room: game.room)
+        GameBroadcaster.broadcast_stage(room: game.room)
       end
       game
     end
@@ -91,9 +89,6 @@ module Games
         Response.create!(player:, prompt_instance: prompt_instance1)
         Response.create!(player:, prompt_instance: prompt_instance2)
       end
-
-
-      GameBroadcaster.broadcast_hand_screen(room:)
     end
   end
 end

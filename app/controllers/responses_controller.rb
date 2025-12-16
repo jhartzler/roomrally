@@ -26,7 +26,7 @@ class ResponsesController < ApplicationController
             )
           end
         end
-        format.html { redirect_to hand_room_path(@response.player.room) }
+        format.html { redirect_to room_hand_path(@response.player.room) }
       end
     else
       # Handle errors

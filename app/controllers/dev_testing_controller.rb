@@ -6,7 +6,7 @@ class DevTestingController < ApplicationController
   def set_player_session
     player = Player.find(params[:id])
     session[:player_session_id] = player.session_id
-    redirect_to hand_room_path(player.room)
+    redirect_to room_hand_path(player.room)
   end
 
   def show_test_game

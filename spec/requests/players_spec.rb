@@ -15,7 +15,7 @@ RSpec.describe "Players", type: :request do
 
       it "redirects to the room" do
         post players_path, params: { player: player_params, code: room.code }
-        expect(response).to redirect_to(hand_room_path(room))
+        expect(response).to redirect_to(room_hand_path(room))
       end
 
       it "shows the player name after redirect" do
