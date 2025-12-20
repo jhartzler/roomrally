@@ -31,5 +31,9 @@ Rails.application.routes.draw do
   resources :responses, only: [ :update ]
   resources :votes, only: [ :create ]
 
+  get "/auth/:provider/callback", to: "sessions#omniauth"
+  get "/auth/failure", to: redirect("/")
+  delete "/logout", to: "sessions#destroy", as: :logout
+
   mount ActionCable.server => "/cable"
 end
