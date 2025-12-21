@@ -1,9 +1,7 @@
 module GameBroadcaster
   def self.broadcast_hand(room:)
     room.players.each do |player|
-      # context argument is sometimes used for logging but not strictly required for logic
-      # keeping it simple for now, logging context can be added if needed or passed as optional kwarg
-      Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
+    Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
 
       Turbo::StreamsChannel.broadcast_update_to(
         player,
@@ -48,6 +46,13 @@ module GameBroadcaster
       partial: "players/stage_player",
       locals: { player: }
     )
+
+    Turbo::StreamsChannel.broadcast_update_to(
+      room,
+      target: "host-controls",
+      partial: "rooms/host_controls",
+      locals: { room: room.reload }
+    )
   end
 
   def self.broadcast_player_left(room:, player:)
@@ -61,6 +66,13 @@ module GameBroadcaster
     Turbo::StreamsChannel.broadcast_remove_to(
       room,
       target: "stage_player_#{player.id}"
+    )
+
+    Turbo::StreamsChannel.broadcast_update_to(
+      room,
+      target: "host-controls",
+      partial: "rooms/host_controls",
+      locals: { room: room.reload }
     )
   end
 

@@ -1,14 +1,16 @@
 require 'capybara/rspec'
-require 'capybara-playwright-driver'
 
-Capybara.register_driver(:playwright) do |app|
-  Capybara::Playwright::Driver.new(
-    app,
-    browser_type: :chromium, # or :firefox, :webkit
-    headless: ENV['CI'].present?, # Set to false to see the browser UI
-    playwright_cli_executable_path: './node_modules/.bin/playwright'
-  )
+
+Capybara.register_driver :selenium_chrome_headless do |app|
+  options = Selenium::WebDriver::Chrome::Options.new
+  options.add_argument('--headless')
+  options.add_argument('--disable-gpu')
+  options.add_argument('--no-sandbox')
+  options.add_argument('--disable-dev-shm-usage')
+  options.add_argument('--window-size=1400,1400')
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options:)
 end
 
-Capybara.default_driver = :playwright
-Capybara.javascript_driver = :playwright
+Capybara.default_driver = :selenium_chrome_headless
+Capybara.javascript_driver = :selenium_chrome_headless

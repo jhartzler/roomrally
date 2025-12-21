@@ -65,7 +65,7 @@ group :development, :test do
   gem "rspec-rails", "~> 8.0.2"
   # System testing
   gem "capybara"
-  gem "capybara-playwright-driver"
+  gem "selenium-webdriver"
 
   # Test factories
   gem "factory_bot_rails", "~> 6.0"
