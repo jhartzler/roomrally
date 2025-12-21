@@ -4,6 +4,19 @@
       <h1 class="text-6xl font-bold text-white mb-2">🎭</h1>
       <h1 class="text-5xl font-black text-white mb-4 drop-shadow-lg">OpenJokeMachine</h1>
       <p class="text-white text-lg opacity-90">Create laughs together</p>
+      
+      <div class="mt-4">
+        <% if current_user %>
+          <div class="flex flex-col items-center space-y-2">
+            <span class="text-white text-sm">Welcome back, <%= current_user.name %>!</span>
+            <%= button_to "Logout", logout_path, method: :delete, class: "text-white underline text-sm hover:text-purple-200" %>
+          </div>
+        <% else %>
+          <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false } do |f| %>
+            <%= f.submit "Login with Google", class: "bg-white text-gray-800 font-semibold py-2 px-4 rounded-full border border-gray-300 shadow-sm hover:bg-gray-100 transition-colors text-sm" %>
+          <% end %>
+        <% end %>
+      </div>
     </div>
 
     <div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">

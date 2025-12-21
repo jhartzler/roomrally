@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_165712) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_18_020725) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,9 +63,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_165712) do
     t.datetime "last_host_claim_at"
     t.string "status"
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["code"], name: "index_rooms_on_code", unique: true
     t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
     t.index ["host_id"], name: "index_rooms_on_host_id"
+    t.index ["user_id"], name: "index_rooms_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "image"
+    t.string "name"
+    t.string "password_digest"
+    t.string "provider"
+    t.string "uid"
+    t.datetime "updated_at", null: false
   end
 
   create_table "votes", force: :cascade do |t|
@@ -91,6 +104,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_165712) do
   add_foreign_key "responses", "players"
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "players", column: "host_id"
+  add_foreign_key "rooms", "users"
   add_foreign_key "votes", "players"
   add_foreign_key "votes", "responses"
 end
