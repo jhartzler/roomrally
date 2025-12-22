@@ -4,7 +4,8 @@ RSpec.describe "Stage View Game Integration", type: :system do
   let!(:room) { Room.create!(game_type: "Write And Vote") }
 
   before do
-    10.times { |i| Prompt.create!(body: "Prompt #{i}") }
+    default_pack = FactoryBot.create(:prompt_pack, :default)
+    10.times { |i| Prompt.create!(body: "Prompt #{i}", prompt_pack: default_pack) }
   end
 
   it "updates stage view through game phases" do

@@ -8,9 +8,11 @@ RSpec.describe Games::WriteAndVote do
     let!(:second_player) { create(:player, room:) }
     let!(:third_player) { create(:player, room:) }
 
+    let!(:default_pack) { create(:prompt_pack, :default) }
+
     before do
-      # Create some master prompts
-      3.times { |i| create(:prompt, body: "Master Prompt #{i + 1}") }
+      # Create some master prompts in the default pack so they can be found
+      3.times { |i| create(:prompt, body: "Master Prompt #{i + 1}", prompt_pack: default_pack) }
       allow(room).to receive(:broadcast_replace_to).and_return(true)
     end
 
@@ -66,8 +68,9 @@ RSpec.describe Games::WriteAndVote do
     end
   end
 
-  describe '.process_vote' do
-    let(:game) { create(:write_and_vote_game, status: 'voting') }
+  describe '.process_vote' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    let!(:default_pack) { create(:prompt_pack, :default) }
+    let(:game) { create(:write_and_vote_game, status: 'voting', prompt_pack: default_pack) }
     let(:room) { create(:room, current_game: game) }
     let(:players) { create_list(:player, 3, room:) }
     let!(:prompts) { create_list(:prompt_instance, 3, write_and_vote_game: game) }
@@ -85,8 +88,8 @@ RSpec.describe Games::WriteAndVote do
       end
       # Allow calls to calculate_scores! on the game instance
       allow(game).to receive(:calculate_scores!)
-      # Create extra prompts for Round 2 logic
-      create_list(:prompt, 3)
+      # Create extra prompts for Round 2 logic, associated with the game's pack
+      create_list(:prompt, 3, prompt_pack: default_pack)
     end
 
     def cast_vote(player, prompt, response = nil)
@@ -124,7 +127,7 @@ RSpec.describe Games::WriteAndVote do
       end
     end
 
-    context 'when the non-author votes on the last prompt of round 2' do
+    context 'when the non-author votes on the last prompt of round 2' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       let!(:round_2_prompts) { create_list(:prompt_instance, 3, write_and_vote_game: game, round: 2) }
 
       before do
@@ -159,9 +162,10 @@ RSpec.describe Games::WriteAndVote do
     before do
       create_list(:player, 3, room:)
       Prompt.destroy_all
-      # Create exactly 6 prompts for 3 players.
+      default_pack = create(:prompt_pack, :default)
+      # Create exactly 6 prompts for 3 players in the default pack
       # R1 takes 3. R2 takes 3. With fix, should succeed with 0 intersection.
-      create_list(:prompt, 6)
+      create_list(:prompt, 6, prompt_pack: default_pack)
       allow(room).to receive(:broadcast_replace_to).and_return(true)
     end
 

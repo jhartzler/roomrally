@@ -56,7 +56,8 @@ RSpec.describe "Rooms", type: :request do
         room.update!(host: player)
         FactoryBot.create_list(:player, 2, room:) # adds 2 players, total 3
         # Create enough master prompts for the game logic
-        FactoryBot.create_list(:prompt, 5)
+        default_pack = FactoryBot.create(:prompt_pack, :default)
+        FactoryBot.create_list(:prompt, 5, prompt_pack: default_pack)
       end
 
       it "starts the game" do

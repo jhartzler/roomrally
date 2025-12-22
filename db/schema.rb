@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_22_180731) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_22_205114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,12 +74,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_180731) do
     t.string "game_type", default: "Write And Vote"
     t.bigint "host_id"
     t.datetime "last_host_claim_at"
+    t.bigint "prompt_pack_id"
     t.string "status"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["code"], name: "index_rooms_on_code", unique: true
     t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
     t.index ["host_id"], name: "index_rooms_on_host_id"
+    t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
     t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
@@ -106,9 +108,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_180731) do
   create_table "write_and_vote_games", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "current_prompt_index", default: 0
+    t.bigint "prompt_pack_id"
     t.integer "round", default: 1
     t.string "status"
     t.datetime "updated_at", null: false
+    t.index ["prompt_pack_id"], name: "index_write_and_vote_games_on_prompt_pack_id"
   end
 
   add_foreign_key "players", "rooms"
@@ -119,7 +123,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_180731) do
   add_foreign_key "responses", "players"
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "players", column: "host_id"
+  add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "users"
   add_foreign_key "votes", "players"
   add_foreign_key "votes", "responses"
+  add_foreign_key "write_and_vote_games", "prompt_packs"
 end

@@ -4,8 +4,9 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
   let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote") }
 
   before do
-    # Ensure sufficient prompts exist for the game
-    FactoryBot.create_list(:prompt, 5)
+    # Ensure sufficient prompts exist for the game in the DEFAULT pack
+    default_pack = FactoryBot.create(:prompt_pack, :default)
+    FactoryBot.create_list(:prompt, 5, prompt_pack: default_pack)
   end
 
   it "allows players to join, start game, answer prompts, and reach voting" do

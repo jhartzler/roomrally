@@ -17,20 +17,21 @@ RSpec.describe "PromptPack CRUD", type: :system do
       # Initial state check - 1 prompt
       expect(page).to have_content("Supports up to 0 players")
 
-      # Fill first prompt
+      # Fill first prompt (which might be the only one or at bottom)
       find("textarea[name*='[body]']").set("Prompt 1")
 
-      # Add second prompt
+      # Add second prompt (Prepended)
       click_button "Add Prompt"
       expect(page).to have_content("Supports up to 1 players")
-      all("textarea[name*='[body]']").last.set("Prompt 2")
+      # New prompt is at the top
+      all("textarea[name*='[body]']").first.set("Prompt 2")
 
-      # Add third prompt
+      # Add third prompt (Prepended)
       click_button "Add Prompt"
       expect(page).to have_content("Supports up to 1 players")
-      all("textarea[name*='[body]']").last.set("Prompt 3")
+      all("textarea[name*='[body]']").first.set("Prompt 3")
 
-      # Remove one prompt
+      # Remove one prompt (The bottom one, "Prompt 1")
       # Use JS click to bypass hover/visibility flake on CI
       wrapper = all(".prompt-field-wrapper").last
       button = wrapper.find("button[data-action='content-editor#removePrompt']", visible: :all)
@@ -41,6 +42,7 @@ RSpec.describe "PromptPack CRUD", type: :system do
 
       expect(page).to have_content("Prompt pack created successfully")
       expect(page).to have_content("My Fun Pack")
+      # We have 2 prompts left ("Prompt 3", "Prompt 2") -> 1 Player (ratio 2)
       expect(page).to have_content("1 Players")
     end
   end
@@ -60,9 +62,9 @@ RSpec.describe "PromptPack CRUD", type: :system do
 
       fill_in "Name", with: "Updated Pack"
 
-      # Add a new prompt
+      # Add a new prompt (Prepended)
       click_button "Add Prompt"
-      all("textarea[name*='[body]']").last.set("New Prompt")
+      all("textarea[name*='[body]']").first.set("New Prompt")
       expect(page).to have_content("Supports up to 1 players")
 
       click_button "Save Pack"

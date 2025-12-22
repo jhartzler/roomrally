@@ -2,6 +2,7 @@ class WriteAndVoteGame < ApplicationRecord
   include AASM
 
   has_one :room, as: :current_game
+  belongs_to :prompt_pack, optional: true
   has_many :prompt_instances, dependent: :destroy
 
   # Configuration

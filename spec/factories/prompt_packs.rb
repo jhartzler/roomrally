@@ -7,5 +7,11 @@ FactoryBot.define do
     trait :global do
       user { nil }
     end
+
+    trait :default do
+      user { nil }
+      is_default { true }
+      name { "Standard Deck" }
+    end
   end
 end
