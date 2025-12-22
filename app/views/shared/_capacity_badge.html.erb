@@ -1,0 +1,4 @@
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-bold border border-slate-100">
+  <%= lucide_icon('users', class: "w-3 h-3", "aria-hidden": true) %>
+  <span><%= pack.supported_players_count || 0 %><%= show_label ? " Players" : "" %></span>
+</div>

@@ -35,10 +35,10 @@ export default class extends Controller {
             timestamp
         )
 
-        this.promptListTarget.insertAdjacentHTML('beforeend', content)
+        this.promptListTarget.insertAdjacentHTML('afterbegin', content)
 
         // Find the newly added textarea and set its value
-        const newField = this.promptListTarget.lastElementChild.querySelector("textarea")
+        const newField = this.promptListTarget.firstElementChild.querySelector("textarea")
         if (newField) {
             newField.value = value
         }
