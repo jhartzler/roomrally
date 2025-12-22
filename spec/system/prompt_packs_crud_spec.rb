@@ -51,7 +51,8 @@ RSpec.describe "PromptPack CRUD", type: :system do
 
     it "allows updating the pack and modifying prompts" do
       visit prompt_packs_path
-      click_link "Original Pack" # Should go to edit based on our previous changes
+      click_link "Original Pack"
+      click_link "Edit Pack"
 
       expect(page).to have_field("Name", with: pack.name)
       expect(page).to have_content("Supports up to 0 players")

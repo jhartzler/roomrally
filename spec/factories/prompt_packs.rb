@@ -4,5 +4,8 @@ FactoryBot.define do
     game_type { "Write And Vote" }
     user
     is_default { false }
+    trait :global do
+      user { nil }
+    end
   end
 end

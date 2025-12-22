@@ -8,8 +8,14 @@
       <div class="mt-4">
         <% if current_user %>
           <div class="flex flex-col items-center space-y-2">
-            <span class="text-white text-sm">Welcome back, <%= current_user.name %>!</span>
-            <%= button_to "Logout", logout_path, method: :delete, class: "text-white underline text-sm hover:text-purple-200" %>
+            <%= link_to dashboard_path, class: "bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-100 transform hover:scale-105 transition-all" do %>
+               Go to Dashboard
+            <% end %>
+            <div class="text-white/80 text-xs mt-2 flex gap-2">
+               <span>Logged in as <%= current_user.name %></span>
+               <span>•</span>
+               <%= button_to "Logout", logout_path, method: :delete, class: "underline hover:text-white" %>
+            </div>
           </div>
         <% else %>
           <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false } do |f| %>
