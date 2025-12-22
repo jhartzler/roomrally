@@ -1,0 +1,99 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Library</h1>
+    <%= link_to new_prompt_pack_path, class: "bg-action-orange text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2" do %>
+      <%= lucide_icon('plus', class: "w-5 h-5") %>
+      <span>New Pack</span>
+    <% end %>
+  </div>
+
+  <!-- Template Gallery Section -->
+  <section class="mb-12">
+    <h2 class="text-xl font-semibold text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
+      <%= lucide_icon('layout-template', class: "w-5 h-5") %>
+      Template Gallery
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Placeholder Static Templates -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:border-rally-blue dark:hover:border-rally-blue transition-colors cursor-pointer group">
+        <div class="flex items-start justify-between mb-3">
+          <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg text-rally-blue">
+             <%= lucide_icon('sparkles', class: "w-6 h-6") %>
+          </div>
+        </div>
+        <h3 class="font-bold text-slate-800 dark:text-gray-100 mb-1 group-hover:text-rally-blue transition-colors">Classic Party</h3>
+        <p class="text-sm text-slate-500 mb-4">The original Write & Vote experience.</p>
+        <span class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full">System Pack</span>
+      </div>
+
+       <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:border-rally-blue dark:hover:border-rally-blue transition-colors cursor-pointer group">
+        <div class="flex items-start justify-between mb-3">
+          <div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg text-purple-600">
+             <%= lucide_icon('brain-circuit', class: "w-6 h-6") %>
+          </div>
+        </div>
+        <h3 class="font-bold text-slate-800 dark:text-gray-100 mb-1 group-hover:text-rally-blue transition-colors">Ice Breakers</h3>
+        <p class="text-sm text-slate-500 mb-4">Perfect for getting things started.</p>
+        <span class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full">System Pack</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- My Packs Section -->
+  <section>
+    <h2 class="text-xl font-semibold text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2">
+      <%= lucide_icon('folder-open', class: "w-5 h-5") %>
+      My Packs
+    </h2>
+    
+    <% if @prompt_packs.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <% @prompt_packs.each do |pack| %>
+          <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow relative overflow-hidden group">
+            <!-- Top Folder Tab Styling -->
+            <div class="h-2 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600"></div>
+            
+            <div class="p-5">
+              <div class="flex justify-between items-start mb-4">
+                 <div class="text-rally-blue bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg">
+                    <%= lucide_icon('folder', class: "w-8 h-8") %>
+                 </div>
+                 
+                 <!-- Status Indicator -->
+                 <div class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium <%= pack.live? ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400' %>">
+                   <div class="w-1.5 h-1.5 rounded-full <%= pack.live? ? 'bg-green-500' : 'bg-slate-400' %>"></div>
+                   <%= pack.status.humanize %>
+                 </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1 truncate group-hover:text-rally-blue transition-colors">
+                <%= link_to pack.name, "#", class: "stretched-link" %>
+              </h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mb-4"><%= pack.game_type %></p>
+
+              <div class="flex items-center gap-2">
+                <!-- Capacity Badge -->
+                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 text-xs border border-slate-200 dark:border-slate-600">
+                    <%= lucide_icon('users', class: "w-3.5 h-3.5") %>
+                    <span>Supports <%= pack.supported_players_count || 0 %> Players</span>
+                 </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+        <div class="mx-auto w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-slate-400 mb-4">
+          <%= lucide_icon('folder-plus', class: "w-8 h-8") %>
+        </div>
+        <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-2">No Prompt Packs Yet</h3>
+        <p class="text-slate-500 dark:text-slate-400 mb-6 max-w-sm mx-auto">Create your first pack to start organizing your custom prompts.</p>
+        <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-rally-blue text-white rounded-lg hover:bg-blue-700 transition-colors" do %>
+          <%= lucide_icon('plus', class: "w-4 h-4") %>
+          <span>Create Prompt Pack</span>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+</div>
