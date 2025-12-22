@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_18_020725) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_22_165403) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,10 +37,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_020725) do
     t.index ["write_and_vote_game_id"], name: "index_prompt_instances_on_write_and_vote_game_id"
   end
 
+  create_table "prompt_packs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "game_type"
+    t.boolean "is_default"
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_prompt_packs_on_user_id"
+  end
+
   create_table "prompts", force: :cascade do |t|
     t.string "body"
     t.datetime "created_at", null: false
+    t.bigint "prompt_pack_id"
     t.datetime "updated_at", null: false
+    t.index ["prompt_pack_id"], name: "index_prompts_on_prompt_pack_id"
   end
 
   create_table "responses", force: :cascade do |t|
@@ -101,6 +113,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_18_020725) do
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
+  add_foreign_key "prompt_packs", "users"
+  add_foreign_key "prompts", "prompt_packs"
   add_foreign_key "responses", "players"
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "players", column: "host_id"
