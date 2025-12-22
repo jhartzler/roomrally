@@ -64,6 +64,24 @@
          </button>
       </div>
 
+      <!-- Bulk Import Section -->
+      <details class="mb-6 bg-slate-50 rounded-xl border border-slate-200 group" data-content-editor-target="bulkSection">
+        <summary class="list-none flex justify-between items-center p-4 cursor-pointer hover:bg-slate-100 rounded-xl transition-colors">
+          <span class="font-bold text-slate-700 flex items-center gap-2">
+            <%= lucide_icon('file-plus', class: "w-4 h-4") %>
+            Bulk Import
+          </span>
+          <%= lucide_icon('chevron-down', class: "w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform") %>
+        </summary>
+        <div class="p-4 border-t border-slate-200">
+           <p class="text-xs text-slate-500 mb-3 font-medium">Paste your prompts below, one per line.</p>
+           <textarea data-content-editor-target="bulkText" rows="6" class="block w-full rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm font-medium text-slate-700 placeholder-slate-300 resize-y mb-3 p-3" placeholder="Why did the chicken cross the road?&#10;To get to the other side.&#10;Knock knock."></textarea>
+           <button type="button" data-action="content-editor#bulkAdd" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm shadow-md transition-all">
+             Import Prompts
+           </button>
+        </div>
+      </details>
+
       <div data-content-editor-target="promptList" class="space-y-4">
         <%= form.fields_for :prompts do |prompt_form| %>
           <div class="prompt-field-wrapper flex gap-3 items-start group" data-new-record="<%= prompt_form.object.new_record? %>">

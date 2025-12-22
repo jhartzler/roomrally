@@ -27,6 +27,14 @@ RSpec.describe "Prompt Packs UI", type: :system do
       expect(page).to have_link("Edit Pack")
     end
 
+    it "allows clicking the edit button directly from the card" do
+      # Find the card containing the pack name, then find the 'Edit' link within it
+      within(find("div", text: "My Cool Pack", match: :first)) do
+        click_link "Edit"
+      end
+      expect(page).to have_current_path(edit_prompt_pack_path(user_pack))
+    end
+
     it "has a working dashboard link" do
       click_link "Dashboard"
       expect(page).to have_current_path(dashboard_path)

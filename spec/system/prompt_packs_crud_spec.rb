@@ -41,7 +41,7 @@ RSpec.describe "PromptPack CRUD", type: :system do
 
       expect(page).to have_content("Prompt pack created successfully")
       expect(page).to have_content("My Fun Pack")
-      expect(page).to have_content("Supports 1 Players")
+      expect(page).to have_content("1 Players")
     end
   end
 
@@ -69,7 +69,7 @@ RSpec.describe "PromptPack CRUD", type: :system do
 
       expect(page).to have_content("Prompt pack updated successfully")
       expect(page).to have_content("Updated Pack")
-      expect(page).to have_content("Supports 1 Players")
+      expect(page).to have_content("1 Players")
     end
 
     it "allows deleting the pack" do

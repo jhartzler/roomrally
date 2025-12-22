@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["promptList", "promptTemplate", "countDisplay", "promptField"]
+    static targets = ["promptList", "promptTemplate", "countDisplay", "promptField", "bulkText", "bulkSection"]
     static values = { ratio: { type: Number, default: 1 } }
 
     connect() {
@@ -9,14 +9,40 @@ export default class extends Controller {
     }
 
     addPrompt(event) {
-        event.preventDefault()
+        if (event) event.preventDefault()
+        this.createPromptField("")
+    }
 
+    bulkAdd(event) {
+        event.preventDefault()
+        const text = this.bulkTextTarget.value
+        if (!text.trim()) return
+
+        const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0)
+
+        lines.forEach(line => {
+            this.createPromptField(line)
+        })
+
+        this.bulkTextTarget.value = ""
+        this.bulkSectionTarget.open = false
+    }
+
+    createPromptField(value) {
+        const timestamp = new Date().getTime() + Math.floor(Math.random() * 1000) // Ensure unique ID for bulk
         const content = this.promptTemplateTarget.innerHTML.replace(
             /NEW_RECORD/g,
-            new Date().getTime()
+            timestamp
         )
 
         this.promptListTarget.insertAdjacentHTML('beforeend', content)
+
+        // Find the newly added textarea and set its value
+        const newField = this.promptListTarget.lastElementChild.querySelector("textarea")
+        if (newField) {
+            newField.value = value
+        }
+
         this.updateCount()
     }
 
