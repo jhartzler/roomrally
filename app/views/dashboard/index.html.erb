@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-slate-50 p-6 md:p-12 font-sans">
+  <header class="max-w-5xl mx-auto mb-10">
+    <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+      <%= current_user.name %>
+    </h1>
+    <p class="text-slate-500 font-medium">Ready to create some chaos today?</p>
+  </header>
+
+  <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+        <span class="text-2xl">📚</span>
+      </div>
+      <h2 class="text-2xl font-black text-slate-900 mb-2">Manage Library</h2>
+      <p class="text-slate-600 mb-6">Create and organize your prompt packs. Build custom decks for your next game night.</p>
+      <%= link_to prompt_packs_path, class: "inline-block font-bold text-blue-600 hover:text-blue-700" do %>
+        Go to Library →
+      <% end %>
+    </div>
+
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
+        <span class="text-2xl">🎮</span>
+      </div>
+      <h2 class="text-2xl font-black text-slate-900 mb-2">Host a Game</h2>
+      <p class="text-slate-600 mb-6">Start a new game room. Launch a Big Screen session for players to join.</p>
+      <%= link_to root_path, class: "block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-black py-3 rounded-xl shadow-lg shadow-orange-200 transition-all" do %>
+        Start Hosting
+      <% end %>
+    </div>
+  </main>
+
+  <% if @recent_packs.any? %>
+    <section class="max-w-5xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-slate-900">Recent Prompt Packs</h3>
+        <%= link_to "View All", prompt_packs_path, class: "text-sm font-bold text-slate-500 hover:text-blue-600" %>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <% @recent_packs.each do |pack| %>
+          <%= link_to edit_prompt_pack_path(pack), class: "bg-white p-5 rounded-2xl border border-slate-200 flex items-center gap-4 hover:border-blue-300 transition-colors cursor-pointer" do %>
+            <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+              <%= lucide_icon('folder', class: "w-5 h-5") %>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-900"><%= pack.name %></h4>
+              <p class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md inline-block">
+                <%= pack.prompts.count %> prompts
+              </p>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
