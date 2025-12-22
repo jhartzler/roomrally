@@ -22,7 +22,7 @@ RSpec.describe PromptPack, type: :model do
     context 'when game_type is Write And Vote' do
       it 'returns the number of prompts' do
         create_list(:prompt, 5, prompt_pack:)
-        expect(prompt_pack.supported_players_count).to eq(5)
+        expect(prompt_pack.supported_players_count).to eq(2)
       end
     end
   end

@@ -1,0 +1,10 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Edit Prompt Pack</h1>
+      <%= button_to "Delete Pack", @prompt_pack, method: :delete, class: "text-red-600 hover:text-red-800 text-sm font-medium", form: { data: { turbo_confirm: "Are you sure?" } } %>
+    </div>
+    
+    <%= render "form", prompt_pack: @prompt_pack %>
+  </div>
+</div>

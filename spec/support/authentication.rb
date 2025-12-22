@@ -12,10 +12,16 @@ module AuthenticationHelper
     })
     OmniAuth.config.mock_auth[:google_oauth2] = auth_hash
     Rails.application.env_config["omniauth.auth"] = auth_hash
-    get "/auth/google_oauth2/callback"
+
+    if defined?(visit)
+      visit "/auth/google_oauth2/callback"
+    else
+      get "/auth/google_oauth2/callback"
+    end
   end
 end
 
 RSpec.configure do |config|
   config.include AuthenticationHelper, type: :request
+  config.include AuthenticationHelper, type: :system
 end

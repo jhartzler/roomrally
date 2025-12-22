@@ -1,0 +1,82 @@
+<%= form_with(model: prompt_pack, class: "contents", data: { controller: "content-editor" }) do |form| %>
+  <% if prompt_pack.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <h2><%= pluralize(prompt_pack.errors.count, "error") %> prohibited this pack from being saved:</h2>
+
+      <ul>
+        <% prompt_pack.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="space-y-6">
+      <div>
+        <%= form.label :name, class: "block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" %>
+        <%= form.text_field :name, class: "block w-full rounded-md border-slate-300 shadow-sm focus:border-rally-blue focus:ring focus:ring-rally-blue/50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" %>
+      </div>
+
+      <div>
+        <%= form.label :game_type, class: "block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" %>
+        <%= form.select :game_type, ["Write And Vote"], {}, class: "block w-full rounded-md border-slate-300 shadow-sm focus:border-rally-blue focus:ring focus:ring-rally-blue/50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" %>
+      </div>
+
+       <div>
+        <%= form.label :status, class: "block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" %>
+        <%= form.select :status, PromptPack.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "block w-full rounded-md border-slate-300 shadow-sm focus:border-rally-blue focus:ring focus:ring-rally-blue/50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" %>
+      </div>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
+        <h3 class="font-bold text-rally-blue mb-2 flex items-center gap-2">
+          <%= lucide_icon('users', class: "w-5 h-5") %>
+          Capacity Check
+        </h3>
+        <p class="text-slate-600 dark:text-slate-300 text-sm">
+          Supports up to <span data-content-editor-target="countDisplay" class="font-bold text-lg">0</span> players.
+        </p>
+        <p class="text-xs text-slate-500 mt-1">Based on current prompt count. Max 20 recommended.</p>
+      </div>
+
+       <div class="pt-4">
+        <%= form.submit "Save Pack", class: "w-full rounded-lg py-3 px-5 bg-rally-blue text-white block font-medium hover:bg-blue-700 cursor-pointer transition-colors" %>
+        <%= link_to "Cancel", prompt_packs_path, class: "block w-full text-center mt-3 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm" %>
+      </div>
+    </div>
+
+    <!-- Prompts Editor -->
+    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-slate-800 dark:text-white">Prompts</h3>
+         <button type="button" data-action="content-editor#addPrompt" class="text-sm text-rally-blue hover:text-blue-700 font-medium flex items-center gap-1">
+            <%= lucide_icon('plus-circle', class: "w-4 h-4") %>
+            Add Prompt
+         </button>
+      </div>
+
+      <div data-content-editor-target="promptList" class="space-y-3">
+        <%= form.fields_for :prompts do |prompt_form| %>
+          <div class="prompt-field-wrapper flex gap-2 items-start group" data-new-record="<%= prompt_form.object.new_record? %>">
+            <%= prompt_form.text_area :body, rows: 2, class: "block w-full rounded-md border-slate-300 shadow-sm focus:border-rally-blue focus:ring focus:ring-rally-blue/50 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white", data: { content_editor_target: "promptField", action: "input->content-editor#updateCount" }, placeholder: "Enter a prompt..." %>
+            <%= prompt_form.hidden_field :_destroy %>
+            <button type="button" data-action="content-editor#removePrompt" class="text-slate-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <%= lucide_icon('trash-2', class: "w-4 h-4") %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Template for New Fields -->
+  <template data-content-editor-target="promptTemplate">
+    <div class="prompt-field-wrapper flex gap-2 items-start group" data-new-record="true">
+      <textarea name="prompt_pack[prompts_attributes][NEW_RECORD][body]" rows="2" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-rally-blue focus:ring focus:ring-rally-blue/50 text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white" data-content-editor-target="promptField" data-action="input->content-editor#updateCount" placeholder="Enter a prompt..."></textarea>
+      
+      <button type="button" data-action="content-editor#removePrompt" class="text-slate-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <i class="lucide lucide-trash-2 w-4 h-4"></i>
+      </button>
+    </div>
+  </template>
+<% end %>
