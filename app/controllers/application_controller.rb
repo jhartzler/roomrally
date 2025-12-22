@@ -24,4 +24,8 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by(id: session[:user_id])
   end
   helper_method :current_user
+
+  def authenticate_user!
+    redirect_to root_path, alert: "Please log in." unless current_user
+  end
 end

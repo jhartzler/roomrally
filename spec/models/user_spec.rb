@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  describe "associations" do
+    it { is_expected.to have_many(:rooms).dependent(:nullify) }
+    it { is_expected.to have_many(:prompt_packs) }
+  end
+
   describe "validations" do
     let(:valid_attributes) { { name: 'Test User', email: 'test@example.com', password: 'password' } }
 

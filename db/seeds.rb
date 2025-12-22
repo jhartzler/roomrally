@@ -9,17 +9,18 @@
 #   end
 
 # Create starter master prompts
-[
-  "What's the best way to annoy a cat?",
-  "Describe your ideal superpower and its biggest drawback.",
-  "What's something everyone thinks is normal, but is actually really weird?",
-  "Invent a new Olympic sport.",
-  "What's the most ridiculous thing you've ever seen someone do for attention?",
-  "If animals could talk, which would be the rudest?",
-  "What's a common phrase that makes no sense if you think about it too hard?",
-  "Describe your perfect sandwich.",
-  "What's the weirdest thing you've ever eaten?",
-  "If you could have any fictional character as your best friend, who would it be and why?"
-].each do |prompt_text|
-  Prompt.find_or_create_by!(body: prompt_text)
+# Create starter master prompts
+# Global "Standard Deck"
+standard_pack = PromptPack.find_or_create_by!(
+  name: "Standard Deck",
+  game_type: "Write And Vote",
+  user_id: nil,
+  is_default: true,
+  status: :live
+)
+
+standard_prompts = YAML.load_file(Rails.root.join("config/standard_prompts.yml"))
+
+standard_prompts.each do |prompt_text|
+  Prompt.find_or_create_by!(body: prompt_text, prompt_pack: standard_pack)
 end
