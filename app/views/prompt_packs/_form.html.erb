@@ -15,7 +15,7 @@
     <div class="space-y-6">
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
         <h3 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-           <%= lucide_icon('settings', class: "w-5 h-5 text-slate-400") %>
+           <%= lucide_icon('settings', class: "w-5 h-5 text-slate-400", "aria-hidden": true) %>
            Pack Settings
         </h3>
         
@@ -39,10 +39,10 @@
 
       <div class="bg-blue-50 p-8 rounded-3xl border border-blue-100">
         <h3 class="font-black text-blue-700 mb-2 flex items-center gap-2">
-          <%= lucide_icon('users', class: "w-5 h-5") %>
+          <%= lucide_icon('users', class: "w-5 h-5", "aria-hidden": true) %>
           Capacity Check
         </h3>
-        <p class="text-slate-600 text-sm font-medium mb-1">
+        <p class="text-slate-600 text-sm font-medium mb-1" aria-live="polite">
           Supports up to <span data-content-editor-target="countDisplay" class="font-black text-lg text-slate-900">0</span> players.
         </p>
         <p class="text-xs text-blue-500/80 font-bold tracking-wide uppercase">Based on current prompt count. Max 20 recommended.</p>
@@ -59,7 +59,7 @@
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-black text-slate-900">Prompts</h3>
          <button type="button" data-action="content-editor#addPrompt" class="text-sm text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
-            <%= lucide_icon('plus', class: "w-4 h-4") %>
+            <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
             Add Prompt
          </button>
       </div>
@@ -68,14 +68,14 @@
       <details class="mb-6 bg-slate-50 rounded-xl border border-slate-200 group" data-content-editor-target="bulkSection">
         <summary class="list-none flex justify-between items-center p-4 cursor-pointer hover:bg-slate-100 rounded-xl transition-colors">
           <span class="font-bold text-slate-700 flex items-center gap-2">
-            <%= lucide_icon('file-plus', class: "w-4 h-4") %>
+            <%= lucide_icon('file-plus', class: "w-4 h-4", "aria-hidden": true) %>
             Bulk Import
           </span>
-          <%= lucide_icon('chevron-down', class: "w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform") %>
+          <%= lucide_icon('chevron-down', class: "w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform", "aria-hidden": true) %>
         </summary>
         <div class="p-4 border-t border-slate-200">
            <p class="text-xs text-slate-500 mb-3 font-medium">Paste your prompts below, one per line.</p>
-           <textarea data-content-editor-target="bulkText" rows="6" class="block w-full rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm font-medium text-slate-700 placeholder-slate-300 resize-y mb-3 p-3" placeholder="Why did the chicken cross the road?&#10;To get to the other side.&#10;Knock knock."></textarea>
+           <textarea data-content-editor-target="bulkText" rows="6" class="block w-full rounded-xl border-2 border-slate-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm font-medium text-slate-700 placeholder-slate-300 resize-y mb-3 p-3" placeholder="Why did the chicken cross the road?&#10;To get to the other side.&#10;Knock knock." aria-label="Bulk prompts input"></textarea>
            <button type="button" data-action="content-editor#bulkAdd" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm shadow-md transition-all">
              Import Prompts
            </button>
@@ -88,8 +88,8 @@
             <%= prompt_form.text_area :body, rows: 2, class: "block w-full rounded-xl border-2 border-slate-100 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm font-medium text-slate-700 placeholder-slate-300 resize-none transition-all px-4 py-3", data: { content_editor_target: "promptField", action: "input->content-editor#updateCount" }, placeholder: "Enter a prompt..." %>
             <%= prompt_form.hidden_field :_destroy %>
             <div class="pt-2">
-              <button type="button" data-action="content-editor#removePrompt" class="text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110">
-                <%= lucide_icon('trash-2', class: "w-5 h-5") %>
+              <button type="button" data-action="content-editor#removePrompt" class="text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110" aria-label="Remove prompt">
+                <%= lucide_icon('trash-2', class: "w-5 h-5", "aria-hidden": true) %>
               </button>
             </div>
           </div>
@@ -104,8 +104,8 @@
       <textarea name="prompt_pack[prompts_attributes][NEW_RECORD][body]" rows="2" class="block w-full rounded-xl border-2 border-slate-100 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm font-medium text-slate-700 placeholder-slate-300 resize-none transition-all px-4 py-3" data-content-editor-target="promptField" data-action="input->content-editor#updateCount" placeholder="Enter a prompt..."></textarea>
       
       <div class="pt-2">
-        <button type="button" data-action="content-editor#removePrompt" class="text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110">
-          <%= lucide_icon('trash-2', class: "w-5 h-5") %>
+        <button type="button" data-action="content-editor#removePrompt" class="text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110" aria-label="Remove prompt">
+          <%= lucide_icon('trash-2', class: "w-5 h-5", "aria-hidden": true) %>
         </button>
       </div>
     </div>
