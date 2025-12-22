@@ -3,8 +3,8 @@ class PromptPacksController < ApplicationController
   before_action :set_prompt_pack, only: %i[edit update destroy]
 
   def index
-    @prompt_packs = current_user.prompt_packs.order(created_at: :desc)
-    @system_packs = PromptPack.global.order(name: :asc)
+    @prompt_packs = current_user.prompt_packs.includes(:prompts).order(created_at: :desc)
+    @system_packs = PromptPack.global.includes(:prompts).order(name: :asc)
   end
 
   def new

@@ -52,10 +52,10 @@ export default class extends Controller {
 
         if (playerCapacity > 20) {
             this.countDisplayTarget.classList.add("text-red-600")
-            this.countDisplayTarget.classList.remove("text-slate-600")
+            this.countDisplayTarget.classList.remove("text-slate-900")
         } else {
             this.countDisplayTarget.classList.remove("text-red-600")
-            this.countDisplayTarget.classList.add("text-slate-600")
+            this.countDisplayTarget.classList.add("text-slate-900")
         }
     }
 }
