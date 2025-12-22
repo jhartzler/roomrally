@@ -6,7 +6,7 @@ RSpec.describe "Dashboards", type: :request do
       it "redirects to root path" do
         get dashboard_path
         expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to eq("Please log in to access the dashboard.")
+        expect(flash[:alert]).to eq("Please log in.")
       end
     end
 

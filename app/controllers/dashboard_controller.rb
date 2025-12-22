@@ -7,8 +7,4 @@ class DashboardController < ApplicationController
   end
 
   private
-
-  def authenticate_user!
-    redirect_to root_path, alert: "Please log in to access the dashboard." unless current_user
-  end
 end

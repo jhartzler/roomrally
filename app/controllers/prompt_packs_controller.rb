@@ -1,4 +1,5 @@
 class PromptPacksController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_prompt_pack, only: %i[edit update destroy]
 
   def index
