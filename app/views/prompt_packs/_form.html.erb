@@ -1,4 +1,4 @@
-<%= form_with(model: prompt_pack, class: "contents", data: { controller: "content-editor" }) do |form| %>
+<%= form_with(model: prompt_pack, class: "contents", data: { controller: "content-editor", content_editor_ratio_value: prompt_pack.prompts_per_player_ratio }) do |form| %>
   <% if prompt_pack.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
       <h2><%= pluralize(prompt_pack.errors.count, "error") %> prohibited this pack from being saved:</h2>

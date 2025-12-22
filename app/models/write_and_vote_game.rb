@@ -4,6 +4,13 @@ class WriteAndVoteGame < ApplicationRecord
   has_one :room, as: :current_game
   has_many :prompt_instances, dependent: :destroy
 
+  # Configuration
+  PROMPTS_PER_PLAYER_RATIO = 2
+
+  def self.supported_players_for(prompts_count)
+    prompts_count / PROMPTS_PER_PLAYER_RATIO
+  end
+
   aasm column: :status, whiny_transitions: false do
     state :writing, initial: true
     state :voting

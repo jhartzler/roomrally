@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     static targets = ["promptList", "promptTemplate", "countDisplay", "promptField"]
+    static values = { ratio: { type: Number, default: 1 } }
 
     connect() {
         this.updateCount()
@@ -45,9 +46,8 @@ export default class extends Controller {
 
         const count = visiblePrompts.length
 
-        // For Write and Vote, 2 prompts = 1 player capacity
-        // Ticket said: "capacity should be 1 player per 2 prompts"
-        const playerCapacity = Math.floor(count / 2)
+        // Use the ratio passed from the server
+        const playerCapacity = Math.floor(count / this.ratioValue)
         this.countDisplayTarget.textContent = playerCapacity
 
         if (playerCapacity > 20) {
