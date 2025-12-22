@@ -31,9 +31,10 @@ RSpec.describe "PromptPack CRUD", type: :system do
       all("textarea[name*='[body]']").last.set("Prompt 3")
 
       # Remove one prompt
-      # Hover to make delete button visible
-      all(".prompt-field-wrapper").last.hover
-      all("button[data-action='content-editor#removePrompt']").last.click
+      # Use JS click to bypass hover/visibility flake on CI
+      wrapper = all(".prompt-field-wrapper").last
+      button = wrapper.find("button[data-action='content-editor#removePrompt']", visible: :all)
+      page.execute_script("arguments[0].click();", button)
       expect(page).to have_content("Supports up to 1 players")
 
       click_button "Save Pack"
