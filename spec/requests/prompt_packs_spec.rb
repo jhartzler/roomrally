@@ -8,10 +8,13 @@ RSpec.describe "PromptPacks", type: :request do
   end
 
   describe "GET /index" do
+    let!(:global_pack) { create(:prompt_pack, user: nil, name: "System Pack") }
+
     it "returns http success", :aggregate_failures do
       get prompt_packs_path
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Library")
+      expect(response.body).to include(global_pack.name)
     end
   end
 

@@ -1,5 +1,6 @@
 class PromptPack < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true
+  scope :global, -> { where(user_id: nil) }
   has_many :prompts, dependent: :destroy
   accepts_nested_attributes_for :prompts, allow_destroy: true, reject_if: :all_blank
 
