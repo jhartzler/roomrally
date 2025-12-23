@@ -43,7 +43,9 @@ export default class extends Controller {
         if (diff <= 0) {
             this.stopTimer()
             this.outputTarget.textContent = "0s"
-            this.visualTarget.classList.add("text-red-600", "animate-pulse")
+            if (this.hasVisualTarget) {
+                this.visualTarget.classList.add("text-red-600", "animate-pulse")
+            }
             return
         }
 
@@ -51,12 +53,14 @@ export default class extends Controller {
         this.outputTarget.textContent = `${seconds}s`
 
         // Visual urgency
-        if (seconds <= 10) {
-            this.visualTarget.classList.add("text-red-500")
-            this.visualTarget.classList.remove("text-indigo-600")
-        } else {
-            this.visualTarget.classList.add("text-indigo-600")
-            this.visualTarget.classList.remove("text-red-500")
+        if (this.hasVisualTarget) {
+            if (seconds <= 10) {
+                this.visualTarget.classList.add("text-red-500")
+                this.visualTarget.classList.remove("text-indigo-600")
+            } else {
+                this.visualTarget.classList.add("text-indigo-600")
+                this.visualTarget.classList.remove("text-red-500")
+            }
         }
     }
 }
