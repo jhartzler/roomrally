@@ -66,6 +66,20 @@ RSpec.describe Games::WriteAndVote do
         expect { described_class.game_started(room:) }.to raise_error("Not enough master prompts to start round 1.")
       end
     end
+
+    it 'starts the round timer' do
+      # Spy on the game creation to intercept the instance
+      game_spy = nil
+      allow(WriteAndVoteGame).to receive(:create!).and_wrap_original do |original_method, *args|
+        game_spy = original_method.call(*args)
+        allow(game_spy).to receive(:start_timer!) # Spy on this method
+        game_spy
+      end
+
+      described_class.game_started(room:)
+
+      expect(game_spy).to have_received(:start_timer!).with(30)
+    end
   end
 
   describe '.process_vote' do # rubocop:disable RSpec/MultipleMemoizedHelpers
@@ -103,6 +117,14 @@ RSpec.describe Games::WriteAndVote do
         expect {
           described_class.process_vote(game:, vote: cast_vote(voter, prompts.first))
         }.to change(game, :current_prompt_index).by(1)
+      end
+
+
+      it 'starts the timer for the next prompt' do
+        voter = players[2]
+        allow(game).to receive(:start_timer!)
+        described_class.process_vote(game:, vote: cast_vote(voter, prompts.first))
+        expect(game).to have_received(:start_timer!).with(30, step_number: 1)
       end
     end
 
@@ -180,6 +202,47 @@ RSpec.describe Games::WriteAndVote do
 
       # Intersection should be empty
       expect(round_1_prompt_ids & round_2_prompt_ids).to be_empty
+    end
+  end
+
+
+  describe '.handle_timeout' do
+    let(:room) { create(:room) }
+    let(:game) { create(:write_and_vote_game, room:, status: "writing") }
+
+    before do
+      allow(game).to receive(:start_timer!)
+      allow(room).to receive(:broadcast_replace_to).and_return(true)
+    end
+
+    context "when writing phase times out" do
+      it "advances to voting and starts timer" do
+        described_class.handle_timeout(game:)
+        expect(game.reload.status).to eq("voting")
+        expect(game).to have_received(:start_timer!).with(30, step_number: 0)
+      end
+
+      it "auto-fills missing responses" do
+        prompt = create(:prompt_instance, write_and_vote_game: game, round: game.round)
+        response = create(:response, prompt_instance: prompt, body: nil)
+
+        described_class.handle_timeout(game:)
+        expect(response.reload.body).to eq("Ran out of time!")
+      end
+    end
+
+    context "when voting phase times out" do
+      before do
+        game.update!(status: "voting", current_prompt_index: 0)
+        create_list(:prompt_instance, 2, write_and_vote_game: game, round: game.round) # 2 prompts
+      end
+
+      it "advances to next prompt and restarts timer" do
+        described_class.handle_timeout(game:)
+
+        expect(game.reload.current_prompt_index).to eq(1)
+        expect(game).to have_received(:start_timer!).with(30, step_number: 1)
+      end
     end
   end
 end
