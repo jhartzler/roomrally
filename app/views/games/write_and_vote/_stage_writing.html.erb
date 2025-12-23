@@ -3,7 +3,7 @@
     <div class="text-9xl mb-8 animate-bounce">📱</div>
 
     <div class="mb-8" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
-       <span class="text-8xl font-black text-white block font-mono" data-timer-target="output">30s</span>
+       <span class="text-8xl font-black text-white block font-mono" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
 
     <h2 class="text-4xl font-bold text-white mb-8">Look at your device!</h2>
