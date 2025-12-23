@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_162152) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_200904) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -113,6 +113,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_162152) do
     t.datetime "round_ends_at"
     t.string "status"
     t.integer "timer_duration", default: 30
+    t.boolean "timer_enabled", default: false, null: false
+    t.integer "timer_increment", default: 60, null: false
     t.datetime "updated_at", null: false
     t.index ["prompt_pack_id"], name: "index_write_and_vote_games_on_prompt_pack_id"
   end

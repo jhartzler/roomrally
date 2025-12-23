@@ -2,7 +2,6 @@ module HasRoundTimer
   extend ActiveSupport::Concern
 
   included do
-    # valid_presence_of :round_ends_at, :timer_duration if table_exists?
   end
 
   # Standard Interface for Views

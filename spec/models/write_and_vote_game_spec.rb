@@ -2,6 +2,19 @@ require 'rails_helper'
 
 RSpec.describe WriteAndVoteGame, type: :model do
   include ActiveSupport::Testing::TimeHelpers
+  describe "validations" do
+    it "validates timer_increment is positive when timer is enabled" do
+      game = build(:write_and_vote_game, timer_enabled: true, timer_increment: 0)
+      expect(game).not_to be_valid
+      expect(game.errors[:timer_increment]).to include("must be greater than 0")
+    end
+
+    it "validates timer_increment is positive (even if disabled, for consistency)" do
+      game = build(:write_and_vote_game, timer_enabled: false, timer_increment: -1)
+      expect(game).to be_valid
+    end
+  end
+
   describe "defaults" do
     it "has default status 'writing'" do
       game = described_class.create!
@@ -16,6 +29,16 @@ RSpec.describe WriteAndVoteGame, type: :model do
     it "has default current_prompt_index 0" do
       game = described_class.create!
       expect(game.current_prompt_index).to eq(0)
+    end
+
+    it "has timer disabled by default" do
+      game = described_class.create!
+      expect(game.timer_enabled).to be false
+    end
+
+    it "has default timer increment of 60" do
+      game = described_class.create!
+      expect(game.timer_increment).to eq(60)
     end
   end
 
@@ -111,7 +134,9 @@ RSpec.describe WriteAndVoteGame, type: :model do
   describe "HasRoundTimer" do
     let(:game) { create(:write_and_vote_game) }
 
-    describe "#start_timer!" do
+    describe "#start_timer! (enabled)" do
+      before { game.update!(timer_enabled: true) }
+
       it "updates the game with duration and end time" do
         freeze_time do
           game.start_timer!(60)
@@ -124,6 +149,21 @@ RSpec.describe WriteAndVoteGame, type: :model do
         expect {
           game.start_timer!(30, step_number: 5)
         }.to have_enqueued_job(GameTimerJob).with(game, 1, 5) # round 1 default, step 5
+      end
+    end
+
+    describe "#start_timer! (raw command)" do
+      it "updates round_ends_at regardless of timer_enabled flag" do
+        game.update!(timer_enabled: false)
+        game.start_timer!(60)
+        expect(game.round_ends_at).to be_present
+      end
+
+      it "enqueues a GameTimerJob" do
+        game.update!(timer_enabled: false)
+        expect {
+          game.start_timer!(60)
+        }.to have_enqueued_job(GameTimerJob)
       end
     end
 

@@ -22,6 +22,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       fill_in "player[name]", with: "Host"
       click_on "Join Game"
       click_on "Claim Host"
+      check "Enable Timer"
       click_on "Start Game"
 
       expect(page).to have_content("TIME LEFT")
@@ -67,5 +68,44 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
     game.reload
     expect(game.current_prompt_index).to eq(1) # Should advance to next prompt
     expect(game.round_ends_at).to be > Time.current # New timer started
+  end
+
+  it "allows host to disable timer" do
+    Capybara.using_session("host") do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      click_on "Claim Host"
+
+      uncheck "Enable Timer"
+      click_on "Start Game"
+
+      expect(page).to have_content("Your Prompts")
+      expect(page).not_to have_content("TIME LEFT")
+    end
+
+    game = room.reload.current_game
+    expect(game.timer_enabled).to be false
+    expect(game.round_ends_at).to be_nil
+  end
+
+  it "allows host to configure timer duration" do
+    Capybara.using_session("host") do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      click_on "Claim Host"
+
+      check "Enable Timer"
+      fill_in "Seconds per round", with: "45"
+      click_on "Start Game"
+
+      expect(page).to have_content("TIME LEFT")
+    end
+
+    game = room.reload.current_game
+    expect(game.timer_enabled).to be true
+    expect(game.timer_increment).to eq(45)
+    expect(game.timer_duration).to eq(45)
   end
 end
