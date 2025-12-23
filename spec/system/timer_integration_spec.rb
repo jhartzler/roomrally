@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Round Timer Integration", type: :system do
+RSpec.describe "Round Timer Integration", :js, type: :system do
   include ActiveSupport::Testing::TimeHelpers
 
   let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote") }
