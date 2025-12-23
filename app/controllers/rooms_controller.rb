@@ -22,7 +22,12 @@ class RoomsController < ApplicationController
 
       if @room.start_game!
         Rails.logger.info "Game started for room #{@room.code} by host #{current_player.name}"
-        publish(:game_started, room: @room)
+
+        timer_enabled = start_game_params[:timer_enabled] == "1"
+        timer_increment = start_game_params[:timer_increment].to_i
+        timer_increment = 60 if timer_increment <= 0
+
+        publish(:game_started, room: @room, timer_enabled:, timer_increment:)
         redirect_to room_hand_path(@room.code), notice: "Game started!"
       else
         redirect_to room_hand_path(@room.code), alert: "Could not start game. Ensure there are at least 2 players and the game hasn't started yet."
@@ -96,6 +101,10 @@ class RoomsController < ApplicationController
 
   def room_params
     params.permit(:game_type)
+  end
+
+  def start_game_params
+    params.permit(:timer_enabled, :timer_increment)
   end
 
 

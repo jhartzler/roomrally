@@ -11,6 +11,9 @@ module HasRoundTimer
   end
 
   def start_timer!(duration, step_number: nil)
+    is_timer_enabled = respond_to?(:timer_enabled) ? timer_enabled : true
+    return unless is_timer_enabled
+
     duration_val = duration.to_i
 
     update!(

@@ -17,6 +17,16 @@ RSpec.describe WriteAndVoteGame, type: :model do
       game = described_class.create!
       expect(game.current_prompt_index).to eq(0)
     end
+
+    it "has timer disabled by default" do
+      game = described_class.create!
+      expect(game.timer_enabled).to be false
+    end
+
+    it "has default timer increment of 60" do
+      game = described_class.create!
+      expect(game.timer_increment).to eq(60)
+    end
   end
 
   describe "state machine" do
@@ -111,7 +121,9 @@ RSpec.describe WriteAndVoteGame, type: :model do
   describe "HasRoundTimer" do
     let(:game) { create(:write_and_vote_game) }
 
-    describe "#start_timer!" do
+    describe "#start_timer! (enabled)" do
+      before { game.update!(timer_enabled: true) }
+
       it "updates the game with duration and end time" do
         freeze_time do
           game.start_timer!(60)
@@ -124,6 +136,21 @@ RSpec.describe WriteAndVoteGame, type: :model do
         expect {
           game.start_timer!(30, step_number: 5)
         }.to have_enqueued_job(GameTimerJob).with(game, 1, 5) # round 1 default, step 5
+      end
+    end
+
+    describe "#start_timer! (disabled)" do
+      before { game.update!(timer_enabled: false) }
+
+      it "does not update round_ends_at" do
+        game.start_timer!(60)
+        expect(game.round_ends_at).to be_nil
+      end
+
+      it "does not enqueue a GameTimerJob" do
+        expect {
+          game.start_timer!(60)
+        }.not_to have_enqueued_job(GameTimerJob)
       end
     end
 
