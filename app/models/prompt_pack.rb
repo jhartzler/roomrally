@@ -3,7 +3,7 @@ class PromptPack < ApplicationRecord
   include SharedScopes
 
   scope :global, -> { where(user_id: nil) }
-  scope :accessible_by, ->(user) { where(user_id: user.id).or(global) }
+  scope :accessible_by, ->(user) { where(user_id: user&.id).or(global) }
 
   def self.default
     find_by(is_default: true)

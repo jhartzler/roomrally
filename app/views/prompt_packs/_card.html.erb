@@ -2,7 +2,7 @@
 <% is_system = variant == :system %>
 <% is_user = variant == :user %>
 
-<div class="bg-white rounded-3xl <%= is_system ? 'p-6' : 'border border-slate-200' %> shadow-sm border border-slate-200 hover:shadow-lg hover:border-<%= is_system ? 'blue' : 'indigo' %>-300 transition-all duration-300 relative overflow-hidden group flex flex-col h-full cursor-pointer">
+<div class="bg-white rounded-3xl <%= is_system ? 'p-6' : '' %> shadow-sm border border-slate-200 hover:shadow-lg hover:border-<%= is_system ? 'blue' : 'indigo' %>-300 transition-all duration-300 relative overflow-hidden group flex flex-col h-full cursor-pointer">
   <div class="<%= is_system ? '' : 'p-6 flex-grow' %>">
     <div class="flex justify-between items-start mb-4">
       <div class="bg-<%= is_system ? 'blue' : 'indigo' %>-50 p-3 rounded-2xl text-<%= is_system ? 'blue' : 'indigo' %>-600 group-hover:bg-<%= is_system ? 'blue' : 'indigo' %>-600 group-hover:text-white transition-colors duration-300">
@@ -24,7 +24,7 @@
       <h3 class="<%= is_system ? 'text-lg' : 'text-xl' %> font-black text-slate-900 mb-1 <%= is_user ? 'truncate' : '' %> group-hover:text-<%= is_system ? 'blue' : 'indigo' %>-600 transition-colors">
         <%= link_to pack.name, prompt_pack_path(pack), class: "before:absolute before:inset-0 before:z-0" %>
       </h3>
-      <p class="text-sm text-slate-500 mb- <%= is_system ? '4' : '5' %> font-medium"><%= pack.game_type %></p>
+      <p class="text-sm text-slate-500 <%= is_system ? 'mb-4' : 'mb-5' %> font-medium"><%= pack.game_type %></p>
     </div>
 
     <% if is_user %>
