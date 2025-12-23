@@ -15,12 +15,9 @@ RSpec.describe "Backstages", type: :request do
 
     context "when logged in as a different user" do
       before do
-        # Simulate login (assuming ApplicationController helper or similar mechanism)
-        # Using a mock or depending on how current_user is set in request specs.
-        # Since I see 'current_user' in Controllers, I'll assume standard session or helper.
-        # If no direct helper, I might need to look at how other request specs do it.
-        # For now, simplistic approach:
+        # rubocop:disable RSpec/AnyInstance
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(other_user)
+        # rubocop:enable RSpec/AnyInstance
       end
 
       it "redirects to root with alert" do
@@ -33,15 +30,30 @@ RSpec.describe "Backstages", type: :request do
 
     context "when logged in as the room owner" do
       before do
+        # rubocop:disable RSpec/AnyInstance
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
       end
 
-      it "returns http success and displays room info" do
-        create(:player, room:, name: "Alice")
+      it "returns http success" do
         get room_backstage_path(room.code)
         expect(response).to have_http_status(:success)
+      end
+
+      it "displays room info" do
+        get room_backstage_path(room.code)
         expect(response.body).to include(room.code)
+      end
+
+      it "displays player list" do
+        create(:player, room:, name: "Alice")
+        get room_backstage_path(room.code)
         expect(response.body).to include("Alice")
+      end
+
+      it "displays moderation queue" do
+        get room_backstage_path(room.code)
+        expect(response.body).to include("Moderation Queue")
       end
     end
   end

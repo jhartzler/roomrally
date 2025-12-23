@@ -46,10 +46,18 @@ RSpec.describe RoomsController, type: :controller do
     context 'when the room has a facilitator (owner)' do
       let(:room) { create(:room, user: create(:user)) }
 
-      it 'prevents claiming host' do
+      it 'redirects to hand path' do
         post :claim_host, params: { code: room.code }
         expect(response).to redirect_to(room_hand_path(room.code))
+      end
+
+      it 'shows alert about facilitator' do
+        post :claim_host, params: { code: room.code }
         expect(flash[:alert]).to include("This room has a facilitator")
+      end
+
+      it 'prevents host assignment' do
+        post :claim_host, params: { code: room.code }
         expect(room.reload.host).to be_nil
       end
     end
@@ -178,9 +186,8 @@ RSpec.describe RoomsController, type: :controller do
       before do
         user = create(:user)
         room.update!(user:)
-        allow(controller).to receive(:current_user).and_return(user)
         # Ensure no current player is set to confuse things, or it doesn't matter
-        allow(controller).to receive(:current_player).and_return(nil)
+        allow(controller).to receive_messages(current_user: user, current_player: nil)
 
         # Room must have enough players to start
         create_list(:player, 3, room:)
