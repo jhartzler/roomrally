@@ -64,4 +64,34 @@
       </ul>
     </div>
   </div>
+
+  <!-- Moderation Stream -->
+  <div class="mt-8">
+    <h2 class="text-xl font-bold mb-4 text-gray-800">Moderation Queue</h2>
+    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+      <% if @room.current_game.present? && @room.current_game.respond_to?(:responses) %>
+         <% responses = Response.joins(:prompt_instance).where(prompt_instances: { write_and_vote_game_id: @room.current_game.id, round: @room.current_game.round }).where(status: "submitted") %>
+         <% if responses.any? %>
+           <div class="space-y-4">
+             <% responses.each do |response| %>
+               <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+                 <div>
+                   <p class="font-medium text-gray-900"><%= response.body || "Writing..." %></p>
+                   <p class="text-sm text-gray-500 mt-1">Prompt: <%= response.prompt_instance.body %></p>
+                   <p class="text-xs text-gray-400 mt-1">by <%= response.player.name %></p>
+                 </div>
+                 <div class="flex gap-2">
+                   <%= button_to "Reject", reject_response_path(response), method: :patch, class: "px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium" %>
+                 </div>
+               </div>
+             <% end %>
+           </div>
+         <% else %>
+           <p class="text-gray-400 text-center italic">No active responses to moderate.</p>
+         <% end %>
+      <% else %>
+         <p class="text-gray-400 text-center italic">Game not started or no moderation available.</p>
+      <% end %>
+    </div>
+  </div>
 </div>
