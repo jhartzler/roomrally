@@ -26,30 +26,14 @@ class RoomsController < ApplicationController
         timer_enabled = start_game_params[:timer_enabled] == "1"
         timer_increment = start_game_params[:timer_increment].to_i
 
-        # We don't clamp manually anymore, relying on service/model validation
-
-        begin
-          publish(:game_started, room: @room, timer_enabled:, timer_increment:)
-          redirect_to room_hand_path(@room.code), notice: "Game started!"
-        rescue ActiveRecord::RecordInvalid => e
-          # Code 422: Unprocessable Entity (although we just redirect with alert)
-          # We need to revert the room state because start_game! transitioned it to playing
-          # But wait, start_game! saved the room state.
-          # If game creation fails, the room is still in "playing" state but has no current_game?
-          # Actually Room#start_game! sets status to playing.
-          # If game creation fails, we should probably set it back?
-          # Or better: start_game! should wrap everything in a transaction?
-          # For now, let's keep it simple: just alert. If room is stuck in playing without game, it's bad.
-          # Wait, check start_game! in Room model?
-          # Room state management is outside of this scope, but let's assume worst case.
-          # To be safe, we should update room status back to lobby if game creation fails?
-
-          # Actually, if game creation failed, room.current_game is nil.
-          # Room status playing + no game = broken?
-          # Let's revert status.
+        if timer_enabled && timer_increment <= 0
           @room.update(status: "lobby")
-          redirect_to room_hand_path(@room.code), alert: "Could not start game: #{e.record.errors.full_messages.join(', ')}"
+          redirect_to room_hand_path(@room.code), alert: "Could not start game: Timer increment must be greater than 0"
+          return
         end
+
+        publish(:game_started, room: @room, timer_enabled:, timer_increment:)
+        redirect_to room_hand_path(@room.code), notice: "Game started!"
       else
         redirect_to room_hand_path(@room.code), alert: "Could not start game. Ensure there are at least 2 players and the game hasn't started yet."
       end
