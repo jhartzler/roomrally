@@ -1,5 +1,6 @@
 class WriteAndVoteGame < ApplicationRecord
   include AASM
+  include HasRoundTimer
 
   has_one :room, as: :current_game
   belongs_to :prompt_pack, optional: true
@@ -32,6 +33,18 @@ class WriteAndVoteGame < ApplicationRecord
     event :finish_game do
       transitions from: :voting, to: :finished
     end
+  end
+
+  def process_timeout(job_round_number, job_step_number)
+    return unless round == job_round_number
+
+    if status == "voting"
+      return unless current_prompt_index == job_step_number
+    elsif status == "writing"
+      # Writing phase - verify we are still in writing
+    end
+
+    Games::WriteAndVote.handle_timeout(game: self)
   end
 
   def current_round_prompts

@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe WriteAndVoteGame, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
   describe "defaults" do
     it "has default status 'writing'" do
       game = described_class.create!
@@ -103,6 +104,83 @@ RSpec.describe WriteAndVoteGame, type: :model do
       create(:response, prompt_instance: prompt, body: "Answer")
 
       expect(game.all_responses_submitted?).to be true
+    end
+  end
+
+
+  describe "HasRoundTimer" do
+    let(:game) { create(:write_and_vote_game) }
+
+    describe "#start_timer!" do
+      it "updates the game with duration and end time" do
+        freeze_time do
+          game.start_timer!(60)
+          expect(game.timer_duration).to eq(60)
+          expect(game.round_ends_at).to eq(60.seconds.from_now)
+        end
+      end
+
+      it "enqueues a GameTimerJob" do
+        expect {
+          game.start_timer!(30, step_number: 5)
+        }.to have_enqueued_job(GameTimerJob).with(game, 1, 5) # round 1 default, step 5
+      end
+    end
+
+    describe "#time_remaining" do
+      it "returns 0 if no timer set" do
+        game.update!(round_ends_at: nil)
+        expect(game.time_remaining).to eq(0)
+      end
+
+      it "returns correct seconds remaining" do
+        freeze_time do
+          game.update!(round_ends_at: 10.seconds.from_now)
+          expect(game.time_remaining).to eq(10)
+        end
+      end
+
+      it "returns 0 if expired" do
+        freeze_time do
+          game.update!(round_ends_at: 10.seconds.ago)
+          expect(game.time_remaining).to eq(0)
+        end
+      end
+    end
+  end
+
+  describe "#process_timeout" do
+    let(:game) { create(:write_and_vote_game) }
+
+    before do
+      allow(Games::WriteAndVote).to receive(:handle_timeout)
+    end
+
+    context "when valid" do
+      it "calls the service" do
+        game.process_timeout(game.round, nil)
+        expect(Games::WriteAndVote).to have_received(:handle_timeout).with(game:)
+      end
+
+      it "calls the service with prompt index" do
+        game.update!(status: "voting", current_prompt_index: 2)
+        game.process_timeout(game.round, 2)
+        expect(Games::WriteAndVote).to have_received(:handle_timeout).with(game:)
+      end
+    end
+
+    context "when invalid (race condition protection)" do
+      it "ignores if round does not match" do
+        game.process_timeout(game.round + 1, nil)
+        expect(Games::WriteAndVote).not_to have_received(:handle_timeout)
+      end
+
+      it "ignores if step_number does not match (voting)" do
+        game.update!(status: "voting", current_prompt_index: 2)
+        # Job thinks we are on step 1, but we are on step 2
+        game.process_timeout(game.round, 1)
+        expect(Games::WriteAndVote).not_to have_received(:handle_timeout)
+      end
     end
   end
 end

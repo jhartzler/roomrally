@@ -16,10 +16,14 @@
     <!-- Main Content Area -->
     <div id="stage_content" class="relative">
       <% if @room.current_game.present? %>
-        <!-- Placeholder for Game View -->
-        <div class="p-12 border-2 border-dashed border-gray-700 rounded-3xl">
-          <p class="text-3xl text-gray-500">Game in Progress...</p>
-        </div>
+        <% if @room.current_game.status == "finished" %>
+           <%= render "games/write_and_vote/stage_finished", room: @room, game: @room.current_game %>
+        <% elsif @room.current_game.status == "voting" %>
+           <%= render "games/write_and_vote/stage_voting", room: @room, game: @room.current_game %>
+        <% else %>
+           <%# Default to writing/intro %>
+           <%= render "games/write_and_vote/stage_writing", room: @room, game: @room.current_game %>
+        <% end %>
       <% else %>
         <%= render "rooms/stage_lobby", room: @room %>
       <% end %>

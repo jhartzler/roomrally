@@ -36,17 +36,7 @@ module Games
       required_votes = players_count - current_prompt.responses.count
 
       if total_votes >= required_votes
-        if game.current_prompt_index < game.current_round_prompts.count - 1
-          game.next_voting_round!
-        else
-          game.calculate_scores!
-          if game.round < MAX_ROUNDS
-            game.start_next_game_round!
-            assign_prompts_for_round(game:, round_number: game.round)
-          else
-            game.finish_game!
-          end
-        end
+        advance_game_state!(game:)
       end
 
       GameBroadcaster.broadcast_hand(room: game.room)
@@ -55,7 +45,7 @@ module Games
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
         game.start_voting!
-
+        game.start_timer!(game.timer_duration || 30, step_number: game.current_prompt_index)
 
         GameBroadcaster.broadcast_hand(room: game.room)
         GameBroadcaster.broadcast_stage(room: game.room)
@@ -93,6 +83,48 @@ module Games
 
         Response.create!(player:, prompt_instance: prompt_instance1)
         Response.create!(player:, prompt_instance: prompt_instance2)
+      end
+
+      # Schedule Timer
+      game.start_timer!(game.timer_duration || 30)
+    end
+
+    def self.handle_timeout(game:)
+      if game.status == "writing"
+        # Find all responses for this round that are empty
+        current_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: game.round).pluck(:id)
+        missing_responses = Response.where(prompt_instance_id: current_prompt_ids, body: [ nil, "" ])
+
+        if missing_responses.any?
+          missing_responses.update_all(body: "Ran out of time!")
+        end
+
+        # Force state advance
+        game.start_voting!
+        game.start_timer!(game.timer_duration || 30, step_number: game.current_prompt_index)
+
+      elsif game.status == "voting"
+        # Force advance to next prompt or next round
+        advance_game_state!(game:)
+      end
+
+      GameBroadcaster.broadcast_hand(room: game.room)
+      GameBroadcaster.broadcast_stage(room: game.room)
+    end
+
+
+    def self.advance_game_state!(game:)
+      if game.current_prompt_index < game.current_round_prompts.count - 1
+        game.next_voting_round!
+        game.start_timer!(game.timer_duration || 30, step_number: game.current_prompt_index)
+      else
+        game.calculate_scores!
+        if game.round < MAX_ROUNDS
+          game.start_next_game_round!
+          assign_prompts_for_round(game:, round_number: game.round)
+        else
+          game.finish_game!
+        end
       end
     end
   end
