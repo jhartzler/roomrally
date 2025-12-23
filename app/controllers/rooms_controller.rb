@@ -2,7 +2,8 @@ class RoomsController < ApplicationController
   include Wisper::Publisher
 
   before_action :set_room, only: %i[start_game claim_host reassign_host]
-  before_action :require_player, only: %i[start_game claim_host reassign_host]
+  before_action :require_player, only: %i[claim_host reassign_host]
+  before_action :authorize_start_game, only: :start_game
   rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
 
   def create
@@ -15,13 +16,15 @@ class RoomsController < ApplicationController
 
 
     def start_game
-      unless current_player == @room.host
+      authorized = (current_player && current_player == @room.host) || (current_user && current_user == @room.user)
+
+      unless authorized
         redirect_to room_hand_path(@room.code), alert: "Only the host can start the game."
         return
       end
 
       if @room.start_game!
-        Rails.logger.info "Game started for room #{@room.code} by host #{current_player.name}"
+        Rails.logger.info "Game started for room #{@room.code} by #{current_player&.name || 'Facilitator'}"
 
         timer_enabled = start_game_params[:timer_enabled] == "1"
         timer_increment = start_game_params[:timer_increment].to_i
@@ -33,13 +36,23 @@ class RoomsController < ApplicationController
         end
 
         publish(:game_started, room: @room, timer_enabled:, timer_increment:)
-        redirect_to room_hand_path(@room.code), notice: "Game started!"
+
+        if current_user && current_user == @room.user
+          redirect_to room_backstage_path(@room.code), notice: "Game started!"
+        else
+          redirect_to room_hand_path(@room.code), notice: "Game started!"
+        end
       else
         redirect_to room_hand_path(@room.code), alert: "Could not start game. Ensure there are at least 2 players and the game hasn't started yet."
       end
     end
     def claim_host
     # Claim host
+    if @room.user.present?
+      redirect_to room_hand_path(@room.code), alert: "This room has a facilitator. Player host controls are disabled."
+      return
+    end
+
     if @room.host.present?
       redirect_to room_hand_path(@room.code), alert: "There is already a host for this room."
       return
@@ -102,6 +115,13 @@ class RoomsController < ApplicationController
   end
 
 
+
+  def authorize_start_game
+    return if current_user && current_user == @room.user
+    return if current_player
+
+    require_player
+  end
 
   def room_not_found
     Rails.logger.warn "Attempted to access non-existent room: #{params[:code]}"

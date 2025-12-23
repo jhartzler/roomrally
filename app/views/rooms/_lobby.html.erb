@@ -22,7 +22,9 @@
           <span>No host in this room. Claim host to start the game!</span>
         </p>
       </div>
+    <% unless room.user.present? %>
       <%= button_to "Claim Host", claim_host_room_path(room.code), method: :post, class: "w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+    <% end %>
     </div>
   </div>
 <% end %>
