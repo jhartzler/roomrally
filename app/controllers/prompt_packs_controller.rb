@@ -1,10 +1,14 @@
 class PromptPacksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_prompt_pack, only: %i[edit update destroy]
+  before_action :set_owned_prompt_pack, only: %i[edit update destroy]
 
   def index
-    @prompt_packs = current_user.prompt_packs.includes(:prompts).order(created_at: :desc)
-    @system_packs = PromptPack.global.includes(:prompts).order(name: :asc)
+    @prompt_packs = current_user.prompt_packs.includes(:prompts).recent
+    @system_packs = PromptPack.global.includes(:prompts).alphabetical
+  end
+
+  def show
+    @prompt_pack = PromptPack.accessible_by(current_user).find(params[:id])
   end
 
   def new
@@ -40,7 +44,7 @@ class PromptPacksController < ApplicationController
 
   private
 
-  def set_prompt_pack
+  def set_owned_prompt_pack
     @prompt_pack = current_user.prompt_packs.find(params[:id])
   end
 

@@ -8,7 +8,8 @@ RSpec.describe "Votes", type: :request do
 
   before do
     # Create master prompts for game logic to avoid running out
-    create_list(:prompt, 5)
+    default_pack = create(:prompt_pack, :default)
+    create_list(:prompt, 5, prompt_pack: default_pack)
     # Simulate player login
     get set_player_session_path(player.id)
   end

@@ -1,6 +1,13 @@
 class PromptPack < ApplicationRecord
   belongs_to :user, optional: true
+  include SharedScopes
+
   scope :global, -> { where(user_id: nil) }
+  scope :accessible_by, ->(user) { where(user_id: user&.id).or(global) }
+
+  def self.default
+    find_by(is_default: true) || global.first
+  end
   has_many :prompts, dependent: :destroy
   accepts_nested_attributes_for :prompts, allow_destroy: true, reject_if: :all_blank
 

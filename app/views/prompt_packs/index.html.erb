@@ -3,42 +3,35 @@
     <div>
       <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600">
         Library
-      </h1>
-      <p class="text-slate-500 font-medium">Manage your collection of chaos.</p>
-    </div>
-    
+    </h1>
+    <p class="text-slate-500 font-medium">Manage your collection of chaos.</p>
+  </div>
+  
+  <div class="flex items-center gap-4">
+    <%= link_to dashboard_path, class: "text-slate-500 hover:text-blue-600 font-bold text-sm flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors" do %>
+       <%= lucide_icon('layout-dashboard', class: "w-4 h-4", "aria-hidden": true) %>
+       Dashboard
+    <% end %>
+
     <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105" do %>
-      <%= lucide_icon('plus', class: "w-5 h-5") %>
+      <%= lucide_icon('plus', class: "w-5 h-5", "aria-hidden": true) %>
       <span>New Pack</span>
     <% end %>
-  </header>
+  </div>
+</header>
 
-  <!-- Template Gallery Section -->
-  <section class="max-w-5xl mx-auto mb-12">
-    <h2 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-      <%= lucide_icon('layout-template', class: "w-6 h-6 text-slate-400") %>
-      Template Gallery
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <% @system_packs.each do |pack| %>
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group">
-          <div class="flex items-start justify-between mb-4">
-            <div class="bg-blue-50 p-3 rounded-2xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-               <%= lucide_icon('sparkles', class: "w-6 h-6") %>
-            </div>
-            <!-- Capacity Badge -->
-             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-bold border border-slate-100">
-                <%= lucide_icon('users', class: "w-3 h-3") %>
-                <span><%= pack.supported_players_count || 0 %></span>
-             </div>
-          </div>
-          <h3 class="text-lg font-black text-slate-900 mb-1 group-hover:text-blue-600 transition-colors"><%= pack.name %></h3>
-          <p class="text-sm text-slate-500 mb-4 font-medium"><%= pack.game_type %></p>
-          <span class="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full uppercase tracking-wide">System Pack</span>
-        </div>
-      <% end %>
-      
-      <% if @system_packs.empty? %>
+<!-- Template Gallery Section -->
+<section class="max-w-5xl mx-auto mb-12">
+  <h2 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+    <%= lucide_icon('layout-template', class: "w-6 h-6 text-slate-400", "aria-hidden": true) %>
+    Template Gallery
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <% @system_packs.each do |pack| %>
+      <%= render "card", pack: pack, variant: :system %>
+    <% end %>
+    
+    <% if @system_packs.empty? %>
         <div class="col-span-full text-center py-8 text-slate-400 font-medium italic">
           No system templates available.
         </div>
@@ -49,51 +42,25 @@
   <!-- My Packs Section -->
   <section class="max-w-5xl mx-auto">
     <h2 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-      <%= lucide_icon('folder-open', class: "w-6 h-6 text-slate-400") %>
+      <%= lucide_icon('folder-open', class: "w-6 h-6 text-slate-400", "aria-hidden": true) %>
       My Packs
     </h2>
     
     <% if @prompt_packs.any? %>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <% @prompt_packs.each do |pack| %>
-          <div class="bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all duration-300 relative overflow-hidden group">
-            <div class="p-6">
-              <div class="flex justify-between items-start mb-6">
-                 <div class="bg-indigo-50 p-3 rounded-2xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
-                    <%= lucide_icon('folder', class: "w-8 h-8") %>
-                 </div>
-                 
-                 <!-- Status Indicator -->
-                 <div class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <%= pack.live? ? 'bg-green-50 text-green-700' : 'bg-slate-50 text-slate-500' %>">
-                   <div class="w-2 h-2 rounded-full <%= pack.live? ? 'bg-green-500' : 'bg-slate-400' %>"></div>
-                   <%= pack.status.humanize %>
-                 </div>
-              </div>
-
-              <h3 class="text-xl font-black text-slate-900 mb-1 truncate group-hover:text-indigo-600 transition-colors">
-                <%= link_to pack.name, edit_prompt_pack_path(pack), class: "stretched-link" %>
-              </h3>
-              <p class="text-sm text-slate-500 mb-5 font-medium"><%= pack.game_type %></p>
-
-              <div class="border-t border-slate-100 pt-4 flex items-center gap-2">
-                 <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 text-xs font-bold">
-                    <%= lucide_icon('users', class: "w-4 h-4 text-slate-400") %>
-                    <span>Supports <%= pack.supported_players_count || 0 %> Players</span>
-                 </div>
-              </div>
-            </div>
-          </div>
+          <%= render "card", pack: pack, variant: :user %>
         <% end %>
       </div>
     <% else %>
       <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
         <div class="mx-auto w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-6">
-          <%= lucide_icon('folder-plus', class: "w-10 h-10") %>
+          <%= lucide_icon('folder-plus', class: "w-10 h-10", "aria-hidden": true) %>
         </div>
         <h3 class="text-2xl font-black text-slate-900 mb-2">No Prompt Packs Yet</h3>
         <p class="text-slate-500 font-medium mb-8 max-w-sm mx-auto">Create your first pack to start organizing your custom prompts.</p>
         <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105" do %>
-          <%= lucide_icon('plus', class: "w-5 h-5") %>
+          <%= lucide_icon('plus', class: "w-5 h-5", "aria-hidden": true) %>
           <span>Create Prompt Pack</span>
         <% end %>
       </div>

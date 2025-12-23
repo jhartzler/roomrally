@@ -10,7 +10,8 @@ module Games
       return if room.current_game.present?
 
       # Create the game first
-      game = WriteAndVoteGame.create!
+      pack = room.prompt_pack || PromptPack.default
+      game = WriteAndVoteGame.create!(prompt_pack: pack)
       room.update!(current_game: game)
 
       assign_prompts_for_round(game:, round_number: 1)
@@ -69,7 +70,11 @@ module Games
 
 
       used_prompt_ids = PromptInstance.where(write_and_vote_game: game).pluck(:prompt_id)
-      master_prompts = Prompt.where.not(id: used_prompt_ids).order("RANDOM()").limit(num_players)
+
+      # Use the game's pack prompts, or fall back to DEFAULT scoped pool (safety net)
+      # NEVER fall back to global Prompt.all because that leaks private user prompts.
+      prompt_scope = (game.prompt_pack || PromptPack.default).prompts
+      master_prompts = prompt_scope.where.not(id: used_prompt_ids).order("RANDOM()").limit(num_players)
 
       if master_prompts.count < num_players
         raise "Not enough master prompts to start round #{round_number}."

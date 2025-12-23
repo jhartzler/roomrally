@@ -3,6 +3,6 @@ class DashboardController < ApplicationController
 
   def index
     # Load recent activity or summary data
-    @recent_packs = current_user.prompt_packs.includes(:prompts).order(updated_at: :desc).limit(4)
+    @recent_packs = current_user.prompt_packs.includes(:prompts).recent.limit(4)
   end
 end
