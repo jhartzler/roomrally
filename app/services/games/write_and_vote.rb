@@ -94,6 +94,33 @@ module Games
         Response.create!(player:, prompt_instance: prompt_instance1)
         Response.create!(player:, prompt_instance: prompt_instance2)
       end
+
+      # Schedule Timer
+      duration = game.timer_duration || 30
+      ends_at = duration.seconds.from_now
+      game.update!(round_ends_at: ends_at)
+      GameTimerJob.set(wait_until: ends_at).perform_later(game.id, round_number)
+    end
+
+    def self.handle_timeout(game:)
+      return unless game.status == "writing"
+
+      # Find all responses for this round that are empty
+      current_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: game.round).pluck(:id)
+      missing_responses = Response.where(prompt_instance_id: current_prompt_ids, body: [ nil, "" ])
+
+      if missing_responses.any?
+        missing_responses.update_all(body: "Ran out of time!")
+
+        # Broadcast the auto-filled updates to the specific players (optional, but good UX)
+        # We'd need to broadcast to each player specifically, or just rely on the stage/state transform.
+        # For now, we mainly care about advancing the game.
+      end
+
+      # Force state advance
+      game.start_voting!
+      GameBroadcaster.broadcast_hand(room: game.room)
+      GameBroadcaster.broadcast_stage(room: game.room)
     end
   end
 end
