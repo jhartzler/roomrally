@@ -36,18 +36,7 @@ module Games
       required_votes = players_count - current_prompt.responses.count
 
       if total_votes >= required_votes
-        if game.current_prompt_index < game.current_round_prompts.count - 1
-          game.next_voting_round!
-          game.start_timer!(30) # Reset timer for next prompt
-        else
-          game.calculate_scores!
-          if game.round < MAX_ROUNDS
-            game.start_next_game_round!
-            assign_prompts_for_round(game:, round_number: game.round)
-          else
-            game.finish_game!
-          end
-        end
+        advance_game_state!(game:)
       end
 
       GameBroadcaster.broadcast_hand(room: game.room)
@@ -56,7 +45,8 @@ module Games
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
         game.start_voting!
-        game.start_timer!(30) # Start timer for first vote
+        # Start timer for first vote (index 0)
+        game.start_timer!(game.timer_duration || 30, prompt_index: game.current_prompt_index)
 
         GameBroadcaster.broadcast_hand(room: game.room)
         GameBroadcaster.broadcast_stage(room: game.room)
@@ -96,30 +86,48 @@ module Games
         Response.create!(player:, prompt_instance: prompt_instance2)
       end
 
-      # Schedule Timer
+      # Schedule Timer (Writing phase)
+      # No prompt index needed for writing phase as it's the whole round
       game.start_timer!(game.timer_duration || 30)
-      GameTimerJob.set(wait_until: game.round_ends_at).perform_later(game.id, round_number)
     end
 
     def self.handle_timeout(game:)
-      return unless game.status == "writing"
+      if game.status == "writing"
+        # Find all responses for this round that are empty
+        current_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: game.round).pluck(:id)
+        missing_responses = Response.where(prompt_instance_id: current_prompt_ids, body: [ nil, "" ])
 
-      # Find all responses for this round that are empty
-      current_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: game.round).pluck(:id)
-      missing_responses = Response.where(prompt_instance_id: current_prompt_ids, body: [ nil, "" ])
+        if missing_responses.any?
+          missing_responses.update_all(body: "Ran out of time!")
+        end
 
-      if missing_responses.any?
-        missing_responses.update_all(body: "Ran out of time!")
+        # Force state advance
+        game.start_voting!
 
-        # Broadcast the auto-filled updates to the specific players (optional, but good UX)
-        # We'd need to broadcast to each player specifically, or just rely on the stage/state transform.
-        # For now, we mainly care about advancing the game.
+      elsif game.status == "voting"
+        # Force advance to next prompt or next round
+        advance_game_state!(game:)
       end
 
-      # Force state advance
-      game.start_voting!
       GameBroadcaster.broadcast_hand(room: game.room)
       GameBroadcaster.broadcast_stage(room: game.room)
+    end
+
+
+    def self.advance_game_state!(game:)
+      if game.current_prompt_index < game.current_round_prompts.count - 1
+        game.next_voting_round!
+        # Reset timer, specifying the NEW prompt index so the job is safe
+        game.start_timer!(game.timer_duration || 30, prompt_index: game.current_prompt_index)
+      else
+        game.calculate_scores!
+        if game.round < MAX_ROUNDS
+          game.start_next_game_round!
+          assign_prompts_for_round(game:, round_number: game.round)
+        else
+          game.finish_game!
+        end
+      end
     end
   end
 end

@@ -13,7 +13,7 @@ module HasRoundTimer
   end
 
   # Encapsulated Logic
-  def start_timer!(duration)
+  def start_timer!(duration, prompt_index: nil)
     # Ensure duration is an integer
     duration_val = duration.to_i
 
@@ -21,6 +21,9 @@ module HasRoundTimer
       timer_duration: duration_val,
       round_ends_at: duration_val.seconds.from_now
     )
+
+    # Schedule the job automatically
+    GameTimerJob.set(wait_until: round_ends_at).perform_later(id, round, prompt_index)
   end
 
   def time_remaining
