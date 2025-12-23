@@ -139,18 +139,18 @@ RSpec.describe WriteAndVoteGame, type: :model do
       end
     end
 
-    describe "#start_timer! (disabled)" do
-      before { game.update!(timer_enabled: false) }
-
-      it "does not update round_ends_at" do
+    describe "#start_timer! (raw command)" do
+      it "updates round_ends_at regardless of timer_enabled flag" do
+        game.update!(timer_enabled: false)
         game.start_timer!(60)
-        expect(game.round_ends_at).to be_nil
+        expect(game.round_ends_at).to be_present
       end
 
-      it "does not enqueue a GameTimerJob" do
+      it "enqueues a GameTimerJob" do
+        game.update!(timer_enabled: false)
         expect {
           game.start_timer!(60)
-        }.not_to have_enqueued_job(GameTimerJob)
+        }.to have_enqueued_job(GameTimerJob)
       end
     end
 
