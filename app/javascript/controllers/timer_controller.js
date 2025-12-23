@@ -30,6 +30,14 @@ export default class extends Controller {
     update() {
         const now = new Date().getTime()
         const endTime = new Date(this.endValue).getTime()
+
+        if (isNaN(endTime)) {
+            console.warn("TimerController: Invalid End Time", this.endValue)
+            this.stopTimer()
+            this.outputTarget.textContent = "0s"
+            return
+        }
+
         const diff = endTime - now
 
         if (diff <= 0) {
