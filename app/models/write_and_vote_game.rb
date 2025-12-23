@@ -13,6 +13,8 @@ class WriteAndVoteGame < ApplicationRecord
     prompts_count / PROMPTS_PER_PLAYER_RATIO
   end
 
+  validates :timer_increment, numericality: { greater_than: 0 }, if: :timer_enabled?
+
   aasm column: :status, whiny_transitions: false do
     state :writing, initial: true
     state :voting

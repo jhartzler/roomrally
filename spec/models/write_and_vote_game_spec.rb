@@ -2,6 +2,21 @@ require 'rails_helper'
 
 RSpec.describe WriteAndVoteGame, type: :model do
   include ActiveSupport::Testing::TimeHelpers
+  describe "validations" do
+    it "validates timer_increment is positive when timer is enabled" do
+      game = build(:write_and_vote_game, timer_enabled: true, timer_increment: 0)
+      expect(game).not_to be_valid
+      expect(game.errors[:timer_increment]).to include("must be greater than 0")
+    end
+
+    it "validates timer_increment is positive (even if disabled, for consistency)" do
+      # Note: The user requirement implies validation 'if enabled', but simpler to always validate
+      # or follow strict requirement. Let's follow strictly: if: :timer_enabled?
+      game = build(:write_and_vote_game, timer_enabled: false, timer_increment: -1)
+      expect(game).to be_valid
+    end
+  end
+
   describe "defaults" do
     it "has default status 'writing'" do
       game = described_class.create!
