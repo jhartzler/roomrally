@@ -10,8 +10,6 @@ RSpec.describe WriteAndVoteGame, type: :model do
     end
 
     it "validates timer_increment is positive (even if disabled, for consistency)" do
-      # Note: The user requirement implies validation 'if enabled', but simpler to always validate
-      # or follow strict requirement. Let's follow strictly: if: :timer_enabled?
       game = build(:write_and_vote_game, timer_enabled: false, timer_increment: -1)
       expect(game).to be_valid
     end
