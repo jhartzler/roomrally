@@ -3,7 +3,7 @@
   <div class="relative bg-gradient-to-br from-purple-900/80 to-indigo-900/80 backdrop-blur-xl border border-white/20 rounded-3xl p-12 shadow-2xl text-center max-w-6xl w-full mb-12 transform hover:scale-[1.02] transition-transform">
     
     <div class="absolute top-6 right-8" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
-       <span class="text-5xl font-black text-white/50 block font-mono" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
+       <span class="text-5xl font-black text-white/50 block font-mono" data-timer-target="output visual"><%= game.time_remaining.ceil %>s</span>
     </div>
     <% current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index] %>
     <p class="text-2xl text-purple-300 font-bold uppercase tracking-widest mb-4">Prompt</p>

@@ -101,6 +101,7 @@ module Games
 
         # Force state advance
         game.start_voting!
+        game.start_timer!(game.timer_duration || 30, step_number: game.current_prompt_index)
 
       elsif game.status == "voting"
         # Force advance to next prompt or next round
