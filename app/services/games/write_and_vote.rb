@@ -49,7 +49,7 @@ module Games
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
         game.start_voting!
-        game.start_timer!(game.timer_increment, step_number: game.current_prompt_index)
+        start_timer_if_enabled(game, step_number: game.current_prompt_index)
 
         GameBroadcaster.broadcast_hand(room: game.room)
         GameBroadcaster.broadcast_stage(room: game.room)
@@ -90,7 +90,7 @@ module Games
       end
 
       # Schedule Timer
-      game.start_timer!(game.timer_increment)
+      start_timer_if_enabled(game)
     end
 
     def self.handle_timeout(game:)
@@ -105,7 +105,7 @@ module Games
 
         # Force state advance
         game.start_voting!
-        game.start_timer!(game.timer_increment, step_number: game.current_prompt_index)
+        start_timer_if_enabled(game, step_number: game.current_prompt_index)
 
       elsif game.status == "voting"
         # Force advance to next prompt or next round
@@ -120,7 +120,7 @@ module Games
     def self.advance_game_state!(game:)
       if game.current_prompt_index < game.current_round_prompts.count - 1
         game.next_voting_round!
-        game.start_timer!(game.timer_increment, step_number: game.current_prompt_index)
+        start_timer_if_enabled(game, step_number: game.current_prompt_index)
       else
         game.calculate_scores!
         if game.round < MAX_ROUNDS
@@ -131,5 +131,12 @@ module Games
         end
       end
     end
+
+    def self.start_timer_if_enabled(game, step_number: nil)
+      return unless game.timer_enabled?
+
+      game.start_timer!(game.timer_increment, step_number:)
+    end
+    private_class_method :start_timer_if_enabled
   end
 end

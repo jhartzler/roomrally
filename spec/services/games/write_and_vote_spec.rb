@@ -76,10 +76,10 @@ RSpec.describe Games::WriteAndVote do
         game_spy
       end
 
-      described_class.game_started(room:)
+      described_class.game_started(room:, timer_enabled: true)
 
       # Default timer is 60 (from migration/model default), so start_timer! is called with 60
-      expect(game_spy).to have_received(:start_timer!).with(60)
+      expect(game_spy).to have_received(:start_timer!).with(60, step_number: nil)
     end
 
     describe "configuration parameters" do
@@ -95,14 +95,14 @@ RSpec.describe Games::WriteAndVote do
         allow(WriteAndVoteGame).to receive(:create!).and_wrap_original { |m, *args| m.call(*args).tap { |g| game_spy = g; allow(g).to receive(:start_timer!) } }
 
         described_class.game_started(room:, timer_enabled: true, timer_increment: 45)
-        expect(game_spy).to have_received(:start_timer!).with(45)
+        expect(game_spy).to have_received(:start_timer!).with(45, step_number: nil)
       end
     end
   end
 
   describe '.process_vote' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     let!(:default_pack) { create(:prompt_pack, :default) }
-    let(:game) { create(:write_and_vote_game, status: 'voting', prompt_pack: default_pack) }
+    let(:game) { create(:write_and_vote_game, status: 'voting', prompt_pack: default_pack, timer_enabled: true) }
     let(:room) { create(:room, current_game: game) }
     let(:players) { create_list(:player, 3, room:) }
     let!(:prompts) { create_list(:prompt_instance, 3, write_and_vote_game: game) }
@@ -226,7 +226,7 @@ RSpec.describe Games::WriteAndVote do
 
   describe '.handle_timeout' do
     let(:room) { create(:room) }
-    let(:game) { create(:write_and_vote_game, room:, status: "writing") }
+    let(:game) { create(:write_and_vote_game, room:, status: "writing", timer_enabled: true) }
 
     before do
       allow(game).to receive(:start_timer!)
