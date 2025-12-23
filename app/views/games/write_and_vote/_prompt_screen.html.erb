@@ -1,6 +1,6 @@
 <%# app/views/games/write_and_vote/_prompt_screen.html.erb %>
 <div class="text-center">
-  <div data-controller="timer" data-timer-end-value="<%= room.current_game.round_ends_at&.iso8601 %>" class="mb-4">
+  <div data-controller="timer" data-timer-end-value="<%= room.current_round_timer_value %>" class="mb-4">
     <span class="text-4xl font-black text-indigo-600 block" data-timer-target="output">30s</span>
     <span class="text-xs font-bold uppercase tracking-widest text-indigo-600" data-timer-target="visual">Time Left</span>
   </div>

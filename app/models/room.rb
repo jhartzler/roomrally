@@ -38,6 +38,11 @@ class Room < ApplicationRecord
     code
   end
 
+  def current_round_timer_value
+    return nil unless current_game&.respond_to?(:round_ends_at)
+    current_game.round_ends_at&.iso8601
+  end
+
   private
 
   def generate_code
