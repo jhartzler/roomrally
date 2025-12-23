@@ -40,7 +40,7 @@ RSpec.describe "Round Timer Integration", type: :system do
 
     # Fast forward time for the backend
     travel 31.seconds do
-      GameTimerJob.perform_now(game.id, 1)
+      GameTimerJob.perform_now(game, 1)
     end
 
     # 4. Verify Advance
@@ -54,10 +54,18 @@ RSpec.describe "Round Timer Integration", type: :system do
     end
     expect(game.round_ends_at).to be > Time.current
 
-
     # 6. Verify Auto-Fill
     # Players didn't submit anything, so responses should be "Ran out of time!"
-    # Responses are created blank at start.
     expect(Response.where(body: "Ran out of time!").count).to be > 0
+
+    # 7. Verify Voting Timeout
+    expect(game.current_prompt_index).to eq(0)
+    travel 31.seconds do
+      GameTimerJob.perform_now(game, 1, 0) # step_number = 0
+    end
+
+    game.reload
+    expect(game.current_prompt_index).to eq(1) # Should advance to next prompt
+    expect(game.round_ends_at).to be > Time.current # New timer started
   end
 end

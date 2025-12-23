@@ -45,8 +45,7 @@ module Games
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
         game.start_voting!
-        # Start timer for first vote (index 0)
-        game.start_timer!(game.timer_duration || 30, prompt_index: game.current_prompt_index)
+        game.start_timer!(game.timer_duration || 30, step_number: game.current_prompt_index)
 
         GameBroadcaster.broadcast_hand(room: game.room)
         GameBroadcaster.broadcast_stage(room: game.room)
@@ -86,8 +85,7 @@ module Games
         Response.create!(player:, prompt_instance: prompt_instance2)
       end
 
-      # Schedule Timer (Writing phase)
-      # No prompt index needed for writing phase as it's the whole round
+      # Schedule Timer
       game.start_timer!(game.timer_duration || 30)
     end
 
@@ -117,8 +115,7 @@ module Games
     def self.advance_game_state!(game:)
       if game.current_prompt_index < game.current_round_prompts.count - 1
         game.next_voting_round!
-        # Reset timer, specifying the NEW prompt index so the job is safe
-        game.start_timer!(game.timer_duration || 30, prompt_index: game.current_prompt_index)
+        game.start_timer!(game.timer_duration || 30, step_number: game.current_prompt_index)
       else
         game.calculate_scores!
         if game.round < MAX_ROUNDS

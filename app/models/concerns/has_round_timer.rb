@@ -2,19 +2,15 @@ module HasRoundTimer
   extend ActiveSupport::Concern
 
   included do
-    # Ensure the model has the necessary columns before using this concern
     # valid_presence_of :round_ends_at, :timer_duration if table_exists?
   end
 
   # Standard Interface for Views
-  # "When does the timer expire?" - Unambiguous name
   def timer_expires_at_iso8601
     round_ends_at&.iso8601
   end
 
-  # Encapsulated Logic
-  def start_timer!(duration, prompt_index: nil)
-    # Ensure duration is an integer
+  def start_timer!(duration, step_number: nil)
     duration_val = duration.to_i
 
     update!(
@@ -22,8 +18,7 @@ module HasRoundTimer
       round_ends_at: duration_val.seconds.from_now
     )
 
-    # Schedule the job automatically
-    GameTimerJob.set(wait_until: round_ends_at).perform_later(id, round, prompt_index)
+    GameTimerJob.set(wait_until: round_ends_at).perform_later(self, round, step_number)
   end
 
   def time_remaining
