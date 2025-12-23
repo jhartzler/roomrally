@@ -67,7 +67,7 @@ RSpec.describe Games::WriteAndVote do
       end
     end
 
-    it 'starts the round timer' do
+    it 'starts the round timer', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
       # Spy on the game creation to intercept the instance
       game_spy = nil
       allow(WriteAndVoteGame).to receive(:create!).and_wrap_original do |original_method, *args|

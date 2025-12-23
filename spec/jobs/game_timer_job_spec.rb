@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe GameTimerJob, type: :job do
   describe "#perform" do
-    let(:game) { instance_double("WriteAndVoteGame") }
+    let(:game) { instance_double(WriteAndVoteGame) }
     let(:round_number) { 1 }
     let(:step_number) { 2 }
 
