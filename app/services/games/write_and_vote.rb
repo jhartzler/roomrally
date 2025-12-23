@@ -38,6 +38,7 @@ module Games
       if total_votes >= required_votes
         if game.current_prompt_index < game.current_round_prompts.count - 1
           game.next_voting_round!
+          game.start_timer!(30) # Reset timer for next prompt
         else
           game.calculate_scores!
           if game.round < MAX_ROUNDS
@@ -55,7 +56,7 @@ module Games
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
         game.start_voting!
-
+        game.start_timer!(30) # Start timer for first vote
 
         GameBroadcaster.broadcast_hand(room: game.room)
         GameBroadcaster.broadcast_stage(room: game.room)
@@ -96,10 +97,8 @@ module Games
       end
 
       # Schedule Timer
-      duration = game.timer_duration || 30
-      ends_at = duration.seconds.from_now
-      game.update!(round_ends_at: ends_at)
-      GameTimerJob.set(wait_until: ends_at).perform_later(game.id, round_number)
+      game.start_timer!(game.timer_duration || 30)
+      GameTimerJob.set(wait_until: game.round_ends_at).perform_later(game.id, round_number)
     end
 
     def self.handle_timeout(game:)

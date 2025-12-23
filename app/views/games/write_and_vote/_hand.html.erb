@@ -11,7 +11,7 @@
 <% if room.current_game.status == "finished" %>
   <%= render "games/write_and_vote/game_over", room: room, player: player %>
 <% elsif room.current_game.status == "voting" %>
-  <%= render "games/write_and_vote/voting", room: room, player: player %>
+  <%= render "games/write_and_vote/voting", room: room, player: player, game: room.current_game %>
 <% else %>
-  <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances, room: room %>
+  <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances, room: room, game: room.current_game %>
 <% end %>

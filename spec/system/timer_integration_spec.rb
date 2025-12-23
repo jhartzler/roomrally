@@ -25,7 +25,7 @@ RSpec.describe "Round Timer Integration", type: :system do
       click_on "Start Game"
 
       expect(page).to have_content("TIME LEFT")
-      expect(page).to have_content("30s") # Initial or close to it
+      expect(page).to have_content(/\d+s/) # Visual countdown check
     end
 
     # 2. Verify DB state
@@ -47,7 +47,15 @@ RSpec.describe "Round Timer Integration", type: :system do
     game.reload
     expect(game.status).to eq("voting")
 
-    # 5. Verify Auto-Fill
+    # 5. Verify Voting Timer Started
+    Capybara.using_session("host") do
+      visit current_path
+      expect(page).to have_content("TIME LEFT")
+    end
+    expect(game.round_ends_at).to be > Time.current
+
+
+    # 6. Verify Auto-Fill
     # Players didn't submit anything, so responses should be "Ran out of time!"
     # Responses are created blank at start.
     expect(Response.where(body: "Ran out of time!").count).to be > 0

@@ -1,5 +1,6 @@
 class WriteAndVoteGame < ApplicationRecord
   include AASM
+  include HasRoundTimer
 
   has_one :room, as: :current_game
   belongs_to :prompt_pack, optional: true

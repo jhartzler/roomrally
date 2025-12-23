@@ -3,6 +3,13 @@
   <% current_game = room.current_game %>
   <% current_prompt = current_game.current_round_prompts.order(:id)[current_game.current_prompt_index] %>
   
+  <div class="mb-6 flex justify-center">
+    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="text-center">
+      <span class="text-4xl font-black text-indigo-600 block" data-timer-target="output">30s</span>
+      <span class="text-xs font-bold uppercase tracking-widest text-indigo-600" data-timer-target="visual">Time Left</span>
+    </div>
+  </div>
+
   <h2 class="text-xl font-bold mb-4">Vote for the best answer!</h2>
   
   <div class="prompt-display mb-6 p-4 bg-gray-100 rounded">
