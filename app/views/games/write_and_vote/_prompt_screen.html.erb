@@ -1,30 +1,80 @@
 <%# app/views/games/write_and_vote/_prompt_screen.html.erb %>
-<div class="text-center">
+<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
+  <div class="flex flex-col">
+    <h1 class="text-white font-black text-2xl tracking-tighter leading-none">ROOMRALLY</h1>
+    <span class="text-blue-200 text-[10px] font-bold uppercase tracking-widest">Player Hand</span>
+  </div>
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center">
+    <p class="text-[10px] text-blue-200 font-bold uppercase">Code</p>
+    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
+  </div>
+</header>
+
+<div class="max-w-md mx-auto space-y-4">
   <% if game.timer_enabled? %>
-    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="mb-4">
-      <span class="text-4xl font-black text-indigo-600 block" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
-      <span class="text-xs font-bold uppercase tracking-widest text-indigo-600" data-timer-target="visual">Time Left</span>
+    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-white/20 mb-4">
+      <span class="text-blue-200 text-xs font-bold uppercase tracking-widest" data-timer-target="visual">Time Left</span>
+      <span class="text-2xl font-black text-white font-mono leading-none" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
   <% end %>
 
-  <h2 class="text-3xl font-black text-gray-800 mb-2">Your Prompts</h2>
-  <p class="text-gray-600">Choose a prompt and write your answer.</p>
-</div>
-
-<div class="mt-8 space-y-4">
-  <% prompts.each do |prompt| %>
+  <% prompts.each_with_index do |prompt, index| %>
     <% response = player.responses.find_by(prompt_instance: prompt) %>
-    <div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
-      <div class="bg-gray-100 p-4 rounded-lg">
-        <p class="font-semibold"><%= prompt.body %></p>
-        <form action="<%= response_path(response) %>" method="post">
-          <input type="hidden" name="_method" value="patch">
-          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-          <textarea name="response[body]" class="w-full border-gray-300 rounded-md mt-2" placeholder="Write your answer..."></textarea>
-          <input type="submit" value="Submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md mt-2">
-        </form>
+    <% is_rejected = response.respond_to?(:status) && response.status == 'rejected' %>
+
+    <%# Rejection Alert %>
+    <% if is_rejected %>
+      <div class="bg-orange-500 rounded-2xl p-4 shadow-2xl shadow-orange-900/40 border-2 border-orange-400 animate-in fade-in zoom-in duration-300 mb-4">
+        <div class="flex items-center gap-3 mb-1">
+          <div class="bg-white rounded-full p-1">
+            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </div>
+          <h3 class="font-black text-white text-sm uppercase tracking-tight">Revision Requested</h3>
+        </div>
+        <p class="text-orange-50 font-medium text-sm">
+          "<%= response.try(:moderation_reason) || "Please check your answer." %>"
+        </p>
       </div>
-    </div>
+    <% end %>
+
+    <% if index == 0 %>
+      <%# Expanded/Active Card %>
+      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white">
+        <div class="bg-slate-50 px-6 py-3 border-b border-slate-100 flex justify-between items-center">
+          <span class="text-slate-400 font-black text-xs uppercase tracking-widest">Prompt <%= index + 1 %> of <%= prompts.count %></span>
+          <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+        </div>
+        
+        <div class="p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4 leading-snug"><%= prompt.body %></h2>
+          
+          <form action="<%= response_path(response) %>" method="post">
+            <input type="hidden" name="_method" value="patch">
+            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <textarea 
+              name="response[body]" 
+              class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 text-slate-900 text-lg placeholder-slate-400 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition-all resize-none"
+              rows="3"
+              placeholder="Type your answer..."><%= response.body %></textarea>
+            
+            <button class="w-full mt-4 bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white font-black py-4 rounded-2xl shadow-lg shadow-orange-900/20 transition-all text-lg uppercase tracking-tight">
+              <%= is_rejected ? "Submit Revision" : "Submit Response" %>
+            </button>
+          </form>
+        </div>
+      </div>
+    <% else %>
+      <%# Collapsed/Pending Card %>
+      <div class="bg-blue-800/40 backdrop-blur-sm rounded-3xl p-6 border border-white/10 flex items-center justify-between group">
+        <div>
+          <p class="text-blue-200 text-[10px] font-black uppercase mb-1">Prompt #<%= index + 1 %></p>
+          <p class="text-blue-100 font-bold opacity-50 truncate max-w-[200px]"><%= prompt.body %></p>
+        </div>
+        <div class="bg-blue-400/20 text-blue-300 p-2 rounded-full">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+      </div>
+    <% end %>
   <% end %>
 </div>
 
