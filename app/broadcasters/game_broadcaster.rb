@@ -87,6 +87,16 @@ module GameBroadcaster
     )
   end
 
+  def self.broadcast_response_rejection(response:)
+    Rails.logger.info({ event: "broadcast_response_rejection", response_id: response.id, player_id: response.player.id })
+    Turbo::StreamsChannel.broadcast_replace_to(
+      response.player,
+      target: "prompt-instance-#{response.prompt_instance.id}",
+      partial: "responses/form",
+      locals: { response:, prompt: response.prompt_instance }
+    )
+  end
+
   def self.game_folder_name(game_type)
     game_type.downcase.gsub(" ", "_")
   end

@@ -12,6 +12,9 @@ AllCops:
   TargetRubyVersion: 3.4
   # Enable new cops by default
   NewCops: enable
+  Exclude:
+    - 'worktrees/**/*'
+    - 'deploy-worktree/**/*'
 
 # RSpec rules
 RSpec:

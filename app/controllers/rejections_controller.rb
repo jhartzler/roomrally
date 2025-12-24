@@ -1,13 +1,13 @@
-class ModerationsController < ApplicationController
+class RejectionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_response
   before_action :authorize_facilitator!
 
-  def reject
+  def create
     rejection_reason = params[:rejection_reason] || "Rejected by facilitator."
 
     if @response.update(status: "rejected", rejection_reason:)
-      # Broadcasts will be handled here (Task 7/8)
+      GameBroadcaster.broadcast_response_rejection(response: @response)
       redirect_back(fallback_location: root_path, notice: "Response rejected.")
     else
       redirect_back(fallback_location: root_path, alert: "Failed to reject response.")
@@ -17,7 +17,7 @@ class ModerationsController < ApplicationController
   private
 
   def set_response
-    @response = Response.find(params[:id])
+    @response = Response.find(params[:response_id])
   end
 
   def authorize_facilitator!

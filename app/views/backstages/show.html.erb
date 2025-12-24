@@ -81,7 +81,7 @@
                    <p class="text-xs text-gray-400 mt-1">by <%= response.player.name %></p>
                  </div>
                  <div class="flex gap-2">
-                   <%= button_to "Reject", reject_response_path(response), method: :patch, class: "px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium" %>
+                   <%= button_to "Reject", response_rejections_path(response), method: :post, class: "px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium" %>
                  </div>
                </div>
              <% end %>

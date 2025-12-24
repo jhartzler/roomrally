@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
-  let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote") }
+  let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote", user: nil) }
 
   before do
     # Ensure sufficient prompts exist for the game in the DEFAULT pack

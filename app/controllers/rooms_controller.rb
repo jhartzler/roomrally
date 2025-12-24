@@ -46,7 +46,7 @@ class RoomsController < ApplicationController
         redirect_to room_hand_path(@room.code), alert: "Could not start game. Ensure there are at least 2 players and the game hasn't started yet."
       end
     end
-    def claim_host
+  def claim_host
     # Claim host
     if @room.user.present?
       redirect_to room_hand_path(@room.code), alert: "This room has a facilitator. Player host controls are disabled."

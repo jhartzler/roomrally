@@ -3,5 +3,5 @@ class Response < ApplicationRecord
   belongs_to :prompt_instance
   has_many :votes, dependent: :destroy
 
-  enum :status, { submitted: "submitted", rejected: "rejected" }, default: "submitted"
+  enum :status, { pending: "pending", submitted: "submitted", rejected: "rejected" }, default: "pending"
 end

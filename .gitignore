@@ -44,3 +44,5 @@ node_modules
 !/app/assets/builds/.keep
 
 .byebug_history
+
+/worktrees/

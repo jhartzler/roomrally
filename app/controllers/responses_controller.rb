@@ -39,6 +39,6 @@ class ResponsesController < ApplicationController
   private
 
   def response_params
-    params.require(:response).permit(:body)
+    params.require(:response).permit(:body).merge(status: "submitted")
   end
 end
