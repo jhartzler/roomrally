@@ -7,10 +7,10 @@ image: jhartzler/roomrally
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 5.161.185.15
   # job:
   #   hosts:
-  #     - 192.168.0.1
+  #     - 5.161.185.15
   #   cmd: bin/jobs
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -99,7 +99,7 @@ builder:
 accessories:
   db:
     image: postgres:15
-    host: 192.168.0.1
+    host: 5.161.185.15
     port: 5432
     env:
       clear:
@@ -114,7 +114,7 @@ accessories:
       - data:/var/lib/postgresql/data
   redis:
     image: redis:7
-    host: 192.168.0.1
+    host: 5.161.185.15
     port: 6379
     directories:
       - data:/data
