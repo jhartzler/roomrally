@@ -8,6 +8,13 @@ class RejectionsController < ApplicationController
 
     if @response.update(status: "rejected", rejection_reason:)
       GameBroadcaster.broadcast_response_rejection(response: @response)
+
+      # Remove from backstage view
+      Turbo::StreamsChannel.broadcast_remove_to(
+        @response.prompt_instance.write_and_vote_game.room,
+        target: ActionView::RecordIdentifier.dom_id(@response)
+      )
+
       redirect_back(fallback_location: root_path, notice: "Response rejected.")
     else
       redirect_back(fallback_location: root_path, alert: "Failed to reject response.")

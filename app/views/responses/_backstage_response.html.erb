@@ -1,0 +1,11 @@
+<%# app/views/responses/_backstage_response.html.erb %>
+<div id="<%= dom_id(response) %>" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+  <div>
+    <p class="font-medium text-gray-900"><%= response.body || "Writing..." %></p>
+    <p class="text-sm text-gray-500 mt-1">Prompt: <%= response.prompt_instance.body %></p>
+    <p class="text-xs text-gray-400 mt-1">by <%= response.player.name %></p>
+  </div>
+  <div class="flex gap-2">
+    <%= button_to "Reject", response_rejections_path(response), method: :post, class: "px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium" %>
+  </div>
+</div>

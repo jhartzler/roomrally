@@ -5,6 +5,7 @@ class WriteAndVoteGame < ApplicationRecord
   has_one :room, as: :current_game
   belongs_to :prompt_pack, optional: true
   has_many :prompt_instances, dependent: :destroy
+  has_many :responses, through: :prompt_instances
 
   # Configuration
   PROMPTS_PER_PLAYER_RATIO = 2

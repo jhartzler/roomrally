@@ -4,6 +4,7 @@ class BackstagesController < ApplicationController
   before_action :authorize_owner!
 
   def show
+    Rails.logger.info("DEBUG: Backstage Show - Room: #{@room.code}, Current Game ID: #{@room.current_game_id}, Current Game Type: #{@room.current_game_type}")
   end
 
   private

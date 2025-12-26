@@ -8,9 +8,12 @@ class RoomsController < ApplicationController
 
   def create
     room = Room.create!(room_params)
-    room.update(user: current_user) if current_user
-    Rails.logger.info "Room #{room.code} created with game type: #{room.game_type}. User: #{room.user&.name || 'Anonymous'}"
-    redirect_to room_stage_path(room)
+    if current_user
+      room.update(user: current_user)
+      redirect_to room_backstage_path(room)
+    else
+      redirect_to room_stage_path(room)
+    end
   end
 
 

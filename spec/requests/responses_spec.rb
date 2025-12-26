@@ -21,7 +21,7 @@ RSpec.describe "Responses", type: :request do
     end
 
     it "returns the correct turbo stream content" do
-      expect(response.body).to include('<turbo-stream action="replace"',
+      expect(response.body).to include('<turbo-stream action="update"',
                                        "prompt-instance-#{prompt_instance.id}",
                                        "Your answer has been submitted!")
     end

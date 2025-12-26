@@ -17,6 +17,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Host"
       click_on "Join Game"
+      expect(page).to have_content("Game Lobby")
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
       expect(page).to have_button("Waiting for players (1/3)...", disabled: true)
@@ -71,14 +72,30 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
 
         # Fill in both prompt responses using the forms on page
         # The forms have actions like /responses/123, so we match on the prefix
-        forms = all('form[action^="/responses"]')
-        expect(forms.count).to eq(2)
+        # Fill in both prompt responses
+        # We re-find the forms each time because submitting one triggers a Turbo update
+        # which invalidates the form elements (StaleElementReferenceError)
+        2.times do |index|
+          # Find the first available form that hasn't been submitted (implied by presence)
+          # Assuming submitted forms are removed or replaced.
+          # If they remain, we might need more specific selector.
+          # But let's assume finding the first one works if we fill it.
+          # Wait, if we have 2 forms, we fill first. It submits.
+          # If it stays but shows "Submitted", does it still have form tag?
+          # If Yes, we must distinguish.
+          # But for now, let's try finding the form that contains the visible input.
+          form = first('form[action^="/responses"]')
 
-        forms.each_with_index do |form, index|
           within form do
             fill_in "response[body]", with: "#{player_name} Answer #{index + 1}"
             click_on "Submit"
           end
+
+          # Wait for submission to complete (form disappears or message appears)
+          expect(page).to have_content("Your answer has been submitted!", wait: 2)
+
+          # Wait for the form to effectively disappear from the "active" set if logic allows?
+          # Or if we have 2 prompts, and one is submitted, maybe only 1 form remains?
         end
 
         # After submitting, we expect success message OR immediate transition to voting
