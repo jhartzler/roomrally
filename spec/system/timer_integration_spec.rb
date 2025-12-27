@@ -13,7 +13,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
     # Create Host and enough players to start game
     FactoryBot.create(:player, room:, name: "Host")
     FactoryBot.create_list(:player, 2, room:)
-    
+
     # Ensure no pre-assigned host so we can claim it
     room.update!(host: nil)
   end
