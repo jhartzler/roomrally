@@ -25,31 +25,41 @@ module Games
     end
 
     def self.process_vote(game:, vote:)
-      current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index]
+      game.with_lock do
+        current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index]
 
-      if current_prompt.nil?
-        Rails.logger.error({ event: "process_vote_error", error: "current_prompt_nil", game_id: game.id, round: game.round, prompt_index: game.current_prompt_index })
-        return game
+        if current_prompt.nil?
+          Rails.logger.error({ event: "process_vote_error", error: "current_prompt_nil", game_id: game.id, round: game.round, prompt_index: game.current_prompt_index })
+          return game
+        end
+
+        Rails.logger.info({ event: "process_vote", game_id: game.id, round: game.round, prompt_index: game.current_prompt_index, vote_id: vote.id })
+
+        total_votes = Vote.where(response: current_prompt.responses).count
+        players_count = game.room.players.count
+        # Authors cannot vote on the prompt they responded to
+        required_votes = players_count - current_prompt.responses.count
+
+        if total_votes >= required_votes
+          # Ensure we haven't already advanced past this prompt index (though logic above re-fetches current_prompt based on index)
+          # If concurrent request advanced index, `game.current_prompt_index` would be higher (due to reload).
+          # And `current_prompt` would be the NEXT prompt.
+          # So we would be checking votes for the NEXT prompt.
+          # If that next prompt doesn't have enough votes, we stop.
+          # So strictly speaking, `with_lock` protects us.
+          advance_game_state!(game:)
+        end
       end
 
-      Rails.logger.info({ event: "process_vote", game_id: game.id, round: game.round, prompt_index: game.current_prompt_index, vote_id: vote.id })
-
-
-      total_votes = Vote.where(response: current_prompt.responses).count
-      players_count = game.room.players.count
-      # Authors cannot vote on the prompt they responded to
-      required_votes = players_count - current_prompt.responses.count
-
-      if total_votes >= required_votes
-        advance_game_state!(game:)
-      end
-
+      # Broadcasts can happen outside lock to reduce contention
       GameBroadcaster.broadcast_hand(room: game.room)
       GameBroadcaster.broadcast_stage(room: game.room)
     end
     def self.check_all_responses_submitted(game:)
-      if game.all_responses_submitted?
-        transition_to_voting(game:)
+      game.with_lock do
+        if game.all_responses_submitted?
+          transition_to_voting(game:)
+        end
       end
       game
     end
