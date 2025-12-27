@@ -78,9 +78,27 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     expect(page).to have_content("by Bob")
 
     # Rejection flow
-    click_on "Reject"
+    # Click summary to open details
+    find("summary", text: "Reject").click
+    fill_in "rejection_reason", with: "Too inappropriate"
+    click_on "Confirm Reject"
 
     expect(page).not_to have_content("Funny Answer")
     expect(page).to have_content("No active responses to moderate")
+
+    # Verify player sees rejection reason
+    Capybara.using_session("player_bob") do
+      expect(page).to have_content("Moderator Rejected:")
+      expect(page).to have_content("Too inappropriate")
+
+      # Resubmit
+      within first("[data-test-id='player-prompt']") do
+        fill_in "response[body]", with: "Clean Answer"
+        click_on "Resubmit"
+      end
+    end
+
+    # Verify resubmission appears in backstage
+    expect(page).to have_content("Clean Answer", wait: 5)
   end
 end

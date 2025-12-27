@@ -9,13 +9,15 @@ class RejectionsController < ApplicationController
     if @response.update(status: "rejected", rejection_reason:)
       GameBroadcaster.broadcast_response_rejection(response: @response)
 
-      # Remove from backstage view
-      Turbo::StreamsChannel.broadcast_remove_to(
-        @response.prompt_instance.write_and_vote_game.room,
-        target: ActionView::RecordIdentifier.dom_id(@response)
-      )
+      # Remove from backstage view (handled via broadcast for all facilitators, but we can also do it locally)
+      # Actually broadcast covers everyone including current user.
 
-      redirect_back(fallback_location: root_path, notice: "Response rejected.")
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@response))
+        end
+        format.html { redirect_back(fallback_location: root_path, notice: "Response rejected.") }
+      end
     else
       redirect_back(fallback_location: root_path, alert: "Failed to reject response.")
     end
