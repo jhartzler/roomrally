@@ -27,7 +27,7 @@ class RejectionsController < ApplicationController
   end
 
   def authorize_facilitator!
-    room = @response.prompt_instance.write_and_vote_game.room
+    room = @response.player.room
     unless room.user == current_user
       redirect_to root_path, alert: "You are not authorized to moderate this game."
     end

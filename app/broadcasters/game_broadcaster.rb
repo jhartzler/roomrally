@@ -27,19 +27,21 @@ module GameBroadcaster
       partial: partial_name,
       locals: { room:, game: }
     )
+  end
 
-    # Update Backstage Host Controls
-    if game.status == "writing"
-      update_all_host_controls(room)
+  def self.broadcast_game_start(room:)
+    Rails.logger.info({ event: "broadcast_game_start", room_code: room.code })
 
-      # Also update moderation queue to show empty state/new game state
-      # We just reload the queue container to refresh context
-      Turbo::StreamsChannel.broadcast_update_to(
-         room,
-         target: "moderation-queue",
-         html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
-      )
-    end
+    # 1. Update Host Controls (switches to 'in progress' or game controls)
+    update_all_host_controls(room)
+
+    # 2. Reset Backstage Moderation Queue
+    # We just reload the queue container to refresh context to empty state
+    Turbo::StreamsChannel.broadcast_update_to(
+        room,
+        target: "moderation-queue",
+        html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
+    )
   end
 
   def self.broadcast_player_joined(room:, player:)
@@ -95,15 +97,14 @@ module GameBroadcaster
 
   # Private Helpers for grouped updates
 
-  def self.update_all_player_lists(room, player:, action:)
-    # Targets and partials mapping
-    targets = [
-      { id: "player-list", partial: "players/player" },
-      { id: "stage_player_list", partial: "players/stage_player" },
-      { id: "backstage-player-list", partial: "players/backstage_player" }
-    ]
+  PLAYER_LIST_TARGETS = [
+    { id: "player-list", partial: "players/player" },
+    { id: "stage_player_list", partial: "players/stage_player" },
+    { id: "backstage-player-list", partial: "players/backstage_player" }
+  ].freeze
 
-    targets.each do |target_info|
+  def self.update_all_player_lists(room, player:, action:)
+    PLAYER_LIST_TARGETS.each do |target_info|
       if action == :append
         Turbo::StreamsChannel.broadcast_append_to(
           room,

@@ -19,6 +19,7 @@ module Games
       room.update!(current_game: game)
 
       assign_prompts_for_round(game:, round_number: 1)
+      GameBroadcaster.broadcast_game_start(room:)
       GameBroadcaster.broadcast_stage(room:)
       GameBroadcaster.broadcast_hand(room:)
     end
