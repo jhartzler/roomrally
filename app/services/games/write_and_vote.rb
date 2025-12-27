@@ -49,11 +49,7 @@ module Games
     end
     def self.check_all_responses_submitted(game:)
       if game.all_responses_submitted?
-        game.start_voting!
-        start_timer_if_enabled(game, step_number: game.current_prompt_index)
-
-        GameBroadcaster.broadcast_hand(room: game.room)
-        GameBroadcaster.broadcast_stage(room: game.room)
+        transition_to_voting(game:)
       end
       game
     end
@@ -104,17 +100,14 @@ module Games
           missing_responses.update_all(body: "Ran out of time!")
         end
 
-        # Force state advance
-        game.start_voting!
-        start_timer_if_enabled(game, step_number: game.current_prompt_index)
-
+        transition_to_voting(game:)
       elsif game.status == "voting"
         # Force advance to next prompt or next round
         advance_game_state!(game:)
-      end
 
-      GameBroadcaster.broadcast_hand(room: game.room)
-      GameBroadcaster.broadcast_stage(room: game.room)
+        GameBroadcaster.broadcast_hand(room: game.room)
+        GameBroadcaster.broadcast_stage(room: game.room)
+      end
     end
 
 
@@ -138,6 +131,21 @@ module Games
 
       game.start_timer!(game.timer_increment, step_number:)
     end
-    private_class_method :start_timer_if_enabled
+
+    def self.transition_to_voting(game:)
+      # Mark submitted responses as published (clearing them from moderation queue logically)
+      current_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: game.round).select(:id)
+      Response.where(prompt_instance_id: current_prompt_ids, status: "submitted").update_all(status: "published")
+
+      game.start_voting!
+
+      start_timer_if_enabled(game, step_number: game.current_prompt_index)
+
+      GameBroadcaster.broadcast_hand(room: game.room)
+      GameBroadcaster.broadcast_stage(room: game.room)
+      GameBroadcaster.clear_moderation_queue(room: game.room)
+    end
+
+    private_class_method :start_timer_if_enabled, :transition_to_voting
   end
 end

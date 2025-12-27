@@ -44,6 +44,15 @@ module GameBroadcaster
     )
   end
 
+  def self.clear_moderation_queue(room:)
+    Rails.logger.info({ event: "clear_moderation_queue", room_code: room.code })
+    Turbo::StreamsChannel.broadcast_update_to(
+      room,
+      target: "moderation-queue",
+      html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
+    )
+  end
+
   def self.broadcast_player_joined(room:, player:)
     Rails.logger.info({ event: "broadcast_player_joined", room_code: room.code, player_id: player.id })
     update_all_player_lists(room, player:, action: :append)

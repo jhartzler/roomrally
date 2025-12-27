@@ -101,4 +101,37 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     # Verify resubmission appears in backstage
     expect(page).to have_content("Clean Answer", wait: 5)
   end
+
+  it 'clears the moderation queue when voting starts' do
+    # Setup game with players
+    create(:player, room:, name: "Bob")
+    create(:player, room:, name: "Charlie")
+    create(:player, room:, name: "Dave")
+    create_list(:prompt, 3, prompt_pack:)
+
+    room.update(status: "playing")
+    Games::WriteAndVote.game_started(room:)
+    game = room.current_game
+
+    sign_in(facilitator)
+    visit room_backstage_path(room.code)
+
+    # Bob submits
+    bob = room.players.find_by(name: "Bob")
+    prompt_instance = game.prompt_instances.where(round: 1).first
+    create(:response, player: bob, prompt_instance:, body: "Moderated Answer", status: "submitted")
+
+    # Manually trigger broadcast for simulation or just reload page? Realtime spec should catch it.
+    GameBroadcaster.broadcast_response_submitted(response: Response.last)
+
+    expect(page).to have_content("Moderated Answer")
+
+    # Trigger transition to voting (simulate all submitted)
+    # We can just call the service method directly to simulate the condition
+    Games::WriteAndVote.send(:transition_to_voting, game:)
+
+    # Queue should clear
+    expect(page).not_to have_content("Moderated Answer")
+    expect(page).to have_content("No active responses to moderate")
+  end
 end
