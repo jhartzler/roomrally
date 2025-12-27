@@ -60,7 +60,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
           # In sequential mode, we only see the ACTIVE form.
           # We wait for *any* form to appear (the active one).
           expect(page).to have_selector('form[action^="/responses"]', count: 1, wait: 10)
-          
+
           form = first('form[action^="/responses"]')
 
           within form do

@@ -82,10 +82,10 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     # Since we replaced the details/summary with a direct button to a new path (likely handled by Turbo Frame),
     # we need to simulate the interaction compatible with the new partial.
     # The new partial uses: button_to "Reject", new_response_rejection_path...
-    
+
     # We click the reject button for the response
     click_on "Reject"
-    
+
     # This should open a modal or form. Assuming it renders the form visible:
     expect(page).to have_field("rejection_reason")
     fill_in "rejection_reason", with: "Too inappropriate"
