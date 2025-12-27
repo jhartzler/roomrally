@@ -87,6 +87,7 @@ test:
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
+  database: roomrally_production
   host: <%= ENV["DB_HOST"] %>
   username: <%= ENV["POSTGRES_USER"] %>
   password: <%= ENV["POSTGRES_PASSWORD"] %>
