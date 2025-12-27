@@ -29,7 +29,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       check "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("TIME LEFT")
+      expect(page).to have_content("Time Left")
       expect(page).to have_content(/\d+s/) # Visual countdown check
     end
 
@@ -54,7 +54,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
 
     # 5. Verify Voting Timer Started
     Capybara.using_session("host") do
-      expect(page).to have_content("TIME LEFT")
+      expect(page).to have_content("Time Left")
     end
     expect(game.round_ends_at).to be > Time.current
 
@@ -83,8 +83,8 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       uncheck "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
-      expect(page).not_to have_content("TIME LEFT")
+      expect(page).to have_content("Write your best answer...")
+      expect(page).not_to have_content("Time Left")
     end
 
     game = room.reload.current_game
@@ -103,7 +103,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       fill_in "Seconds per round", with: "45"
       click_on "Start Game"
 
-      expect(page).to have_content("TIME LEFT")
+      expect(page).to have_content("Time Left")
     end
 
     game = room.reload.current_game
