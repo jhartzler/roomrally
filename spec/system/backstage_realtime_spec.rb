@@ -92,7 +92,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
       expect(page).to have_content("Too inappropriate")
 
       # Resubmit
-      within first("[data-test-id='player-prompt']") do
+      within find("[data-test-id='player-prompt']", text: "Moderator Rejected:") do
         fill_in "response[body]", with: "Clean Answer"
         click_on "Resubmit"
       end
