@@ -15,8 +15,8 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     sign_in(facilitator)
     visit room_backstage_path(room.code)
 
-    expect(page).to have_content("BACKSTAGE: #{room.code}")
-    expect(page).to have_content("0 CONNECTED")
+    expect(page).to have_content("Backstage: #{room.code}")
+    expect(page).to have_content("0 connected")
 
     # Simulate player joining in another session
     Capybara.using_session("player1") do
@@ -27,7 +27,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     # Facilitator should see the update without refreshing
     expect(page).to have_content("Alice")
-    expect(page).to have_content("1 CONNECTED")
+    expect(page).to have_content("1 connected")
 
     # And empty message should disappear
     expect(page).not_to have_content("No players yet")
@@ -54,11 +54,11 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     visit room_backstage_path(room.code)
 
     # Wait for websocket connection
-    expect(page).to have_content("BACKSTAGE: #{room.code}")
+    expect(page).to have_content("Backstage: #{room.code}")
 
     # We need to ensure the view sees the "Game in Progress" state
     expect(page).to have_content("Game in Progress")
-    expect(page).to have_content("MODERATION QUEUE")
+    expect(page).to have_content("Moderation Queue")
     expect(page).to have_selector("#moderation-queue")
 
     # Simulate player submitting response
@@ -96,11 +96,11 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     # Verify player sees rejection reason
     Capybara.using_session("player_bob") do
-      expect(page).to have_content("REVISION REQUESTED")
+      expect(page).to have_content("Revision Requested")
       expect(page).to have_content("Too inappropriate")
 
       # Resubmit
-      within find("[data-test-id='player-prompt']", text: "REVISION REQUESTED") do
+      within find("[data-test-id='player-prompt']", text: "Revision Requested") do
         fill_in "response[body]", with: "Clean Answer"
         click_on "Submit Revision"
       end

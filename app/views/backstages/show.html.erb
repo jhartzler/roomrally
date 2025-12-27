@@ -2,13 +2,13 @@
   <%= turbo_stream_from @room %>
 
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-black uppercase tracking-tighter drop-shadow-md">Backstage: <span class="text-blue-200"><%= @room.code %></span></h1>
+    <h1 class="text-3xl font-black tracking-tighter drop-shadow-md">Backstage: <span class="text-blue-200"><%= @room.code %></span></h1>
     <div class="flex items-center gap-4">
       <%= link_to room_stage_path(@room.code), target: "_blank", class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-bold shadow-lg border border-white/20" do %>
         <%= lucide_icon('external-link', class: "w-4 h-4") %>
         Launch Stage View
       <% end %>
-      <span class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-sm font-bold uppercase tracking-wider text-blue-200 border border-white/10">
+      <span class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-sm font-bold tracking-wider text-blue-200 border border-white/10">
         Status: <%= @room.status.titleize %>
       </span>
     </div>
@@ -17,7 +17,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Host Controls -->
     <div id="backstage-host-controls" class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
-      <h2 class="text-xl font-bold mb-4 text-white uppercase tracking-wide border-b border-white/10 pb-2">Host Controls</h2>
+      <h2 class="text-xl font-bold mb-4 text-white tracking-wide border-b border-white/10 pb-2">Host Controls</h2>
       
       <%= render "rooms/host_controls", room: @room, backstage: true %>
     </div>
@@ -25,8 +25,8 @@
     <!-- Player List -->
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
       <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-        <h2 class="text-xl font-bold text-white uppercase tracking-wide">Players</h2>
-        <span id="player-count" class="text-sm font-bold text-blue-200 uppercase tracking-wider"><%= @room.players.count %> connected</span>
+        <h2 class="text-xl font-bold text-white tracking-wide">Players</h2>
+        <span id="player-count" class="text-sm font-bold text-blue-200 tracking-wider"><%= @room.players.count %> connected</span>
       </div>
       <ul id="backstage-player-list" class="space-y-2">
         <% @room.players.each do |player| %>
@@ -41,7 +41,7 @@
 
   <!-- Moderation Stream -->
   <div class="mt-8">
-    <h2 class="text-xl font-bold mb-4 text-white uppercase tracking-wide">Moderation Queue</h2>
+    <h2 class="text-xl font-bold mb-4 text-white tracking-wide">Moderation Queue</h2>
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
       <% if @room.current_game.present? %>
          <% responses = Response.joins(:prompt_instance).where(prompt_instances: { write_and_vote_game_id: @room.current_game.id, round: @room.current_game.round }).where(status: "submitted").order(created_at: :desc) %>

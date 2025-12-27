@@ -8,7 +8,7 @@ RSpec.describe 'Player Join Flow', type: :system do
     visit join_room_path(room)
 
     # 2. Check for the name form
-    expect(page).to have_content("JOIN THE FUN!")
+    expect(page).to have_content("Join the Fun!")
     expect(page).to have_content(room.code)
     expect(page).to have_field("What's your name?")
     expect(page).to have_button('Join Game')

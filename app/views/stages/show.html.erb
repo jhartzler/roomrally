@@ -4,11 +4,11 @@
   <div class="max-w-7xl mx-auto text-center">
     <!-- Header -->
     <div class="mb-12">
-      <h1 class="text-6xl font-black text-white mb-4 uppercase tracking-tighter drop-shadow-lg">
-        Stage View
+      <h1 class="text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
+        <%= @room.game_type.titleize %>
       </h1>
       <div class="inline-block bg-white/10 backdrop-blur-md rounded-3xl px-12 py-6 border border-white/20">
-        <p class="text-gray-400 text-xl font-bold uppercase tracking-wider mb-2">Room Code</p>
+        <p class="text-gray-400 text-xl font-bold tracking-wider mb-2">Room Code</p>
         <p class="text-8xl font-black font-mono tracking-widest"><%= @room.code %></p>
       </div>
     </div>

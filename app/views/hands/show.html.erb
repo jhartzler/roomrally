@@ -1,7 +1,7 @@
 <%= turbo_stream_from @room %>
 <%= turbo_stream_from @player %>
 
-<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
+<div class="min-h-screen p-4">
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="text-center mb-8 mt-8">
@@ -20,7 +20,8 @@
     </div>
 
     <!-- Main Content -->
-    <div id="hand_screen" class="bg-white rounded-3xl shadow-2xl p-8">
+    <!-- Main Content -->
+    <div id="hand_screen" class="w-full">
       <%= render "rooms/hand_screen_content", room: @room, player: @player %>
     </div>
   </div>

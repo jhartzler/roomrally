@@ -39,13 +39,13 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       click_on "Start Game"
 
       expect(page).to have_content("Game started!")
-      expect(page).to have_content("ACTIVE PROMPT")
+      expect(page).to have_content("Write your best answer...")
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     end
 
     [ :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
-      expect(page).to have_content("ACTIVE PROMPT")
+      expect(page).to have_content("Write your best answer...")
         expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
       end
     end

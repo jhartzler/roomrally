@@ -1,10 +1,10 @@
 <header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
   <div class="flex flex-col">
     <h1 class="text-white font-black text-2xl tracking-tighter leading-none">ROOMRALLY</h1>
-    <span class="text-blue-200 text-[10px] font-bold uppercase tracking-widest">Player Hand</span>
+    <span class="text-blue-200 text-[10px] font-bold tracking-widest">Write your best answer...</span>
   </div>
   <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center">
-    <p class="text-[10px] text-blue-200 font-bold uppercase">Code</p>
+    <p class="text-[10px] text-blue-200 font-bold">Code</p>
     <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
   </div>
 </header>
@@ -12,7 +12,7 @@
 <div class="max-w-md mx-auto space-y-4">
   <% if game.timer_enabled? %>
     <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-white/20 mb-4">
-      <span class="text-blue-200 text-xs font-bold uppercase tracking-widest" data-timer-target="visual">Time Left</span>
+      <span class="text-blue-200 text-xs font-bold tracking-widest" data-timer-target="visual">Time Left</span>
       <span class="text-2xl font-black text-white font-mono leading-none" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
   <% end %>
@@ -48,7 +48,7 @@
           <%# Pending but not active %>
           <div class="bg-blue-800/40 backdrop-blur-sm rounded-3xl p-6 border border-white/10 flex items-center justify-between group" data-test-id="player-prompt">
             <div>
-              <p class="text-blue-200 text-[10px] font-black uppercase mb-1">Prompt #<%= index + 1 %></p>
+              <p class="text-blue-200 text-[10px] font-black mb-1">Prompt #<%= index + 1 %></p>
               <p class="text-blue-100 font-bold opacity-50 truncate max-w-[200px]"><%= prompt.body %></p>
             </div>
             <div class="bg-blue-400/20 text-blue-300 p-2 rounded-full">
