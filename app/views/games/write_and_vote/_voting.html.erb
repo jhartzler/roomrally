@@ -5,9 +5,9 @@
   
   <div class="mb-6 flex justify-center">
     <% if game.timer_enabled? %>
-      <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 text-center border border-white/20">
-        <span class="text-3xl font-black text-white block font-mono leading-none" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
-        <span class="text-[10px] font-bold tracking-widest text-blue-200" data-timer-target="visual">Time Left</span>
+      <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 text-center border border-white/20 shadow-lg">
+        <span class="text-3xl font-black text-white block font-mono leading-none drop-shadow-md" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
+        <span class="text-[10px] font-black tracking-widest text-orange-400 uppercase animate-pulse" data-timer-target="visual">Time Left</span>
       </div>
     <% end %>
   </div>

@@ -11,9 +11,9 @@
 
 <div class="max-w-md mx-auto space-y-4">
   <% if game.timer_enabled? %>
-    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-white/20 mb-4">
-      <span class="text-blue-200 text-xs font-bold tracking-widest" data-timer-target="visual">Time Left</span>
-      <span class="text-2xl font-black text-white font-mono leading-none" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
+    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-white/20 mb-4 shadow-lg">
+      <span class="text-orange-400 text-xs font-black tracking-widest uppercase animate-pulse" data-timer-target="visual">Time Left</span>
+      <span class="text-2xl font-black text-white font-mono leading-none drop-shadow-md" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
   <% end %>
 
