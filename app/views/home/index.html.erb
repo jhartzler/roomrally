@@ -1,17 +1,17 @@
-<div class="min-h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 flex items-center justify-center p-4">
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
   <div class="max-w-md w-full">
     <div class="text-center mb-8">
       <h1 class="text-6xl font-bold text-white mb-2">🎭</h1>
-      <h1 class="text-5xl font-black text-white mb-4 drop-shadow-lg">RoomRally</h1>
-      <p class="text-white text-lg opacity-90">Create laughs together</p>
+      <h1 class="text-5xl font-black text-white mb-4 drop-shadow-lg tracking-tighter uppercase">RoomRally</h1>
+      <p class="text-blue-200 text-lg font-bold uppercase tracking-widest">Create laughs together</p>
       
       <div class="mt-4">
         <% if current_user %>
           <div class="flex flex-col items-center space-y-2">
-            <%= link_to dashboard_path, class: "bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-100 transform hover:scale-105 transition-all" do %>
+            <%= link_to dashboard_path, class: "bg-white text-blue-900 font-bold py-2 px-6 rounded-full shadow-lg hover:bg-blue-50 transform hover:scale-105 transition-all" do %>
                Go to Dashboard
             <% end %>
-            <div class="text-white/80 text-xs mt-2 flex gap-2">
+            <div class="text-blue-200/80 text-xs mt-2 flex gap-2">
                <span>Logged in as <%= current_user.name %></span>
                <span>•</span>
                <%= button_to "Logout", logout_path, method: :delete, class: "underline hover:text-white" %>
@@ -19,37 +19,38 @@
           </div>
         <% else %>
           <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false } do |f| %>
-            <%= f.submit "Login with Google", class: "bg-white text-gray-800 font-semibold py-2 px-4 rounded-full border border-gray-300 shadow-sm hover:bg-gray-100 transition-colors text-sm" %>
+            <%= f.submit "Login with Google", class: "bg-white text-blue-900 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-blue-50 transition-colors text-sm" %>
           <% end %>
         <% end %>
       </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 space-y-6 border border-white/20">
+      <%# Create Room Form %>
       <%= form_with url: rooms_path, method: :post, class: "space-y-4" do |form| %>
         <div>
-          <%= form.label :game_type, "Select Game", class: "block text-gray-700 font-semibold mb-2" %>
-          <%= form.select :game_type, Room::GAME_TYPES.map { |game| [game, game] }, {}, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all text-lg" %>
+          <%= form.label :game_type, "Select Game", class: "block text-blue-200 font-bold uppercase text-xs tracking-widest mb-2" %>
+          <%= form.select :game_type, Room::GAME_TYPES.map { |game| [game, game] }, {}, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-lg placeholder-white/50" %>
         </div>
-        <%= form.submit "Create Room", class: "w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+        <%= form.submit "Create Room", class: "w-full bg-orange-500 text-white font-black py-4 px-6 rounded-xl hover:bg-orange-600 active:scale-[0.98] transform hover:shadow-lg shadow-orange-900/20 transition-all duration-200 text-lg uppercase tracking-tight" %>
       <% end %>
 
       <div class="relative">
         <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-gray-300"></div>
+          <div class="w-full border-t border-white/20"></div>
         </div>
         <div class="relative flex justify-center text-sm">
-          <span class="px-4 bg-white text-gray-500 font-medium">or</span>
+          <span class="px-4 text-blue-200 font-bold uppercase text-[10px] tracking-widest bg-transparent">or</span>
         </div>
       </div>
 
+      <%# Join Room Form %>
       <%= form_with url: "javascript:void(0);", method: :get, data: { turbo: false, controller: "redirect-form", action: "submit->redirect-form#join", "redirect-form-url-template-value": "/rooms/{{value}}/join" }, class: "space-y-4" do |form| %>
-
         <div>
-          <%= form.label :room_code, "Enter Room Code", class: "block text-gray-700 font-semibold mb-2" %>
-          <%= form.text_field :room_code, data: { "redirect-form-target": "input" }, class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all text-center text-2xl font-mono uppercase", placeholder: "ABCD" %>
+          <%= form.label :room_code, "Enter Room Code", class: "block text-blue-200 font-bold uppercase text-xs tracking-widest mb-2" %>
+          <%= form.text_field :room_code, data: { "redirect-form-target": "input" }, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-center text-2xl font-mono font-black uppercase", placeholder: "ABCD" %>
         </div>
-        <%= form.submit "Join Room", class: "w-full bg-gray-900 text-white font-bold py-4 px-6 rounded-xl hover:bg-gray-800 transform hover:scale-105 transition-all duration-200 shadow-lg" %>
+        <%= form.submit "Join Room", class: "w-full bg-blue-600 text-white font-black py-4 px-6 rounded-xl hover:bg-blue-700 active:scale-[0.98] transform hover:shadow-lg transition-all duration-200 uppercase tracking-tight" %>
       <% end %>
     </div>
   </div>

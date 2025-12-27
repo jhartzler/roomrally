@@ -7,7 +7,7 @@ RSpec.describe "Admin Buttons Visibility", :js, type: :system do
     # 1. Player 1 joins
     Capybara.using_session(:player1) do
       visit join_room_path(room)
-      fill_in "player[name]", with: "Player 1"
+      fill_in "player_name", with: "Player 1"
       click_on "Join Game"
       expect(page).to have_content("Player 1")
 
@@ -22,7 +22,7 @@ RSpec.describe "Admin Buttons Visibility", :js, type: :system do
     # 2. Player 2 joins
     Capybara.using_session(:player2) do
       visit join_room_path(room)
-      fill_in "player[name]", with: "Player 2"
+      fill_in "player_name", with: "Player 2"
       click_on "Join Game"
       expect(page).to have_content("Player 2")
 

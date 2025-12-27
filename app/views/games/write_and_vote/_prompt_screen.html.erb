@@ -1,25 +1,61 @@
-<%# app/views/games/write_and_vote/_prompt_screen.html.erb %>
-<div class="text-center">
+<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
+  <div class="flex flex-col">
+    <h1 class="text-white font-black text-2xl tracking-tighter leading-none">ROOMRALLY</h1>
+    <span class="text-blue-200 text-[10px] font-bold uppercase tracking-widest">Player Hand</span>
+  </div>
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center">
+    <p class="text-[10px] text-blue-200 font-bold uppercase">Code</p>
+    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
+  </div>
+</header>
+
+<div class="max-w-md mx-auto space-y-4">
   <% if game.timer_enabled? %>
-    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="mb-4">
-      <span class="text-4xl font-black text-indigo-600 block" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
-      <span class="text-xs font-bold uppercase tracking-widest text-indigo-600" data-timer-target="visual">Time Left</span>
+    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-white/20 mb-4">
+      <span class="text-blue-200 text-xs font-bold uppercase tracking-widest" data-timer-target="visual">Time Left</span>
+      <span class="text-2xl font-black text-white font-mono leading-none" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
   <% end %>
 
-  <h2 class="text-3xl font-black text-gray-800 mb-2">Your Prompts</h2>
-  <p class="text-gray-600">Choose a prompt and write your answer.</p>
-</div>
+  <%# Calculate active index: First prompt with blank/pending response or rejected status %>
+  <% 
+    active_index = prompts.to_a.find_index do |p| 
+      r = player.responses.find_by(prompt_instance: p)
+      # If pending, it's open for input. If rejected, it needs revision.
+      r&.pending? || r&.rejected?
+    end || 0 
+  %>
 
-<div class="mt-8 space-y-4">
-  <% prompts.each do |prompt| %>
+  <% prompts.each_with_index do |prompt, index| %>
     <% response = player.responses.find_by(prompt_instance: prompt) %>
-    <% if response.pending? || response.rejected? %>
-      <%= render "responses/form", response: response, prompt: prompt %>
+    
+    <% if index == active_index %>
+        <% if response.pending? || response.rejected? %>
+            <%= render "responses/form", response: response, prompt: prompt %>
+        <% else %>
+            <%# If the active index points to a submitted response (shouldn't happen unless all done), show success %>
+            <div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
+                <%= render "responses/submission_success", response: response %>
+            </div>
+        <% end %>
     <% else %>
-      <div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
-        <%= render "responses/submission_success", response: response %>
-      </div>
+      <%# Collapsed/Pending Card or Completed Card %>
+      <% if response.submitted? %>
+          <div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
+             <%= render "responses/submission_success", response: response %>
+          </div>
+      <% else %>
+          <%# Pending but not active %>
+          <div class="bg-blue-800/40 backdrop-blur-sm rounded-3xl p-6 border border-white/10 flex items-center justify-between group" data-test-id="player-prompt">
+            <div>
+              <p class="text-blue-200 text-[10px] font-black uppercase mb-1">Prompt #<%= index + 1 %></p>
+              <p class="text-blue-100 font-bold opacity-50 truncate max-w-[200px]"><%= prompt.body %></p>
+            </div>
+            <div class="bg-blue-400/20 text-blue-300 p-2 rounded-full">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+          </div>
+      <% end %>
     <% end %>
   <% end %>
 </div>

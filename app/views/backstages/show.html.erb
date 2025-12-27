@@ -1,14 +1,14 @@
-<div class="container mx-auto p-4">
+<div class="container mx-auto p-4 text-white">
   <%= turbo_stream_from @room %>
 
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Backstage: <%= @room.code %></h1>
+    <h1 class="text-3xl font-black uppercase tracking-tighter drop-shadow-md">Backstage: <span class="text-blue-200"><%= @room.code %></span></h1>
     <div class="flex items-center gap-4">
-      <%= link_to room_stage_path(@room.code), target: "_blank", class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-bold shadow-sm" do %>
+      <%= link_to room_stage_path(@room.code), target: "_blank", class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-bold shadow-lg border border-white/20" do %>
         <%= lucide_icon('external-link', class: "w-4 h-4") %>
         Launch Stage View
       <% end %>
-      <span class="px-3 py-1 bg-gray-100 rounded-full text-sm font-medium text-gray-600">
+      <span class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-sm font-bold uppercase tracking-wider text-blue-200 border border-white/10">
         Status: <%= @room.status.titleize %>
       </span>
     </div>
@@ -16,24 +16,24 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Host Controls -->
-    <div id="backstage-host-controls" class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-      <h2 class="text-xl font-bold mb-4 text-gray-800">Host Controls</h2>
+    <div id="backstage-host-controls" class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
+      <h2 class="text-xl font-bold mb-4 text-white uppercase tracking-wide border-b border-white/10 pb-2">Host Controls</h2>
       
       <%= render "rooms/host_controls", room: @room, backstage: true %>
     </div>
 
     <!-- Player List -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-800">Players</h2>
-        <span id="player-count" class="text-sm font-medium text-gray-500"><%= @room.players.count %> connected</span>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
+      <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+        <h2 class="text-xl font-bold text-white uppercase tracking-wide">Players</h2>
+        <span id="player-count" class="text-sm font-bold text-blue-200 uppercase tracking-wider"><%= @room.players.count %> connected</span>
       </div>
       <ul id="backstage-player-list" class="space-y-2">
         <% @room.players.each do |player| %>
           <%= render "players/backstage_player", player: player %>
         <% end %>
         <% if @room.players.empty? %>
-          <li id="no-players-placeholder" class="text-gray-400 text-center py-4 italic">No players yet.</li>
+          <li id="no-players-placeholder" class="text-blue-300/50 text-center py-4 italic font-medium">No players yet.</li>
         <% end %>
       </ul>
     </div>
@@ -41,8 +41,8 @@
 
   <!-- Moderation Stream -->
   <div class="mt-8">
-    <h2 class="text-xl font-bold mb-4 text-gray-800">Moderation Queue</h2>
-    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+    <h2 class="text-xl font-bold mb-4 text-white uppercase tracking-wide">Moderation Queue</h2>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
       <% if @room.current_game.present? %>
          <% responses = Response.joins(:prompt_instance).where(prompt_instances: { write_and_vote_game_id: @room.current_game.id, round: @room.current_game.round }).where(status: "submitted").order(created_at: :desc) %>
          <div id="moderation-queue" class="space-y-4">
@@ -51,12 +51,13 @@
                <%= render "responses/backstage_response", response: response %>
              <% end %>
            <% else %>
-             <p class="text-gray-400 text-center italic">No active responses to moderate.</p>
+             <p class="text-blue-300/50 text-center italic font-medium">No active responses to moderate.</p>
            <% end %>
          </div>
       <% else %>
-         <p class="text-gray-400 text-center italic">Game not started or no moderation available.</p>
+         <p class="text-blue-300/50 text-center italic font-medium">Game not started or no moderation available.</p>
       <% end %>
     </div>
   </div>
+  <%= turbo_frame_tag "modal" %>
 </div>
