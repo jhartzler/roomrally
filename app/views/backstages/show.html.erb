@@ -44,10 +44,9 @@
     <h2 class="text-xl font-bold mb-4 text-white tracking-wide">Moderation Queue</h2>
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
       <% if @room.current_game.present? %>
-         <% responses = Response.joins(:prompt_instance).where(prompt_instances: { write_and_vote_game_id: @room.current_game.id, round: @room.current_game.round }).where(status: "submitted").order(created_at: :desc) %>
          <div id="moderation-queue" class="space-y-4">
-           <% if responses.any? %>
-             <% responses.each do |response| %>
+           <% if @moderation_queue.any? %>
+             <% @moderation_queue.each do |response| %>
                <%= render "responses/backstage_response", response: response %>
              <% end %>
            <% else %>

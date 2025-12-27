@@ -18,13 +18,7 @@
   <% end %>
 
   <%# Calculate active index: First prompt with blank/pending response or rejected status %>
-  <% 
-    active_index = prompts.to_a.find_index do |p| 
-      r = player.responses.find_by(prompt_instance: p)
-      # If pending, it's open for input. If rejected, it needs revision.
-      r&.pending? || r&.rejected?
-    end || 0 
-  %>
+  <% active_index = active_prompt_index(player, prompts) %>
 
   <% prompts.each_with_index do |prompt, index| %>
     <% response = player.responses.find_by(prompt_instance: prompt) %>
