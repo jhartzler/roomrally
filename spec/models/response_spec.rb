@@ -7,7 +7,7 @@ RSpec.describe Response, type: :model do
   end
 
   describe 'enums' do
-    it { is_expected.to define_enum_for(:status).with_values(pending: 'pending', submitted: 'submitted', rejected: 'rejected').backed_by_column_of_type(:string) }
+    it { is_expected.to define_enum_for(:status).with_values(pending: 'pending', submitted: 'submitted', rejected: 'rejected', published: 'published').backed_by_column_of_type(:string) }
   end
 
   describe 'columns' do

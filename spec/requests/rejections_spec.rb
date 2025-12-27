@@ -6,8 +6,10 @@ RSpec.describe "Rejections", type: :request do
   # Chain creation to reduce memoized helpers count (max 5)
   # creating response implicitly creates player and prompt_instance
   # we just need to ensure they link to our room
+  let(:player) { create(:player, room:) }
   let(:response_obj) do
     create(:response, status: "submitted",
+      player:,
       prompt_instance: create(:prompt_instance,
         write_and_vote_game: create(:write_and_vote_game, room:)
       )
