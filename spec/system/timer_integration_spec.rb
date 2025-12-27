@@ -13,6 +13,9 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
     # Create Host and enough players to start game
     FactoryBot.create(:player, room:, name: "Host")
     FactoryBot.create_list(:player, 2, room:)
+    
+    # Ensure no pre-assigned host so we can claim it
+    room.update!(host: nil)
   end
 
   it "auto-advances the game when time expires" do
@@ -80,7 +83,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       uncheck "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("Write your best answer...")
+      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
       expect(page).not_to have_content("TIME LEFT")
     end
 

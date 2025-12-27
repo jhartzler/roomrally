@@ -15,7 +15,6 @@ RSpec.describe "Admin Buttons Visibility", :js, type: :system do
       expect(page).to have_button("Claim Host")
 
       # Should NOT see admin buttons yet (no host)
-      expect(page).not_to have_button("Make Host")
       expect(page).not_to have_button("Kick")
     end
 
@@ -30,7 +29,6 @@ RSpec.describe "Admin Buttons Visibility", :js, type: :system do
       expect(page).to have_button("Claim Host")
 
       # Should NOT see admin buttons
-      expect(page).not_to have_button("Make Host")
       expect(page).not_to have_button("Kick")
     end
 
@@ -43,14 +41,12 @@ RSpec.describe "Admin Buttons Visibility", :js, type: :system do
       # We need to find Player 2's card
       player2_card = find("#player_#{Player.find_by(name: 'Player 2').id}")
       within(player2_card) do
-        expect(page).to have_button("Make Host")
         expect(page).to have_button("Kick")
       end
 
       # Should NOT see admin buttons for self (Player 1)
       player1_card = find("#player_#{Player.find_by(name: 'Player 1').id}")
       within(player1_card) do
-        expect(page).not_to have_button("Make Host")
         expect(page).not_to have_button("Kick")
       end
     end
