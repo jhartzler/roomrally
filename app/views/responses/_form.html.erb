@@ -1,0 +1,21 @@
+<%# app/views/responses/_form.html.erb %>
+<%# partial locals: response, prompt %>
+<div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
+  <div class="bg-gray-100 p-4 rounded-lg">
+    <p class="font-semibold"><%= prompt.body %></p>
+    <% if response.status == "rejected" %>
+       <div class="mb-3 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+         <p class="font-bold">Moderator Rejected:</p>
+         <p><%= response.rejection_reason %></p>
+       </div>
+    <% end %>
+    <%= form_with model: response, url: response_path(response), method: :patch, local: true do |f| %>
+      <%= f.text_area :body, class: "w-full border-gray-300 rounded-md mt-2", placeholder: "Write your answer...", value: (response.status == "rejected" ? response.body : "") %>
+      <% if response.status == "rejected" %>
+         <%= f.submit "Resubmit", class: "w-full bg-red-500 text-white font-bold py-2 px-4 rounded-md mt-2 hover:bg-red-600 cursor-pointer" %>
+      <% else %>
+         <%= f.submit "Submit", class: "w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md mt-2 hover:bg-blue-600 cursor-pointer" %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

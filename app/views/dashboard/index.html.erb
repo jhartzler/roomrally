@@ -7,6 +7,37 @@
   </header>
 
   <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+    <% if @active_rooms.any? %>
+      <div class="md:col-span-2">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">Active Rooms & Games</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% @active_rooms.each do |room| %>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-indigo-100 flex flex-col justify-between h-full">
+              <div>
+                <div class="flex justify-between items-start mb-2">
+                   <h4 class="font-black text-2xl font-mono text-indigo-600 tracking-wider"><%= room.code %></h4>
+                   <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold uppercase rounded"><%= room.status %></span>
+                </div>
+                <p class="text-sm font-bold text-slate-700 mb-1"><%= room.game_type %></p>
+                <p class="text-xs text-slate-500 mb-4"><%= time_ago_in_words(room.created_at) %> ago</p>
+              </div>
+
+               <div class="grid grid-cols-2 gap-2 mt-auto">
+                 <%= link_to room_backstage_path(room.code), class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-indigo-50 text-indigo-700 font-bold text-sm rounded-lg hover:bg-indigo-100 transition-colors" do %>
+                   <%= lucide_icon('settings', class: "w-4 h-4") %>
+                   Manage
+                 <% end %>
+                 <%= link_to room_stage_path(room.code), target: "_blank", class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-slate-50 text-slate-700 font-bold text-sm rounded-lg hover:bg-slate-100 transition-colors" do %>
+                   <%= lucide_icon('external-link', class: "w-4 h-4") %>
+                   Stage
+                 <% end %>
+               </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
       <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
         <span class="text-2xl">📚</span>

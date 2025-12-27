@@ -1,0 +1,7 @@
+<%# app/views/players/_backstage_player.html.erb %>
+<li id="<%= dom_id(player, :backstage) %>" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+  <span class="font-medium text-gray-700"><%= player.name %></span>
+  <% if player == player.room.host %>
+    <span class="text-xs font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">Host</span>
+  <% end %>
+</li>

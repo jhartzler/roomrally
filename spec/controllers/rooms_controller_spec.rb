@@ -43,6 +43,25 @@ RSpec.describe RoomsController, type: :controller do
       end
     end
 
+    context 'when the room has a facilitator (owner)' do
+      let(:room) { create(:room, user: create(:user)) }
+
+      it 'redirects to hand path' do
+        post :claim_host, params: { code: room.code }
+        expect(response).to redirect_to(room_hand_path(room.code))
+      end
+
+      it 'shows alert about facilitator' do
+        post :claim_host, params: { code: room.code }
+        expect(flash[:alert]).to include("This room has a facilitator")
+      end
+
+      it 'prevents host assignment' do
+        post :claim_host, params: { code: room.code }
+        expect(room.reload.host).to be_nil
+      end
+    end
+
     context 'when there is already a host' do
       let(:other_player) { create(:player, room:) }
 
@@ -160,6 +179,29 @@ RSpec.describe RoomsController, type: :controller do
       it 'redirects to the hand view' do
         post :start_game, params: { code: room.code }
         expect(response).to redirect_to(room_hand_path(room.code))
+      end
+    end
+
+    context 'when the current user is the room owner' do
+      before do
+        user = create(:user)
+        room.update!(user:)
+        # Ensure no current player is set to confuse things, or it doesn't matter
+        allow(controller).to receive_messages(current_user: user, current_player: nil)
+
+        # Room must have enough players to start
+        create_list(:player, 3, room:)
+
+        # Ensure prompts exist
+        pack = create(:prompt_pack)
+        create_list(:prompt, 10, prompt_pack: pack)
+        room.update!(prompt_pack: pack)
+      end
+
+      it 'starts the game successfully' do
+        post :start_game, params: { code: room.code }
+        expect(response).to redirect_to(room_backstage_path(room.code))
+        expect(room.reload.status).to eq('playing')
       end
     end
 

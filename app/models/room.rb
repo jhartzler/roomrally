@@ -13,6 +13,9 @@ class Room < ApplicationRecord
   validates :code, uniqueness: { case_sensitive: false }
   validates :game_type, presence: true, inclusion: { in: GAME_TYPES }
 
+  scope :active, -> { where.not(status: "finished") }
+  scope :most_recent_by_type, -> { select("DISTINCT ON (game_type) rooms.*").order("game_type, created_at DESC") }
+
 
   before_create :generate_code
 

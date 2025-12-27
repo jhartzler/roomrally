@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_23_200904) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_23_200904) do
     t.datetime "created_at", null: false
     t.bigint "player_id", null: false
     t.bigint "prompt_instance_id", null: false
+    t.text "rejection_reason"
+    t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_responses_on_player_id"
     t.index ["prompt_instance_id"], name: "index_responses_on_prompt_instance_id"

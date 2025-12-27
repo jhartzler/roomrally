@@ -1,0 +1,62 @@
+<div class="container mx-auto p-4">
+  <%= turbo_stream_from @room %>
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Backstage: <%= @room.code %></h1>
+    <div class="flex items-center gap-4">
+      <%= link_to room_stage_path(@room.code), target: "_blank", class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-bold shadow-sm" do %>
+        <%= lucide_icon('external-link', class: "w-4 h-4") %>
+        Launch Stage View
+      <% end %>
+      <span class="px-3 py-1 bg-gray-100 rounded-full text-sm font-medium text-gray-600">
+        Status: <%= @room.status.titleize %>
+      </span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Host Controls -->
+    <div id="backstage-host-controls" class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+      <h2 class="text-xl font-bold mb-4 text-gray-800">Host Controls</h2>
+      
+      <%= render "rooms/host_controls", room: @room, backstage: true %>
+    </div>
+
+    <!-- Player List -->
+    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Players</h2>
+        <span id="player-count" class="text-sm font-medium text-gray-500"><%= @room.players.count %> connected</span>
+      </div>
+      <ul id="backstage-player-list" class="space-y-2">
+        <% @room.players.each do |player| %>
+          <%= render "players/backstage_player", player: player %>
+        <% end %>
+        <% if @room.players.empty? %>
+          <li id="no-players-placeholder" class="text-gray-400 text-center py-4 italic">No players yet.</li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Moderation Stream -->
+  <div class="mt-8">
+    <h2 class="text-xl font-bold mb-4 text-gray-800">Moderation Queue</h2>
+    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+      <% if @room.current_game.present? %>
+         <% responses = Response.joins(:prompt_instance).where(prompt_instances: { write_and_vote_game_id: @room.current_game.id, round: @room.current_game.round }).where(status: "submitted").order(created_at: :desc) %>
+         <div id="moderation-queue" class="space-y-4">
+           <% if responses.any? %>
+             <% responses.each do |response| %>
+               <%= render "responses/backstage_response", response: response %>
+             <% end %>
+           <% else %>
+             <p class="text-gray-400 text-center italic">No active responses to moderate.</p>
+           <% end %>
+         </div>
+      <% else %>
+         <p class="text-gray-400 text-center italic">Game not started or no moderation available.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

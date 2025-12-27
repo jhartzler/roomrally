@@ -8,23 +8,19 @@ class ResponsesController < ApplicationController
 
       # Check if all responses are in to start voting
       game = @response.prompt_instance.write_and_vote_game
+
+      # Broadcast that a response was submitted (for facilitator/backstage)
+      GameBroadcaster.broadcast_response_submitted(response: @response)
+
       game = Games::WriteAndVote.check_all_responses_submitted(game:)
 
       respond_to do |format|
         format.turbo_stream do
-          if game.voting?
-            render turbo_stream: turbo_stream.update(
-              "hand_screen",
-              partial: "rooms/hand_screen_content",
-              locals: { room: @response.player.room.reload, player: @response.player }
-            )
-          else
-            render turbo_stream: turbo_stream.replace(
-              "prompt-instance-#{@response.prompt_instance.id}",
-              partial: "responses/submission_success",
-              locals: { response: @response }
-            )
-          end
+          render turbo_stream: turbo_stream.update(
+            "hand_screen",
+            partial: "rooms/hand_screen_content",
+            locals: { room: @response.player.room.reload, player: @response.player }
+          )
         end
         format.html { redirect_to room_hand_path(@response.player.room) }
       end
@@ -39,6 +35,6 @@ class ResponsesController < ApplicationController
   private
 
   def response_params
-    params.require(:response).permit(:body)
+    params.require(:response).permit(:body).merge(status: "submitted")
   end
 end

@@ -1,31 +1,66 @@
 <div class="max-w-md mx-auto">
-  <div class="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-yellow-300">
-    <p class="text-center text-sm font-semibold text-gray-700 flex items-center justify-center gap-2">
-      <span>👑</span>
-      <span>You're the host! Start the game when everyone's ready.</span>
-    </p>
-  </div>
-  <% if room.enough_players? %>
-    <%= form_with url: start_game_room_path(room.code), method: :post, local: true, class: "space-y-4" do |f| %>
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-        <h3 class="font-bold text-gray-700 mb-2">Game Settings</h3>
-        <div class="flex items-center gap-4">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <%= check_box_tag :timer_enabled, "1", false, class: "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
-            <span class="text-gray-700 font-medium">Enable Timer</span>
-          </label>
-
-          <label class="flex items-center gap-2">
-             <span class="text-gray-700 font-medium text-sm">Seconds per round:</span>
-             <%= number_field_tag :timer_increment, 60, min: 10, max: 300, class: "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-          </label>
+  <% if local_assigns[:backstage] %>
+    <% if room.status == "lobby" %>
+       <%# Lobby logic for backstage (similar to regular host controls but without "You're the host" header) %>
+       <% if room.enough_players? %>
+        <%= form_with url: start_game_room_path(room.code), method: :post, local: true, class: "space-y-4" do |f| %>
+          <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+            <h3 class="font-bold text-gray-700 mb-2">Game Settings</h3>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <%= check_box_tag :timer_enabled, "1", false, class: "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
+                <span class="text-gray-700 font-medium">Enable Timer</span>
+              </label>
+      
+              <label class="flex items-center gap-2">
+                 <span class="text-gray-700 font-medium text-sm">Seconds per round:</span>
+                 <%= number_field_tag :timer_increment, 60, min: 10, max: 300, class: "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+              </label>
+            </div>
+          </div>
+          <%= f.submit "Start Game", class: "w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-indigo-700 transition duration-200 shadow-lg cursor-pointer" %>
+        <% end %>
+      <% else %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
+          <p class="text-yellow-700 font-medium">Waiting for players (<%= room.players.count %>/3)...</p>
+          <p class="text-yellow-600 text-sm mt-1">Need at least 3 players to start.</p>
         </div>
+      <% end %>
+    <% else %>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+        <p class="text-green-700 font-bold text-lg">Game in Progress</p>
       </div>
-      <%= f.submit "Start Game", id: "start-game-btn", class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
     <% end %>
   <% else %>
-    <button class="w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl cursor-not-allowed text-lg" disabled>
-      Waiting for players (<%= room.players.count %>/3)...
-    </button>
+    <%# Standard Host Controls (Hand View) %>
+    <div class="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-yellow-300">
+      <p class="text-center text-sm font-semibold text-gray-700 flex items-center justify-center gap-2">
+        <span>👑</span>
+        <span>You're the host! Start the game when everyone's ready.</span>
+      </p>
+    </div>
+    <% if room.enough_players? %>
+      <%= form_with url: start_game_room_path(room.code), method: :post, local: true, class: "space-y-4" do |f| %>
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+          <h3 class="font-bold text-gray-700 mb-2">Game Settings</h3>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <%= check_box_tag :timer_enabled, "1", false, class: "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
+              <span class="text-gray-700 font-medium">Enable Timer</span>
+            </label>
+  
+            <label class="flex items-center gap-2">
+               <span class="text-gray-700 font-medium text-sm">Seconds per round:</span>
+               <%= number_field_tag :timer_increment, 60, min: 10, max: 300, class: "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+            </label>
+          </div>
+        </div>
+        <%= f.submit "Start Game", id: "start-game-btn", class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
+      <% end %>
+    <% else %>
+      <button class="w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl cursor-not-allowed text-lg" disabled>
+        Waiting for players (<%= room.players.count %>/3)...
+      </button>
+    <% end %>
   <% end %>
 </div>

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resources :rooms, only: %i[create show], param: :code do
     resource :stage, only: :show
     resource :hand, only: :show
+    resource :backstage, only: :show
     member do
       post :start_game
       post :claim_host
@@ -30,7 +31,9 @@ Rails.application.routes.draw do
 
   get "/rooms/:code/join", to: "players#new", as: :join_room
   resources :players, only: [ :create, :destroy ]
-  resources :responses, only: [ :update ]
+  resources :responses, only: [ :update ] do
+    resources :rejections, only: [ :create ]
+  end
   resources :votes, only: [ :create ]
 
   get "/auth/:provider/callback", to: "sessions#omniauth"
