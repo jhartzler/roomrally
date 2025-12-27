@@ -13,6 +13,9 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
     # Create Host and enough players to start game
     FactoryBot.create(:player, room:, name: "Host")
     FactoryBot.create_list(:player, 2, room:)
+
+    # Ensure no pre-assigned host so we can claim it
+    room.update!(host: nil)
   end
 
   it "auto-advances the game when time expires" do
@@ -22,6 +25,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       fill_in "player[name]", with: "Host"
       click_on "Join Game"
       click_on "Claim Host"
+      expect(page).to have_content("Game Settings")
       check "Enable Timer"
       click_on "Start Game"
 
@@ -50,7 +54,6 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
 
     # 5. Verify Voting Timer Started
     Capybara.using_session("host") do
-      visit current_path
       expect(page).to have_content("TIME LEFT")
     end
     expect(game.round_ends_at).to be > Time.current
@@ -76,11 +79,11 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       fill_in "player[name]", with: "Host"
       click_on "Join Game"
       click_on "Claim Host"
-
+      expect(page).to have_content("Game Settings")
       uncheck "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("Your Prompts")
+      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
       expect(page).not_to have_content("TIME LEFT")
     end
 
@@ -95,7 +98,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       fill_in "player[name]", with: "Host"
       click_on "Join Game"
       click_on "Claim Host"
-
+      expect(page).to have_content("Game Settings")
       check "Enable Timer"
       fill_in "Seconds per round", with: "45"
       click_on "Start Game"

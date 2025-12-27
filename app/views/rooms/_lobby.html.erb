@@ -1,7 +1,7 @@
 <%# app/views/rooms/_lobby.html.erb %>
 <div class="text-center mb-8">
-  <h2 class="text-3xl font-black text-gray-800 mb-2">Game Lobby</h2>
-  <p class="text-gray-600 flex items-center justify-center gap-2">
+  <h2 class="text-3xl font-black text-white mb-2 drop-shadow-md">Game Lobby</h2>
+  <p class="text-blue-100 flex items-center justify-center gap-2 font-medium">
     <span class="animate-pulse">⏳</span>
     Waiting for players to join...
   </p>
@@ -14,18 +14,18 @@
 
 <!-- Claim Host Button (No Host) -->
 <% if room.host.nil? %>
-  <div class="border-t-2 border-gray-200 pt-6 mb-6">
+  <div class="border-t-2 border-white/10 pt-6 mb-6">
     <div class="max-w-md mx-auto">
     <% unless room.user.present? %>
-      <div class="bg-gradient-to-r from-red-100 to-orange-100 rounded-xl p-4 mb-4 border-2 border-red-300">
-        <p class="text-center text-sm font-semibold text-gray-700 flex items-center justify-center gap-2">
+      <div class="bg-red-500/20 backdrop-blur-md rounded-xl p-4 mb-4 border border-red-400/30">
+        <p class="text-center text-sm font-semibold text-red-100 flex items-center justify-center gap-2">
           <span>⚠️</span>
           <span>No host in this room. Claim host to start the game!</span>
         </p>
       </div>
     <% end %>
     <% unless room.user.present? %>
-      <%= button_to "Claim Host", claim_host_room_path(room.code), method: :post, class: "w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg" %>
+      <%= button_to "Claim Host", claim_host_room_path(room.code), method: :post, class: "w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-4 px-6 rounded-xl hover:from-orange-600 hover:to-amber-600 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg border border-white/20" %>
     <% end %>
     </div>
   </div>
@@ -33,7 +33,7 @@
 
 <!-- Start Game Button (Host Only) -->
 <% if player == room.host %>
-  <div id="host-controls" class="border-t-2 border-gray-200 pt-6">
+  <div id="host-controls" class="border-t-2 border-white/10 pt-6">
     <%= render "rooms/host_controls", room: room %>
   </div>
 <% end %>

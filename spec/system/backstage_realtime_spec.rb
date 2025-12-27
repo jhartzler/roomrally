@@ -75,26 +75,34 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     # Facilitator should see the response
     expect(page).to have_content("Funny Answer")
-    expect(page).to have_content("by Bob")
+    expect(page).to have_content("BOB")
 
     # Rejection flow
-    # Click summary to open details
-    find("summary", text: "Reject").click
+    # Click Reject button to open modal (simulated by finding the button)
+    # Since we replaced the details/summary with a direct button to a new path (likely handled by Turbo Frame),
+    # we need to simulate the interaction compatible with the new partial.
+    # The new partial uses: button_to "Reject", new_response_rejection_path...
+
+    # We click the reject button for the response
+    click_on "Reject"
+
+    # This should open a modal or form. Assuming it renders the form visible:
+    expect(page).to have_field("rejection_reason")
     fill_in "rejection_reason", with: "Too inappropriate"
-    click_on "Confirm Reject"
+    click_on "Reject Response"
 
     expect(page).not_to have_content("Funny Answer")
     expect(page).to have_content("No active responses to moderate")
 
     # Verify player sees rejection reason
     Capybara.using_session("player_bob") do
-      expect(page).to have_content("Moderator Rejected:")
+      expect(page).to have_content("Revision Requested")
       expect(page).to have_content("Too inappropriate")
 
       # Resubmit
-      within find("[data-test-id='player-prompt']", text: "Moderator Rejected:") do
+      within find("[data-test-id='player-prompt']", text: "Revision Requested") do
         fill_in "response[body]", with: "Clean Answer"
-        click_on "Resubmit"
+        click_on "Submit Revision"
       end
     end
 

@@ -6,6 +6,7 @@ inherit_gem:
 plugins:
   - rubocop-rspec
 
+
 # Overwrite or add rules to create your own house style
 AllCops:
   # The version of Ruby that RuboCop will target.
@@ -13,7 +14,6 @@ AllCops:
   # Enable new cops by default
   NewCops: enable
   Exclude:
-    - 'worktrees/**/*'
     - 'deploy-worktree/**/*'
 
 # RSpec rules

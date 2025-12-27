@@ -39,13 +39,13 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       click_on "Start Game"
 
       expect(page).to have_content("Game started!")
-      expect(page).to have_content("Your Prompts")
+      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     end
 
     [ :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
-        expect(page).to have_content("Your Prompts")
+      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
         expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
       end
     end
@@ -56,9 +56,11 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       [ :player3, "Player 3" ]
     ].each do |session, player_name|
       Capybara.using_session(session) do
-        expect(page).to have_selector('form[action^="/responses"]', count: 2, wait: 10)
-
         2.times do |index|
+          # In sequential mode, we only see the ACTIVE form.
+          # We wait for *any* form to appear (the active one).
+          expect(page).to have_selector('form[action^="/responses"]', count: 1, wait: 10)
+
           form = first('form[action^="/responses"]')
 
           within form do
@@ -66,7 +68,12 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
             click_on "Submit"
           end
 
-          expect(page).to have_content("Your answer has been submitted!", wait: 2)
+          # After submission, the next prompt becomes active (or we are done)
+          # We wait for the "active" indicator to move or for Success/Vote screen.
+          if index == 0
+             # Wait for the first one to be marked submitted (or just wait for next form)
+             expect(page).to have_content("Your answer has been submitted!", wait: 5)
+          end
         end
 
         expect(page).to have_content("Your answer has been submitted!").or have_content("Vote for the best answer!")

@@ -1,33 +1,36 @@
-<div class="min-h-screen bg-slate-50 p-6 md:p-12 font-sans">
+<div class="min-h-screen p-6 md:p-12 font-sans text-white">
   <header class="max-w-5xl mx-auto mb-10">
-    <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-      <%= current_user.name %>
+    <h1 class="text-4xl font-black text-white drop-shadow-lg mb-2">
+      Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400"><%= current_user.name %></span>
     </h1>
-    <p class="text-slate-500 font-medium">Ready to create some chaos today?</p>
+    <p class="text-blue-200 font-bold tracking-widest text-sm">Ready to create some chaos today?</p>
   </header>
 
   <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
     <% if @active_rooms.any? %>
       <div class="md:col-span-2">
-        <h3 class="text-xl font-bold text-slate-900 mb-4">Active Rooms & Games</h3>
+        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span>Active Rooms & Games</span>
+          <span class="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full"><%= @active_rooms.count %></span>
+        </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <% @active_rooms.each do |room| %>
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-indigo-100 flex flex-col justify-between h-full">
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col justify-between h-full hover:bg-white/15 transition-all group">
               <div>
                 <div class="flex justify-between items-start mb-2">
-                   <h4 class="font-black text-2xl font-mono text-indigo-600 tracking-wider"><%= room.code %></h4>
-                   <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold uppercase rounded"><%= room.status %></span>
+                   <h4 class="font-black text-2xl font-mono text-white tracking-wider group-hover:scale-105 transition-transform"><%= room.code %></h4>
+                   <span class="px-2 py-0.5 bg-white/20 text-blue-100 text-xs font-bold rounded border border-white/10"><%= room.status %></span>
                 </div>
-                <p class="text-sm font-bold text-slate-700 mb-1"><%= room.game_type %></p>
-                <p class="text-xs text-slate-500 mb-4"><%= time_ago_in_words(room.created_at) %> ago</p>
+                <p class="text-sm font-bold text-blue-200 mb-1 tracking-wide"><%= room.game_type %></p>
+                <p class="text-[10px] text-blue-300 mb-4 font-mono"><%= time_ago_in_words(room.created_at) %> ago</p>
               </div>
 
                <div class="grid grid-cols-2 gap-2 mt-auto">
-                 <%= link_to room_backstage_path(room.code), class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-indigo-50 text-indigo-700 font-bold text-sm rounded-lg hover:bg-indigo-100 transition-colors" do %>
+                 <%= link_to room_backstage_path(room.code), class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-blue-600/50 hover:bg-blue-600 text-white font-bold text-sm rounded-lg transition-colors border border-blue-400/30" do %>
                    <%= lucide_icon('settings', class: "w-4 h-4") %>
                    Manage
                  <% end %>
-                 <%= link_to room_stage_path(room.code), target: "_blank", class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-slate-50 text-slate-700 font-bold text-sm rounded-lg hover:bg-slate-100 transition-colors" do %>
+                 <%= link_to room_stage_path(room.code), target: "_blank", class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10" do %>
                    <%= lucide_icon('external-link', class: "w-4 h-4") %>
                    Stage
                  <% end %>
@@ -38,44 +41,52 @@
       </div>
     <% end %>
 
-    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
-      <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-        <span class="text-2xl">📚</span>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all group relative overflow-hidden">
+      <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all"></div>
+      
+      <div class="relative z-10">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-400/30 text-blue-200">
+          <span class="text-2xl">📚</span>
+        </div>
+        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Manage Library</h2>
+        <p class="text-blue-200 mb-6 text-sm leading-relaxed">Create and organize your prompt packs. Build custom decks for your next game night.</p>
+        <%= link_to prompt_packs_path, class: "inline-flex items-center gap-2 font-bold text-blue-300 hover:text-white transition-colors" do %>
+          Go to Library <%= lucide_icon('arrow-right', class: "w-4 h-4") %>
+        <% end %>
       </div>
-      <h2 class="text-2xl font-black text-slate-900 mb-2">Manage Library</h2>
-      <p class="text-slate-600 mb-6">Create and organize your prompt packs. Build custom decks for your next game night.</p>
-      <%= link_to prompt_packs_path, class: "inline-block font-bold text-blue-600 hover:text-blue-700" do %>
-        Go to Library →
-      <% end %>
     </div>
 
-    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
-      <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
-        <span class="text-2xl">🎮</span>
+    <div class="bg-gradient-to-br from-orange-500/20 to-pink-500/20 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:from-orange-500/30 hover:to-pink-500/30 transition-all group relative overflow-hidden">
+       <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-500/20 rounded-full blur-2xl group-hover:bg-orange-500/30 transition-all"></div>
+
+       <div class="relative z-10">
+        <div class="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6 border border-orange-400/30 text-orange-200">
+          <span class="text-2xl">🏆</span>
+        </div>
+        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Host a Game</h2>
+        <p class="text-orange-100/80 mb-6 text-sm leading-relaxed">Start a new game room. Launch a Big Screen session for players to join.</p>
+        <%= link_to root_path, class: "block w-full text-center bg-orange-500 hover:bg-orange-400 text-white font-black py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-all tracking-tight text-sm" do %>
+          Start Hosting
+        <% end %>
       </div>
-      <h2 class="text-2xl font-black text-slate-900 mb-2">Host a Game</h2>
-      <p class="text-slate-600 mb-6">Start a new game room. Launch a Big Screen session for players to join.</p>
-      <%= link_to root_path, class: "block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-black py-3 rounded-xl shadow-lg shadow-orange-200 transition-all" do %>
-        Start Hosting
-      <% end %>
     </div>
   </main>
 
   <% if @recent_packs.any? %>
     <section class="max-w-5xl mx-auto">
       <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-slate-900">Recent Prompt Packs</h3>
-        <%= link_to "View All", prompt_packs_path, class: "text-sm font-bold text-slate-500 hover:text-blue-600" %>
+        <h3 class="text-xl font-bold text-white tracking-wide text-sm">Recent Prompt Packs</h3>
+        <%= link_to "View All", prompt_packs_path, class: "text-xs font-bold text-blue-300 hover:text-white transition-colors tracking-widest" %>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <% @recent_packs.each do |pack| %>
-          <%= link_to edit_prompt_pack_path(pack), class: "bg-white p-5 rounded-2xl border border-slate-200 flex items-center gap-4 hover:border-blue-300 transition-colors cursor-pointer" do %>
-            <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+          <%= link_to edit_prompt_pack_path(pack), class: "bg-white/5 backdrop-blur-sm p-5 rounded-2xl border border-white/10 flex items-center gap-4 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group" do %>
+            <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-blue-200 group-hover:text-white transition-colors">
               <%= lucide_icon('folder', class: "w-5 h-5") %>
             </div>
             <div>
-              <h4 class="font-bold text-slate-900"><%= pack.name %></h4>
-              <p class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md inline-block">
+              <h4 class="font-bold text-white group-hover:text-blue-200 transition-colors"><%= pack.name %></h4>
+              <p class="text-[10px] font-bold text-blue-400 bg-blue-900/30 px-2 py-0.5 rounded-md inline-block border border-blue-500/20 mt-1">
                 <%= pack.prompts.count %> prompts
               </p>
             </div>

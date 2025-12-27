@@ -7,7 +7,7 @@ RSpec.describe "Stage View Flow", type: :system do
     # open stage view in a new window/tab
     visit room_stage_path(room)
 
-    expect(page).to have_content("Stage View")
+    expect(page).to have_content("Write And Vote")
     expect(page).to have_content(room.code)
     expect(page).to have_content("Join via your phone!")
 
@@ -40,6 +40,8 @@ RSpec.describe "Stage View Flow", type: :system do
 
       # Find Bob's card and kick him
       bob = Player.find_by(name: "Bob")
+      # Find Bob's card and hover it to reveal actions
+      find("#player_#{bob.id}").hover
       within "#player_#{bob.id}" do
         accept_confirm do
           click_on "Kick"

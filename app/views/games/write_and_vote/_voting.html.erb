@@ -1,48 +1,55 @@
 <%# app/views/games/write_and_vote/_voting.html.erb %>
-<div class="voting-screen" data-render-time="<%= Time.now.to_f %>">
+<div class="voting-screen text-white" data-render-time="<%= Time.now.to_f %>">
   <% current_game = room.current_game %>
   <% current_prompt = current_game.current_round_prompts.order(:id)[current_game.current_prompt_index] %>
   
   <div class="mb-6 flex justify-center">
     <% if game.timer_enabled? %>
-      <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="text-center">
-        <span class="text-4xl font-black text-indigo-600 block" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
-        <span class="text-xs font-bold uppercase tracking-widest text-indigo-600" data-timer-target="visual">Time Left</span>
+      <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 text-center border border-white/20 shadow-lg flex flex-col items-center gap-1">
+        <div class="bg-indigo-950/40 rounded-lg px-4 py-1 border border-white/10 shadow-inner mb-1">
+          <span class="text-3xl font-black text-white block font-mono leading-none drop-shadow-md" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
+        </div>
+        <span class="text-[10px] font-black tracking-widest text-orange-400 uppercase animate-pulse" data-timer-target="visual">Time Left</span>
       </div>
     <% end %>
   </div>
 
-  <h2 class="text-xl font-bold mb-4">Vote for the best answer!</h2>
+  <h2 class="text-xl font-bold mb-4 text-center drop-shadow-md">Vote for the best answer!</h2>
   
-  <div class="prompt-display mb-6 p-4 bg-gray-100 rounded">
-    <p class="text-lg"><%= current_prompt.prompt.body %></p>
+  <div class="prompt-display mb-6 p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-center shadow-lg">
+    <p class="text-xl font-bold italic text-blue-100"><%= current_prompt.prompt.body %></p>
   </div>
 
   <div class="responses-list space-y-4">
-    <% if current_prompt.responses.exists?(player: player) %>
-      <div class="text-center p-8 bg-gray-50 rounded-xl border border-gray-200">
-        <div class="text-4xl mb-3">🗳️</div>
-        <h3 class="text-xl font-bold text-gray-800 mb-2">Voting in Progress</h3>
-        <p class="text-gray-600">May the best answer win!</p>
-        <p class="text-gray-500 text-sm mt-2 animate-pulse">Waiting for other players...</p>
+    <% responses = current_prompt.responses %>
+    <% if responses.exists?(player: player) %>
+      <div class="text-center p-8 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 flex flex-col items-center">
+        <div class="text-4xl mb-3 animate-bounce">🗳️</div>
+        <h3 class="text-xl font-bold text-white mb-2">Voting in Progress</h3>
+        <p class="text-blue-200">May the best answer win!</p>
+        <p class="text-blue-300/50 text-xs mt-4 animate-pulse uppercase tracking-widest font-bold">Waiting for other players...</p>
       </div>
     <% else %>
-      <% current_prompt.responses.shuffle.each do |response| %>
-        <div class="response-card p-4 border rounded shadow-sm hover:bg-gray-50">
-          <% if Vote.exists?(player: player, response: current_prompt.responses) %>
-             <div class="text-gray-500 italic">Waiting for other players...</div>
+      <% 
+         player_voted = Vote.exists?(player: player, response: responses)
+         available_responses = responses.shuffle 
+      %>
+      <% available_responses.each do |response| %>
+        <div class="response-card bg-white/10 backdrop-blur-sm p-5 rounded-2xl border border-white/10 shadow-sm hover:bg-white/20 transition-all cursor-pointer group">
+          <% if player_voted %>
+             <div class="text-blue-300 italic text-center">Waiting for other players...</div>
           <% else %>
             <%= button_to "Vote", votes_path, 
                 params: { vote: { response_id: response.id } }, 
-                class: "w-full text-left font-medium text-blue-600 hover:text-blue-800" %>
-            <div class="mt-2 text-gray-800"><%= response.body %></div>
+                class: "w-full text-center font-black text-lg text-white group-hover:scale-105 transition-transform" %>
+            <div class="mt-2 text-blue-200 font-medium text-center border-t border-white/10 pt-2"><%= response.body %></div>
           <% end %>
         </div>
       <% end %>
     <% end %>
   </div>
   
-  <div class="round-info mt-8 text-sm text-gray-500">
+  <div class="round-info mt-8 text-xs text-blue-300/50 text-center font-mono">
     Round <%= current_game.round %> | Prompt <%= current_game.current_prompt_index + 1 %> / <%= current_game.current_round_prompts.count %>
   </div>
 </div>

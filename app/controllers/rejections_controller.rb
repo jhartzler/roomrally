@@ -3,6 +3,9 @@ class RejectionsController < ApplicationController
   before_action :set_response
   before_action :authorize_facilitator!
 
+  def new
+  end
+
   def create
     rejection_reason = params[:rejection_reason] || "Rejected by facilitator."
 
@@ -11,7 +14,10 @@ class RejectionsController < ApplicationController
 
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@response))
+          render turbo_stream: [
+            turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@response)),
+            turbo_stream.update("modal", "")
+          ]
         end
         format.html { redirect_back(fallback_location: root_path, notice: "Response rejected.") }
       end
