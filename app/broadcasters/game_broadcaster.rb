@@ -17,7 +17,6 @@ module GameBroadcaster
     return unless game
 
     # Convention: games/[game_type]/stage_[status]
-    # e.g. games/write_and_vote/stage_writing
     partial_name = "games/#{game_folder_name(room.game_type)}/stage_#{game.status}"
 
     Rails.logger.info({ event: "broadcast_stage", room_code: room.code, partial: partial_name })
@@ -30,8 +29,7 @@ module GameBroadcaster
     )
 
     # Update Backstage Host Controls
-    # We replace the entire host controls section if the game just started
-    if game.status == "writing" # Or whatever initial state
+    if game.status == "writing"
       update_all_host_controls(room)
 
       # Also update moderation queue to show empty state/new game state
@@ -102,7 +100,7 @@ module GameBroadcaster
     targets = [
       { id: "player-list", partial: "players/player" },
       { id: "stage_player_list", partial: "players/stage_player" },
-      { id: "backstage-player-list", partial: "players/backstage_player" } # Make sure this partial exists!
+      { id: "backstage-player-list", partial: "players/backstage_player" }
     ]
 
     targets.each do |target_info|
@@ -114,10 +112,6 @@ module GameBroadcaster
           locals: { player: }
         )
       elsif action == :remove
-        # For remove, target is usually dom_id logic, but specific IDs for stage/backstage might differ
-        # Revisit: removing logic was slightly custom for stage/backstage.
-        # Let's handle special cases:
-
         remove_target = nil
 
         case target_info[:id]

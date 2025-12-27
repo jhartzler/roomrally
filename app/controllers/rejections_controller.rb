@@ -9,9 +9,6 @@ class RejectionsController < ApplicationController
     if @response.update(status: "rejected", rejection_reason:)
       GameBroadcaster.broadcast_response_rejection(response: @response)
 
-      # Remove from backstage view (handled via broadcast for all facilitators, but we can also do it locally)
-      # Actually broadcast covers everyone including current user.
-
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@response))
