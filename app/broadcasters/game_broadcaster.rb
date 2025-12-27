@@ -1,5 +1,10 @@
 module GameBroadcaster
   def self.broadcast_hand(room:)
+    if room.nil?
+      Rails.logger.error({ event: "broadcast_hand_error", error: "room_nil" })
+      return
+    end
+
     room.players.each do |player|
     Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
 
@@ -13,6 +18,11 @@ module GameBroadcaster
   end
 
   def self.broadcast_stage(room:)
+    if room.nil?
+      Rails.logger.error({ event: "broadcast_stage_error", error: "room_nil" })
+      return
+    end
+
     game = room.current_game
     return unless game
 
@@ -45,6 +55,8 @@ module GameBroadcaster
   end
 
   def self.clear_moderation_queue(room:)
+    return unless room
+
     Rails.logger.info({ event: "clear_moderation_queue", room_code: room.code })
     Turbo::StreamsChannel.broadcast_update_to(
       room,

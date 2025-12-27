@@ -17,10 +17,12 @@
           <% end %>
         </div>
 
-        <div data-player-card-target="actions" class="hidden flex gap-2">
-          <%= button_to "Make Host", reassign_host_room_path(player.room.code, player_id: player.id), method: :post, class: "text-xs bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded-lg transition-all", title: "Make this player the host" %>
-          <%= button_to "Kick", player_path(player), method: :delete, class: "text-xs bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg transition-all", title: "Remove this player from the room", data: { turbo_confirm: "Are you sure you want to kick #{player.name}?" } %>
-        </div>
+        <% if player.room.host.present? && player != player.room.host %>
+          <div data-player-card-target="actions" class="hidden flex gap-2">
+            <%= button_to "Make Host", reassign_host_room_path(player.room.code, player_id: player.id), method: :post, class: "text-xs bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded-lg transition-all", title: "Make this player the host" %>
+            <%= button_to "Kick", player_path(player), method: :delete, class: "text-xs bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg transition-all", title: "Remove this player from the room", data: { turbo_confirm: "Are you sure you want to kick #{player.name}?" } %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
