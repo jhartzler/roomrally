@@ -20,9 +20,9 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  ssl: true
+  host: roomrally.app
 
 # Where you keep your container images.
 registry:
@@ -56,6 +56,7 @@ env:
     # Match this to any external database server to configure Active Record correctly
     # Use roomrally-db for a db accessory server on same machine via local kamal docker network.
     DB_HOST: roomrally-db
+    REDIS_URL: redis://roomrally-redis:6379/1
 
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
