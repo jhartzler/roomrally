@@ -1,6 +1,6 @@
-# OpenJokeMachine
+# Room Rally
 
-OpenJokeMachine is an open-source, real-time party game engine inspired by Jackbox Games. It allows multiple players to connect using their phones (Hand clients) to a central screen (Stage client) to play various interactive games.
+Room Rally is an open-source, real-time party game engine inspired by Jackbox Games. It allows multiple players to connect using their phones (Hand clients) to a central screen (Stage client) to play various interactive games.
 
 ## Features
 

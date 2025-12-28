@@ -1,4 +1,4 @@
-# OpenJokeMachine
+# Room Rally
 
 ## Goal
 Create a Rails-based, open-source, real-time party game platform inspired by Jackbox Games.
