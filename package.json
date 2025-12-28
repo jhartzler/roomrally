@@ -11,16 +11,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jhartzler/openjokemachine.git"
+    "url": "git+https://github.com/jhartzler/roomrally.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/jhartzler/openjokemachine/issues"
+    "url": "https://github.com/jhartzler/roomrally/issues"
   },
-  "homepage": "https://github.com/jhartzler/openjokemachine#readme",
+  "homepage": "https://github.com/jhartzler/roomrally#readme",
   "devDependencies": {
     "playwright": "^1.56.1"
   }
