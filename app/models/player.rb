@@ -11,6 +11,10 @@ class Player < ApplicationRecord
 
   attribute :score, :integer, default: 0
 
+  def as_json(options = {})
+    super(options.merge(except: [ :session_id ]))
+  end
+
   private
 
   def generate_session_id
