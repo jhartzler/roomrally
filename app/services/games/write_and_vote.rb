@@ -65,11 +65,14 @@ module Games
       # Use the game's pack prompts, or fall back to DEFAULT scoped pool (safety net)
       # NEVER fall back to global Prompt.all because that leaks private user prompts.
       prompt_scope = (game.prompt_pack || PromptPack.default).prompts
-      master_prompts = prompt_scope.where.not(id: used_prompt_ids).order("RANDOM()").limit(num_players)
+      available_prompt_ids = prompt_scope.where.not(id: used_prompt_ids).pluck(:id)
+      sampled_ids = available_prompt_ids.sample(num_players)
 
-      if master_prompts.count < num_players
+      if sampled_ids.size < num_players
         raise "Not enough master prompts to start round #{round_number}."
       end
+
+      master_prompts = Prompt.where(id: sampled_ids).to_a.shuffle
 
 
       prompt_instances = master_prompts.map do |master_prompt|

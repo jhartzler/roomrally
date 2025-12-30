@@ -221,6 +221,13 @@ RSpec.describe Games::WriteAndVote do
       # Intersection should be empty
       expect(round_1_prompt_ids & round_2_prompt_ids).to be_empty
     end
+
+    it 'does not use DB-level RANDOM() sorting for scalability' do
+      # Expecting order("RANDOM()") NOT to be called ensures we moved to app-level sampling
+      expect_any_instance_of(ActiveRecord::Relation).not_to receive(:order).with("RANDOM()") # rubocop:disable RSpec/AnyInstance
+
+      described_class.assign_prompts_for_round(game:, round_number: 1)
+    end
   end
 
 
