@@ -6,7 +6,8 @@ class VotesController < ApplicationController
     @vote = Vote.new(player: current_player, response: @response)
 
     unless @vote.save
-      if @vote.errors[:base].include?("You cannot vote for your own response")
+      if @vote.errors[:base].include?("You cannot vote for your own response") ||
+         @vote.errors[:base].include?("You cannot vote for a response in another room")
         head :forbidden
       elsif @vote.errors[:base].include?("You have already voted for this prompt")
         head :unprocessable_content

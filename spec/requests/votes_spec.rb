@@ -53,5 +53,16 @@ RSpec.describe "Votes", type: :request do
         expect(response).to have_http_status(:unprocessable_content)
       end
     end
+
+    context "when voting for response in another room" do
+      it "returns forbidden status" do
+        # creating a response creates a new player, prompt_instance, game, room by default
+        # ensuring it is separate from the `player` and `room` in `let`
+        other_response = create(:response)
+
+        post votes_path, params: { vote: { response_id: other_response.id } }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
   end
 end
