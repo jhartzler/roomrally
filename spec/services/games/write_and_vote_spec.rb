@@ -230,6 +230,41 @@ RSpec.describe Games::WriteAndVote do
     end
   end
 
+  describe '.check_all_responses_submitted' do
+    let(:game) { create(:write_and_vote_game, status: "writing") }
+    let(:room) { create(:room, current_game: game) }
+
+    before do
+      create(:prompt_instance, write_and_vote_game: game, round: 1)
+      allow(room).to receive(:broadcast_replace_to).and_return(true)
+    end
+
+    it "transitions to voting when all responses are submitted" do
+      # Setup responses as submitted
+      game.prompt_instances.each do |pi|
+        # Assume 2 players for simplicity
+        create(:response, prompt_instance: pi, status: :submitted)
+        create(:response, prompt_instance: pi, status: :submitted)
+      end
+      
+      # Mock the check to return true (since we manually created them)
+      allow(game).to receive(:all_responses_submitted?).and_return(true)
+      allow(game).to receive(:start_timer!)
+
+      described_class.check_all_responses_submitted(game:)
+
+      expect(game.reload.status).to eq("voting")
+    end
+
+    it "does not transition if responses are missing" do
+      allow(game).to receive(:all_responses_submitted?).and_return(false)
+      
+      described_class.check_all_responses_submitted(game:)
+      
+      expect(game.reload.status).to eq("writing")
+    end
+  end
+
 
   describe '.handle_timeout' do
     let(:room) { create(:room) }
