@@ -75,7 +75,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     # Facilitator should see the response
     expect(page).to have_content("Funny Answer")
-    expect(page).to have_content("BOB")
+    expect(page).to have_content("Bob")
 
     # Rejection flow
     # Click Reject button to open modal (simulated by finding the button)
