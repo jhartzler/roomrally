@@ -75,7 +75,7 @@ RSpec.describe 'Player Join Flow', type: :system do
       host_player = Player.find_by!(name: "Host Player")
       within "#player_#{host_player.id}" do
         # This is the key fix: we assert the buttons' container is in the DOM but hidden.
-        expect(page).to have_selector("[data-player-card-target='actions']", visible: :hidden)
+        expect(page).to have_css("[data-player-card-target='actions'].hidden")
       end
     end
   end

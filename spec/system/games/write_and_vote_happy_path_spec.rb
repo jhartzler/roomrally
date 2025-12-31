@@ -68,11 +68,13 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
             click_on "Submit"
           end
 
-          # After submission, the next prompt becomes active (or we are done)
-          # We wait for the "active" indicator to move or for Success/Vote screen.
+          # Wait for the form to disappear.
+          # If index is 0, we expect 1 form remaining.
+          # If index is 1, we expect 0 forms remaining (or transition to voting).
           if index == 0
-             # Wait for the first one to be marked submitted (or just wait for next form)
-             expect(page).to have_content("Your answer has been submitted!", wait: 5)
+            expect(page).to have_css('form[action^="/responses"]', count: 1, wait: 10)
+          else
+            expect(page).to have_no_css('form[action^="/responses"]', wait: 10)
           end
         end
 
