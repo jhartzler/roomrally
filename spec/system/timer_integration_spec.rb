@@ -84,7 +84,7 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       uncheck "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
+      expect(page).to have_content("Write your best answer...")
       expect(page).not_to have_content("TIME LEFT")
     end
 

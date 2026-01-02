@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
-  let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote", user: nil) }
+  let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote") }
 
   before do
     # Ensure sufficient prompts exist for the game in the DEFAULT pack
@@ -39,13 +39,13 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       click_on "Start Game"
 
       expect(page).to have_content("Game started!")
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
+      expect(page).to have_content("Write your best answer...")
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     end
 
     [ :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
+      expect(page).to have_content("Write your best answer...")
         expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
       end
     end
@@ -61,12 +61,8 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
           # We wait for *any* form to appear (the active one).
           expect(page).to have_selector('form[action^="/responses"]', count: 1, wait: 10)
 
-          form = first('form[action^="/responses"]')
-
-          within form do
-            fill_in "response[body]", with: "#{player_name} Answer #{index + 1}"
-            click_on "Submit"
-          end
+          fill_in "response[body]", with: "#{player_name} Answer #{index + 1}"
+          click_on "Submit"
 
           # Wait for the form to disappear.
           # If index is 0, we expect 1 form remaining.

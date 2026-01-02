@@ -240,27 +240,19 @@ RSpec.describe Games::WriteAndVote do
     end
 
     it "transitions to voting when all responses are submitted" do
-      # Setup responses as submitted
-      game.prompt_instances.each do |pi|
-        # Assume 2 players for simplicity
-        create(:response, prompt_instance: pi, status: :submitted)
-        create(:response, prompt_instance: pi, status: :submitted)
-      end
-      
-      # Mock the check to return true (since we manually created them)
-      allow(game).to receive(:all_responses_submitted?).and_return(true)
-      allow(game).to receive(:start_timer!)
+      game.prompt_instances.each { |pi| create_list(:response, 2, prompt_instance: pi, status: :submitted) }
+
+      allow(game).to receive_messages(all_responses_submitted?: true, start_timer!: true)
 
       described_class.check_all_responses_submitted(game:)
-
       expect(game.reload.status).to eq("voting")
     end
 
     it "does not transition if responses are missing" do
       allow(game).to receive(:all_responses_submitted?).and_return(false)
-      
+
       described_class.check_all_responses_submitted(game:)
-      
+
       expect(game.reload.status).to eq("writing")
     end
   end
