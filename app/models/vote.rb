@@ -32,7 +32,7 @@ class Vote < ApplicationRecord
   def response_must_be_in_same_room
     return unless response && player
 
-    if response.player.room != player.room
+    if response.room != player.room
       errors.add(:base, "You cannot vote for a response in another room")
     end
   end
