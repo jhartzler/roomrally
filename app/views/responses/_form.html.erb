@@ -24,7 +24,7 @@
         </div>
       <% end %>
 
-      <%= form_with model: response, url: response_path(response), method: :patch, local: true do |f| %>
+      <%= form_with model: response, url: response_path(response), method: :patch, local: true, id: dom_id(response, :edit_form) do |f| %>
         <%= f.text_area :body, class: "w-full bg-black/20 border-2 border-white/10 rounded-2xl p-4 text-white text-lg placeholder-white/30 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-black/30 outline-none transition-all resize-none shadow-inner", rows: 3, placeholder: "Type your answer...", value: (response.status == "rejected" ? response.body : "") %>
         
         <%= f.submit (response.status == "rejected" ? "Submit Revision" : "Submit Response"), class: "w-full mt-6 bg-orange-500 hover:bg-orange-600 active:scale-[0.95] text-white font-black py-4 rounded-2xl shadow-lg shadow-orange-900/20 transition-all text-lg tracking-tight cursor-pointer" %>

@@ -19,7 +19,7 @@ class ResponsesController < ApplicationController
           render turbo_stream: turbo_stream.update(
             "hand_screen",
             partial: "rooms/hand_screen_content",
-            locals: { room: @response.player.room.reload, player: @response.player }
+            locals: { room: @response.player.room.reload, player: @response.player.reload }
           )
         end
         format.html { redirect_to room_hand_path(@response.player.room) }

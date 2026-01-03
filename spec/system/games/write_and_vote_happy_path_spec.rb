@@ -59,18 +59,21 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
         2.times do |index|
           # In sequential mode, we only see the ACTIVE form.
           # We wait for *any* form to appear (the active one).
-          expect(page).to have_selector('form[action^="/responses"]', count: 1, wait: 10)
+          # We need to make sure we don't double-fill the same form.
+          # Get the ID of the form we are about to fill
+          form_element = find('form[action^="/responses"]')
+          form_id = form_element[:id]
 
           fill_in "response[body]", with: "#{player_name} Answer #{index + 1}"
           click_on "Submit"
 
-          # Wait for the form to disappear.
-          # If index is 0, we expect 1 form remaining.
-          # If index is 1, we expect 0 forms remaining (or transition to voting).
+          # Strictly wait for THIS specific form to disappear from the DOM
+          expect(page).to have_no_css("##{form_id}", wait: 10)
+          expect(page).to have_content("Success! Your answer has been submitted!", wait: 10)
+
+          # If we have more to do, wait for the next one to appear
           if index == 0
             expect(page).to have_css('form[action^="/responses"]', count: 1, wait: 10)
-          else
-            expect(page).to have_no_css('form[action^="/responses"]', wait: 10)
           end
         end
 
