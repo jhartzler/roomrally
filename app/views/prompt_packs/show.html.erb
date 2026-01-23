@@ -9,12 +9,19 @@
         <span>Back to Library</span>
       <% end %>
 
-      <% if @prompt_pack.user == current_user %>
-        <%= link_to edit_prompt_pack_path(@prompt_pack), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105" do %>
-          <%= lucide_icon('edit-3', class: "w-4 h-4") %>
-          <span>Edit Pack</span>
+      <div class="flex items-center gap-3">
+        <%= button_to rooms_path(game_type: @prompt_pack.game_type, prompt_pack_id: @prompt_pack.id), method: :post, class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105" do %>
+          <%= lucide_icon('play', class: "w-4 h-4") %>
+          <span>Play Pack</span>
         <% end %>
-      <% end %>
+
+        <% if @prompt_pack.user == current_user %>
+          <%= link_to edit_prompt_pack_path(@prompt_pack), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105" do %>
+            <%= lucide_icon('edit-3', class: "w-4 h-4") %>
+            <span>Edit Pack</span>
+          <% end %>
+        <% end %>
+      </div>
     </div>
 
     <!-- Content Card -->

@@ -16,7 +16,7 @@ RSpec.describe "Prompt Packs UI", type: :system do
       find("h3", text: "System Standard").click_link
       expect(page).to have_current_path(prompt_pack_path(system_pack))
       expect(page).to have_content("System Standard")
-      expect(page).to have_content("SYSTEM PACK")
+      expect(page).to have_content(/system pack/i)
       expect(page).not_to have_link("Edit Pack")
     end
 

@@ -110,7 +110,7 @@ class RoomsController < ApplicationController
   end
 
   def room_params
-    params.permit(:game_type)
+    params.permit(:game_type, :prompt_pack_id)
   end
 
   def start_game_params
