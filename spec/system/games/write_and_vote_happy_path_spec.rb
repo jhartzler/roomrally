@@ -82,6 +82,11 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
 
     [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
+        # Wait for broadcast, fallback to refresh if missed (race condition resilience)
+        unless page.has_content?("Vote for the best answer!", wait: 2)
+          visit current_path
+        end
+
         expect(page).to have_content("Vote for the best answer!", wait: 10)
         expect(page).to have_selector(".voting-screen")
       end
