@@ -3,6 +3,7 @@ class Vote < ApplicationRecord
   belongs_to :response
   validate :player_cannot_vote_for_own_response
   validate :player_can_only_vote_once_per_prompt_instance
+  validate :response_must_be_in_same_room
 
   private
 
@@ -25,6 +26,14 @@ class Vote < ApplicationRecord
 
     if existing_vote
       errors.add(:base, "You have already voted for this prompt")
+    end
+  end
+
+  def response_must_be_in_same_room
+    return unless response && player
+
+    if response.player.room_id != player.room_id
+      errors.add(:base, "You cannot vote for a response in another room")
     end
   end
 end

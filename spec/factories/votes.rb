@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :vote do
-    player { nil }
-    response { nil }
+    response
+    player { association :player, room: response.player.room }
   end
 end
