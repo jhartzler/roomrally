@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-slate-50 p-6 md:p-12 font-sans">
+<div class="p-6 md:p-12 font-sans">
   <div class="max-w-4xl mx-auto">
     <!-- Header / Navigation -->
     <div class="flex items-center justify-between mb-8">
-      <%= link_to prompt_packs_path, class: "group flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-bold" do %>
-        <div class="p-2 rounded-full bg-slate-200 group-hover:bg-blue-100 transition-colors">
+      <%= link_to prompt_packs_path, class: "group flex items-center gap-2 text-blue-200 hover:text-white transition-colors font-bold" do %>
+        <div class="p-2 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors border border-white/10">
            <%= lucide_icon('arrow-left', class: "w-5 h-5") %>
         </div>
         <span>Back to Library</span>
@@ -16,7 +16,7 @@
         <% end %>
 
         <% if @prompt_pack.user == current_user %>
-          <%= link_to edit_prompt_pack_path(@prompt_pack), class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105" do %>
+          <%= link_to edit_prompt_pack_path(@prompt_pack), class: "inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105 active:scale-95" do %>
             <%= lucide_icon('edit-3', class: "w-4 h-4") %>
             <span>Edit Pack</span>
           <% end %>
@@ -25,56 +25,56 @@
     </div>
 
     <!-- Content Card -->
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/20">
       
       <!-- Top Banner area -->
-      <div class="bg-gradient-to-r from-slate-100 to-slate-50 p-8 border-b border-slate-100">
+      <div class="bg-white/5 p-8 border-b border-white/10">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <h1 class="text-3xl font-black text-slate-900"><%= @prompt_pack.name %></h1>
+              <h1 class="text-3xl font-black text-white"><%= @prompt_pack.name %></h1>
               <% if @prompt_pack.user.nil? %>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-700">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-500/20 text-blue-200 border border-blue-400/30">
                   System Pack
                 </span>
               <% else %>
-                 <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <%= @prompt_pack.live? ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600' %>">
-                   <div class="w-2 h-2 rounded-full <%= @prompt_pack.live? ? 'bg-green-500' : 'bg-slate-400' %>"></div>
+                 <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <%= @prompt_pack.live? ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-slate-300' %> border border-white/10">
+                   <div class="w-2 h-2 rounded-full <%= @prompt_pack.live? ? 'bg-green-400 animate-pulse' : 'bg-slate-400' %>"></div>
                    <%= @prompt_pack.status.humanize %>
                  </span>
               <% end %>
             </div>
-            <p class="text-slate-500 font-medium text-lg flex items-center gap-2">
-              <%= lucide_icon('gamepad-2', class: "w-5 h-5 text-slate-400") %>
+            <p class="text-blue-200 font-medium text-lg flex items-center gap-2">
+              <%= lucide_icon('gamepad-2', class: "w-5 h-5 text-blue-300") %>
               <%= @prompt_pack.game_type %>
             </p>
           </div>
 
           <div class="flex items-center gap-4">
-             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center min-w-[100px]">
-                <span class="block text-3xl font-black text-slate-900"><%= @prompt_pack.prompts.count %></span>
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Prompts</span>
+             <div class="bg-white/5 p-4 rounded-2xl shadow-lg border border-white/10 text-center min-w-[100px] backdrop-blur-sm">
+                <span class="block text-3xl font-black text-white"><%= @prompt_pack.prompts.count %></span>
+                <span class="text-xs font-bold text-blue-300 uppercase tracking-widest">Prompts</span>
              </div>
-             <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-center min-w-[100px]">
-                <span class="block text-3xl font-black text-slate-900"><%= @prompt_pack.supported_players_count || 0 %></span>
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Players</span>
+             <div class="bg-white/5 p-4 rounded-2xl shadow-lg border border-white/10 text-center min-w-[100px] backdrop-blur-sm">
+                <span class="block text-3xl font-black text-white"><%= @prompt_pack.supported_players_count || 0 %></span>
+                <span class="text-xs font-bold text-blue-300 uppercase tracking-widest">Players</span>
              </div>
           </div>
         </div>
       </div>
 
       <!-- Prompts List -->
-      <div class="p-8 bg-white">
-        <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2 pb-4 border-b border-slate-100">
-          <%= lucide_icon('list', class: "w-5 h-5 text-slate-400") %>
+      <div class="p-8 bg-black/20">
+        <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2 pb-4 border-b border-white/10 tracking-wide">
+          <%= lucide_icon('list', class: "w-5 h-5 text-blue-300") %>
           Prompts Included
         </h2>
         
         <% if @prompt_pack.prompts.any? %>
           <div class="grid grid-cols-1 gap-3">
             <% @prompt_pack.prompts.each do |prompt| %>
-              <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-700 font-medium hover:bg-slate-100 transition-colors flex items-start gap-3">
-                 <span class="mt-1 text-slate-400">
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-blue-50 font-medium hover:bg-white/10 transition-colors flex items-start gap-3">
+                 <span class="mt-1 text-blue-300">
                     <%= lucide_icon('message-square', class: "w-4 h-4") %>
                  </span>
                  <%= prompt.body %>
@@ -82,8 +82,8 @@
             <% end %>
           </div>
         <% else %>
-          <div class="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-             <p class="text-slate-400 font-medium">This pack has no prompts yet.</p>
+          <div class="text-center py-12 bg-white/5 rounded-2xl border-2 border-dashed border-white/10">
+             <p class="text-blue-300/50 font-medium">This pack has no prompts yet.</p>
           </div>
         <% end %>
       </div>
