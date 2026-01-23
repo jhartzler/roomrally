@@ -7,9 +7,10 @@ RSpec.describe Vote, type: :model do
   end
 
   describe "validations" do
+    let(:room) { create(:room) }
     let(:prompt_instance) { create(:prompt_instance) }
-    let(:voter) { create(:player) }
-    let(:author) { create(:player) }
+    let(:voter) { create(:player, room:) }
+    let(:author) { create(:player, room:) }
     let(:author_response) { create(:response, prompt_instance:, player: author) }
 
     it "is valid when voting for another player's response" do
@@ -24,8 +25,7 @@ RSpec.describe Vote, type: :model do
     end
 
     it "is invalid when voting twice for the same prompt instance" do
-      other_response = create(:response, prompt_instance:)
-      create(:vote, player: voter, response: other_response)
+      create(:vote, player: voter, response: create(:response, prompt_instance:, player: create(:player, room:)))
 
       vote = described_class.new(player: voter, response: author_response)
       expect(vote).not_to be_valid
