@@ -6,7 +6,7 @@
        <span class="text-5xl font-black text-white/50 block font-mono" data-timer-target="output visual"><%= game.time_remaining.ceil %>s</span>
     </div>
     <% current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index] %>
-    <p class="text-2xl text-purple-300 font-bold uppercase tracking-widest mb-4">Prompt</p>
+    <p class="text-2xl text-blue-200 font-bold uppercase tracking-widest mb-4">Prompt</p>
     <h2 class="text-5xl md:text-7xl font-black text-white leading-tight">
       <%= current_prompt&.body || "Loading prompt..." %>
     </h2>
@@ -29,6 +29,6 @@
   </div>
 
   <div class="mt-12">
-    <p class="text-3xl text-indigo-300 animate-pulse font-semibold">Cast your votes now!</p>
+    <p class="text-3xl text-blue-200 animate-pulse font-semibold">Cast your votes now!</p>
   </div>
 </div>

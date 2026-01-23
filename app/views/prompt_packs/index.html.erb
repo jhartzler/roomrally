@@ -1,19 +1,19 @@
-<div class="min-h-screen bg-slate-50 p-6 md:p-12 font-sans">
+<div class="p-6 md:p-12 font-sans">
   <header class="max-w-5xl mx-auto mb-10 flex justify-between items-end">
     <div>
-      <h1 class="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600">
+      <h1 class="text-4xl font-black text-white tracking-tighter drop-shadow-md">
         Library
     </h1>
-    <p class="text-slate-500 font-medium">Manage your collection of chaos.</p>
+    <p class="text-blue-200 font-medium">Manage your collection of chaos.</p>
   </div>
   
   <div class="flex items-center gap-4">
-    <%= link_to dashboard_path, class: "text-slate-500 hover:text-blue-600 font-bold text-sm flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors" do %>
+    <%= link_to dashboard_path, class: "text-blue-200 hover:text-white font-bold text-sm flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/5 transition-colors" do %>
        <%= lucide_icon('layout-dashboard', class: "w-4 h-4", "aria-hidden": true) %>
        Dashboard
     <% end %>
 
-    <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105" do %>
+    <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95" do %>
       <%= lucide_icon('plus', class: "w-5 h-5", "aria-hidden": true) %>
       <span>New Pack</span>
     <% end %>
@@ -22,8 +22,8 @@
 
 <!-- Template Gallery Section -->
 <section class="max-w-5xl mx-auto mb-12">
-  <h2 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-    <%= lucide_icon('layout-template', class: "w-6 h-6 text-slate-400", "aria-hidden": true) %>
+  <h2 class="text-xl font-black text-white mb-6 flex items-center gap-2 tracking-wide">
+    <%= lucide_icon('layout-template', class: "w-6 h-6 text-blue-200/50", "aria-hidden": true) %>
     Template Gallery
   </h2>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -32,7 +32,7 @@
     <% end %>
     
     <% if @system_packs.empty? %>
-        <div class="col-span-full text-center py-8 text-slate-400 font-medium italic">
+        <div class="col-span-full text-center py-8 text-blue-200/50 font-medium italic">
           No system templates available.
         </div>
       <% end %>
@@ -41,8 +41,8 @@
 
   <!-- My Packs Section -->
   <section class="max-w-5xl mx-auto">
-    <h2 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-      <%= lucide_icon('folder-open', class: "w-6 h-6 text-slate-400", "aria-hidden": true) %>
+    <h2 class="text-xl font-black text-white mb-6 flex items-center gap-2 tracking-wide">
+      <%= lucide_icon('folder-open', class: "w-6 h-6 text-blue-200/50", "aria-hidden": true) %>
       My Packs
     </h2>
     
@@ -53,13 +53,13 @@
         <% end %>
       </div>
     <% else %>
-      <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-        <div class="mx-auto w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-6">
+      <div class="text-center py-20 bg-white/5 backdrop-blur-md rounded-3xl border-2 border-dashed border-white/10">
+        <div class="mx-auto w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-blue-200/30 mb-6">
           <%= lucide_icon('folder-plus', class: "w-10 h-10", "aria-hidden": true) %>
         </div>
-        <h3 class="text-2xl font-black text-slate-900 mb-2">No Prompt Packs Yet</h3>
-        <p class="text-slate-500 font-medium mb-8 max-w-sm mx-auto">Create your first pack to start organizing your custom prompts.</p>
-        <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105" do %>
+        <h3 class="text-2xl font-black text-white mb-2">No Prompt Packs Yet</h3>
+        <p class="text-blue-200 font-medium mb-8 max-w-sm mx-auto">Create your first pack to start organizing your custom prompts.</p>
+        <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95" do %>
           <%= lucide_icon('plus', class: "w-5 h-5", "aria-hidden": true) %>
           <span>Create Prompt Pack</span>
         <% end %>
