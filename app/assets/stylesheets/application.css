@@ -8,3 +8,29 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+.roomrally-logo {
+  /* "Nunito" gives it that rounded, friendly app feel */
+  font-family: 'Nunito', sans-serif;
+  
+  /* Size and Weight */
+  font-size: 3.5rem; /* Adjust based on your header size */
+  font-weight: 900;  /* Extra Black/Bold */
+  font-style: italic; /* Adds the forward momentum */
+  
+  /* "Room" Color (White) */
+  color: #ffffff;
+  
+  /* Layout */
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.03em; /* Slight tightening for a cohesive logo look */
+  
+  /* subtle drop shadow to pop against the blue background */
+  text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* "Rally" Color (Orange) */
+.roomrally-logo span {
+  color: #FF8C00; /* Matches the vibrant orange button */
+}
