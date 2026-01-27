@@ -1,37 +1,31 @@
-# Room Rally
+# Room Rally Documentation
 
 ## Goal
-Create a Rails-based, open-source, real-time party game platform inspired by Jackbox Games.
 
-## Core Technology Stack
-- **Backend**: Ruby on Rails 8+
-- **Real-time**: Action Cable (WebSockets)
-- **Frontend**: Hotwire (Turbo + Stimulus)
-- **Background Jobs**: Sidekiq
-- **Database**: PostgreSQL
-- **Cache/Pub-Sub**: Redis
-- **Testing**: RSpec, Capybara (with Playwright driver)
-- **Code Quality**: RuboCop
+A Rails-based, open-source, real-time party game platform inspired by Jackbox Games.
+
+## Technology Stack
+
+- **Backend**: Ruby on Rails 8+ with PostgreSQL
+- **Real-time**: Turbo Streams over Action Cable
+- **Frontend**: Hotwire (Turbo + Stimulus), Tailwind CSS
+- **Background Jobs**: Sidekiq with Redis
+- **Testing**: RSpec, Capybara with Playwright
 
 ## Core Experience
-- **Main Screen (Stage)**: Displays the game state to all players.
-- **Controllers (Hands/Tablets/Laptops)**: Players use personal devices to join a room and interact.
-- **Room-Based**: Games are accessed via 4-letter codes (e.g., "ABCD").
-- **Session Length**: 10-15 minutes per game.
-- **Target Audience**: Groups of friends playing together in the same physical space.
 
-## MVP Features
+- **Stage**: Main screen displaying game state to all players
+- **Hand**: Personal device for player input (phone/tablet)
+- **Room Codes**: 4-letter codes for easy joining
+- **Session-based**: No accounts required, players identified by browser session
 
-### Game Creation & Lobby
-- Generate unique 4-letter codes.
-- Players join via code.
-- Display waiting players on Stage and hands.
-- Minimum 2 players to start.
-- First player is host who can start the game.
+## Documentation Index
 
-### WriteAndVote Game Flow (Example MVP Game)
-1. **Prompting Phase**: Display a prompt, players submit text answers (60s).
-2. **Voting Phase**: Display all answers anonymously, players vote for favorites (30s).
-3. **Results Phase**: Show votes received and update scores (5s display).
-4. **Repeat**: 3-5 rounds total.
-5. **Final Scores**: Display winner.
+- [Architecture](architecture.md) - System design and request flow
+- [Game Logic Guide](game_logic_guide.md) - How to add new game types
+- [Data Models](data_models.md) - Model relationships and design
+- [Client Guide](client_guide.md) - Frontend architecture
+- [Real-time Communication](real_time_communication.md) - Turbo Streams broadcasting
+- [Background Services](background_services.md) - Timers and Sidekiq
+- [Development Guide](development_guide.md) - TDD workflow and practices
+- [Style Guide](STYLE_GUIDE.md) - UI design system

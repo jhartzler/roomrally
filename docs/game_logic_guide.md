@@ -1,56 +1,50 @@
 # Game Logic Guide
 
-This guide explains how to implement the logic for a new game.
+This guide explains how game logic is organized and how to add a new game type.
 
 ## The Strategy Pattern
-Each game is a "Strategy" module that encapsulates its own rules and state transitions. This module is responsible for a single thing: managing the gameplay for its specific game type.
 
-A game logic module **does**:
-- Validate player actions against game rules (e.g., "Can this player vote right now?").
-- Create and update game-specific models (e.g., `WriteAndVote::Answer`).
-- Determine when to transition the game state (e.g., move from "prompting" to "voting").
-- **Publish events** when significant actions occur.
+Each game type is a module in `app/services/games/` that encapsulates its rules and state transitions. This allows adding new games without modifying controllers, broadcasters, or other infrastructure.
 
-A game logic module **does not**:
-- Calculate scores (`ScoreListener` does this).
-- Broadcast to clients (`BroadcastListener` does this).
-- Manage timers (`TimerService` does this).
+A game logic module is responsible for:
+- Validating player actions against game rules
+- Updating game-specific models and state
+- Determining when to transition between game phases
+- Calling `GameBroadcaster` to push UI updates to clients
 
-## The Game Logic Interface
-To be a valid game type, your module must be added to the `GAME_TYPE_REGISTRY` and respond to a common set of messages that the `GameChannel` will send to it.
+## Adding a New Game Type
 
-**Required Methods:**
-- `handle_start(player:, data:)`: Called when the host starts the game.
-- `handle_submission(player:, data:)`: Called when a player submits data (e.g., an answer, a drawing).
-- `handle_vote(player:, data:)`: Called when a player votes.
-
-## Publishing Events
-Your game logic must not have side effects. Instead, it publishes events using a pub/sub library like Wisper. This decouples the game from other parts of the system.
-
-**Example Flow:**
-1. In `handle_submission`, you determine all players have now submitted their answers.
-2. Instead of calling a broadcaster, you publish an event: `publish(:all_answers_in, game: @game)`.
-3. A separate `BroadcastListener` is subscribed to this event. It wakes up, sees the event, and handles the work of rendering and broadcasting the "Voting" screen.
-
-**Common Events to Publish:**
-- `:round_started`
-- `:answer_submitted`
-- `:all_answers_in`
-- `:voting_started`
-- `:vote_cast`
-- `:all_votes_in`
-- `:round_complete`
-- `:game_complete`
+1. **Create a game model** in `app/models/` with an AASM state machine defining the game phases
+2. **Create a game logic module** in `app/services/games/your_game.rb`
+3. **Create view partials** in `app/views/games/your_game/` for each game phase (naming convention: `stage_[status].html.erb`)
+4. **Update Room model** if needed to support the new game type
+5. **Write system tests** that simulate multiple players through the full game flow
 
 ## State Management
-The `Game` and `Round` models have a `status` column (e.g., `lobby`, `prompting`, `voting`). Your logic module is responsible for updating this status as the game progresses.
 
-For the MVP, this is done with manual checks. If state transitions become complex, we may introduce a state machine gem like `aasm`.
+Games use AASM state machines to manage phases. Look at existing game models for the pattern. The state machine defines:
+- Valid states (e.g., `writing`, `voting`, `finished`)
+- Transitions between states
+- Callbacks that run on transitions
 
-## Example: WriteAndVote Game Flow
+## Concurrency
 
-- **States**: `lobby` -> `prompting` -> `voting` -> `results` -> `complete`
-- **Transitions**:
-  - `lobby` -> `prompting`: Triggered by `handle_start`. Logic creates the first `Round`, sets game status to `prompting`, starts a timer, and publishes `:round_started`.
-  - `prompting` -> `voting`: Triggered when all players have answered OR the timer expires. Logic sets status to `voting`, starts a new timer, and publishes `:voting_started`.
-  - `voting` -> `results`: Triggered when all players have voted OR timer expires. Logic publishes `:round_complete`. The `ScoreListener` will hear this, calculate scores, and then publish `:scores_calculated`. The `BroadcastListener` hears *that* and shows the results screen.
+When checking conditions like "have all players submitted?" before transitioning state, always use `with_lock` to prevent race conditions:
+
+```ruby
+game.with_lock do
+  if game.all_responses_submitted?
+    transition_to_voting(game:)
+  end
+end
+```
+
+## Broadcasting Pattern
+
+Game logic calls `GameBroadcaster` methods directly after state changes. The broadcaster renders the appropriate partial based on game type and status.
+
+Convention for stage partials: `games/[game_type]/stage_[status]`
+
+## Timer Integration
+
+If your game has timed phases, include the `HasRoundTimer` concern in your game model and implement `process_timeout(round_number, step_number)` to handle what happens when time expires.

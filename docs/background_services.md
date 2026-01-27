@@ -1,30 +1,25 @@
 # Background Services
 
-This document describes asynchronous services, primarily the Timer Service.
-
-## Timer Service
+## Timer System
 
 ### Philosophy
-The server is the authority on time. Client-side timers are for user experience only and are not trusted. A small amount of variance (±3 seconds) between clients is acceptable for a casual party game.
 
-### MVP Implementation: Sidekiq
-The timer is implemented using background jobs.
+The server is the authority on time. Client-side timers are for display only and are not trusted. A small amount of variance between clients is acceptable for a casual party game.
 
-**How it works:**
-1. When a timed phase begins (e.g., "prompting"), the game logic calculates an expiration time.
-2. It stores `timer_expires_at` and a `timer_event` (e.g., `"prompting_timer_expired"`) on the `Room` model.
-3. It schedules a Sidekiq job to run at the `timer_expires_at` time.
-4. When the job executes, it checks if the game is still in the expected state.
-5. If so, it publishes the `timer_event` (e.g., `:prompting_timer_expired`).
-6. The appropriate game logic module listens for this event to transition the game state (e.g., move from "prompting" to "voting").
+### Implementation
 
-**Pros:**
-- **Simple**: Uses existing Sidekiq infrastructure.
-- **Resilient**: Sidekiq jobs persist across server restarts. If the server crashes, the timer job will still execute when it comes back up (or shortly after), allowing the game to recover.
-- **Testable**: Sidekiq provides testing helpers to control job execution in tests.
+Timers are implemented using Sidekiq jobs:
+
+1. When a timed phase begins, the game logic calls `game.start_timer!(duration)`
+2. The `HasRoundTimer` concern stores `round_ends_at` on the game model and schedules a `GameTimerJob`
+3. When the job executes, it calls `game.process_timeout(round_number, step_number)`
+4. The game model verifies it's still in the expected state before handling the timeout
+5. Timeout handling is game-specific (e.g., fill empty responses, advance to next phase)
 
 ### Reconnection
-If a player disconnects and reconnects while a timer is active, the server can calculate the remaining time from the `room.timer_expires_at` value and send it to the client so their countdown can start from the correct place.
 
-### Future Complexity
-We will only add more complex timer synchronization (e.g., per-second broadcasts, clock skew detection) if playtesting reveals it to be a significant problem. The current Sidekiq-based approach is sufficient for the MVP.
+Timer state (`round_ends_at`) is stored on the game model. When a client reconnects, the server can calculate remaining time and send it to the client.
+
+### Sidekiq
+
+Sidekiq handles all background job processing. Configuration is in `config/sidekiq.yml` if present, otherwise uses defaults. In development, `bin/dev` starts Sidekiq automatically via Procfile.dev.

@@ -3,50 +3,54 @@
 The client architecture is based on **Hotwire (Turbo + Stimulus)**, following an HTML-Over-the-Wire approach.
 
 ## Technology
-- **Hotwire**: Eliminates the need for a separate frontend framework. The server sends fully-rendered HTML, which is updated in place by Turbo Streams.
-- **Stimulus**: Used for small, client-side interactions like handling form submissions, managing WebSocket connections, or controlling a countdown timer display.
-- **Importmap**: Manages JavaScript dependencies without a build step.
+
+- **Turbo**: Handles page updates via Turbo Streams (real-time) and Turbo Drive (navigation)
+- **Stimulus**: Small client-side controllers for interactions like form handling, timer display, fullscreen mode
+- **Importmap**: Manages JavaScript dependencies without a build step
 
 ## Client Types
 
-There are two distinct types of clients in any game.
+### Stage Client (`/rooms/:code/stage`)
 
-### 1. Stage Client (`/rooms/:code/stage`)
 The main screen that all players look at.
-- **Purpose**: Display-only, showing the public game state.
-- **Characteristics**: Large screen format, receives game-wide broadcasts, minimal to no interaction.
-- **Key Views**: Lobby (code, player list), Prompting (question), Voting (all answers), Results (scores).
-- **Stimulus Controllers**: `stage_controller` (fullscreen, wake lock), `game_connection_controller`, `timer_controller`.
 
-### 2. `Hand Client (`/rooms/:code/hand`)
-The personal device each player uses to interact with the game.
-- **Purpose**: Input device and personal display.
-- **Characteristics**: Mobile-first, interactive with forms and buttons, shows player-specific state.
-- **Key Views**: Join Room (enter name), Lobby, Prompting (answer form), Waiting, Voting (buttons), Results (your score).
-- **Stimulus Controllers**: `hand_controller` (form submission), `game_connection_controller`, `timer_controller`.
+- **Purpose**: Display-only, showing the public game state
+- **Characteristics**: Large screen format, minimal interaction
+- **Receives**: Game-wide broadcasts (room stream)
 
-## Turbo Streams & UI Updates
-The server drives all UI changes. The pattern is:
-1. A game event occurs on the server.
-2. A listener renders a Rails partial into an HTML string.
-3. The listener wraps that HTML in a `<turbo-stream>` tag with an action (e.g., `replace`) and a target DOM ID.
-4. This payload is broadcast over Action Cable.
-5. The client's browser receives the stream and automatically performs the DOM update.
+### Hand Client (`/rooms/:code/hand`)
 
-**Convention**: Broadcast entire screen updates rather than small fragments. This is simpler to reason about. Use consistent DOM IDs for targetable areas.
-- `#stage_screen`: Main content area on the Stage.
-- `#hand_screen`: Main content area on the Hand.
-- `#player_list`: The list of players, present on both clients.
-- `#timer`: The timer display.
+The personal device each player uses to interact.
 
-## Stimulus Controller Design
-- **`game_connection_controller`**: Shared controller responsible for establishing the WebSocket connection and providing an API for other controllers to send messages.
-- **`hand_controller` / `stage_controller`**: Handle client-specific interactions (e.g., intercepting a form submission on the phone to send it over the WebSocket).
-- **`timer_controller`**: Manages the visual countdown based on data received from the server.
+- **Purpose**: Input device and personal display
+- **Characteristics**: Mobile-first, interactive (forms, buttons)
+- **Receives**: Both game-wide broadcasts and player-specific updates
 
-## Routing and Sessions
-- `/`: Home page to create or join a room.
-- `/rooms/:code`: A splash page to choose between the Stage or Hand view.
-- `/rooms/:code/stage`: The Stage client.
-- `/rooms/:code/hand`: The Hand client.
-- A `session_id` stored in the Rails session is used to identify a player's browser. If they disconnect and reconnect, this ID allows them to rejoin the room in progress. No user accounts or passwords are required for the MVP.
+## UI Update Flow
+
+The server drives all UI changes:
+
+1. Game event occurs on the server
+2. `GameBroadcaster` renders a Rails partial
+3. Broadcasts via `Turbo::StreamsChannel` with target DOM ID
+4. Client's browser receives and automatically updates DOM
+
+## Stimulus Controllers
+
+Look in `app/javascript/controllers/` for client-side behavior. Controllers handle things like:
+- Form submission interception
+- Timer countdown display
+- Fullscreen/wake lock for Stage
+- WebSocket connection status
+
+## Routing
+
+- `/` - Home page (create or join room)
+- `/rooms/:code` - Room entry (choose Stage or Hand)
+- `/rooms/:code/stage` - Stage client
+- `/rooms/:code/hand` - Hand client
+- `/rooms/:code/backstage` - Host moderation interface
+
+## Session Identity
+
+Players are identified by Rails session. No login required. If a player disconnects and reconnects with the same browser session, they rejoin as the same player.

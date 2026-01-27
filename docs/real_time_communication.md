@@ -1,36 +1,40 @@
-# Real-Time Communication Layer
+# Real-Time Communication
 
-This layer is responsible for managing WebSocket connections and message traffic between the server and clients (Stages and Hands).
+This document describes how real-time updates flow from server to clients.
 
-## Core Component: `GameChannel`
-A single, generic `GameChannel` handles all real-time communication for all game types. This avoids channel proliferation and code duplication.
+## Technology
 
-### Responsibilities
-- **Authentication**: Identifies the connecting client (player or Stage) via the Rails session.
-- **Subscription**: Subscribes the client to the correct Turbo Streams for receiving UI updates.
-- **Routing**: Receives incoming messages (e.g., `submit_data`, `start_game`) and routes them to the appropriate Game Logic module based on the game's `game_type`.
-- **Authorization**: Performs basic checks to ensure the player is part of the game they are trying to interact with.
+The application uses **Turbo Streams** over Action Cable via the built-in `Turbo::StreamsChannel`. There are no custom Action Cable channels.
 
-The `GameChannel` itself contains **no game-specific logic**. It is purely a router.
+## How It Works
 
-## Game Type Registry
-To securely route messages, the channel uses a registry (a simple Hash) that maps `game_type` strings (e.g., `"WriteAndVote"`) to the corresponding game logic class (e.g., `WriteAndVote::Logic`). This avoids unsafe `constantize` calls on user-provided data.
+1. Clients subscribe to Turbo Streams on page load (handled automatically by Turbo)
+2. Server broadcasts updates via `Turbo::StreamsChannel.broadcast_*` methods
+3. Clients receive the stream and Turbo automatically updates the DOM
 
-## Turbo Streams
-The server communicates UI changes to clients almost exclusively through Turbo Streams.
+All broadcasting logic is centralized in `GameBroadcaster` (`app/broadcasters/game_broadcaster.rb`).
 
-### Stream Naming Convention
-- **Game-wide broadcasts**: Target the `Game` model itself. The Stage client subscribes to this stream.
-  - `stream_for @game`
-- **Player-specific broadcasts**: Target a unique stream combining the game and player. Hand clients subscribe to this in addition to the game-wide stream.
-  - `stream_for [@game, @player]`
+## Stream Subscriptions
 
-### Message Flow
-1. Client sends a message via WebSocket (e.g., a form submission handled by Stimulus).
-2. `GameChannel` receives the action.
-3. Channel identifies the game and player, finds the correct game logic module from the registry.
-4. Channel delegates the message to the game logic module (e.g., `WriteAndVote::Logic.handle_submission(player, data)`).
-5. Game logic processes the action and publishes an event (e.g., `:answer_submitted`).
-6. A `BroadcastListener` catches the event, renders the appropriate Rails partial into a Turbo Stream message.
-7. The listener broadcasts the Turbo Stream to the relevant stream(s).
-8. Clients receive the broadcast and automatically update the DOM.
+- **Room stream**: Stage clients subscribe to receive game-wide updates
+- **Player stream**: Hand clients subscribe to receive player-specific updates
+
+The views use `turbo_stream_from` helpers to establish subscriptions.
+
+## Broadcast Patterns
+
+`GameBroadcaster` provides methods for common broadcast scenarios:
+- `broadcast_stage(room:)` - Update the main stage display
+- `broadcast_hand(room:)` - Update all players' hand displays
+- `broadcast_player_joined/left` - Update player lists
+- `broadcast_response_submitted` - Update moderation queue
+
+## View Conventions
+
+Stage partials follow the naming convention: `games/[game_type]/stage_[status]`
+
+For example, when a WriteAndVote game is in the `voting` state, the broadcaster renders `games/write_and_vote/stage_voting`.
+
+## Why Not Custom Channels?
+
+Turbo Streams provides everything needed for this use case. Custom Action Cable channels would add complexity without benefit. The server pushes HTML updates; clients don't need to send messages over WebSocket (they use regular HTTP POST for actions).
