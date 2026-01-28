@@ -9,9 +9,19 @@ class Room < ApplicationRecord
 
   GAME_TYPES = [ "Write And Vote" ].freeze
 
+  # Default display names for each game type (used for whitelabeling)
+  GAME_DISPLAY_NAMES = {
+    "Write And Vote" => "ComedyClash"
+  }.freeze
+
 
   validates :code, uniqueness: { case_sensitive: false }
   validates :game_type, presence: true, inclusion: { in: GAME_TYPES }
+
+  # Returns the user-facing game name, with fallback to configured default
+  def display_name
+    super.presence || GAME_DISPLAY_NAMES[game_type] || game_type
+  end
 
   scope :active, -> { where.not(status: "finished") }
   scope :most_recent_by_type, -> { select("DISTINCT ON (game_type) rooms.*").order("game_type, created_at DESC") }

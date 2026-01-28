@@ -21,7 +21,7 @@
                    <h4 class="font-black text-2xl font-mono text-white tracking-wider group-hover:scale-105 transition-transform"><%= room.code %></h4>
                    <span class="px-2 py-0.5 bg-white/20 text-blue-100 text-xs font-bold rounded border border-white/10"><%= room.status %></span>
                 </div>
-                <p class="text-sm font-bold text-blue-200 mb-1 tracking-wide"><%= room.game_type %></p>
+                <p class="text-sm font-bold text-blue-200 mb-1 tracking-wide"><%= room.display_name %></p>
                 <p class="text-[10px] text-blue-300 mb-4 font-mono"><%= time_ago_in_words(room.created_at) %> ago</p>
               </div>
 

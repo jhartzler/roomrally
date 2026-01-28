@@ -77,4 +77,25 @@ RSpec.describe Room, type: :model do
       expect(room.enough_players?).to be true
     end
   end
+
+  describe '#display_name' do
+    it 'returns the custom display_name when set' do
+      room = create(:room, display_name: "Mike's Birthday Bash")
+      expect(room.display_name).to eq("Mike's Birthday Bash")
+    end
+
+    it 'returns the default display name when display_name is nil' do
+      room = create(:room, display_name: nil)
+      expect(room.display_name).to eq('ComedyClash')
+    end
+
+    it 'returns the default display name when display_name is blank' do
+      room = create(:room, display_name: '')
+      expect(room.display_name).to eq('ComedyClash')
+    end
+
+    it 'uses GAME_DISPLAY_NAMES mapping for defaults' do
+      expect(Room::GAME_DISPLAY_NAMES['Write And Vote']).to eq('ComedyClash')
+    end
+  end
 end
