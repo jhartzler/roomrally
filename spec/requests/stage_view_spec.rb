@@ -11,7 +11,7 @@ RSpec.describe "Stage View", type: :request do
 
     it "renders the room details" do
       get room_stage_path(room)
-      expect(response.body).to include("ComedyClash") # default display name
+      expect(response.body).to include("Comedy Clash") # default display name
       expect(response.body).to include(room.code)
     end
 

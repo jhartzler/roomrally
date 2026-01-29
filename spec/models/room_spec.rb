@@ -86,16 +86,16 @@ RSpec.describe Room, type: :model do
 
     it 'returns the default display name when display_name is nil' do
       room = create(:room, display_name: nil)
-      expect(room.display_name).to eq('ComedyClash')
+      expect(room.display_name).to eq('Comedy Clash')
     end
 
     it 'returns the default display name when display_name is blank' do
       room = create(:room, display_name: '')
-      expect(room.display_name).to eq('ComedyClash')
+      expect(room.display_name).to eq('Comedy Clash')
     end
 
     it 'uses GAME_DISPLAY_NAMES mapping for defaults' do
-      expect(Room::GAME_DISPLAY_NAMES['Write And Vote']).to eq('ComedyClash')
+      expect(Room::GAME_DISPLAY_NAMES['Write And Vote']).to eq('Comedy Clash')
     end
   end
 end

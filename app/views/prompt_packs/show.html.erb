@@ -10,9 +10,11 @@
       <% end %>
 
       <div class="flex items-center gap-3">
-        <%= button_to rooms_path(game_type: @prompt_pack.game_type, prompt_pack_id: @prompt_pack.id), method: :post, class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105" do %>
-          <%= lucide_icon('play', class: "w-4 h-4") %>
-          <span>Play Pack</span>
+        <%= form_with url: rooms_path, method: :post, class: "flex items-center gap-2" do |form| %>
+          <%= form.hidden_field :game_type, value: @prompt_pack.game_type %>
+          <%= form.hidden_field :prompt_pack_id, value: @prompt_pack.id %>
+          <%= form.text_field :display_name, placeholder: "Game name (optional)", class: "px-3 py-2 bg-white/20 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-green-400 text-sm w-48" %>
+          <%= form.submit "Play Pack", class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105 cursor-pointer" %>
         <% end %>
 
         <% if @prompt_pack.user == current_user %>

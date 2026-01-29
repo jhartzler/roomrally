@@ -11,7 +11,7 @@ class Room < ApplicationRecord
 
   # Default display names for each game type (used for whitelabeling)
   GAME_DISPLAY_NAMES = {
-    "Write And Vote" => "ComedyClash"
+    "Write And Vote" => "Comedy Clash"
   }.freeze
 
 

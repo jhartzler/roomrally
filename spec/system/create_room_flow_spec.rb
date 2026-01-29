@@ -20,7 +20,7 @@ RSpec.describe 'Room Creation Flow', type: :system do
     room = Room.find_by!(code: room_code)
 
     # Now that we have the room, we can make specific assertions
-    expect(page).to have_content("ComedyClash") # default display name
+    expect(page).to have_content("Comedy Clash") # default display name
     expect(page).to have_content(room.code)
     # The stage lobby should be visible
     expect(page).to have_selector("#stage_content")
