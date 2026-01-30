@@ -2,6 +2,12 @@ class SpeedTriviaGame < ApplicationRecord
   include AASM
   include HasRoundTimer
 
+  # Scoring Configuration
+  MAXIMUM_POINTS = 1000
+  MINIMUM_POINTS = 100
+  DECAY_FACTOR = 0.5 # Score drops to 50% at max time
+  GRACE_PERIOD = 0.5.seconds
+
   has_one :room, as: :current_game
   belongs_to :trivia_pack, optional: true
   has_many :trivia_question_instances, dependent: :destroy
