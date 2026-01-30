@@ -10,11 +10,6 @@
       <% end %>
 
       <div class="flex items-center gap-3">
-        <%= button_to rooms_path(game_type: @prompt_pack.game_type, prompt_pack_id: @prompt_pack.id), method: :post, class: "inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105" do %>
-          <%= lucide_icon('play', class: "w-4 h-4") %>
-          <span>Play Pack</span>
-        <% end %>
-
         <% if @prompt_pack.user == current_user %>
           <%= link_to edit_prompt_pack_path(@prompt_pack), class: "inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105 active:scale-95" do %>
             <%= lucide_icon('edit-3', class: "w-4 h-4") %>
@@ -22,6 +17,21 @@
           <% end %>
         <% end %>
       </div>
+    </div>
+
+    <!-- Play Pack Card -->
+    <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 mb-8">
+      <%= form_with url: rooms_path, method: :post, class: "space-y-3" do |form| %>
+        <%= form.hidden_field :game_type, value: @prompt_pack.game_type %>
+        <%= form.hidden_field :prompt_pack_id, value: @prompt_pack.id %>
+
+        <div>
+          <%= form.label :display_name, "Game Name (optional)", class: "block text-blue-200 text-xs font-bold mb-1" %>
+          <%= form.text_field :display_name, placeholder: "Leave blank for default", class: "w-full px-3 py-2 bg-white/20 border border-white/10 rounded-lg text-white placeholder-white/40 text-sm focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all" %>
+        </div>
+
+        <%= form.submit "Play Pack", class: "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md transition-all transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2" %>
+      <% end %>
     </div>
 
     <!-- Content Card -->
