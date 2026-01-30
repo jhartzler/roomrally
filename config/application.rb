@@ -38,6 +38,7 @@ module RoomRally
 
     # Set the queue adapter to Sidekiq
     config.active_job.queue_adapter = :sidekiq
+    config.exceptions_app = self.routes
 
     # Don't generate system test files.
     config.generators.system_tests = nil
