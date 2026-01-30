@@ -1,0 +1,159 @@
+- body: "What is the capital of France?"
+  correct_answer: "Paris"
+  options:
+    - "Paris"
+    - "London"
+    - "Berlin"
+    - "Madrid"
+
+- body: "Which planet is known as the Red Planet?"
+  correct_answer: "Mars"
+  options:
+    - "Mars"
+    - "Jupiter"
+    - "Venus"
+    - "Saturn"
+
+- body: "What is the largest ocean on Earth?"
+  correct_answer: "Pacific Ocean"
+  options:
+    - "Pacific Ocean"
+    - "Atlantic Ocean"
+    - "Indian Ocean"
+    - "Arctic Ocean"
+
+- body: "Who painted the Mona Lisa?"
+  correct_answer: "Leonardo da Vinci"
+  options:
+    - "Leonardo da Vinci"
+    - "Pablo Picasso"
+    - "Vincent van Gogh"
+    - "Michelangelo"
+
+- body: "What is the chemical symbol for gold?"
+  correct_answer: "Au"
+  options:
+    - "Au"
+    - "Ag"
+    - "Fe"
+    - "Cu"
+
+- body: "Which country has the largest population?"
+  correct_answer: "China"
+  options:
+    - "China"
+    - "India"
+    - "United States"
+    - "Indonesia"
+
+- body: "What year did World War II end?"
+  correct_answer: "1945"
+  options:
+    - "1945"
+    - "1944"
+    - "1946"
+    - "1943"
+
+- body: "What is the smallest prime number?"
+  correct_answer: "2"
+  options:
+    - "2"
+    - "1"
+    - "3"
+    - "0"
+
+- body: "Which element has the atomic number 1?"
+  correct_answer: "Hydrogen"
+  options:
+    - "Hydrogen"
+    - "Helium"
+    - "Oxygen"
+    - "Carbon"
+
+- body: "What is the capital of Japan?"
+  correct_answer: "Tokyo"
+  options:
+    - "Tokyo"
+    - "Osaka"
+    - "Kyoto"
+    - "Yokohama"
+
+- body: "Who wrote 'Romeo and Juliet'?"
+  correct_answer: "William Shakespeare"
+  options:
+    - "William Shakespeare"
+    - "Charles Dickens"
+    - "Jane Austen"
+    - "Mark Twain"
+
+- body: "What is the speed of light in a vacuum?"
+  correct_answer: "299,792 km/s"
+  options:
+    - "299,792 km/s"
+    - "150,000 km/s"
+    - "500,000 km/s"
+    - "1,000,000 km/s"
+
+- body: "Which planet has the most moons?"
+  correct_answer: "Saturn"
+  options:
+    - "Saturn"
+    - "Jupiter"
+    - "Uranus"
+    - "Neptune"
+
+- body: "What is the main ingredient in guacamole?"
+  correct_answer: "Avocado"
+  options:
+    - "Avocado"
+    - "Tomato"
+    - "Onion"
+    - "Lime"
+
+- body: "In what year was the iPhone first released?"
+  correct_answer: "2007"
+  options:
+    - "2007"
+    - "2005"
+    - "2008"
+    - "2010"
+
+- body: "What is the largest mammal in the world?"
+  correct_answer: "Blue Whale"
+  options:
+    - "Blue Whale"
+    - "African Elephant"
+    - "Giraffe"
+    - "Hippopotamus"
+
+- body: "Which country invented pizza?"
+  correct_answer: "Italy"
+  options:
+    - "Italy"
+    - "Greece"
+    - "United States"
+    - "France"
+
+- body: "What is the hardest natural substance on Earth?"
+  correct_answer: "Diamond"
+  options:
+    - "Diamond"
+    - "Gold"
+    - "Iron"
+    - "Titanium"
+
+- body: "How many continents are there?"
+  correct_answer: "7"
+  options:
+    - "7"
+    - "5"
+    - "6"
+    - "8"
+
+- body: "What is the currency of the United Kingdom?"
+  correct_answer: "Pound Sterling"
+  options:
+    - "Pound Sterling"
+    - "Euro"
+    - "Dollar"
+    - "Franc"
