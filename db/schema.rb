@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_28_040647) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_204443) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,6 +88,65 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_040647) do
     t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
+  create_table "speed_trivia_games", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "current_question_index", default: 0
+    t.datetime "round_closed_at"
+    t.datetime "round_started_at"
+    t.string "status"
+    t.integer "time_limit", default: 20
+    t.bigint "trivia_pack_id"
+    t.datetime "updated_at", null: false
+    t.index ["trivia_pack_id"], name: "index_speed_trivia_games_on_trivia_pack_id"
+  end
+
+  create_table "trivia_answers", force: :cascade do |t|
+    t.boolean "correct"
+    t.datetime "created_at", null: false
+    t.bigint "player_id", null: false
+    t.integer "points_awarded", default: 0
+    t.string "selected_option"
+    t.datetime "submitted_at"
+    t.bigint "trivia_question_instance_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_trivia_answers_on_player_id"
+    t.index ["trivia_question_instance_id"], name: "index_trivia_answers_on_trivia_question_instance_id"
+  end
+
+  create_table "trivia_packs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "game_type", default: "Speed Trivia"
+    t.boolean "is_default"
+    t.string "name"
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_trivia_packs_on_user_id"
+  end
+
+  create_table "trivia_question_instances", force: :cascade do |t|
+    t.text "body"
+    t.string "correct_answer"
+    t.datetime "created_at", null: false
+    t.jsonb "options"
+    t.integer "position"
+    t.bigint "speed_trivia_game_id", null: false
+    t.bigint "trivia_question_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["speed_trivia_game_id"], name: "index_trivia_question_instances_on_speed_trivia_game_id"
+    t.index ["trivia_question_id"], name: "index_trivia_question_instances_on_trivia_question_id"
+  end
+
+  create_table "trivia_questions", force: :cascade do |t|
+    t.text "body"
+    t.string "correct_answer"
+    t.datetime "created_at", null: false
+    t.jsonb "options"
+    t.bigint "trivia_pack_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trivia_pack_id"], name: "index_trivia_questions_on_trivia_pack_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -132,6 +191,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_040647) do
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "users"
+  add_foreign_key "speed_trivia_games", "trivia_packs"
+  add_foreign_key "trivia_answers", "players"
+  add_foreign_key "trivia_answers", "trivia_question_instances"
+  add_foreign_key "trivia_packs", "users"
+  add_foreign_key "trivia_question_instances", "speed_trivia_games"
+  add_foreign_key "trivia_question_instances", "trivia_questions"
+  add_foreign_key "trivia_questions", "trivia_packs"
   add_foreign_key "votes", "players"
   add_foreign_key "votes", "responses"
   add_foreign_key "write_and_vote_games", "prompt_packs"
