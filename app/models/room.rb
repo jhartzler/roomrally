@@ -9,12 +9,14 @@ class Room < ApplicationRecord
 
   # Game type identifiers (internal)
   WRITE_AND_VOTE = "Write And Vote".freeze
+  SPEED_TRIVIA = "Speed Trivia".freeze
 
-  GAME_TYPES = [ WRITE_AND_VOTE ].freeze
+  GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA ].freeze
 
   # Default display names for each game type (used for whitelabeling)
   GAME_DISPLAY_NAMES = {
-    WRITE_AND_VOTE => "Comedy Clash"
+    WRITE_AND_VOTE => "Comedy Clash",
+    SPEED_TRIVIA => "Think Fast"
   }.freeze
 
   # Convenience method for getting default display name
