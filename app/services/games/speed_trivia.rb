@@ -3,18 +3,23 @@ module Games
     DEFAULT_QUESTION_COUNT = 10
     DEFAULT_TIME_LIMIT = 20
 
-    def self.game_started(room:, question_count: DEFAULT_QUESTION_COUNT, time_limit: DEFAULT_TIME_LIMIT, timer_enabled: false, timer_increment: 60)
+    def self.game_started(room:, question_count: DEFAULT_QUESTION_COUNT, time_limit: DEFAULT_TIME_LIMIT, timer_enabled: false, timer_increment: nil)
+      # Use timer_increment if provided (from UI), otherwise fall back to time_limit
+      effective_time_limit = timer_increment.presence || time_limit
+
       Rails.logger.info({
         event: "speed_trivia_game_started",
         room_code: room.code,
         player_count: room.players.count,
-        question_count:
+        question_count:,
+        timer_enabled:,
+        time_limit: effective_time_limit
       })
 
       return if room.current_game.present?
 
       pack = TriviaPack.default
-      game = SpeedTriviaGame.create!(trivia_pack: pack, time_limit:, timer_enabled:)
+      game = SpeedTriviaGame.create!(trivia_pack: pack, time_limit: effective_time_limit, timer_enabled:)
       room.update!(current_game: game)
 
       assign_questions(game:, question_count:)
