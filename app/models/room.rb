@@ -7,11 +7,29 @@ class Room < ApplicationRecord
   belongs_to :prompt_pack, optional: true
 
 
-  GAME_TYPES = [ "Write And Vote" ].freeze
+  # Game type identifiers (internal)
+  WRITE_AND_VOTE = "Write And Vote".freeze
+
+  GAME_TYPES = [ WRITE_AND_VOTE ].freeze
+
+  # Default display names for each game type (used for whitelabeling)
+  GAME_DISPLAY_NAMES = {
+    WRITE_AND_VOTE => "Comedy Clash"
+  }.freeze
+
+  # Convenience method for getting default display name
+  def self.default_display_name_for(game_type)
+    GAME_DISPLAY_NAMES[game_type] || game_type
+  end
 
 
   validates :code, uniqueness: { case_sensitive: false }
   validates :game_type, presence: true, inclusion: { in: GAME_TYPES }
+
+  # Returns the user-facing game name, with fallback to configured default
+  def display_name
+    super.presence || GAME_DISPLAY_NAMES[game_type] || game_type
+  end
 
   scope :active, -> { where.not(status: "finished") }
   scope :most_recent_by_type, -> { select("DISTINCT ON (game_type) rooms.*").order("game_type, created_at DESC") }
