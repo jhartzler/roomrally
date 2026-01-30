@@ -22,7 +22,7 @@
   <% if game.waiting? %>
     <p class="text-blue-200 text-sm mb-4">Players are waiting for the first question.</p>
     <%= button_to "Start First Question",
-        start_question_speed_trivia_game_path(game),
+        speed_trivia_game_question_path(game),
         method: :post,
         class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
@@ -43,7 +43,7 @@
     </p>
 
     <%= button_to "Close Round & Show Answer",
-        close_round_speed_trivia_game_path(game),
+        speed_trivia_game_round_closure_path(game),
         method: :post,
         class: "w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
@@ -56,12 +56,12 @@
 
     <% if game.questions_remaining? %>
       <%= button_to "Next Question",
-          next_question_speed_trivia_game_path(game),
+          speed_trivia_game_advancement_path(game),
           method: :post,
           class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% else %>
       <%= button_to "Finish Game",
-          next_question_speed_trivia_game_path(game),
+          speed_trivia_game_advancement_path(game),
           method: :post,
           class: "w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>

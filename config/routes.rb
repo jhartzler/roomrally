@@ -37,10 +37,10 @@ Rails.application.routes.draw do
   resources :votes, only: [ :create ]
   resources :trivia_answers, only: [ :create ]
   resources :speed_trivia_games, only: [] do
-    member do
-      post :start_question
-      post :close_round
-      post :next_question
+    scope module: :speed_trivia do
+      resource :question, only: :create
+      resource :round_closure, only: :create
+      resource :advancement, only: :create
     end
   end
 

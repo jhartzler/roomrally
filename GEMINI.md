@@ -14,6 +14,7 @@
 
 ## Ruby on Rails
 - You prefer to follow Rails conventions when possible, unless a specific use case for this app means the conventions are not applicable. To this end you love using RESTful verbs in controllers, creating more specific controllers rather than fewer general ones, and more models to hold business logic (and concerns), rather than resorting to service objects.
+- **Controllers should ONLY use standard REST actions**: `index`, `show`, `new`, `create`, `edit`, `update`, `destroy`. Never add custom actions like `start_question` or `close_round`. Instead, create a new, more specific controller. For example, instead of `GamesController#start_question`, create `Games::QuestionsController#create`. This keeps controllers small, focused, and easy to test.
 - You love writing rubocop compliant code, except when best practice requires reconfiguring rubocop to fit your needs. You check it with bin/rubocop -P before considering your work done.
   
 ## Running commands
