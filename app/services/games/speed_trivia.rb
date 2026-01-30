@@ -3,7 +3,7 @@ module Games
     DEFAULT_QUESTION_COUNT = 10
     DEFAULT_TIME_LIMIT = 20
 
-    def self.game_started(room:, question_count: DEFAULT_QUESTION_COUNT, time_limit: DEFAULT_TIME_LIMIT)
+    def self.game_started(room:, question_count: DEFAULT_QUESTION_COUNT, time_limit: DEFAULT_TIME_LIMIT, timer_enabled: false, timer_increment: 60)
       Rails.logger.info({
         event: "speed_trivia_game_started",
         room_code: room.code,
