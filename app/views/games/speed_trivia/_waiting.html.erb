@@ -1,0 +1,45 @@
+<%# app/views/games/speed_trivia/_waiting.html.erb %>
+
+<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
+  <div class="flex flex-col">
+    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">
+      <%= game.waiting? ? "Get Ready" : "Results" %>
+    </span>
+  </div>
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
+  </div>
+</header>
+
+<div class="max-w-md mx-auto">
+  <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
+    <% if game.waiting? %>
+      <div class="text-6xl mb-6 animate-bounce">🧠</div>
+      <p class="text-2xl text-white font-bold mb-4">Get Ready!</p>
+      <p class="text-lg text-blue-200">
+        <%= game.trivia_question_instances.count %> questions
+      </p>
+      <p class="text-blue-300 mt-4">Faster answers = more points!</p>
+    <% elsif game.reviewing? %>
+      <% current_question = game.current_question %>
+      <% player_answer = current_question&.trivia_answers&.find_by(player:) %>
+
+      <% if player_answer&.correct? %>
+        <div class="text-6xl mb-6">🎉</div>
+        <p class="text-2xl text-green-400 font-bold mb-4">Correct!</p>
+        <p class="text-4xl text-white font-black">+<%= player_answer.points_awarded %></p>
+      <% elsif player_answer %>
+        <div class="text-6xl mb-6">😅</div>
+        <p class="text-2xl text-red-400 font-bold mb-4">Wrong!</p>
+        <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answer %></span></p>
+      <% else %>
+        <div class="text-6xl mb-6">⏱</div>
+        <p class="text-2xl text-gray-400 font-bold mb-4">Time's Up!</p>
+        <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answer %></span></p>
+      <% end %>
+
+      <p class="text-blue-200 mt-6">Watch the screen for standings...</p>
+    <% end %>
+  </div>
+</div>

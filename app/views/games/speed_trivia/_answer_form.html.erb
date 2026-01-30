@@ -1,0 +1,52 @@
+<%# app/views/games/speed_trivia/_answer_form.html.erb %>
+<% current_question = game.current_question %>
+<% existing_answer = current_question&.trivia_answers&.find_by(player:) %>
+
+<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
+  <div class="flex flex-col">
+    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Question <%= game.current_question_index + 1 %></span>
+  </div>
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
+  </div>
+</header>
+
+<div class="max-w-md mx-auto">
+  <% if existing_answer %>
+    <!-- Already answered -->
+    <div class="bg-green-900/40 backdrop-blur-md rounded-3xl p-8 border border-green-500/30 text-center">
+      <div class="text-6xl mb-4">✓</div>
+      <p class="text-2xl text-white font-bold mb-2">Answer submitted!</p>
+      <p class="text-xl text-green-300">You answered: <%= existing_answer.selected_option %></p>
+      <p class="text-lg text-blue-200 mt-4">Waiting for results...</p>
+    </div>
+  <% elsif current_question %>
+    <!-- Question display -->
+    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-6">
+      <p class="text-xl text-white font-bold text-center">
+        <%= current_question.body %>
+      </p>
+    </div>
+
+    <!-- Answer options -->
+    <div class="space-y-3">
+      <% current_question.options&.each_with_index do |option, index| %>
+        <%= button_to trivia_answers_path,
+            method: :post,
+            params: { trivia_answer: { selected_option: option } },
+            class: "w-full bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-md border-2 border-gray-600 hover:border-blue-400 rounded-2xl p-5 flex items-center shadow-lg transition-all active:scale-95",
+            data: { turbo_frame: "hand_screen", test_id: "answer-option-#{index}" } do %>
+          <div class="bg-white text-black font-black text-2xl h-12 w-12 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-md">
+            <%= (index + 65).chr %>
+          </div>
+          <span class="text-xl text-white font-bold text-left"><%= option %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 text-center">
+      <p class="text-xl text-white">Loading question...</p>
+    </div>
+  <% end %>
+</div>
