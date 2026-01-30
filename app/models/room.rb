@@ -7,12 +7,20 @@ class Room < ApplicationRecord
   belongs_to :prompt_pack, optional: true
 
 
-  GAME_TYPES = [ "Write And Vote" ].freeze
+  # Game type identifiers (internal)
+  WRITE_AND_VOTE = "Write And Vote".freeze
+
+  GAME_TYPES = [ WRITE_AND_VOTE ].freeze
 
   # Default display names for each game type (used for whitelabeling)
   GAME_DISPLAY_NAMES = {
-    "Write And Vote" => "Comedy Clash"
+    WRITE_AND_VOTE => "Comedy Clash"
   }.freeze
+
+  # Convenience method for getting default display name
+  def self.default_display_name_for(game_type)
+    GAME_DISPLAY_NAMES[game_type] || game_type
+  end
 
 
   validates :code, uniqueness: { case_sensitive: false }

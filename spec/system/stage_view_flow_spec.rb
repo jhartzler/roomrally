@@ -7,7 +7,7 @@ RSpec.describe "Stage View Flow", type: :system do
     # open stage view in a new window/tab
     visit room_stage_path(room)
 
-    expect(page).to have_content("Comedy Clash") # default display name
+    expect(page).to have_content(Room.default_display_name_for(Room::WRITE_AND_VOTE))
     expect(page).to have_content(room.code)
     expect(page).to have_content("Join via your phone!")
 
