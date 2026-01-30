@@ -1,5 +1,6 @@
 class SpeedTriviaGame < ApplicationRecord
   include AASM
+  include HasRoundTimer
 
   has_one :room, as: :current_game
   belongs_to :trivia_pack, optional: true
@@ -50,6 +51,19 @@ class SpeedTriviaGame < ApplicationRecord
       score = trivia_answers.where(player:).sum(:points_awarded)
       player.update!(score:)
     end
+  end
+
+  # For HasRoundTimer compatibility - use question index as "round"
+  def round
+    current_question_index
+  end
+
+  def process_timeout(job_question_index, _step_number)
+    # Verify this timeout is still relevant (guard against race conditions)
+    return unless current_question_index == job_question_index
+    return unless answering?
+
+    Games::SpeedTrivia.handle_timeout(game: self)
   end
 
   private

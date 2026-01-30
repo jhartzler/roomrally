@@ -65,7 +65,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       Capybara.using_session(session) do
         # Refresh to ensure we have the latest state
         visit current_path
-        expect(page).to have_content("Question 1", wait: 5)
+        expect(page).to have_content(/question 1/i, wait: 5)
         expect(page).to have_selector('[data-test-id^="answer-option"]', minimum: 4)
       end
     end
@@ -99,7 +99,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
     [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         visit current_path
-        expect(page).to have_content("Game Over", wait: 5).or have_content("Place", wait: 5)
+        expect(page).to have_content(/game over/i, wait: 5).or have_content("Place", wait: 5)
       end
     end
   end

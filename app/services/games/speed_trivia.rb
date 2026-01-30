@@ -14,7 +14,7 @@ module Games
       return if room.current_game.present?
 
       pack = TriviaPack.default
-      game = SpeedTriviaGame.create!(trivia_pack: pack, time_limit:)
+      game = SpeedTriviaGame.create!(trivia_pack: pack, time_limit:, timer_enabled:)
       room.update!(current_game: game)
 
       assign_questions(game:, question_count:)
@@ -25,6 +25,7 @@ module Games
 
     def self.start_question(game:)
       game.start_question!
+      start_timer_if_enabled(game)
       GameBroadcaster.broadcast_stage(room: game.room)
       GameBroadcaster.broadcast_hand(room: game.room)
     end
@@ -75,6 +76,19 @@ module Games
       end
     end
 
+    def self.handle_timeout(game:)
+      return unless game.answering?
+
+      # Auto-close the round when timer expires
+      close_round(game:)
+    end
+
+    def self.start_timer_if_enabled(game)
+      return unless game.timer_enabled?
+
+      game.start_timer!(game.time_limit)
+    end
+
     def self.assign_questions(game:, question_count:)
       pack = game.trivia_pack || TriviaPack.default
       available_questions = pack.trivia_questions.to_a
@@ -97,6 +111,6 @@ module Games
       end
     end
 
-    private_class_method :assign_questions
+    private_class_method :assign_questions, :start_timer_if_enabled
   end
 end

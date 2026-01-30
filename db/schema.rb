@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_204443) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,9 +92,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_204443) do
     t.datetime "created_at", null: false
     t.integer "current_question_index", default: 0
     t.datetime "round_closed_at"
+    t.datetime "round_ends_at"
     t.datetime "round_started_at"
     t.string "status"
     t.integer "time_limit", default: 20
+    t.integer "timer_duration"
+    t.boolean "timer_enabled", default: false, null: false
     t.bigint "trivia_pack_id"
     t.datetime "updated_at", null: false
     t.index ["trivia_pack_id"], name: "index_speed_trivia_games_on_trivia_pack_id"

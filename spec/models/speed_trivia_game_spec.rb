@@ -163,6 +163,67 @@ RSpec.describe SpeedTriviaGame, type: :model do
     end
   end
 
+  describe 'HasRoundTimer' do
+    let(:game) { create(:speed_trivia_game, timer_enabled: true, time_limit: 30) }
+    let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
+
+    describe '#start_timer!' do
+      it 'updates the game with duration and end time' do
+        freeze_time do
+          game.start_timer!(30)
+          expect(game.timer_duration).to eq(30)
+          expect(game.round_ends_at).to eq(30.seconds.from_now)
+        end
+      end
+
+      it 'enqueues a GameTimerJob' do
+        expect {
+          game.start_timer!(30)
+        }.to have_enqueued_job(GameTimerJob).with(game, 0, nil)
+      end
+    end
+
+    describe '#time_remaining' do
+      it 'returns 0 if no timer set' do
+        game.update!(round_ends_at: nil)
+        expect(game.time_remaining).to eq(0)
+      end
+
+      it 'returns correct seconds remaining' do
+        freeze_time do
+          game.update!(round_ends_at: 10.seconds.from_now)
+          expect(game.time_remaining).to eq(10)
+        end
+      end
+    end
+  end
+
+  describe '#process_timeout' do
+    let(:game) { create(:speed_trivia_game, status: "answering") }
+    let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
+
+    before do
+      allow(Games::SpeedTrivia).to receive(:handle_timeout)
+    end
+
+    it 'calls the service when question index matches' do
+      game.process_timeout(0, nil)
+      expect(Games::SpeedTrivia).to have_received(:handle_timeout).with(game:)
+    end
+
+    it 'ignores if question index does not match' do
+      game.update!(current_question_index: 1)
+      game.process_timeout(0, nil)
+      expect(Games::SpeedTrivia).not_to have_received(:handle_timeout)
+    end
+
+    it 'ignores if not in answering state' do
+      game.update!(status: "reviewing")
+      game.process_timeout(0, nil)
+      expect(Games::SpeedTrivia).not_to have_received(:handle_timeout)
+    end
+  end
+
   describe '#calculate_scores!' do
     let(:game) { create(:speed_trivia_game) }
     let(:room) { create(:room, current_game: game) }
