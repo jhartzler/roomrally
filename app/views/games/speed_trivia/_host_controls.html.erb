@@ -1,0 +1,75 @@
+<%# app/views/games/speed_trivia/_host_controls.html.erb %>
+<%# Host controls for Speed Trivia game during play %>
+
+<% game = room.current_game %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between mb-4">
+    <span class="text-blue-200 font-medium">
+      Question <%= game.current_question_index + 1 %> of <%= game.trivia_question_instances.count %>
+    </span>
+    <span class="px-3 py-1 rounded-full text-sm font-bold
+      <%= case game.status
+          when 'waiting' then 'bg-yellow-500/20 text-yellow-300'
+          when 'answering' then 'bg-green-500/20 text-green-300'
+          when 'reviewing' then 'bg-blue-500/20 text-blue-300'
+          else 'bg-gray-500/20 text-gray-300'
+          end %>">
+      <%= game.status.titleize %>
+    </span>
+  </div>
+
+  <% if game.waiting? %>
+    <p class="text-blue-200 text-sm mb-4">Players are waiting for the first question.</p>
+    <%= button_to "Start First Question",
+        start_question_speed_trivia_game_path(game),
+        method: :post,
+        class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+
+  <% elsif game.answering? %>
+    <% current_q = game.current_question %>
+    <div class="bg-white/5 rounded-xl p-4 mb-4">
+      <p class="text-white font-medium mb-2"><%= current_q&.body %></p>
+      <p class="text-green-400 text-sm">Correct: <%= current_q&.correct_answer %></p>
+    </div>
+
+    <% answers_count = current_q&.trivia_answers&.count || 0 %>
+    <% players_count = room.players.count %>
+    <p class="text-blue-200 text-sm mb-4">
+      Answers: <%= answers_count %>/<%= players_count %> players
+      <% if game.timer_enabled? && game.round_ends_at %>
+        <span class="ml-2">(Timer: <%= game.time_remaining.ceil %>s)</span>
+      <% end %>
+    </p>
+
+    <%= button_to "Close Round & Show Answer",
+        close_round_speed_trivia_game_path(game),
+        method: :post,
+        class: "w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+
+  <% elsif game.reviewing? %>
+    <% current_q = game.current_question %>
+    <div class="bg-white/5 rounded-xl p-4 mb-4">
+      <p class="text-white font-medium mb-2"><%= current_q&.body %></p>
+      <p class="text-green-400">Answer: <%= current_q&.correct_answer %></p>
+    </div>
+
+    <% if game.questions_remaining? %>
+      <%= button_to "Next Question",
+          next_question_speed_trivia_game_path(game),
+          method: :post,
+          class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+    <% else %>
+      <%= button_to "Finish Game",
+          next_question_speed_trivia_game_path(game),
+          method: :post,
+          class: "w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+    <% end %>
+
+  <% elsif game.finished? %>
+    <div class="bg-green-500/20 rounded-xl p-4 text-center">
+      <p class="text-green-300 font-bold text-lg">Game Complete!</p>
+      <p class="text-green-200 text-sm mt-2">Final scores are displayed on screen.</p>
+    </div>
+  <% end %>
+</div>

@@ -26,13 +26,19 @@
           <p class="text-yellow-600 text-sm mt-1">Need at least 3 players to start.</p>
         </div>
       <% end %>
-    <% else %>
-      <div class="bg-indigo-600/20 backdrop-blur-md border border-indigo-500/30 rounded-xl p-4 text-center shadow-lg">
-        <p class="text-blue-100 font-bold text-lg tracking-wide drop-shadow-sm flex items-center justify-center gap-2">
-            <span class="animate-pulse w-2 h-2 bg-indigo-400 rounded-full"></span>
-            Game in Progress
-        </p>
-      </div>
+    <% elsif room.current_game.present? %>
+      <%# Render game-specific controls based on game type %>
+      <% game_type_folder = room.game_type.parameterize.underscore %>
+      <% if lookup_context.template_exists?("host_controls", "games/#{game_type_folder}", true) %>
+        <%= render "games/#{game_type_folder}/host_controls", room: room, game: room.current_game %>
+      <% else %>
+        <div class="bg-indigo-600/20 backdrop-blur-md border border-indigo-500/30 rounded-xl p-4 text-center shadow-lg">
+          <p class="text-blue-100 font-bold text-lg tracking-wide drop-shadow-sm flex items-center justify-center gap-2">
+              <span class="animate-pulse w-2 h-2 bg-indigo-400 rounded-full"></span>
+              Game in Progress
+          </p>
+        </div>
+      <% end %>
     <% end %>
   <% else %>
     <%# Standard Host Controls (Hand View) %>

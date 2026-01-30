@@ -61,6 +61,7 @@ RSpec.describe Games::SpeedTrivia do
     before do
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
     end
 
     it 'transitions to answering state' do
@@ -92,6 +93,7 @@ RSpec.describe Games::SpeedTrivia do
       game.update!(round_started_at: 5.seconds.ago)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
     end
 
     it 'creates a TriviaAnswer' do
@@ -145,6 +147,7 @@ RSpec.describe Games::SpeedTrivia do
       game.update!(round_started_at: 10.seconds.ago)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
     end
 
     it 'transitions to reviewing state' do
@@ -169,6 +172,7 @@ RSpec.describe Games::SpeedTrivia do
     before do
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
     end
 
     context 'when more questions remain' do

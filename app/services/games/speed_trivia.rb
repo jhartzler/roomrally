@@ -26,8 +26,7 @@ module Games
     def self.start_question(game:)
       game.start_question!
       start_timer_if_enabled(game)
-      GameBroadcaster.broadcast_stage(room: game.room)
-      GameBroadcaster.broadcast_hand(room: game.room)
+      broadcast_all(game)
     end
 
     def self.submit_answer(game:, player:, selected_option:)
@@ -60,8 +59,7 @@ module Games
 
     def self.close_round(game:)
       game.close_round!
-      GameBroadcaster.broadcast_stage(room: game.room)
-      GameBroadcaster.broadcast_hand(room: game.room)
+      broadcast_all(game)
     end
 
     def self.next_question(game:)
@@ -71,8 +69,7 @@ module Games
       else
         game.calculate_scores!
         game.finish_game!
-        GameBroadcaster.broadcast_stage(room: game.room)
-        GameBroadcaster.broadcast_hand(room: game.room)
+        broadcast_all(game)
       end
     end
 
@@ -87,6 +84,13 @@ module Games
       return unless game.timer_enabled?
 
       game.start_timer!(game.time_limit)
+    end
+
+    def self.broadcast_all(game)
+      room = game.room
+      GameBroadcaster.broadcast_stage(room:)
+      GameBroadcaster.broadcast_hand(room:)
+      GameBroadcaster.broadcast_host_controls(room:)
     end
 
     def self.assign_questions(game:, question_count:)
@@ -111,6 +115,6 @@ module Games
       end
     end
 
-    private_class_method :assign_questions, :start_timer_if_enabled
+    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all
   end
 end
