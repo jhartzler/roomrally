@@ -8,6 +8,6 @@ class ErrorsController < ApplicationController
   end
 
   def unprocessable_entity
-    render status: :unprocessable_entity
+    render status: :unprocessable_content
   end
 end
