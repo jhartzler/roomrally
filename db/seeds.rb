@@ -39,7 +39,7 @@ standard_trivia = YAML.load_file(Rails.root.join("config/standard_trivia.yml"))
 standard_trivia.each do |question_data|
   TriviaQuestion.find_or_create_by!(
     body: question_data["body"],
-    trivia_pack: trivia_pack
+    trivia_pack:
   ) do |q|
     q.correct_answer = question_data["correct_answer"]
     q.options = question_data["options"]

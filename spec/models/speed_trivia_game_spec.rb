@@ -165,7 +165,8 @@ RSpec.describe SpeedTriviaGame, type: :model do
 
   describe 'HasRoundTimer' do
     let(:game) { create(:speed_trivia_game, timer_enabled: true, time_limit: 30) }
-    let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
+
+    before { create(:room, current_game: game, game_type: "Speed Trivia") }
 
     describe '#start_timer!' do
       it 'updates the game with duration and end time' do
@@ -200,9 +201,9 @@ RSpec.describe SpeedTriviaGame, type: :model do
 
   describe '#process_timeout' do
     let(:game) { create(:speed_trivia_game, status: "answering") }
-    let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
 
     before do
+      create(:room, current_game: game, game_type: "Speed Trivia")
       allow(Games::SpeedTrivia).to receive(:handle_timeout)
     end
 

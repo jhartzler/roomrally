@@ -5,12 +5,10 @@ RSpec.describe Games::SpeedTrivia do
 
   describe '.game_started' do
     let(:room) { create(:room, game_type: "Speed Trivia") }
-    let!(:alice) { create(:player, room:) }
-    let!(:bob) { create(:player, room:) }
-    let!(:charlie) { create(:player, room:) }
-    let!(:default_pack) { create(:trivia_pack, :default) }
+    let(:default_pack) { create(:trivia_pack, :default) }
 
     before do
+      create_list(:player, 3, room:)
       10.times { |i| create(:trivia_question, trivia_pack: default_pack, body: "Question #{i + 1}?") }
       allow(GameBroadcaster).to receive(:broadcast_game_start)
       allow(GameBroadcaster).to receive(:broadcast_stage)
@@ -56,9 +54,9 @@ RSpec.describe Games::SpeedTrivia do
   describe '.start_question' do
     let(:game) { create(:speed_trivia_game, status: "waiting") }
     let(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
-    let!(:question) { create(:trivia_question_instance, speed_trivia_game: game, position: 0) }
 
     before do
+      create(:trivia_question_instance, speed_trivia_game: game, position: 0)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
       allow(GameBroadcaster).to receive(:broadcast_host_controls)
@@ -81,15 +79,13 @@ RSpec.describe Games::SpeedTrivia do
     let(:game) { create(:speed_trivia_game, status: "answering", time_limit: 20) }
     let(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
     let!(:player) { create(:player, room:) }
-    let!(:question) do
+
+    before do
       create(:trivia_question_instance,
         speed_trivia_game: game,
         position: 0,
         correct_answer: "Paris",
         options: [ "Paris", "London", "Berlin", "Madrid" ])
-    end
-
-    before do
       game.update!(round_started_at: 5.seconds.ago)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
@@ -112,8 +108,7 @@ RSpec.describe Games::SpeedTrivia do
       freeze_time do
         game.update!(round_started_at: Time.current)
         described_class.submit_answer(game:, player:, selected_option: "Paris")
-        answer = TriviaAnswer.last
-        expect(answer.points_awarded).to eq(1000)
+        expect(TriviaAnswer.last.points_awarded).to eq(1000)
       end
     end
 
@@ -166,10 +161,10 @@ RSpec.describe Games::SpeedTrivia do
   describe '.next_question' do
     let(:game) { create(:speed_trivia_game, status: "reviewing", current_question_index: 0) }
     let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
-    let!(:first_question) { create(:trivia_question_instance, speed_trivia_game: game, position: 0) }
-    let!(:second_question) { create(:trivia_question_instance, speed_trivia_game: game, position: 1) }
 
     before do
+      create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+      create(:trivia_question_instance, speed_trivia_game: game, position: 1)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
       allow(GameBroadcaster).to receive(:broadcast_host_controls)
@@ -204,10 +199,8 @@ RSpec.describe Games::SpeedTrivia do
 
       it 'calculates final scores' do
         player = create(:player, room:, score: 0)
-        create(:trivia_answer,
-          player:,
-          trivia_question_instance: first_question,
-          points_awarded: 800)
+        first_question = game.trivia_question_instances.find_by(position: 0)
+        create(:trivia_answer, player:, trivia_question_instance: first_question, points_awarded: 800)
 
         described_class.next_question(game:)
         expect(player.reload.score).to eq(800)
