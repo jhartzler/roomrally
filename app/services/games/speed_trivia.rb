@@ -64,6 +64,7 @@ module Games
 
     def self.close_round(game:)
       game.close_round!
+      game.calculate_scores!
       broadcast_all(game)
     end
 
