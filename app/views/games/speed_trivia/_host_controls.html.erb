@@ -38,7 +38,9 @@
     <p class="text-blue-200 text-sm mb-4">
       Answers: <%= answers_count %>/<%= players_count %> players
       <% if game.timer_enabled? && game.round_ends_at %>
-        <span class="ml-2">(Timer: <%= game.time_remaining.ceil %>s)</span>
+        <span class="ml-2" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
+          (Timer: <span data-timer-target="output"><%= game.time_remaining.ceil %>s</span>)
+        </span>
       <% end %>
     </p>
 

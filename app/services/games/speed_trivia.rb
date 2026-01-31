@@ -58,6 +58,7 @@ module Games
 
       GameBroadcaster.broadcast_hand(room: game.room)
       GameBroadcaster.broadcast_stage(room: game.room)
+      GameBroadcaster.broadcast_host_controls(room: game.room)
 
       answer
     end
