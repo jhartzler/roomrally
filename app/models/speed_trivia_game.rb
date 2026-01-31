@@ -75,7 +75,7 @@ class SpeedTriviaGame < ApplicationRecord
   private
 
   def record_round_start
-    update!(round_started_at: Time.current)
+    update!(round_started_at: Time.current, round_closed_at: nil)
   end
 
   def record_round_close

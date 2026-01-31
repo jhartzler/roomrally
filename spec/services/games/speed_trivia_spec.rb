@@ -136,9 +136,9 @@ RSpec.describe Games::SpeedTrivia do
 
   describe '.close_round' do
     let(:game) { create(:speed_trivia_game, status: "answering") }
-    let(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
 
     before do
+      create(:room, current_game: game, game_type: "Speed Trivia")
       game.update!(round_started_at: 10.seconds.ago)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
