@@ -2,7 +2,7 @@ module Games
   module WriteAndVote
     MAX_ROUNDS = 2
 
-    def self.game_started(room:, timer_enabled: false, timer_increment: 60)
+    def self.game_started(room:, timer_enabled: false, timer_increment: 60, question_count: nil)
       Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.count, timer_enabled:, timer_increment: })
 
 

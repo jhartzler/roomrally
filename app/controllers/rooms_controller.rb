@@ -31,6 +31,7 @@ class RoomsController < ApplicationController
 
         timer_enabled = start_game_params[:timer_enabled] == "1"
         timer_increment = start_game_params[:timer_increment].to_i
+        question_count = start_game_params[:question_count].to_i
 
         if timer_enabled && timer_increment <= 0
           @room.update(status: "lobby")
@@ -38,7 +39,16 @@ class RoomsController < ApplicationController
           return
         end
 
-        publish(:game_started, room: @room, timer_enabled:, timer_increment:)
+        if @room.game_type == "Speed Trivia" && question_count > 0
+          max_questions = TriviaPack.default.trivia_questions.count
+          if question_count > max_questions
+            @room.update(status: "lobby")
+            redirect_to room_hand_path(@room.code), alert: "Could not start game: Only #{max_questions} questions available"
+            return
+          end
+        end
+
+        publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:)
 
         if current_user && current_user == @room.user
           redirect_to room_backstage_path(@room.code), notice: "Game started!"
@@ -117,7 +127,7 @@ class RoomsController < ApplicationController
   end
 
   def start_game_params
-    params.permit(:timer_enabled, :timer_increment)
+    params.permit(:timer_enabled, :timer_increment, :question_count)
   end
 
 

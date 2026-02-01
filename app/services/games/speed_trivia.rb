@@ -1,6 +1,6 @@
 module Games
   module SpeedTrivia
-    DEFAULT_QUESTION_COUNT = 10
+    DEFAULT_QUESTION_COUNT = 5
     DEFAULT_TIME_LIMIT = 20
 
     def self.game_started(room:, question_count: DEFAULT_QUESTION_COUNT, time_limit: DEFAULT_TIME_LIMIT, timer_enabled: false, timer_increment: nil)
