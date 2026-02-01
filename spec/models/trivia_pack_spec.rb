@@ -7,7 +7,11 @@ RSpec.describe TriviaPack, type: :model do
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:name) }
+    it 'sets a default name if blank' do
+      pack = build(:trivia_pack, name: nil)
+      pack.valid?
+      expect(pack.name).to eq("Untitled Trivia Pack")
+    end
   end
 
   describe 'enums' do
@@ -73,6 +77,19 @@ RSpec.describe TriviaPack, type: :model do
         ]
       )
       expect(pack.trivia_questions.count).to eq(2)
+      expect(pack.trivia_questions.first.body).to eq("Question 1?")
+    end
+
+    it 'rejects questions with blank body' do # rubocop:disable RSpec/ExampleLength
+      user = create(:user)
+      pack = user.trivia_packs.create!(
+        name: "Test Pack",
+        trivia_questions_attributes: [
+          { body: "Question 1?", options: [ "A", "B", "C", "D" ], correct_answer: "A" },
+          { body: "", options: [ "W", "X", "Y", "Z" ], correct_answer: "Z" }
+        ]
+      )
+      expect(pack.trivia_questions.count).to eq(1)
       expect(pack.trivia_questions.first.body).to eq("Question 1?")
     end
   end

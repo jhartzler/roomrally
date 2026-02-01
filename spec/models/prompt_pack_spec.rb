@@ -7,7 +7,12 @@ RSpec.describe PromptPack, type: :model do
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:name) }
+    it 'sets a default name if blank' do
+      pack = build(:prompt_pack, name: nil)
+      pack.valid?
+      expect(pack.name).to eq("Untitled Prompt Pack")
+    end
+
     it { is_expected.to validate_presence_of(:game_type) }
   end
 
