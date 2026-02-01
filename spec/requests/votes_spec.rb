@@ -22,7 +22,7 @@ RSpec.describe "Votes", type: :request do
       post votes_path, params: { vote: { response_id: response_b.id } }, as: :turbo_stream
 
       # Expect failure
-      expect(response).to have_http_status(:unprocessable_entity).or have_http_status(:forbidden)
+      expect(response).to have_http_status(:unprocessable_content).or have_http_status(:forbidden)
     end
   end
 end

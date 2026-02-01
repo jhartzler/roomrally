@@ -1,0 +1,204 @@
+# Nature & Science
+- body: "What is the only fruit that has its seeds on the outside?"
+  correct_answer: "Strawberry"
+  options:
+    - "Raspberry"
+    - "Strawberry"
+    - "Kiwi"
+    - "Pomegranate"
+
+- body: "What is the hardest natural substance on Earth?"
+  correct_answer: "Diamond"
+  options:
+    - "Gold"
+    - "Iron"
+    - "Diamond"
+    - "Quartz"
+
+- body: "What is the most common gas found in Earth's atmosphere?"
+  correct_answer: "Nitrogen"
+  options:
+    - "Oxygen"
+    - "Nitrogen"
+    - "Carbon Dioxide"
+    - "Hydrogen"
+
+- body: "Which planet is known as the \"Red Planet\"?"
+  correct_answer: "Mars"
+  options:
+    - "Venus"
+    - "Jupiter"
+    - "Mars"
+    - "Saturn"
+
+- body: "What is the largest organ in the human body?"
+  correct_answer: "The Skin"
+  options:
+    - "The Liver"
+    - "The Brain"
+    - "The Skin"
+    - "The Large Intestine"
+
+# Geography & History
+- body: "Which country gifted the Statue of Liberty to the United States?"
+  correct_answer: "France"
+  options:
+    - "United Kingdom"
+    - "Italy"
+    - "Germany"
+    - "France"
+
+- body: "In what year did the Titanic sink on its maiden voyage?"
+  correct_answer: "1912"
+  options:
+    - "1905"
+    - "1912"
+    - "1921"
+    - "1898"
+
+- body: "Which of these is the capital city of Australia?"
+  correct_answer: "Canberra"
+  options:
+    - "Sydney"
+    - "Melbourne"
+    - "Canberra"
+    - "Perth"
+
+- body: "Which continent is the least populated on Earth?"
+  correct_answer: "Antarctica"
+  options:
+    - "Australia"
+    - "Antarctica"
+    - "South America"
+    - "Europe"
+
+- body: "How many feet are in a single mile?"
+  correct_answer: "5,280"
+  options:
+    - "2,140"
+    - "5,280"
+    - "4,800"
+    - "10,000"
+
+# Art, Literature & Pop Culture
+- body: "Which artist famously painted the ceiling of the Sistine Chapel?"
+  correct_answer: "Michelangelo"
+  options:
+    - "Leonardo da Vinci"
+    - "Michelangelo"
+    - "Raphael"
+    - "Donatello"
+
+- body: "In the original 1939 film The Wizard of Oz, what color were Dorothy's slippers?"
+  correct_answer: "Ruby"
+  options:
+    - "Silver"
+    - "Ruby"
+    - "Gold"
+    - "Emerald"
+
+- body: "Which classic novel begins with the line, \"Call me Ishmael\"?"
+  correct_answer: "Moby-Dick"
+  options:
+    - "Great Expectations"
+    - "Moby-Dick"
+    - "Treasure Island"
+    - "The Old Man and the Sea"
+
+- body: "How many strings does a standard violin have?"
+  correct_answer: "4"
+  options:
+    - "4"
+    - "5"
+    - "6"
+    - "8"
+
+- body: "Which mythical creature is the national animal of Scotland?"
+  correct_answer: "Unicorn"
+  options:
+    - "Dragon"
+    - "Loch Ness Monster"
+    - "Unicorn"
+    - "Phoenix"
+
+# General Knowledge & Food
+- body: "How many hearts does an octopus have?"
+  correct_answer: "3"
+  options:
+    - "1"
+    - "2"
+    - "3"
+    - "4"
+
+- body: "What is the main ingredient in traditional Hummus?"
+  correct_answer: "Chickpeas"
+  options:
+    - "Black beans"
+    - "Lentils"
+    - "Chickpeas"
+    - "Soybeans"
+
+- body: "Which company first released the \"iPhone\" in 2007?"
+  correct_answer: "Apple"
+  options:
+    - "Microsoft"
+    - "Apple"
+    - "Google"
+    - "Nokia"
+
+- body: "What is the primary ingredient in a Japanese Miso soup base?"
+  correct_answer: "Fermented soybean paste"
+  options:
+    - "Seaweed"
+    - "Tofu"
+    - "Fermented soybean paste"
+    - "Fish stock"
+
+- body: "Which animal is known as the \"Ship of the Desert\"?"
+  correct_answer: "Camel"
+  options:
+    - "Elephant"
+    - "Ostrich"
+    - "Camel"
+    - "Llama"
+
+# Logic, Math & Tech
+- body: "In the world of computers, what does \"ROM\" stand for?"
+  correct_answer: "Read-Only Memory"
+  options:
+    - "Random Only Memory"
+    - "Real-time Operating Monitor"
+    - "Read-Only Memory"
+    - "Rapid Output Module"
+
+- body: "What is the square root of 144?"
+  correct_answer: "12"
+  options:
+    - "10"
+    - "12"
+    - "14"
+    - "16"
+
+- body: "How many elements are currently listed on the Periodic Table?"
+  correct_answer: "118"
+  options:
+    - "102"
+    - "112"
+    - "118"
+    - "124"
+
+- body: "How many holes are played in a standard professional round of golf?"
+  correct_answer: "18"
+  options:
+    - "9"
+    - "12"
+    - "18"
+    - "24"
+
+- body: "Which planet in our solar system has the most rings?"
+  correct_answer: "Saturn"
+  options:
+    - "Jupiter"
+    - "Neptune"
+    - "Saturn"
+    - "Uranus"

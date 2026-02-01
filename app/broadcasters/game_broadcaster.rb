@@ -171,5 +171,9 @@ module GameBroadcaster
     )
   end
 
+  def self.broadcast_host_controls(room:)
+    update_all_host_controls(room)
+  end
+
   private_class_method :update_all_player_lists, :update_all_host_controls, :update_backstage_meta
 end

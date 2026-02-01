@@ -1,0 +1,13 @@
+<%# app/views/games/speed_trivia/_hand.html.erb %>
+<%# Main view router for a player's hand in Speed Trivia %>
+
+<% game = room.current_game %>
+
+<% if game.finished? %>
+  <%= render "games/speed_trivia/game_over", room:, player:, game: %>
+<% elsif game.answering? %>
+  <%= render "games/speed_trivia/answer_form", room:, player:, game: %>
+<% else %>
+  <%# waiting or reviewing %>
+  <%= render "games/speed_trivia/waiting", room:, player:, game: %>
+<% end %>

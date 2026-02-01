@@ -1,0 +1,66 @@
+<div id="stage_reviewing" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+  <% current_question = game.current_question %>
+
+  <!-- Question Counter -->
+  <div class="mb-8">
+    <span class="text-2xl text-blue-200 font-bold uppercase tracking-widest">
+      Question <%= game.current_question_index + 1 %> Results
+    </span>
+  </div>
+
+  <!-- Question with Answer -->
+  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-12 shadow-2xl text-center max-w-6xl w-full mb-8">
+    <p class="text-2xl text-blue-200 mb-4"><%= current_question&.body %></p>
+    <div class="flex items-center justify-center gap-4">
+      <span class="text-6xl">✓</span>
+      <h2 class="text-5xl md:text-7xl font-black text-green-400">
+        <%= current_question&.correct_answer %>
+      </h2>
+    </div>
+  </div>
+
+  <!-- Players Who Got It Right -->
+  <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 max-w-4xl w-full">
+    <h3 class="text-2xl text-white font-bold mb-6 text-center">Results</h3>
+    <div class="space-y-4">
+      <% if current_question %>
+        <% current_question.trivia_answers.includes(:player).order(points_awarded: :desc).each do |answer| %>
+          <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 <%= answer.correct? ? 'border-green-500/50' : 'border-red-500/50' %>">
+            <div class="flex-grow flex items-center gap-4">
+              <span class="text-3xl"><%= answer.correct? ? '✓' : '✗' %></span>
+              <span class="text-2xl font-bold text-white"><%= answer.player.name %></span>
+              <span class="text-lg text-gray-400"><%= answer.selected_option %></span>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <div class="text-2xl font-black <%= answer.correct? ? 'text-green-400' : 'text-red-400' %> font-mono">
+                +<%= answer.points_awarded %>
+              </div>
+              <div class="text-sm text-blue-300 font-bold">
+                Total: <%= answer.player.score %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <% players_without_answers = game.room.players.where.not(id: current_question.trivia_answers.select(:player_id)) %>
+        <% players_without_answers.each do |player| %>
+          <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 border-gray-500/50">
+            <div class="flex-grow flex items-center gap-4">
+              <span class="text-3xl">⏱</span>
+              <span class="text-2xl font-bold text-white"><%= player.name %></span>
+              <span class="text-lg text-gray-500">No answer</span>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <div class="text-2xl font-black text-gray-500 font-mono">
+                +0
+              </div>
+              <div class="text-sm text-blue-300 font-bold">
+                Total: <%= player.score %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -35,6 +35,14 @@ Rails.application.routes.draw do
     resources :rejections, only: [ :create, :new ]
   end
   resources :votes, only: [ :create ]
+  resources :trivia_answers, only: [ :create ]
+  resources :speed_trivia_games, only: [] do
+    scope module: :speed_trivia do
+      resource :question, only: :create
+      resource :round_closure, only: :create
+      resource :advancement, only: :create
+    end
+  end
 
   get "/auth/:provider/callback", to: "sessions#omniauth"
   get "/auth/failure", to: redirect("/")

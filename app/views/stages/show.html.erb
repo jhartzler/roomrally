@@ -16,14 +16,10 @@
     <!-- Main Content Area -->
     <div id="stage_content" class="relative">
       <% if @room.current_game.present? %>
-        <% if @room.current_game.status == "finished" %>
-           <%= render "games/write_and_vote/stage_finished", room: @room, game: @room.current_game %>
-        <% elsif @room.current_game.status == "voting" %>
-           <%= render "games/write_and_vote/stage_voting", room: @room, game: @room.current_game %>
-        <% else %>
-           <%# Default to writing/intro %>
-           <%= render "games/write_and_vote/stage_writing", room: @room, game: @room.current_game %>
-        <% end %>
+        <% game = @room.current_game %>
+        <% game_type_folder = @room.game_type.parameterize.underscore %>
+        <% partial_name = "games/#{game_type_folder}/stage_#{game.status}" %>
+        <%= render partial_name, room: @room, game: game %>
       <% else %>
         <%= render "rooms/stage_lobby", room: @room %>
       <% end %>

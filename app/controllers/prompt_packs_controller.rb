@@ -22,7 +22,7 @@ class PromptPacksController < ApplicationController
     if @prompt_pack.save
       redirect_to prompt_packs_path, notice: "Prompt pack created successfully."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -33,7 +33,7 @@ class PromptPacksController < ApplicationController
     if @prompt_pack.update(prompt_pack_params)
       redirect_to prompt_packs_path, notice: "Prompt pack updated successfully."
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
