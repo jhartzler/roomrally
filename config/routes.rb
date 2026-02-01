@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :prompt_packs
   resources :trivia_packs
   get "dashboard", to: "dashboard#index", as: :dashboard
+  get "customize", to: "customize#index", as: :customize
   get "dev/testing", to: "dev_testing#index"
   post "dev/testing/create_test_game", to: "dev_testing#create_test_game"
   get "dev/testing/show_test_game/:id", to: "dev_testing#show_test_game", as: :show_test_game
