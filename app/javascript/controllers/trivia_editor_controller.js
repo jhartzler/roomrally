@@ -1,8 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import YAML from "yaml"
 
 export default class extends Controller {
-    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswerField", "bulkText", "bulkSection"]
+    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswerField"]
     static values = { ratio: { type: Number, default: 1 } }
 
     connect() {
@@ -12,40 +11,6 @@ export default class extends Controller {
     addQuestion(event) {
         if (event) event.preventDefault()
         this.createQuestionField({ body: "", options: ["", "", "", ""], correct_answer: "" })
-    }
-
-    bulkAdd(event) {
-        event.preventDefault()
-        const text = this.bulkTextTarget.value
-        if (!text.trim()) return
-
-        try {
-            const questions = YAML.parse(text)
-
-            if (!Array.isArray(questions)) {
-                alert("Invalid YAML format. Expected an array of questions.")
-                return
-            }
-
-            questions.forEach(question => {
-                if (!question.body || !question.options || !question.correct_answer) {
-                    console.warn("Skipping invalid question:", question)
-                    return
-                }
-
-                if (!Array.isArray(question.options) || question.options.length !== 4) {
-                    console.warn("Skipping question with invalid options (must be array of 4):", question)
-                    return
-                }
-
-                this.createQuestionField(question)
-            })
-
-            this.bulkTextTarget.value = ""
-            this.bulkSectionTarget.open = false
-        } catch (e) {
-            alert("Error parsing YAML: " + e.message)
-        }
     }
 
     createQuestionField(data) {

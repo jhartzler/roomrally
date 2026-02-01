@@ -64,24 +64,6 @@
          </button>
       </div>
 
-      <!-- Bulk Import Section -->
-      <details class="mb-6 bg-white/5 rounded-xl border border-white/10 group overflow-hidden" data-trivia-editor-target="bulkSection">
-        <summary class="list-none flex justify-between items-center p-4 cursor-pointer hover:bg-white/10 transition-colors">
-          <span class="font-bold text-blue-200 flex items-center gap-2">
-            <%= lucide_icon('file-plus', class: "w-4 h-4", "aria-hidden": true) %>
-            Bulk Import (YAML)
-          </span>
-          <%= lucide_icon('chevron-down', class: "w-4 h-4 text-blue-300 group-open:rotate-180 transition-transform", "aria-hidden": true) %>
-        </summary>
-        <div class="p-4 border-t border-white/10">
-           <p class="text-xs text-blue-200/70 mb-3 font-medium">Paste YAML-formatted questions below.</p>
-           <textarea data-trivia-editor-target="bulkText" rows="8" class="block w-full rounded-xl bg-white/5 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-xs font-mono text-white placeholder-white/20 resize-y mb-3 p-3" placeholder="- body: &quot;Question text?&quot;&#10;  correct_answer: &quot;Option 2&quot;&#10;  options:&#10;    - &quot;Option 1&quot;&#10;    - &quot;Option 2&quot;&#10;    - &quot;Option 3&quot;&#10;    - &quot;Option 4&quot;" aria-label="Bulk YAML input"></textarea>
-           <button type="button" data-action="trivia-editor#bulkAdd" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-md transition-all active:scale-95">
-             Import Questions
-           </button>
-        </div>
-      </details>
-
       <div data-trivia-editor-target="questionList" class="space-y-6">
         <%= form.fields_for :trivia_questions do |q| %>
           <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="<%= q.object.new_record? %>">
