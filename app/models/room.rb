@@ -5,6 +5,7 @@ class Room < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :current_game, polymorphic: true, optional: true
   belongs_to :prompt_pack, optional: true
+  belongs_to :trivia_pack, optional: true
 
 
   # Game type identifiers (internal)

@@ -43,15 +43,30 @@
 
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all group relative overflow-hidden">
       <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all"></div>
-      
+
       <div class="relative z-10">
         <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-400/30 text-blue-200">
           <span class="text-2xl">📚</span>
         </div>
-        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Manage Library</h2>
+        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Prompt Library</h2>
         <p class="text-blue-200 mb-6 text-sm leading-relaxed">Create and organize your prompt packs. Build custom decks for your next game night.</p>
         <%= link_to prompt_packs_path, class: "inline-flex items-center gap-2 font-bold text-blue-300 hover:text-white transition-colors" do %>
           Go to Library <%= lucide_icon('arrow-right', class: "w-4 h-4") %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all group relative overflow-hidden">
+      <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-all"></div>
+
+      <div class="relative z-10">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 border border-purple-400/30 text-purple-200">
+          <%= lucide_icon('brain', class: "w-6 h-6") %>
+        </div>
+        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Trivia Library</h2>
+        <p class="text-blue-200 mb-6 text-sm leading-relaxed">Create and manage your trivia question packs. Build custom quizzes for your game sessions.</p>
+        <%= link_to trivia_packs_path, class: "inline-flex items-center gap-2 font-bold text-blue-300 hover:text-white transition-colors" do %>
+          Go to Trivia <%= lucide_icon('arrow-right', class: "w-4 h-4") %>
         <% end %>
       </div>
     </div>

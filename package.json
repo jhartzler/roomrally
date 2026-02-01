@@ -23,5 +23,8 @@
   "homepage": "https://github.com/jhartzler/roomrally#readme",
   "devDependencies": {
     "playwright": "^1.56.1"
+  },
+  "dependencies": {
+    "yaml": "^2.8.2"
   }
 }

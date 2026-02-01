@@ -1,0 +1,209 @@
+<%= form_with(model: trivia_pack, class: "contents", data: { controller: "trivia-editor", trivia_editor_ratio_value: trivia_pack.questions_per_player_ratio }) do |form| %>
+  <% if trivia_pack.errors.any? %>
+    <div id="error_explanation" class="bg-red-500/20 text-red-200 px-6 py-4 font-medium rounded-2xl mb-8 border border-red-500/30 backdrop-blur-md">
+      <h2 class="font-bold mb-2"><%= pluralize(trivia_pack.errors.count, "error") %> prohibited this pack from being saved:</h2>
+      <ul class="list-disc list-inside text-sm">
+        <% trivia_pack.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Left Column: Settings -->
+    <div class="space-y-6">
+      <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20">
+        <h3 class="text-xl font-black text-white mb-6 flex items-center gap-2 tracking-wide">
+           <%= lucide_icon('settings', class: "w-5 h-5 text-blue-200", "aria-hidden": true) %>
+           Pack Settings
+        </h3>
+
+        <div class="space-y-5">
+          <div>
+            <%= form.label :name, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
+            <%= form.text_field :name, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white placeholder-white/30" %>
+          </div>
+
+          <div>
+            <%= form.label :game_type, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
+            <%= form.select :game_type, Room::GAME_TYPES, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
+          </div>
+
+           <div>
+            <%= form.label :status, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
+            <%= form.select :status, TriviaPack.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-blue-600/20 p-8 rounded-3xl border border-blue-500/30 backdrop-blur-md">
+        <h3 class="font-black text-white mb-2 flex items-center gap-2">
+          <%= lucide_icon('users', class: "w-5 h-5 text-blue-300", "aria-hidden": true) %>
+          Capacity Check
+        </h3>
+        <p class="text-blue-100 text-sm font-medium mb-1" aria-live="polite">
+          Supports up to <span data-trivia-editor-target="countDisplay" class="font-black text-2xl text-white">0</span> players.
+        </p>
+        <p class="text-xs text-blue-300 font-bold tracking-wide uppercase">Based on current question count. Max 20 recommended.</p>
+      </div>
+
+       <div class="pt-2">
+        <%= form.submit "Save Pack", class: "w-full rounded-xl py-4 px-6 bg-orange-500 hover:bg-orange-600 text-white block font-black text-lg shadow-lg shadow-orange-900/20 transition-all cursor-pointer transform hover:scale-[1.02] active:scale-95" %>
+        <%= link_to "Cancel", trivia_packs_path, class: "block w-full text-center mt-4 text-blue-200/50 hover:text-white font-bold text-sm transition-colors" %>
+      </div>
+    </div>
+
+    <!-- Right Column: Questions -->
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 h-fit">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-black text-white tracking-wide">Questions</h3>
+         <button type="button" data-action="trivia-editor#addQuestion" class="text-sm text-white font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-white/10">
+            <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
+            Add Question
+         </button>
+      </div>
+
+      <!-- Bulk Import Section -->
+      <details class="mb-6 bg-white/5 rounded-xl border border-white/10 group overflow-hidden" data-trivia-editor-target="bulkSection">
+        <summary class="list-none flex justify-between items-center p-4 cursor-pointer hover:bg-white/10 transition-colors">
+          <span class="font-bold text-blue-200 flex items-center gap-2">
+            <%= lucide_icon('file-plus', class: "w-4 h-4", "aria-hidden": true) %>
+            Bulk Import (YAML)
+          </span>
+          <%= lucide_icon('chevron-down', class: "w-4 h-4 text-blue-300 group-open:rotate-180 transition-transform", "aria-hidden": true) %>
+        </summary>
+        <div class="p-4 border-t border-white/10">
+           <p class="text-xs text-blue-200/70 mb-3 font-medium">Paste YAML-formatted questions below.</p>
+           <textarea data-trivia-editor-target="bulkText" rows="8" class="block w-full rounded-xl bg-white/5 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-xs font-mono text-white placeholder-white/20 resize-y mb-3 p-3" placeholder="- body: &quot;Question text?&quot;&#10;  correct_answer: &quot;Option 2&quot;&#10;  options:&#10;    - &quot;Option 1&quot;&#10;    - &quot;Option 2&quot;&#10;    - &quot;Option 3&quot;&#10;    - &quot;Option 4&quot;" aria-label="Bulk YAML input"></textarea>
+           <button type="button" data-action="trivia-editor#bulkAdd" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-md transition-all active:scale-95">
+             Import Questions
+           </button>
+        </div>
+      </details>
+
+      <div data-trivia-editor-target="questionList" class="space-y-6">
+        <%= form.fields_for :trivia_questions do |q| %>
+          <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="<%= q.object.new_record? %>">
+            <!-- Question Body -->
+            <div class="mb-4">
+              <%= q.text_area :body, rows: 2, class: "block w-full rounded-lg bg-white/10 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 resize-none transition-all px-3 py-2", data: { trivia_editor_target: "questionField", action: "input->trivia-editor#updateCount" }, placeholder: "Enter trivia question..." %>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 gap-2 mb-3">
+              <% 4.times do |i| %>
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded flex-shrink-0">
+                    <%= ('A'.ord + i).chr %>
+                  </span>
+                  <input type="text"
+                         name="<%= q.object_name %>[options][]"
+                         value="<%= q.object.options&.at(i) %>"
+                         placeholder="Option <%= ('A'.ord + i).chr %>"
+                         data-trivia-editor-target="optionField"
+                         data-action="input->trivia-editor#optionChanged"
+                         data-question-index="<%= q.index %>"
+                         data-option-index="<%= i %>"
+                         class="flex-1 rounded-lg bg-white/10 border border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 transition-all px-3 py-2">
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Correct Answer Selection -->
+            <div class="mb-3">
+              <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Correct Answer</label>
+              <div class="flex gap-2">
+                <% 4.times do |i| %>
+                  <label class="flex-1 cursor-pointer">
+                    <input type="radio"
+                           name="<%= q.object_name %>[correct_answer_index]"
+                           value="<%= i %>"
+                           <%= 'checked' if q.object.options&.at(i) == q.object.correct_answer %>
+                           data-action="change->trivia-editor#updateCorrectAnswer"
+                           data-question-index="<%= q.index %>"
+                           class="sr-only peer">
+                    <div class="text-center py-2 px-3 rounded-lg bg-white/10 border-2 border-white/10 peer-checked:border-green-500 peer-checked:bg-green-500/20 peer-checked:text-green-300 text-blue-200 font-bold text-xs transition-all hover:bg-white/20">
+                      <%= ('A'.ord + i).chr %>
+                    </div>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+
+            <%= q.hidden_field :correct_answer, data: { trivia_editor_target: "correctAnswerField" } %>
+
+            <!-- Delete Button -->
+            <%= q.hidden_field :_destroy %>
+            <div class="flex justify-end">
+              <button type="button" data-action="trivia-editor#removeQuestion" class="text-white/40 hover:text-red-400 font-bold text-xs flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all px-2 py-1 rounded hover:bg-red-500/10" aria-label="Remove question">
+                <%= lucide_icon('trash-2', class: "w-4 h-4", "aria-hidden": true) %>
+                Remove
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Template for New Questions -->
+  <template data-trivia-editor-target="questionTemplate">
+    <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="true">
+      <!-- Question Body -->
+      <div class="mb-4">
+        <textarea name="trivia_pack[trivia_questions_attributes][NEW_RECORD][body]" rows="2" class="block w-full rounded-lg bg-white/10 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 resize-none transition-all px-3 py-2" data-trivia-editor-target="questionField" data-action="input->trivia-editor#updateCount" placeholder="Enter trivia question..."></textarea>
+      </div>
+
+      <!-- Options Grid -->
+      <div class="grid grid-cols-1 gap-2 mb-3">
+        <% 4.times do |i| %>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded flex-shrink-0">
+              <%= ('A'.ord + i).chr %>
+            </span>
+            <input type="text"
+                   name="trivia_pack[trivia_questions_attributes][NEW_RECORD][options][]"
+                   placeholder="Option <%= ('A'.ord + i).chr %>"
+                   data-trivia-editor-target="optionField"
+                   data-action="input->trivia-editor#optionChanged"
+                   data-question-index="NEW_RECORD"
+                   data-option-index="<%= i %>"
+                   class="flex-1 rounded-lg bg-white/10 border border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 transition-all px-3 py-2">
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Correct Answer Selection -->
+      <div class="mb-3">
+        <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Correct Answer</label>
+        <div class="flex gap-2">
+          <% 4.times do |i| %>
+            <label class="flex-1 cursor-pointer">
+              <input type="radio"
+                     name="trivia_pack[trivia_questions_attributes][NEW_RECORD][correct_answer_index]"
+                     value="<%= i %>"
+                     <%= 'checked' if i == 0 %>
+                     data-action="change->trivia-editor#updateCorrectAnswer"
+                     data-question-index="NEW_RECORD"
+                     class="sr-only peer">
+              <div class="text-center py-2 px-3 rounded-lg bg-white/10 border-2 border-white/10 peer-checked:border-green-500 peer-checked:bg-green-500/20 peer-checked:text-green-300 text-blue-200 font-bold text-xs transition-all hover:bg-white/20">
+                <%= ('A'.ord + i).chr %>
+              </div>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <input type="hidden" name="trivia_pack[trivia_questions_attributes][NEW_RECORD][correct_answer]" data-trivia-editor-target="correctAnswerField">
+
+      <!-- Delete Button -->
+      <div class="flex justify-end">
+        <button type="button" data-action="trivia-editor#removeQuestion" class="text-white/40 hover:text-red-400 font-bold text-xs flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all px-2 py-1 rounded hover:bg-red-500/10" aria-label="Remove question">
+          <%= lucide_icon('trash-2', class: "w-4 h-4", "aria-hidden": true) %>
+          Remove
+        </button>
+      </div>
+    </div>
+  </template>
+<% end %>
