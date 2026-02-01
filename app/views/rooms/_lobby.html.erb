@@ -25,7 +25,7 @@
       </div>
     <% end %>
     <% unless room.user.present? %>
-      <%= button_to "Claim Host", claim_host_room_path(room.code), method: :post, class: "w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-4 px-6 rounded-xl hover:from-orange-600 hover:to-amber-600 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg border border-white/20" %>
+      <%= button_to "Claim Host", room_host_path(room.code), method: :post, class: "w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-4 px-6 rounded-xl hover:from-orange-600 hover:to-amber-600 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg border border-white/20" %>
     <% end %>
     </div>
   </div>

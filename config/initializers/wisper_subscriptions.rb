@@ -4,4 +4,5 @@
 # The GameEventRouter is the central hub for all game-related events.
 Rails.application.config.to_prepare do
   RoomsController.subscribe(GameEventRouter)
+  GamesController.subscribe(GameEventRouter)
 end

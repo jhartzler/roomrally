@@ -22,11 +22,8 @@ Rails.application.routes.draw do
     resource :stage, only: :show
     resource :hand, only: :show
     resource :backstage, only: :show
-    member do
-      post :start_game
-      post :claim_host
-      post :reassign_host
-    end
+    resources :games, only: :create
+    resource :host, only: %i[create update]
   end
 
   get "/rooms/:code/join", to: "players#new", as: :join_room

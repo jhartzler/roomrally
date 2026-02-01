@@ -1,9 +1,7 @@
 class RoomsController < ApplicationController
   include Wisper::Publisher
 
-  before_action :set_room, only: %i[start_game claim_host reassign_host]
-  before_action :require_player, only: %i[claim_host reassign_host]
-  before_action :authorize_start_game, only: :start_game
+  before_action :set_room, only: %i[create]
   rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
 
   def create
@@ -18,80 +16,6 @@ class RoomsController < ApplicationController
 
 
 
-    def start_game
-      authorized = (current_player && current_player == @room.host) || (current_user && current_user == @room.user)
-
-      unless authorized
-        redirect_to room_hand_path(@room.code), alert: "Only the host can start the game."
-        return
-      end
-
-      if @room.start_game!
-        Rails.logger.info "Game started for room #{@room.code} by #{current_player&.name || 'Facilitator'}"
-
-        timer_enabled = start_game_params[:timer_enabled] == "1"
-        timer_increment = start_game_params[:timer_increment].to_i
-
-        if timer_enabled && timer_increment <= 0
-          @room.update(status: "lobby")
-          redirect_to room_hand_path(@room.code), alert: "Could not start game: Timer increment must be greater than 0"
-          return
-        end
-
-        publish(:game_started, room: @room, timer_enabled:, timer_increment:)
-
-        if current_user && current_user == @room.user
-          redirect_to room_backstage_path(@room.code), notice: "Game started!"
-        else
-          redirect_to room_hand_path(@room.code), notice: "Game started!"
-        end
-      else
-        redirect_to room_hand_path(@room.code), alert: "Could not start game. Ensure there are at least 2 players and the game hasn't started yet."
-      end
-    end
-  def claim_host
-    # Claim host
-    if @room.user.present?
-      redirect_to room_hand_path(@room.code), alert: "This room has a facilitator. Player host controls are disabled."
-      return
-    end
-
-    if @room.host.present?
-      redirect_to room_hand_path(@room.code), alert: "There is already a host for this room."
-      return
-    end
-
-    if @room.last_host_claim_at.present? && @room.last_host_claim_at > 30.seconds.ago
-      remaining_seconds = (30 - (Time.current - @room.last_host_claim_at)).ceil
-      redirect_to room_hand_path(@room.code), alert: "Host was recently claimed. Please wait #{remaining_seconds} seconds."
-      return
-    end
-
-    @room.update!(host: current_player, last_host_claim_at: Time.current)
-    Rails.logger.info "Player #{current_player.name} claimed host for room #{@room.code}"
-
-    GameBroadcaster.broadcast_host_change(room: @room)
-    redirect_to room_hand_path(@room.code), notice: "You are now the host!"
-  end
-
-  def reassign_host
-    unless current_player == @room.host
-      redirect_to room_hand_path(@room.code), alert: "Only the host can reassign host privileges."
-      return
-    end
-
-    target_player = @room.players.find_by(id: params[:player_id])
-    unless target_player
-      redirect_to room_hand_path(@room.code), alert: "Player not found in this room."
-      return
-    end
-
-    @room.update!(host: target_player)
-    Rails.logger.info "Host reassigned from #{current_player.name} to #{target_player.name} in room #{@room.code}"
-
-    GameBroadcaster.broadcast_host_change(room: @room)
-    redirect_to room_hand_path(@room.code), notice: "Host has been reassigned to #{target_player.name}."
-  end
 
   private
 
@@ -116,18 +40,9 @@ class RoomsController < ApplicationController
     permitted
   end
 
-  def start_game_params
-    params.permit(:timer_enabled, :timer_increment)
-  end
 
 
 
-  def authorize_start_game
-    return if current_user && current_user == @room.user
-    return if current_player
-
-    require_player
-  end
 
   def room_not_found
     Rails.logger.warn "Attempted to access non-existent room: #{params[:code]}"

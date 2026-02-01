@@ -34,16 +34,28 @@ class PlayersController < ApplicationController
   def destroy
     player_to_kick = Player.find(params[:id])
     room = player_to_kick.room
-    current_player = Player.find_by!(session_id: session[:player_session_id])
 
-    # Check if current player is the host
-    unless current_player == room.host
+    # Authorization
+    authorized = false
+    kicker_name = "Facilitator"
+
+    if current_user && current_user == room.user
+      authorized = true
+    elsif (current_host = Player.find_by(session_id: session[:player_session_id]))
+      if current_host == room.host
+        authorized = true
+        kicker_name = current_host.name
+      end
+    end
+
+    unless authorized
       redirect_to room_hand_path(room.code), alert: "Only the host can kick players."
       return
     end
 
-    # Prevent host from kicking themselves
-    if player_to_kick == current_player
+    # Prevent kicking self (if kicker is a player)
+    current_requesting_player = Player.find_by(session_id: session[:player_session_id])
+    if current_requesting_player && player_to_kick == current_requesting_player
       redirect_to room_hand_path(room.code), alert: "You cannot kick yourself."
       return
     end
@@ -51,7 +63,7 @@ class PlayersController < ApplicationController
     # Kick the player
     player_name = player_to_kick.name
     player_to_kick.destroy!
-    Rails.logger.info "Player #{player_name} was kicked from room #{room.code} by host #{current_player.name}"
+    Rails.logger.info "Player #{player_name} was kicked from room #{room.code} by #{kicker_name}"
 
     # Broadcast removal to all players in the room
     GameBroadcaster.broadcast_player_left(room:, player: player_to_kick)

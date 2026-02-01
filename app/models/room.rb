@@ -17,6 +17,9 @@ class Room < ApplicationRecord
     WRITE_AND_VOTE => "Comedy Clash"
   }.freeze
 
+  MIN_PLAYERS = 3
+  HOST_CLAIM_COOLDOWN = 30.seconds
+
   # Convenience method for getting default display name
   def self.default_display_name_for(game_type)
     GAME_DISPLAY_NAMES[game_type] || game_type
@@ -50,7 +53,7 @@ class Room < ApplicationRecord
   end
 
   def enough_players?
-    players.count >= 3
+    players.count >= Room::MIN_PLAYERS
   end
 
 
