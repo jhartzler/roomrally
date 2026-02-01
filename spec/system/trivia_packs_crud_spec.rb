@@ -131,7 +131,8 @@ RSpec.describe "TriviaPack CRUD", type: :system do
 
   describe "viewing a trivia pack" do
     let!(:pack) { create(:trivia_pack, user:, name: "Test Pack") }
-    let!(:question) do
+
+    before do
       create(:trivia_question,
              trivia_pack: pack,
              body: "What is the capital of France?",

@@ -63,7 +63,7 @@ RSpec.describe TriviaPack, type: :model do
   end
 
   describe 'nested attributes' do
-    it 'accepts nested attributes for trivia questions' do
+    it 'accepts nested attributes for trivia questions' do # rubocop:disable RSpec/ExampleLength
       user = create(:user)
       pack = user.trivia_packs.create!(
         name: "Test Pack",
