@@ -29,7 +29,7 @@ RSpec.describe "Dashboards", type: :request do
 
       it "displays quick action links" do
         get dashboard_path
-        expect(response.body).to include("Manage Library")
+        expect(response.body).to include("Customize Games")
         expect(response.body).to include("Host a Game")
       end
 

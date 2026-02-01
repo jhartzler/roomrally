@@ -11,7 +11,8 @@ class PromptPack < ApplicationRecord
   has_many :prompts, dependent: :destroy
   accepts_nested_attributes_for :prompts, allow_destroy: true, reject_if: :all_blank
 
-  validates :name, presence: true
+  before_validation :set_default_name
+
   validates :game_type, presence: true
 
   enum :status, { draft: 0, live: 1 }
@@ -25,6 +26,10 @@ class PromptPack < ApplicationRecord
   end
 
   private
+
+  def set_default_name
+    self.name = "Untitled Prompt Pack" if name.blank?
+  end
 
   def game_class
     # Assumes game_type is like "Write And Vote" -> "WriteAndVoteGame"
