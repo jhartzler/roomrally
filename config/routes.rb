@@ -3,9 +3,6 @@ Rails.application.routes.draw do
   get "privacy", to: "pages#privacy", as: :privacy
   get "terms", to: "pages#terms", as: :terms
 
-  # Contact form
-  resource :contact, only: %i[new create]
-
   resources :prompt_packs
   resources :trivia_packs
   get "dashboard", to: "dashboard#index", as: :dashboard
