@@ -1,0 +1,23 @@
+<footer class="mt-auto border-t border-white/10">
+  <div class="container mx-auto px-4 py-8">
+    <div class="text-center space-y-4">
+      <p class="text-blue-300/50 text-xs leading-relaxed max-w-md mx-auto">
+        This project is still in Alpha. While we endeavor to release bug free code, this service does not come with any guarantees and may have unresolved issues.
+      </p>
+
+      <nav class="flex flex-wrap justify-center gap-4 text-sm">
+        <%= link_to "Privacy Policy", privacy_path, class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+        <span class="text-blue-300/30">|</span>
+        <%= link_to "Terms of Service", terms_path, class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+        <span class="text-blue-300/30">|</span>
+        <%= link_to "Contact Us", "https://forms.gle/xyHntsW9Kku1yaBw6", target: "_blank", rel: "noopener noreferrer", class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+        <span class="text-blue-300/30">|</span>
+        <%= link_to "Feedback", "https://forms.gle/DvBEVC5DwqcGAnHv8", target: "_blank", rel: "noopener noreferrer", class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+      </nav>
+
+      <p class="text-blue-300/30 text-xs">
+        &copy; <%= Date.current.year %> RoomRally. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

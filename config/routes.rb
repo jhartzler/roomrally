@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  # Static pages
+  get "privacy", to: "pages#privacy", as: :privacy
+  get "terms", to: "pages#terms", as: :terms
+
+  # Contact form
+  resource :contact, only: %i[new create]
+
   resources :prompt_packs
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "dev/testing", to: "dev_testing#index"

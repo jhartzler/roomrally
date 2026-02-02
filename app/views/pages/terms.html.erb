@@ -1,0 +1,93 @@
+<% content_for(:title) { "Terms of Service - RoomRally" } %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-white/20">
+    <h1 class="text-3xl font-bold text-white mb-6">Terms of Service</h1>
+
+    <div class="prose prose-invert prose-blue max-w-none text-blue-100 space-y-6">
+      <p class="text-blue-200">
+        Last updated: <%= Date.current.strftime("%B %d, %Y") %>
+      </p>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">1. Acceptance of Terms</h2>
+        <p>
+          By accessing or using RoomRally, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">2. Description of Service</h2>
+        <p>
+          RoomRally is a real-time multiplayer party game platform. The service is provided "as is" and is currently in alpha development.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">3. Alpha Status Disclaimer</h2>
+        <p class="bg-orange-500/20 border border-orange-500/30 rounded-lg p-4">
+          This service is in alpha development. While we strive to provide a stable experience, you may encounter bugs, data loss, or service interruptions. We make no guarantees about service availability or data persistence.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">4. User Conduct</h2>
+        <p>
+          When using RoomRally, you agree to:
+        </p>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+          <li>Use appropriate and respectful player names</li>
+          <li>Submit appropriate content during games</li>
+          <li>Not attempt to disrupt or abuse the service</li>
+          <li>Not use the service for any illegal purpose</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">5. Intellectual Property</h2>
+        <p>
+          RoomRally and its associated trademarks, logos, and content are the property of its operators. User-generated content during games remains the property of the users who created it.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">6. Limitation of Liability</h2>
+        <p>
+          RoomRally and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">7. Service Modifications</h2>
+        <p>
+          We reserve the right to modify, suspend, or discontinue the service at any time without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuation of the service.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">8. Privacy</h2>
+        <p>
+          Your use of RoomRally is also governed by our <%= link_to "Privacy Policy", privacy_path, class: "text-orange-400 hover:text-orange-300 underline" %>.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">9. Changes to Terms</h2>
+        <p>
+          We may update these Terms of Service from time to time. Continued use of the service after changes constitutes acceptance of the new terms.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">10. Contact</h2>
+        <p>
+          If you have questions about these Terms, please <%= link_to "contact us", new_contact_path, class: "text-orange-400 hover:text-orange-300 underline" %>.
+        </p>
+      </section>
+    </div>
+
+    <div class="mt-8">
+      <%= link_to "&larr; Back to Home".html_safe, root_path, class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<% content_for(:title) { "Contact Us - RoomRally" } %>
+
+<div class="max-w-xl mx-auto">
+  <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-white/20">
+    <h1 class="text-3xl font-bold text-white mb-6">Contact Us</h1>
+
+    <p class="text-blue-200 mb-6">
+      Have a question, suggestion, or found a bug? We'd love to hear from you.
+    </p>
+
+    <%= form_with model: @contact, url: contact_path, class: "space-y-6" do |form| %>
+      <% if @contact.errors.any? %>
+        <div class="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
+          <h2 class="text-red-200 font-semibold mb-2">Please fix the following errors:</h2>
+          <ul class="list-disc list-inside text-red-200 text-sm">
+            <% @contact.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :name, class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
+        <%= form.text_field :name, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all", placeholder: "Your name" %>
+      </div>
+
+      <div>
+        <%= form.label :email, class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
+        <%= form.text_field :email, type: :email, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all", placeholder: "your@email.com" %>
+      </div>
+
+      <div>
+        <%= form.label :subject, class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
+        <%= form.text_field :subject, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all", placeholder: "What's this about?" %>
+      </div>
+
+      <div>
+        <%= form.label :message, class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
+        <%= form.text_area :message, rows: 6, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all resize-none", placeholder: "Your message..." %>
+      </div>
+
+      <div>
+        <%= form.submit "Send Message", class: "w-full bg-orange-500 text-white font-black py-4 px-6 rounded-xl hover:bg-orange-600 active:scale-[0.98] transform hover:shadow-lg shadow-orange-900/20 transition-all duration-200 text-lg tracking-tight cursor-pointer" %>
+      </div>
+    <% end %>
+
+    <div class="mt-8">
+      <%= link_to "&larr; Back to Home".html_safe, root_path, class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+    </div>
+  </div>
+</div>

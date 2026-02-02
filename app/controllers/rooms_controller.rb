@@ -1,8 +1,12 @@
 class RoomsController < ApplicationController
   include Wisper::Publisher
 
-  before_action :set_room, only: %i[create]
+  before_action :set_room, only: %i[show]
   rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
+
+  def show
+    redirect_to room_stage_path(@room)
+  end
 
   def create
     room = Room.create!(room_params)
