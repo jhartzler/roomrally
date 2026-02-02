@@ -47,6 +47,13 @@ Rails.application.routes.draw do
       resource :question, only: :create
       resource :round_closure, only: :create
       resource :advancement, only: :create
+      resource :game_start, only: :create
+    end
+  end
+
+  resources :write_and_vote_games, only: [] do
+    scope module: :write_and_vote do
+      resource :game_start, only: :create
     end
   end
 

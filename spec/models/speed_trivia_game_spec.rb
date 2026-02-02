@@ -11,9 +11,9 @@ RSpec.describe SpeedTriviaGame, type: :model do
   end
 
   describe 'defaults' do
-    it 'has default status waiting' do
+    it 'has default status instructions' do
       game = described_class.create!
-      expect(game.status).to eq('waiting')
+      expect(game.status).to eq('instructions')
     end
 
     it 'has default current_question_index 0' do
@@ -30,11 +30,21 @@ RSpec.describe SpeedTriviaGame, type: :model do
   describe 'state machine' do
     let(:game) { described_class.create! }
 
-    it 'starts in waiting state' do
-      expect(game.status).to eq('waiting')
+    it 'starts in instructions state' do
+      expect(game.status).to eq('instructions')
+    end
+
+    describe 'start_game event' do
+      it 'transitions from instructions to waiting' do
+        expect(game.may_start_game?).to be true
+        game.start_game!
+        expect(game.status).to eq('waiting')
+      end
     end
 
     describe 'start_question event' do
+      before { game.start_game! }
+
       it 'transitions from waiting to answering' do
         expect(game.may_start_question?).to be true
         game.start_question!

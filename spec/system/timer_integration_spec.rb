@@ -29,7 +29,12 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       check "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("TIME LEFT")
+      # Advance past instructions screen
+      expect(page).to have_content("Get ready!")
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      find("#start-from-instructions-btn").click
+
+      expect(page).to have_content("TIME LEFT", wait: 5)
       expect(page).to have_content(/\d+s/) # Visual countdown check
     end
 
@@ -83,7 +88,12 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       uncheck "Enable Timer"
       click_on "Start Game"
 
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
+      # Advance past instructions screen
+      expect(page).to have_content("Get ready!")
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      find("#start-from-instructions-btn").click
+
+      expect(page).to have_content("WRITE YOUR BEST ANSWER...", wait: 5)
       expect(page).not_to have_content("TIME LEFT")
     end
 
@@ -103,7 +113,12 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       fill_in "Seconds per round", with: "45"
       click_on "Start Game"
 
-      expect(page).to have_content("TIME LEFT")
+      # Advance past instructions screen
+      expect(page).to have_content("Get ready!")
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      find("#start-from-instructions-btn").click
+
+      expect(page).to have_content("TIME LEFT", wait: 5)
     end
 
     game = room.reload.current_game

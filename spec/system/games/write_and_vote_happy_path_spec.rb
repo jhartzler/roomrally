@@ -35,11 +35,23 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
     end
 
     Capybara.using_session(:host) do
-      expect(page).to have_button("Start Game")
+      # Wait for turbo stream to update, or refresh if needed
+      unless page.has_button?("Start Game", wait: 3)
+        visit current_path
+      end
+      expect(page).to have_button("Start Game", wait: 5)
       click_on "Start Game"
 
       expect(page).to have_content("Game started!")
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
+      # Instructions screen shown for non-logged-in games
+      expect(page).to have_content("Get ready!")
+
+      # Host must advance past instructions - wait for and click the button with specific ID
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      find("#start-from-instructions-btn").click
+
+      # Wait for turbo stream broadcast to update the page
+      expect(page).to have_content("WRITE YOUR BEST ANSWER...", wait: 10)
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
     end
 

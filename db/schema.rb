@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_161411) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,8 +21,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.integer "score", default: 0, null: false
     t.string "session_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "room_id" ], name: "index_players_on_room_id"
-    t.index [ "session_id" ], name: "index_players_on_session_id", unique: true
+    t.index ["room_id"], name: "index_players_on_room_id"
+    t.index ["session_id"], name: "index_players_on_session_id", unique: true
   end
 
   create_table "prompt_instances", force: :cascade do |t|
@@ -33,8 +33,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.string "status"
     t.datetime "updated_at", null: false
     t.bigint "write_and_vote_game_id"
-    t.index [ "prompt_id" ], name: "index_prompt_instances_on_prompt_id"
-    t.index [ "write_and_vote_game_id" ], name: "index_prompt_instances_on_write_and_vote_game_id"
+    t.index ["prompt_id"], name: "index_prompt_instances_on_prompt_id"
+    t.index ["write_and_vote_game_id"], name: "index_prompt_instances_on_write_and_vote_game_id"
   end
 
   create_table "prompt_packs", force: :cascade do |t|
@@ -45,7 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.integer "status", default: 0
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.index [ "user_id" ], name: "index_prompt_packs_on_user_id"
+    t.index ["user_id"], name: "index_prompt_packs_on_user_id"
   end
 
   create_table "prompts", force: :cascade do |t|
@@ -53,7 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.datetime "created_at", null: false
     t.bigint "prompt_pack_id"
     t.datetime "updated_at", null: false
-    t.index [ "prompt_pack_id" ], name: "index_prompts_on_prompt_pack_id"
+    t.index ["prompt_pack_id"], name: "index_prompts_on_prompt_pack_id"
   end
 
   create_table "responses", force: :cascade do |t|
@@ -64,8 +64,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.text "rejection_reason"
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
-    t.index [ "player_id" ], name: "index_responses_on_player_id"
-    t.index [ "prompt_instance_id" ], name: "index_responses_on_prompt_instance_id"
+    t.index ["player_id"], name: "index_responses_on_player_id"
+    t.index ["prompt_instance_id"], name: "index_responses_on_prompt_instance_id"
   end
 
   create_table "rooms", force: :cascade do |t|
@@ -81,11 +81,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.string "status"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.index [ "code" ], name: "index_rooms_on_code", unique: true
-    t.index [ "current_game_type", "current_game_id" ], name: "index_rooms_on_current_game"
-    t.index [ "host_id" ], name: "index_rooms_on_host_id"
-    t.index [ "prompt_pack_id" ], name: "index_rooms_on_prompt_pack_id"
-    t.index [ "user_id" ], name: "index_rooms_on_user_id"
+    t.index ["code"], name: "index_rooms_on_code", unique: true
+    t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
+    t.index ["host_id"], name: "index_rooms_on_host_id"
+    t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
+    t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
   create_table "speed_trivia_games", force: :cascade do |t|
@@ -94,13 +94,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.datetime "round_closed_at"
     t.datetime "round_ends_at"
     t.datetime "round_started_at"
+    t.boolean "show_instructions", default: true, null: false
     t.string "status"
     t.integer "time_limit", default: 20
     t.integer "timer_duration"
     t.boolean "timer_enabled", default: false, null: false
     t.bigint "trivia_pack_id"
     t.datetime "updated_at", null: false
-    t.index [ "trivia_pack_id" ], name: "index_speed_trivia_games_on_trivia_pack_id"
+    t.index ["trivia_pack_id"], name: "index_speed_trivia_games_on_trivia_pack_id"
   end
 
   create_table "trivia_answers", force: :cascade do |t|
@@ -112,8 +113,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.datetime "submitted_at"
     t.bigint "trivia_question_instance_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "player_id" ], name: "index_trivia_answers_on_player_id"
-    t.index [ "trivia_question_instance_id" ], name: "index_trivia_answers_on_trivia_question_instance_id"
+    t.index ["player_id"], name: "index_trivia_answers_on_player_id"
+    t.index ["trivia_question_instance_id"], name: "index_trivia_answers_on_trivia_question_instance_id"
   end
 
   create_table "trivia_packs", force: :cascade do |t|
@@ -124,7 +125,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.integer "status", default: 0
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.index [ "user_id" ], name: "index_trivia_packs_on_user_id"
+    t.index ["user_id"], name: "index_trivia_packs_on_user_id"
   end
 
   create_table "trivia_question_instances", force: :cascade do |t|
@@ -136,8 +137,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.bigint "speed_trivia_game_id", null: false
     t.bigint "trivia_question_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "speed_trivia_game_id" ], name: "index_trivia_question_instances_on_speed_trivia_game_id"
-    t.index [ "trivia_question_id" ], name: "index_trivia_question_instances_on_trivia_question_id"
+    t.index ["speed_trivia_game_id"], name: "index_trivia_question_instances_on_speed_trivia_game_id"
+    t.index ["trivia_question_id"], name: "index_trivia_question_instances_on_trivia_question_id"
   end
 
   create_table "trivia_questions", force: :cascade do |t|
@@ -147,7 +148,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.jsonb "options"
     t.bigint "trivia_pack_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "trivia_pack_id" ], name: "index_trivia_questions_on_trivia_pack_id"
+    t.index ["trivia_pack_id"], name: "index_trivia_questions_on_trivia_pack_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -166,8 +167,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.bigint "player_id", null: false
     t.bigint "response_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "player_id" ], name: "index_votes_on_player_id"
-    t.index [ "response_id" ], name: "index_votes_on_response_id"
+    t.index ["player_id"], name: "index_votes_on_player_id"
+    t.index ["response_id"], name: "index_votes_on_response_id"
   end
 
   create_table "write_and_vote_games", force: :cascade do |t|
@@ -176,12 +177,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_210451) do
     t.bigint "prompt_pack_id"
     t.integer "round", default: 1
     t.datetime "round_ends_at"
+    t.boolean "show_instructions", default: true, null: false
     t.string "status"
     t.integer "timer_duration", default: 30
     t.boolean "timer_enabled", default: false, null: false
     t.integer "timer_increment", default: 60, null: false
     t.datetime "updated_at", null: false
-    t.index [ "prompt_pack_id" ], name: "index_write_and_vote_games_on_prompt_pack_id"
+    t.index ["prompt_pack_id"], name: "index_write_and_vote_games_on_prompt_pack_id"
   end
 
   add_foreign_key "players", "rooms"

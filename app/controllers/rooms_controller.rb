@@ -36,6 +36,8 @@ class RoomsController < ApplicationController
         timer_enabled = start_game_params[:timer_enabled] == "1"
         timer_increment = start_game_params[:timer_increment].to_i
         question_count = start_game_params[:question_count].to_i
+        # Force show_instructions for non-logged-in games
+        show_instructions = @room.user.nil? || start_game_params[:show_instructions] == "1"
 
         if timer_enabled && timer_increment <= 0
           @room.update(status: "lobby")
@@ -52,7 +54,7 @@ class RoomsController < ApplicationController
           end
         end
 
-        publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:)
+        publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:, show_instructions:)
 
         if current_user && current_user == @room.user
           redirect_to room_backstage_path(@room.code), notice: "Game started!"
@@ -131,7 +133,7 @@ class RoomsController < ApplicationController
   end
 
   def start_game_params
-    params.permit(:timer_enabled, :timer_increment, :question_count)
+    params.permit(:timer_enabled, :timer_increment, :question_count, :show_instructions)
   end
 
 

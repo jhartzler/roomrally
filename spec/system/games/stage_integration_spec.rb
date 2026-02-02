@@ -38,11 +38,16 @@ RSpec.describe "Stage View Game Integration", type: :system do
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
       click_on "Start Game"
+
+      # Advance past instructions screen
+      expect(page).to have_content("Get ready!")
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      find("#start-from-instructions-btn").click
     end
 
     # 3. Verify Writing Phase on Stage
     within_window stage_window do
-      expect(page).to have_content("Look at your device!")
+      expect(page).to have_content("Look at your device!", wait: 5)
       expect(page).to have_content("Writing Phase: Round 1")
     end
 

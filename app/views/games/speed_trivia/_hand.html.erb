@@ -7,6 +7,22 @@
   <%= render "games/speed_trivia/game_over", room:, player:, game: %>
 <% elsif game.answering? %>
   <%= render "games/speed_trivia/answer_form", room:, player:, game: %>
+<% elsif game.instructions? %>
+  <div class="bg-gradient-to-r from-indigo-100 to-blue-100 rounded-xl p-6 text-center mb-6">
+    <p class="text-2xl mb-2">🧠</p>
+    <p class="text-lg font-bold text-gray-700">Get ready!</p>
+    <p class="text-gray-600 mt-2">The game is about to begin...</p>
+  </div>
+  <% if player == room.host %>
+    <div id="host-controls" class="border-t-2 border-gray-200 pt-6">
+      <%= button_to "Start Game",
+          speed_trivia_game_game_start_path(game),
+          method: :post,
+          id: "start-from-instructions-btn",
+          data: { turbo: false },
+          class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
+    </div>
+  <% end %>
 <% else %>
   <%# waiting or reviewing %>
   <%= render "games/speed_trivia/waiting", room:, player:, game: %>

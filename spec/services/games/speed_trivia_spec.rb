@@ -36,8 +36,13 @@ RSpec.describe Games::SpeedTrivia do
       expect(positions).to eq([ 0, 1, 2 ])
     end
 
-    it 'starts in waiting state' do
+    it 'starts in instructions state by default' do
       described_class.game_started(room:)
+      expect(room.current_game.status).to eq("instructions")
+    end
+
+    it 'starts in waiting state when show_instructions is false' do
+      described_class.game_started(room:, show_instructions: false)
       expect(room.current_game.status).to eq("waiting")
     end
 

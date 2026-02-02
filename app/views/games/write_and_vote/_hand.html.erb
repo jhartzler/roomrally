@@ -1,16 +1,33 @@
 <%# app/views/games/write_and_vote/_hand.html.erb %>
 <%# This is the main view for a player's hand in the Write and Vote game. %>
 
-<%
-  player_prompt_instances = player.responses.joins(:prompt_instance)
-                                  .where(prompt_instances: { round: room.current_game.round })
-                                  .map(&:prompt_instance)
-%>
+<% game = room.current_game %>
 
-<% if room.current_game.status == "finished" %>
+<% if game.instructions? %>
+  <div class="bg-gradient-to-r from-indigo-100 to-blue-100 rounded-xl p-6 text-center mb-6">
+    <p class="text-2xl mb-2">✍️</p>
+    <p class="text-lg font-bold text-gray-700">Get ready!</p>
+    <p class="text-gray-600 mt-2">The game is about to begin...</p>
+  </div>
+  <% if player == room.host %>
+    <div id="host-controls" class="border-t-2 border-gray-200 pt-6">
+      <%= button_to "Start Game",
+          write_and_vote_game_game_start_path(game),
+          method: :post,
+          id: "start-from-instructions-btn",
+          data: { turbo: false },
+          class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
+    </div>
+  <% end %>
+<% elsif game.finished? %>
   <%= render "games/write_and_vote/game_over", room: room, player: player %>
-<% elsif room.current_game.status == "voting" %>
-  <%= render "games/write_and_vote/voting", room: room, player: player, game: room.current_game %>
+<% elsif game.voting? %>
+  <%= render "games/write_and_vote/voting", room: room, player: player, game: game %>
 <% else %>
-  <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances, room: room, game: room.current_game %>
+  <%
+    player_prompt_instances = player.responses.joins(:prompt_instance)
+                                    .where(prompt_instances: { round: game.round })
+                                    .map(&:prompt_instance)
+  %>
+  <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances, room: room, game: game %>
 <% end %>

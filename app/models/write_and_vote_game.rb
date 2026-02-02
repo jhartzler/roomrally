@@ -17,9 +17,14 @@ class WriteAndVoteGame < ApplicationRecord
   validates :timer_increment, numericality: { greater_than: 0 }, if: :timer_enabled?
 
   aasm column: :status, whiny_transitions: false do
-    state :writing, initial: true
+    state :instructions, initial: true
+    state :writing
     state :voting
     state :finished
+
+    event :start_game do
+      transitions from: :instructions, to: :writing
+    end
 
     event :start_voting do
       transitions from: :writing, to: :voting

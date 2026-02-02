@@ -4,22 +4,31 @@
 <% game = room.current_game %>
 
 <div class="space-y-4">
-  <div class="flex items-center justify-between mb-4">
-    <span class="text-blue-200 font-medium">
-      Question <%= game.current_question_index + 1 %> of <%= game.trivia_question_instances.count %>
-    </span>
-    <span class="px-3 py-1 rounded-full text-sm font-bold
-      <%= case game.status
-          when 'waiting' then 'bg-yellow-500/20 text-yellow-300'
-          when 'answering' then 'bg-green-500/20 text-green-300'
-          when 'reviewing' then 'bg-blue-500/20 text-blue-300'
-          else 'bg-gray-500/20 text-gray-300'
-          end %>">
-      <%= game.status.titleize %>
-    </span>
-  </div>
+  <% unless game.instructions? %>
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-blue-200 font-medium">
+        Question <%= game.current_question_index + 1 %> of <%= game.trivia_question_instances.count %>
+      </span>
+      <span class="px-3 py-1 rounded-full text-sm font-bold
+        <%= case game.status
+            when 'waiting' then 'bg-yellow-500/20 text-yellow-300'
+            when 'answering' then 'bg-green-500/20 text-green-300'
+            when 'reviewing' then 'bg-blue-500/20 text-blue-300'
+            else 'bg-gray-500/20 text-gray-300'
+            end %>">
+        <%= game.status.titleize %>
+      </span>
+    </div>
+  <% end %>
 
-  <% if game.waiting? %>
+  <% if game.instructions? %>
+    <p class="text-blue-200 text-sm mb-4">Players are viewing the instructions.</p>
+    <%= button_to "Start Game",
+        speed_trivia_game_game_start_path(game),
+        method: :post,
+        class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+
+  <% elsif game.waiting? %>
     <p class="text-blue-200 text-sm mb-4">Players are waiting for the first question.</p>
     <%= button_to "Start First Question",
         speed_trivia_game_question_path(game),
