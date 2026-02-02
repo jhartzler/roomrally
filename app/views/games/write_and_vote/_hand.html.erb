@@ -1,33 +1,23 @@
 <%# app/views/games/write_and_vote/_hand.html.erb %>
-<%# This is the main view for a player's hand in the Write and Vote game. %>
+<%# Main view router for a player's hand in Write and Vote %>
 
 <% game = room.current_game %>
 
 <% if game.instructions? %>
-  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center mb-6">
-    <p class="text-4xl mb-3">✍️</p>
-    <p class="text-xl font-bold text-white">Get ready!</p>
-    <p class="text-blue-200 mt-2">The game is about to begin...</p>
-  </div>
-  <% if player == room.host %>
-    <div id="host-controls" class="border-t-2 border-white/20 pt-6">
-      <%= button_to "Start Game",
-          write_and_vote_game_game_start_path(game),
-          method: :post,
-          id: "start-from-instructions-btn",
-          data: { turbo: false },
-          class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
-    </div>
-  <% end %>
+  <%= render "games/shared/hand_instructions",
+      emoji: "✍️",
+      start_game_path: write_and_vote_game_game_start_path(game),
+      room:,
+      player: %>
 <% elsif game.finished? %>
-  <%= render "games/write_and_vote/game_over", room: room, player: player %>
+  <%= render "games/write_and_vote/game_over", room:, player: %>
 <% elsif game.voting? %>
-  <%= render "games/write_and_vote/voting", room: room, player: player, game: game %>
+  <%= render "games/write_and_vote/voting", room:, player:, game: %>
 <% else %>
   <%
     player_prompt_instances = player.responses.joins(:prompt_instance)
                                     .where(prompt_instances: { round: game.round })
                                     .map(&:prompt_instance)
   %>
-  <%= render "games/write_and_vote/prompt_screen", player: player, prompts: player_prompt_instances, room: room, game: game %>
+  <%= render "games/write_and_vote/prompt_screen", player:, prompts: player_prompt_instances, room:, game: %>
 <% end %>
