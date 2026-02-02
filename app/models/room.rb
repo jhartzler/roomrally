@@ -46,9 +46,14 @@ class Room < ApplicationRecord
   aasm column: :status, whiny_transitions: false do
     state :lobby, initial: true
     state :playing
+    state :finished
 
     event :start_game do
       transitions from: :lobby, to: :playing, guard: :enough_players?
+    end
+
+    event :finish do
+      transitions from: :playing, to: :finished
     end
   end
 

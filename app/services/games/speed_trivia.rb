@@ -76,6 +76,7 @@ module Games
       else
         game.calculate_scores!
         game.finish_game!
+        game.room.finish!
         broadcast_all(game)
       end
     end

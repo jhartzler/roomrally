@@ -135,6 +135,7 @@ module Games
           assign_prompts_for_round(game:, round_number: game.round)
         else
           game.finish_game!
+          game.room.finish!
         end
       end
     end

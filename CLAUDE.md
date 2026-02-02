@@ -31,6 +31,10 @@ bin/rspec spec/system                               # Run system tests (most imp
 # Code quality
 rubocop                # Check code style
 rubocop -A             # Auto-fix code style issues (run before committing)
+
+# Worktrees
+# After creating a new worktree, rebuild Tailwind CSS for tests:
+RAILS_ENV=test bin/rails tailwindcss:build
 ```
 
 ## Architecture
