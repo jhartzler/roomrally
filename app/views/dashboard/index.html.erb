@@ -1,5 +1,12 @@
 <div class="min-h-screen p-6 md:p-12 font-sans text-white">
   <header class="max-w-5xl mx-auto mb-10">
+    <%= link_to root_path, class: "group flex items-center gap-2 text-blue-200 hover:text-white transition-colors font-bold mb-6 w-fit" do %>
+      <div class="p-2 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors border border-white/10">
+        <%= lucide_icon('arrow-left', class: "w-5 h-5") %>
+      </div>
+      <span>Back to Home</span>
+    <% end %>
+
     <h1 class="text-4xl font-black text-white drop-shadow-lg mb-2">
       Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400"><%= current_user.name %></span>
     </h1>

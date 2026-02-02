@@ -1,10 +1,14 @@
 class RoomsController < ApplicationController
   include Wisper::Publisher
 
-  before_action :set_room, only: %i[start_game claim_host reassign_host]
+  before_action :set_room, only: %i[show start_game claim_host reassign_host]
   before_action :require_player, only: %i[claim_host reassign_host]
   before_action :authorize_start_game, only: :start_game
   rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
+
+  def show
+    redirect_to room_stage_path(@room)
+  end
 
   def create
     room = Room.create!(room_params)

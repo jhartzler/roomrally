@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Room Rally is an open-source, real-time multiplayer party game engine inspired by Jackbox Games. Players connect via 4-letter room codes using their phones (Hand clients) while viewing a shared screen (Stage client). The system uses HTML-Over-The-Wire architecture with Rails backend and Hotwire frontend.
+Room Rally is a real-time multiplayer party game engine inspired by Jackbox Games. Players connect via 4-letter room codes using their phones (Hand clients) while viewing a shared screen (Stage client). The system uses HTML-Over-The-Wire architecture with Rails backend and Hotwire frontend.
 
 ## Technology Stack
 
@@ -92,6 +92,21 @@ Games with timed phases include `HasRoundTimer` concern and implement `process_t
 - **No Channels Directory**: Uses Turbo Streams directly, no custom Action Cable channels
 - **Session-Based Auth**: Players identified by Rails session for reconnection, no accounts required
 - **System Tests Are Critical**: Multiplayer flows must be tested with multiple Capybara sessions
+
+## Pull Request Descriptions
+
+Focus on what matters to a human reviewer. GitHub already shows file changes, so don't list them.
+
+**Include:**
+- **Why**: What problem does this solve? What's the context?
+- **Decisions**: Non-obvious choices, tradeoffs, or things done intentionally
+- **Reviewer notes**: What should they pay attention to? Any risks?
+- **Configuration**: Environment variables or setup needed
+
+**Avoid:**
+- Listing files added/modified (GitHub shows this)
+- Restating the commit message
+- Obvious observations ("added tests for new code")
 
 ## Documentation
 

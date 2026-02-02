@@ -2,7 +2,7 @@
 
 ## Goal
 
-A Rails-based, open-source, real-time party game platform inspired by Jackbox Games.
+A Rails-based, real-time party game platform inspired by Jackbox Games.
 
 ## Technology Stack
 

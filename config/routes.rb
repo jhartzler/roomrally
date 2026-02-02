@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # Static pages
+  get "privacy", to: "pages#privacy", as: :privacy
+  get "terms", to: "pages#terms", as: :terms
+
   resources :prompt_packs
   resources :trivia_packs
   get "dashboard", to: "dashboard#index", as: :dashboard

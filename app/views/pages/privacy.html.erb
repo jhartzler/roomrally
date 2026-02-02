@@ -1,0 +1,101 @@
+<% content_for(:title) { "Privacy Policy - RoomRally" } %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-white/20">
+    <h1 class="text-3xl font-bold text-white mb-6">Privacy Policy</h1>
+
+    <div class="prose prose-invert prose-blue max-w-none text-blue-100 space-y-6">
+      <p class="text-blue-200">
+        Last updated: <%= Date.current.strftime("%B %d, %Y") %>
+      </p>
+
+      <section class="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mt-6">
+        <h2 class="text-xl font-semibold text-white mb-3">We Will Never Sell Your Data</h2>
+        <p>
+          Your privacy matters to us. We will never sell, rent, or trade your personal information to third parties. Period.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">1. Minimal Data Collection</h2>
+        <p class="mb-4">
+          We believe in collecting only what's absolutely necessary. Here's what we collect:
+        </p>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+          <li><strong>If you play without logging in:</strong> Only the nickname you choose when joining a game. That's it.</li>
+          <li><strong>If you log in with Google:</strong> Your name and email address from your Google account, used solely to identify you as a host.</li>
+          <li><strong>During gameplay:</strong> Your game responses and votes (the fun stuff you create during games).</li>
+          <li><strong>Technical data:</strong> Session cookies to keep you connected to your game.</li>
+        </ul>
+        <p class="mt-4 text-blue-200">
+          We do not collect your location, browsing history, device fingerprints, or any other tracking data.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">2. How We Use Your Information</h2>
+        <p>
+          We use the collected information to:
+        </p>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+          <li>Provide and maintain the game service</li>
+          <li>Enable multiplayer functionality</li>
+          <li>Improve our services</li>
+          <li>Communicate with you when necessary</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">3. Data Retention</h2>
+        <p>
+          Game session data (nicknames, responses, votes) is stored on our servers. If you log in with Google, your account information is retained until you request deletion. You can request deletion of your data at any time by <%= link_to "contacting us", "https://forms.gle/xyHntsW9Kku1yaBw6", target: "_blank", rel: "noopener noreferrer", class: "text-orange-400 hover:text-orange-300 underline" %>.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">4. Third-Party Services</h2>
+        <p>
+          We use Google OAuth for optional authentication. Please review Google's privacy policy for information about how they handle your data.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">5. Cookies and Session Storage</h2>
+        <p>
+          We use cookies and session storage to maintain your game session and authentication state. These are essential for the service to function properly.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">6. Your Rights</h2>
+        <p>
+          You have the right to:
+        </p>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+          <li>Access the personal data we hold about you</li>
+          <li>Request correction of inaccurate data</li>
+          <li>Request deletion of your data</li>
+          <li>Withdraw consent at any time</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">7. Contact Us</h2>
+        <p>
+          If you have questions about this Privacy Policy, please <%= link_to "contact us", "https://forms.gle/xyHntsW9Kku1yaBw6", target: "_blank", rel: "noopener noreferrer", class: "text-orange-400 hover:text-orange-300 underline" %>.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-white mt-6 mb-3">8. Changes to This Policy</h2>
+        <p>
+          We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.
+        </p>
+      </section>
+    </div>
+
+    <div class="mt-8">
+      <%= link_to "&larr; Back to Home".html_safe, root_path, class: "text-blue-200 hover:text-orange-400 transition-colors" %>
+    </div>
+  </div>
+</div>
