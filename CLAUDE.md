@@ -93,6 +93,21 @@ Games with timed phases include `HasRoundTimer` concern and implement `process_t
 - **Session-Based Auth**: Players identified by Rails session for reconnection, no accounts required
 - **System Tests Are Critical**: Multiplayer flows must be tested with multiple Capybara sessions
 
+## Pull Request Descriptions
+
+Focus on what matters to a human reviewer. GitHub already shows file changes, so don't list them.
+
+**Include:**
+- **Why**: What problem does this solve? What's the context?
+- **Decisions**: Non-obvious choices, tradeoffs, or things done intentionally
+- **Reviewer notes**: What should they pay attention to? Any risks?
+- **Configuration**: Environment variables or setup needed
+
+**Avoid:**
+- Listing files added/modified (GitHub shows this)
+- Restating the commit message
+- Obvious observations ("added tests for new code")
+
 ## Documentation
 
 See `docs/` directory for detailed guides on architecture, game logic, data models, and client architecture.
