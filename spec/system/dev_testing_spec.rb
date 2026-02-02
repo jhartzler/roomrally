@@ -11,6 +11,6 @@ RSpec.describe "Dev testing", type: :system do
     expect(page).to have_content("Test Game Created")
     expect(page).to have_content("Room code:")
     expect(page).to have_content("Game type: Write And Vote")
-    expect(page).to have_selector("div.space-y-4 > div.flex", count: 3)
+    expect(page).to have_selector(".max-w-md div.space-y-4 > div.flex", count: 3)
   end
 end
