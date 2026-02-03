@@ -6,9 +6,22 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   before_action :set_current_player
+  before_action :set_sentry_context
   helper_method :current_player
 
   private
+
+  def set_sentry_context
+    Sentry.set_user(id: current_user.id) if current_user
+
+    Sentry.set_tags(player_id: current_player.id) if current_player
+
+    room_code = current_player&.room&.code || params[:code]
+    if room_code
+      Sentry.set_tags(room_code:)
+      Sentry.set_context("room", { code: room_code })
+    end
+  end
 
   def set_current_player
     return unless session[:player_session_id]
