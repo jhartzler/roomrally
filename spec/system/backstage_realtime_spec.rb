@@ -48,7 +48,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     create(:player, room:, name: "Charlie")
 
     room.update(status: "playing")
-    Games::WriteAndVote.game_started(room:)
+    Games::WriteAndVote.game_started(room:, show_instructions: false)
 
     sign_in(facilitator)
     visit room_backstage_path(room.code)
@@ -118,7 +118,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     create_list(:prompt, 3, prompt_pack:)
 
     room.update(status: "playing")
-    Games::WriteAndVote.game_started(room:)
+    Games::WriteAndVote.game_started(room:, show_instructions: false)
     game = room.current_game
 
     sign_in(facilitator)

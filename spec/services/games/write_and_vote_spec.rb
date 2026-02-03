@@ -26,27 +26,36 @@ RSpec.describe Games::WriteAndVote do
       expect(room.reload.current_game).to be_a(WriteAndVoteGame)
     end
 
-    it 'creates the correct number of prompt instances' do
-      expect { described_class.game_started(room:) }.to change(PromptInstance, :count).by(3)
+    context 'with show_instructions: false (skips instructions)' do
+      it 'creates the correct number of prompt instances' do
+        expect { described_class.game_started(room:, show_instructions: false) }.to change(PromptInstance, :count).by(3)
+      end
+
+      it 'creates the correct number of responses' do
+        expect { described_class.game_started(room:, show_instructions: false) }.to change(Response, :count).by(6)
+      end
+
+      it 'assigns two prompts to player one' do
+        described_class.game_started(room:, show_instructions: false)
+        expect(first_player.responses.count).to eq(2)
+      end
+
+      it 'assigns two prompts to player two' do
+        described_class.game_started(room:, show_instructions: false)
+        expect(second_player.responses.count).to eq(2)
+      end
+
+      it 'assigns two prompts to player three' do
+        described_class.game_started(room:, show_instructions: false)
+        expect(third_player.responses.count).to eq(2)
+      end
     end
 
-    it 'creates the correct number of responses' do
-      expect { described_class.game_started(room:) }.to change(Response, :count).by(6)
-    end
-
-    it 'assigns two prompts to player one' do
-      described_class.game_started(room:)
-      expect(first_player.responses.count).to eq(2)
-    end
-
-    it 'assigns two prompts to player two' do
-      described_class.game_started(room:)
-      expect(second_player.responses.count).to eq(2)
-    end
-
-    it 'assigns two prompts to player three' do
-      described_class.game_started(room:)
-      expect(third_player.responses.count).to eq(2)
+    context 'with show_instructions: true (default)' do
+      it 'starts in instructions state without assigning prompts' do
+        expect { described_class.game_started(room:) }.not_to change(PromptInstance, :count)
+        expect(room.current_game.status).to eq("instructions")
+      end
     end
 
     it 'assigns each prompt instance to two players' do
@@ -62,12 +71,12 @@ RSpec.describe Games::WriteAndVote do
         Prompt.destroy_all
       end
 
-      it 'raises an error' do
-        expect { described_class.game_started(room:) }.to raise_error("Not enough master prompts to start round 1.")
+      it 'raises an error when show_instructions is false' do
+        expect { described_class.game_started(room:, show_instructions: false) }.to raise_error("Not enough master prompts to start round 1.")
       end
     end
 
-    it 'starts the round timer', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+    it 'starts the round timer when show_instructions is false', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
       # Spy on the game creation to intercept the instance
       game_spy = nil
       allow(WriteAndVoteGame).to receive(:create!).and_wrap_original do |original_method, *args|
@@ -76,7 +85,7 @@ RSpec.describe Games::WriteAndVote do
         game_spy
       end
 
-      described_class.game_started(room:, timer_enabled: true)
+      described_class.game_started(room:, timer_enabled: true, show_instructions: false)
 
       # Default timer is 60 (from migration/model default), so start_timer! is called with 60
       expect(game_spy).to have_received(:start_timer!).with(60, step_number: nil)
@@ -84,7 +93,7 @@ RSpec.describe Games::WriteAndVote do
 
     describe "configuration parameters" do
       it "creates game with custom timer settings" do
-        described_class.game_started(room:, timer_enabled: true, timer_increment: 90)
+        described_class.game_started(room:, timer_enabled: true, timer_increment: 90, show_instructions: false)
         game = room.current_game
         expect(game.timer_enabled).to be true
         expect(game.timer_increment).to eq(90)
@@ -94,7 +103,7 @@ RSpec.describe Games::WriteAndVote do
         game_spy = nil
         allow(WriteAndVoteGame).to receive(:create!).and_wrap_original { |m, *args| m.call(*args).tap { |g| game_spy = g; allow(g).to receive(:start_timer!) } }
 
-        described_class.game_started(room:, timer_enabled: true, timer_increment: 45)
+        described_class.game_started(room:, timer_enabled: true, timer_increment: 45, show_instructions: false)
         expect(game_spy).to have_received(:start_timer!).with(45, step_number: nil)
       end
     end

@@ -2,10 +2,8 @@ module Games
   module WriteAndVote
     MAX_ROUNDS = 2
 
-    def self.game_started(room:, timer_enabled: false, timer_increment: 60, question_count: nil)
-      Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.count, timer_enabled:, timer_increment: })
-
-
+    def self.game_started(room:, timer_enabled: false, timer_increment: 60, question_count: nil, show_instructions: true)
+      Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.count, timer_enabled:, timer_increment:, show_instructions: })
 
       return if room.current_game.present?
 
@@ -14,14 +12,32 @@ module Games
       game = WriteAndVoteGame.create!(
         prompt_pack: pack,
         timer_enabled:,
-        timer_increment:
+        timer_increment:,
+        show_instructions:
       )
       room.update!(current_game: game)
 
+      # Skip instructions if disabled - assign prompts immediately
+      if show_instructions
+        GameBroadcaster.broadcast_game_start(room:)
+        GameBroadcaster.broadcast_stage(room:)
+        GameBroadcaster.broadcast_hand(room:)
+      else
+        game.start_game!
+        assign_prompts_for_round(game:, round_number: 1)
+        GameBroadcaster.broadcast_game_start(room:)
+        GameBroadcaster.broadcast_stage(room:)
+        GameBroadcaster.broadcast_hand(room:)
+      end
+    end
+
+    def self.start_from_instructions(game:)
+      game.start_game!
       assign_prompts_for_round(game:, round_number: 1)
-      GameBroadcaster.broadcast_game_start(room:)
+      room = game.room
       GameBroadcaster.broadcast_stage(room:)
       GameBroadcaster.broadcast_hand(room:)
+      GameBroadcaster.broadcast_host_controls(room:)
     end
 
     def self.process_vote(game:, vote:)

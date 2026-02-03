@@ -1,0 +1,19 @@
+<%# app/views/games/shared/_hand_instructions.html.erb %>
+<%# Shared instructions screen shown on player's hand while waiting for host to start %>
+<%# Required locals: emoji, start_game_path, room, player %>
+
+<div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center mb-6">
+  <p class="text-4xl mb-3"><%= emoji %></p>
+  <p class="text-xl font-bold text-white">Get ready!</p>
+  <p class="text-blue-200 mt-2">The game is about to begin...</p>
+</div>
+<% if player == room.host %>
+  <div id="host-controls" class="border-t-2 border-white/20 pt-6">
+    <%= button_to "Start Game",
+        start_game_path,
+        method: :post,
+        id: "start-from-instructions-btn",
+        data: { turbo: false },
+        class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
+  </div>
+<% end %>

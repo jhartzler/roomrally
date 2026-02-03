@@ -14,10 +14,15 @@ class SpeedTriviaGame < ApplicationRecord
   has_many :trivia_answers, through: :trivia_question_instances
 
   aasm column: :status, whiny_transitions: false do
-    state :waiting, initial: true
+    state :instructions, initial: true
+    state :waiting
     state :answering
     state :reviewing
     state :finished
+
+    event :start_game do
+      transitions from: :instructions, to: :waiting
+    end
 
     event :start_question do
       transitions from: [ :waiting, :reviewing ], to: :answering, after: :record_round_start

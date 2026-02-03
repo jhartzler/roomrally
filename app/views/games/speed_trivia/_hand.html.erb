@@ -7,6 +7,12 @@
   <%= render "games/speed_trivia/game_over", room:, player:, game: %>
 <% elsif game.answering? %>
   <%= render "games/speed_trivia/answer_form", room:, player:, game: %>
+<% elsif game.instructions? %>
+  <%= render "games/shared/hand_instructions",
+      emoji: "🧠",
+      start_game_path: speed_trivia_game_game_start_path(game),
+      room:,
+      player: %>
 <% else %>
   <%# waiting or reviewing %>
   <%= render "games/speed_trivia/waiting", room:, player:, game: %>

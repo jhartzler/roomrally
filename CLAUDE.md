@@ -16,6 +16,12 @@ Room Rally is a real-time multiplayer party game engine inspired by Jackbox Game
 - **Database**: PostgreSQL
 - **Testing**: RSpec, Capybara with Playwright driver
 
+## Git Workflow
+
+- **Never push directly to main** - Always create a feature branch for changes
+- Create descriptive branch names (e.g., `feature/game-instructions-screen`, `fix/timer-bug`)
+- Commit changes to the feature branch, then create a PR for review
+
 ## Development Commands
 
 ```bash
