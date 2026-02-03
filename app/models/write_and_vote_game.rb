@@ -34,7 +34,7 @@ class WriteAndVoteGame < ApplicationRecord
     end
 
     event :finish_game do
-      transitions from: :voting, to: :finished
+      transitions from: [ :writing, :voting ], to: :finished
     end
   end
 

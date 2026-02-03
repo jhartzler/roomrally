@@ -100,4 +100,74 @@ RSpec.describe Room, type: :model do
       expect(Room::GAME_DISPLAY_NAMES[Room::WRITE_AND_VOTE]).to eq(default_name)
     end
   end
+
+  describe 'state transitions' do
+    let(:room) { create(:room) }
+
+    describe '#start_game!' do
+      before { create_list(:player, 3, room:) }
+
+      it 'transitions from lobby to playing' do
+        expect {
+          room.start_game!
+        }.to change(room, :status).from('lobby').to('playing')
+      end
+
+      it 'requires at least 3 players' do
+        room_with_few_players = create(:room)
+        create_list(:player, 2, room: room_with_few_players)
+
+        expect {
+          room_with_few_players.start_game!
+        }.not_to change(room_with_few_players, :status)
+      end
+    end
+
+    describe '#finish!' do
+      let(:playing_room) { create(:room, status: 'playing') }
+
+      it 'transitions from playing to finished' do
+        expect {
+          playing_room.finish!
+        }.to change(playing_room, :status).from('playing').to('finished')
+      end
+
+      it 'cannot finish a room in lobby state' do
+        lobby_room = create(:room, status: 'lobby')
+
+        expect {
+          lobby_room.finish!
+        }.not_to change(lobby_room, :status)
+        expect(lobby_room.status).to eq('lobby')
+      end
+
+      it 'is idempotent for already finished rooms' do
+        finished_room = create(:room, status: 'finished')
+
+        expect {
+          finished_room.finish!
+        }.not_to change(finished_room, :status)
+      end
+    end
+  end
+
+  describe 'scopes' do
+    let!(:active_lobby) { create(:room, status: 'lobby') }
+    let!(:active_playing) { create(:room, status: 'playing') }
+    let!(:finished_room) { create(:room, status: 'finished') }
+
+    describe '.active' do
+      it 'includes rooms in lobby state' do
+        expect(described_class.active).to include(active_lobby)
+      end
+
+      it 'includes rooms in playing state' do
+        expect(described_class.active).to include(active_playing)
+      end
+
+      it 'excludes finished rooms' do
+        expect(described_class.active).not_to include(finished_room)
+      end
+    end
+  end
 end

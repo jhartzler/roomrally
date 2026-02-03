@@ -187,6 +187,13 @@ RSpec.describe Games::WriteAndVote do
         }.to change(game, :status).to("finished")
       end
 
+      it 'finishes the room' do
+        room.update!(status: 'playing')
+        voter = players[1] # P1 is the voter for Prompt 2
+        described_class.process_vote(game:, vote: cast_vote(voter, round_2_prompts.last))
+        expect(room.reload.status).to eq("finished")
+      end
+
       it 'calculates scores at the end of the game' do
         voter = players[1]
         described_class.process_vote(game:, vote: cast_vote(voter, round_2_prompts.last))
