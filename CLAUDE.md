@@ -43,6 +43,16 @@ rubocop -A             # Auto-fix code style issues (run before committing)
 RAILS_ENV=test bin/rails tailwindcss:build
 ```
 
+## Troubleshooting
+
+- **Tailwind changes not showing up?**
+  If styles like `mb-24` appear in code but not in the browser, your build cache is likely stale. Run:
+  ```bash
+  bin/rails tmp:clear
+  bin/rails assets:clobber
+  ```
+  Then restart `bin/dev`.
+
 ## Architecture
 
 ### Request Flow
