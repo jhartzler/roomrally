@@ -37,7 +37,7 @@ class SpeedTriviaGame < ApplicationRecord
     end
 
     event :finish_game do
-      transitions from: :reviewing, to: :finished
+      transitions from: [ :waiting, :answering, :reviewing ], to: :finished
     end
   end
 

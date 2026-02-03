@@ -202,6 +202,12 @@ RSpec.describe Games::SpeedTrivia do
         expect(game.reload.status).to eq("finished")
       end
 
+      it 'finishes the room' do
+        room.update!(status: 'playing')
+        described_class.next_question(game:)
+        expect(room.reload.status).to eq("finished")
+      end
+
       it 'calculates final scores' do
         player = create(:player, room:, score: 0)
         first_question = game.trivia_question_instances.find_by(position: 0)
