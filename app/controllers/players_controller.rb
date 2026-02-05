@@ -61,19 +61,22 @@ class PlayersController < ApplicationController
   def destroy
     player_to_kick = Player.find(params[:id])
     room = player_to_kick.room
-    current_player = Player.find_by!(session_id: session[:player_session_id])
 
-    Rails.logger.info "KICK DEBUG: session[:player_session_id]=#{session[:player_session_id]}, current_player=#{current_player.name} (id=#{current_player.id}), player_to_kick=#{player_to_kick.name} (id=#{player_to_kick.id}), host=#{room.host&.name} (id=#{room.host&.id})"
+    # Allow kicks from room owner (backstage) OR from host player (hand view)
+    is_room_owner = current_user && room.user == current_user
+    is_host_player = current_player && current_player == room.host
 
-    # Check if current player is the host
-    unless current_player == room.host
-      Rails.logger.warn "KICK FAILED: current_player (#{current_player.name}) is not the host (#{room.host&.name})"
+    Rails.logger.info "KICK DEBUG: current_user=#{current_user&.id}, room.user=#{room.user&.id}, is_room_owner=#{is_room_owner}, current_player=#{current_player&.name} (id=#{current_player&.id}), is_host_player=#{is_host_player}, player_to_kick=#{player_to_kick.name} (id=#{player_to_kick.id})"
+
+    # Check if current user is room owner OR current player is the host
+    unless is_room_owner || is_host_player
+      Rails.logger.warn "KICK FAILED: Not authorized (is_room_owner=#{is_room_owner}, is_host_player=#{is_host_player})"
       redirect_to room_hand_path(room.code), alert: "Only the host can kick players."
       return
     end
 
-    # Prevent host from kicking themselves
-    if player_to_kick == current_player
+    # Prevent host from kicking themselves (only applicable if they have a player)
+    if current_player && player_to_kick == current_player
       redirect_to room_hand_path(room.code), alert: "You cannot kick yourself."
       return
     end
