@@ -83,7 +83,8 @@ class PlayersController < ApplicationController
     # Broadcast removal from active lists and add to waiting room
     GameBroadcaster.broadcast_player_kicked(room:, player: player_to_kick)
 
-    redirect_to room_hand_path(room.code), notice: "#{player_name} has been moved to waiting room."
+    # Redirect back to where the kick was initiated (backstage or hand view)
+    redirect_back fallback_location: room_hand_path(room.code), notice: "#{player_name} has been moved to waiting room."
   end
 
   def approve
