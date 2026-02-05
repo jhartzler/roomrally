@@ -10,15 +10,37 @@ class PlayersController < ApplicationController
   end
 
   def create
-    @player = @room.players.build(player_params)
+    # Check if this session has a pending player in this room
+    existing_player = @room.players.find_by(session_id: session[:player_session_id])
 
-    session_id = SecureRandom.uuid
+    if existing_player&.pending_approval?
+      # They were kicked - update their name and keep them in waiting room
+      old_name = existing_player.name
+      if existing_player.update(name: player_params[:name])
+        @player = existing_player
+
+        # Only broadcast if name actually changed
+        if old_name != existing_player.name
+          GameBroadcaster.broadcast_waiting_player_updated(room: @room, player: existing_player)
+        end
+
+        redirect_to room_hand_path(@room), notice: "Name updated. Waiting for host approval..."
+      else
+        flash[:error] = existing_player.errors.full_messages.join(", ")
+        redirect_to new_player_path(code: @room.code)
+      end
+      return
+    end
+
+    # Normal player creation flow - join immediately as active
+    @player = @room.players.build(player_params)
+    session_id = session[:player_session_id] || SecureRandom.uuid
     session[:player_session_id] = session_id
     @player.session_id = session_id
+    @player.status = :active  # Join as active (innocent until proven guilty)
 
     if @player.save
       Rails.logger.info "Player #{@player.name} created in room #{@room.code}"
-
 
       # Broadcast the new player to all clients viewing this room
       GameBroadcaster.broadcast_player_joined(room: @room, player: @player)
@@ -48,15 +70,47 @@ class PlayersController < ApplicationController
       return
     end
 
-    # Kick the player
+    # Move to waiting room instead of destroying
     player_name = player_to_kick.name
-    player_to_kick.destroy!
+    player_to_kick.kick!
     Rails.logger.info "Player #{player_name} was kicked from room #{room.code} by host #{current_player.name}"
 
-    # Broadcast removal to all players in the room
-    GameBroadcaster.broadcast_player_left(room:, player: player_to_kick)
+    # Broadcast removal from active lists and add to waiting room
+    GameBroadcaster.broadcast_player_kicked(room:, player: player_to_kick)
 
-    redirect_to room_hand_path(room.code), notice: "#{player_name} has been kicked from the room."
+    redirect_to room_hand_path(room.code), notice: "#{player_name} has been moved to waiting room."
+  end
+
+  def approve
+    player = Player.find(params[:id])
+    room = player.room
+    current_player = Player.find_by!(session_id: session[:player_session_id])
+
+    unless current_player == room.host
+      redirect_to room_hand_path(room.code), alert: "Only the host can approve players."
+      return
+    end
+
+    player.approve!
+    GameBroadcaster.broadcast_player_approved(room:, player:)
+
+    redirect_to backstage_path(room.code), notice: "#{player.name} approved!"
+  end
+
+  def reject
+    player = Player.find(params[:id])
+    room = player.room
+    current_player = Player.find_by!(session_id: session[:player_session_id])
+
+    unless current_player == room.host
+      redirect_to room_hand_path(room.code), alert: "Only the host can reject players."
+      return
+    end
+
+    player_name = player.name
+    player.reject!  # Permanently removes player
+
+    redirect_to backstage_path(room.code), notice: "#{player_name} permanently removed."
   end
 
   private

@@ -13,6 +13,10 @@ class SpeedTriviaGame < ApplicationRecord
   has_many :trivia_question_instances, dependent: :destroy
   has_many :trivia_answers, through: :trivia_question_instances
 
+  def self.supports_response_moderation?
+    false
+  end
+
   aasm column: :status, whiny_transitions: false do
     state :instructions, initial: true
     state :waiting
@@ -53,12 +57,12 @@ class SpeedTriviaGame < ApplicationRecord
     return false if current_question.nil?
 
     submitted_count = current_question.trivia_answers.count
-    players_count = room&.players&.count || 0
+    players_count = room&.players&.active_players&.count || 0
     submitted_count >= players_count && players_count > 0
   end
 
   def calculate_scores!
-    room.players.each do |player|
+    room.players.active_players.each do |player|
       score = trivia_answers.where(player:).sum(:points_awarded)
       player.update!(score:)
     end

@@ -1,0 +1,20 @@
+<%# app/views/players/_waiting_player.html.erb %>
+<%# partial locals: player %>
+<li id="waiting_player_<%= player.id %>" class="flex items-center justify-between p-3 bg-orange-500/10 rounded-xl border border-orange-400/30">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-bold">
+      <%= player.name[0].upcase %>
+    </div>
+    <div>
+      <p class="font-bold text-white"><%= player.name %></p>
+      <span class="text-[10px] uppercase font-bold text-orange-300 tracking-wider">Kicked - Waiting</span>
+    </div>
+  </div>
+  <div class="flex gap-2">
+    <%= button_to "Approve", approve_player_path(player), method: :patch,
+        class: "text-xs bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg uppercase tracking-wide" %>
+    <%= button_to "Reject", reject_player_path(player), method: :patch,
+        class: "text-xs bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg uppercase tracking-wide",
+        data: { turbo_confirm: "Permanently remove #{player.name}?" } %>
+  </div>
+</li>

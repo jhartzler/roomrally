@@ -2,7 +2,7 @@
   <h2 class="text-4xl font-bold mb-12 text-white drop-shadow-md">Join via your phone!</h2>
 
   <div id="stage_player_list" class="flex flex-wrap justify-center gap-6 max-w-6xl">
-    <% @room.players.each do |player| %>
+    <% @room.players.active_players.each do |player| %>
       <%= render "players/stage_player", player: player, room: @room %>
     <% end %>
   </div>

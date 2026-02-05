@@ -10,7 +10,7 @@
     </h2>
 
     <div class="space-y-6">
-      <% game.room.players.order(score: :desc).each_with_index do |player, index| %>
+      <% game.room.players.active_players.order(score: :desc).each_with_index do |player, index| %>
         <div class="flex items-center bg-black/40 rounded-xl p-6 border border-white/10 <%= index == 0 ? 'scale-110 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)] animate-bounce-in' : '' %>">
           <div class="text-4xl w-16 font-bold <%= index == 0 ? 'text-yellow-400' : 'text-gray-400' %>">#<%= index + 1 %></div>
           <div class="text-4xl font-bold text-white flex-grow text-left mx-8"><%= player.name %></div>

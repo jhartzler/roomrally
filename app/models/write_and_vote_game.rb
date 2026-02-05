@@ -14,6 +14,10 @@ class WriteAndVoteGame < ApplicationRecord
     prompts_count / PROMPTS_PER_PLAYER_RATIO
   end
 
+  def self.supports_response_moderation?
+    true
+  end
+
   validates :timer_increment, numericality: { greater_than: 0 }, if: :timer_enabled?
 
   aasm column: :status, whiny_transitions: false do
@@ -60,7 +64,7 @@ class WriteAndVoteGame < ApplicationRecord
   end
 
   def calculate_scores!
-    room.players.each do |player|
+    room.players.active_players.each do |player|
       score = Response.joins(:votes, :prompt_instance)
                       .where(player:)
                       .where(prompt_instances: { write_and_vote_game_id: id })

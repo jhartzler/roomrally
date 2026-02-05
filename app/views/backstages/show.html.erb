@@ -26,37 +26,52 @@
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
       <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
         <h2 class="text-xl font-bold text-white tracking-wide">Players</h2>
-        <span id="player-count" class="text-sm font-bold text-blue-200 tracking-wider"><%= @room.players.count %> connected</span>
+        <span id="player-count" class="text-sm font-bold text-blue-200 tracking-wider"><%= @room.players.active_players.count %> connected</span>
       </div>
       <ul id="backstage-player-list" class="space-y-2">
-        <% @room.players.each do |player| %>
+        <% @room.players.active_players.each do |player| %>
           <%= render "players/backstage_player", player: player %>
         <% end %>
-        <% if @room.players.empty? %>
+        <% if @room.players.active_players.empty? %>
           <li id="no-players-placeholder" class="text-blue-300/50 text-center py-4 italic font-medium">No players yet.</li>
         <% end %>
       </ul>
     </div>
   </div>
 
-  <!-- Moderation Stream -->
-  <div class="mt-8">
-    <h2 class="text-xl font-bold mb-4 text-white tracking-wide">Moderation Queue</h2>
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
-      <% if @room.current_game.present? %>
-         <div id="moderation-queue" class="space-y-4">
-           <% if @moderation_queue.any? %>
-             <% @moderation_queue.each do |response| %>
-               <%= render "responses/backstage_response", response: response %>
-             <% end %>
-           <% else %>
-             <p class="text-blue-300/50 text-center italic font-medium">No active responses to moderate.</p>
-           <% end %>
-         </div>
-      <% else %>
-         <p class="text-blue-300/50 text-center italic font-medium">Game not started or no moderation available.</p>
-      <% end %>
+  <!-- Waiting Room Section -->
+  <% if @room.players.pending_approval.any? %>
+    <div class="mt-8 bg-orange-500/10 backdrop-blur-md rounded-3xl p-6 border-2 border-orange-400/50 shadow-xl">
+      <div class="flex justify-between items-center mb-4 border-b border-orange-400/30 pb-2">
+        <h2 class="text-xl font-bold text-white tracking-wide">⏳ Waiting for Approval</h2>
+        <span class="text-sm font-bold text-orange-200 tracking-wider">
+          <%= @room.players.pending_approval.count %> pending
+        </span>
+      </div>
+      <ul id="waiting-room-list" class="space-y-2">
+        <% @room.players.pending_approval.each do |player| %>
+          <%= render "players/waiting_player", player: player %>
+        <% end %>
+      </ul>
     </div>
-  </div>
+  <% end %>
+
+  <!-- Moderation Stream -->
+  <% if @room.current_game&.class&.supports_response_moderation? %>
+    <div class="mt-8">
+      <h2 class="text-xl font-bold mb-4 text-white tracking-wide">Moderation Queue</h2>
+      <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
+        <div id="moderation-queue" class="space-y-4">
+          <% if @moderation_queue.any? %>
+            <% @moderation_queue.each do |response| %>
+              <%= render "responses/backstage_response", response: response %>
+            <% end %>
+          <% else %>
+            <p class="text-blue-300/50 text-center italic font-medium">No active responses to moderate.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
   <%= turbo_frame_tag "modal" %>
 </div>

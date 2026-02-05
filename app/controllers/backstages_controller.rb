@@ -6,13 +6,17 @@ class BackstagesController < ApplicationController
   def show
     Rails.logger.info("DEBUG: Backstage Show - Room: #{@room.code}, Current Game ID: #{@room.current_game_id}, Current Game Type: #{@room.current_game_type}")
 
-    if @room.current_game.present?
-      @moderation_queue = Response.joins(:prompt_instance)
-                                  .where(prompt_instances: { write_and_vote_game_id: @room.current_game.id, round: @room.current_game.round })
-                                  .where(status: "submitted")
-                                  .order(created_at: :desc)
+    @moderation_queue = if @room.current_game.present? &&
+                          @room.current_game.class.supports_response_moderation?
+      Response.joins(:prompt_instance)
+              .where(prompt_instances: {
+                write_and_vote_game_id: @room.current_game.id,
+                round: @room.current_game.round
+              })
+              .where(status: "submitted")
+              .order(created_at: :desc)
     else
-      @moderation_queue = Response.none
+      Response.none
     end
   end
 

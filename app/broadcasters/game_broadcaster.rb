@@ -66,6 +66,60 @@ module GameBroadcaster
     update_all_host_controls(room)
   end
 
+  def self.broadcast_player_kicked(room:, player:)
+    Rails.logger.info({ event: "broadcast_player_kicked", room_code: room.code, player_id: player.id })
+    # Remove from active lists
+    update_all_player_lists(room, player:, action: :remove)
+
+    # Add to waiting room
+    Turbo::StreamsChannel.broadcast_append_to(
+      room,
+      target: "waiting-room-list",
+      partial: "players/waiting_player",
+      locals: { player: }
+    )
+
+    # Update hand view to show waiting message
+    Turbo::StreamsChannel.broadcast_update_to(
+      player,
+      target: "hand_screen",
+      partial: "rooms/waiting_for_approval",
+      locals: { room:, player: }
+    )
+
+    update_all_host_controls(room)
+    update_backstage_meta(room)
+  end
+
+  def self.broadcast_player_approved(room:, player:)
+    Rails.logger.info({ event: "broadcast_player_approved", room_code: room.code, player_id: player.id })
+    # Remove from waiting room
+    Turbo::StreamsChannel.broadcast_remove_to(
+      room,
+      target: "waiting_player_#{player.id}"
+    )
+
+    # Add to active lists
+    update_all_player_lists(room, player:, action: :append)
+
+    # Update hand view to show normal game
+    broadcast_hand(room:)
+
+    update_all_host_controls(room)
+    update_backstage_meta(room)
+  end
+
+  def self.broadcast_waiting_player_updated(room:, player:)
+    Rails.logger.info({ event: "broadcast_waiting_player_updated", room_code: room.code, player_id: player.id })
+    # Update the waiting room card with new name
+    Turbo::StreamsChannel.broadcast_replace_to(
+      room,
+      target: "waiting_player_#{player.id}",
+      partial: "players/waiting_player",
+      locals: { player: }
+    )
+  end
+
   def self.broadcast_host_change(room:)
     Rails.logger.info({ event: "broadcast_host_change", room_code: room.code })
     # Replace the entire player list to update host status indicators
@@ -162,7 +216,7 @@ module GameBroadcaster
     Turbo::StreamsChannel.broadcast_update_to(
       room,
       target: "player-count",
-      html: "#{room.players.count} connected"
+      html: "#{room.players.active_players.count} connected"
     )
 
     Turbo::StreamsChannel.broadcast_remove_to(

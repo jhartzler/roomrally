@@ -11,6 +11,26 @@ class Player < ApplicationRecord
 
   attribute :score, :integer, default: 0
 
+  enum :status, {
+    active: "active",
+    pending_approval: "pending_approval"
+  }, default: :active
+
+  scope :active_players, -> { where(status: "active") }
+  scope :pending_approval, -> { where(status: "pending_approval") }
+
+  def kick!
+    update!(status: :pending_approval)
+  end
+
+  def approve!
+    update!(status: :active)
+  end
+
+  def reject!
+    destroy!
+  end
+
   private
 
   def generate_session_id
