@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import confetti from "../utils/confetti"
 
 export default class extends Controller {
     static values = {
@@ -19,6 +20,11 @@ export default class extends Controller {
     }
 
     animateEntrance() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            // No animation for reduced motion preference
+            return
+        }
+
         this.element.style.opacity = "0"
 
         // Use requestAnimationFrame to ensure the opacity change is applied
@@ -41,6 +47,10 @@ export default class extends Controller {
     }
 
     celebrateMilestone(totalPlayers) {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return
+        }
+
         // Create a celebration overlay
         const celebration = document.createElement("div")
         celebration.className = "fixed inset-0 flex items-center justify-center z-[9999] pointer-events-none"
@@ -64,43 +74,10 @@ export default class extends Controller {
     }
 
     triggerConfetti() {
-        const colors = ["#60a5fa", "#34d399", "#fbbf24", "#f87171", "#a78bfa", "#fb923c"]
-        const container = document.createElement("div")
-        container.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-        `
-
-        for (let i = 0; i < 60; i++) {
-            const confetti = document.createElement("div")
-            const color = colors[Math.floor(Math.random() * colors.length)]
-            const left = Math.random() * 100
-            const delay = Math.random() * 0.3
-            const duration = 2 + Math.random() * 1
-
-            confetti.style.cssText = `
-                position: absolute;
-                width: ${Math.random() * 10 + 5}px;
-                height: ${Math.random() * 10 + 5}px;
-                background: ${color};
-                left: ${left}%;
-                top: -10%;
-                opacity: 1;
-                animation: confetti-fall ${duration}s linear ${delay}s forwards;
-            `
-
-            container.appendChild(confetti)
-        }
-
-        document.body.appendChild(container)
-
-        setTimeout(() => {
-            container.remove()
-        }, 3500)
+        confetti({
+            count: 60,
+            zIndex: 9998,
+            duration: 3500
+        })
     }
 }
