@@ -1,21 +1,27 @@
-<div id="stage_finished" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+<div id="stage_finished"
+     class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in"
+     data-controller="celebration"
+     data-celebration-type-value="trophy">
   <div class="bg-white/10 backdrop-blur-xl border-2 border-yellow-400/30 rounded-3xl p-16 text-center max-w-5xl w-full relative overflow-hidden shadow-2xl">
     <div class="absolute inset-0 bg-[url('confetti.svg')] opacity-20"></div>
-    
-    <h2 class="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-yellow-300 via-yellow-100 to-yellow-500 mb-12 drop-shadow-xl">
+
+    <h2 class="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-yellow-300 via-yellow-100 to-yellow-500 mb-12 drop-shadow-xl animate-bounce-in">
       Game Over!
     </h2>
 
     <div class="space-y-6">
       <% game.room.players.order(score: :desc).each_with_index do |player, index| %>
-        <div class="flex items-center bg-black/40 rounded-xl p-6 border border-white/10 <%= index == 0 ? 'scale-110 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)]' : '' %>">
-          <div class="text-4xl w-16 font-bold text-gray-400">#<%= index + 1 %></div>
+        <div class="flex items-center bg-black/40 rounded-xl p-6 border border-white/10 <%= index == 0 ? 'scale-110 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)] animate-bounce-in' : '' %>">
+          <div class="text-4xl w-16 font-bold <%= index == 0 ? 'text-yellow-400' : 'text-gray-400' %>">#<%= index + 1 %></div>
           <div class="text-4xl font-bold text-white flex-grow text-left mx-8"><%= player.name %></div>
           <div class="text-5xl font-black text-yellow-400 font-mono"><%= player.score %></div>
+          <% if index == 0 %>
+            <div class="text-5xl ml-4">🏆</div>
+          <% end %>
         </div>
       <% end %>
     </div>
-    
+
     <div class="mt-16">
       <p class="text-2xl text-gray-400">Host can start a new game anytime.</p>
     </div>
