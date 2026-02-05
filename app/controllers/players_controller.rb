@@ -63,8 +63,11 @@ class PlayersController < ApplicationController
     room = player_to_kick.room
     current_player = Player.find_by!(session_id: session[:player_session_id])
 
+    Rails.logger.info "KICK DEBUG: session[:player_session_id]=#{session[:player_session_id]}, current_player=#{current_player.name} (id=#{current_player.id}), player_to_kick=#{player_to_kick.name} (id=#{player_to_kick.id}), host=#{room.host&.name} (id=#{room.host&.id})"
+
     # Check if current player is the host
     unless current_player == room.host
+      Rails.logger.warn "KICK FAILED: current_player (#{current_player.name}) is not the host (#{room.host&.name})"
       redirect_to room_hand_path(room.code), alert: "Only the host can kick players."
       return
     end
