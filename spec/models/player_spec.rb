@@ -5,7 +5,7 @@ RSpec.describe Player, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:name) }
-    it { is_expected.to validate_uniqueness_of(:session_id) }
+    it { is_expected.to validate_uniqueness_of(:session_id).scoped_to(:room_id) }
 
     it 'validates presence of session_id' do
       player = build(:player, session_id: nil)

@@ -5,7 +5,7 @@ class Player < ApplicationRecord
   has_many :responses, dependent: :destroy
 
   validates :name, presence: true
-  validates :session_id, presence: true, uniqueness: true
+  validates :session_id, presence: true, uniqueness: { scope: :room_id }
 
   before_validation :generate_session_id, on: :create
 
