@@ -161,6 +161,29 @@ RSpec.describe PlayersController, type: :controller do
       end
     end
 
+    context 'when room owner (user) kicks player' do
+      let(:owner) { create(:user) }
+
+      before do
+        room.update!(user: owner)
+        session[:user_id] = owner.id
+      end
+
+      it 'sets player status to pending_approval' do
+        player_to_kick # ensure player exists
+        expect {
+          delete :destroy, params: { id: player_to_kick.id }
+        }.not_to change(Player, :count)
+        expect(player_to_kick.reload.status).to eq('pending_approval')
+      end
+
+      it 'redirects with success notice' do
+        delete :destroy, params: { id: player_to_kick.id }
+        expect(response).to redirect_to(room_hand_path(room.code))
+        expect(flash[:notice]).to include("waiting room")
+      end
+    end
+
     context 'when current player is not the host' do
       before do
         session[:player_session_id] = player_to_kick.session_id
@@ -177,7 +200,7 @@ RSpec.describe PlayersController, type: :controller do
       it 'redirects with alert' do
         delete :destroy, params: { id: host_player.id }
         expect(response).to redirect_to(room_hand_path(room.code))
-        expect(flash[:alert]).to include("Only the host can kick")
+        expect(flash[:alert]).to include("Only the room owner or host can perform this action")
       end
     end
 
@@ -226,6 +249,26 @@ RSpec.describe PlayersController, type: :controller do
       end
     end
 
+    context 'when room owner (user) approves player' do
+      let(:owner) { create(:user) }
+
+      before do
+        room.update!(user: owner)
+        session[:user_id] = owner.id
+      end
+
+      it 'sets player status to active' do
+        patch :approve, params: { id: pending_player.id }
+        expect(pending_player.reload.status).to eq('active')
+      end
+
+      it 'redirects to backstage with notice' do
+        patch :approve, params: { id: pending_player.id }
+        expect(response).to redirect_to(room_backstage_path(room.code))
+        expect(flash[:notice]).to include('approved')
+      end
+    end
+
     context 'when current player is not the host' do
       let(:other_player) { create(:player, room:) }
 
@@ -241,7 +284,7 @@ RSpec.describe PlayersController, type: :controller do
       it 'redirects with alert' do
         patch :approve, params: { id: pending_player.id }
         expect(response).to redirect_to(room_hand_path(room.code))
-        expect(flash[:alert]).to include('Only the host can approve')
+        expect(flash[:alert]).to include('Only the room owner or host can perform this action')
       end
     end
   end
@@ -258,6 +301,28 @@ RSpec.describe PlayersController, type: :controller do
     context 'when current player is the host' do
       before do
         session[:player_session_id] = host_player.session_id
+      end
+
+      it 'permanently deletes the player' do
+        pending_player # ensure player exists
+        expect {
+          patch :reject, params: { id: pending_player.id }
+        }.to change(Player, :count).by(-1)
+      end
+
+      it 'redirects to backstage with notice' do
+        patch :reject, params: { id: pending_player.id }
+        expect(response).to redirect_to(room_backstage_path(room.code))
+        expect(flash[:notice]).to include('permanently removed')
+      end
+    end
+
+    context 'when room owner (user) rejects player' do
+      let(:owner) { create(:user) }
+
+      before do
+        room.update!(user: owner)
+        session[:user_id] = owner.id
       end
 
       it 'permanently deletes the player' do
@@ -291,7 +356,7 @@ RSpec.describe PlayersController, type: :controller do
       it 'redirects with alert' do
         patch :reject, params: { id: pending_player.id }
         expect(response).to redirect_to(room_hand_path(room.code))
-        expect(flash[:alert]).to include('Only the host can reject')
+        expect(flash[:alert]).to include('Only the room owner or host can perform this action')
       end
     end
   end

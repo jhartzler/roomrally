@@ -62,20 +62,10 @@ class PlayersController < ApplicationController
     player_to_kick = Player.find(params[:id])
     room = player_to_kick.room
 
-    # Allow kicks from room owner (backstage) OR from host player (hand view)
-    is_room_owner = current_user && room.user == current_user
-    is_host_player = current_player && current_player == room.host
+    # Check moderation permissions
+    authorize_moderator!(room)
 
-    Rails.logger.info "KICK DEBUG: current_user=#{current_user&.id}, room.user=#{room.user&.id}, is_room_owner=#{is_room_owner}, current_player=#{current_player&.name} (id=#{current_player&.id}), is_host_player=#{is_host_player}, player_to_kick=#{player_to_kick.name} (id=#{player_to_kick.id})"
-
-    # Check if current user is room owner OR current player is the host
-    unless is_room_owner || is_host_player
-      Rails.logger.warn "KICK FAILED: Not authorized (is_room_owner=#{is_room_owner}, is_host_player=#{is_host_player})"
-      redirect_to room_hand_path(room.code), alert: "Only the host can kick players."
-      return
-    end
-
-    # Prevent host from kicking themselves (only applicable if they have a player)
+    # Prevent kicking yourself (only applicable if you have a player)
     if current_player && player_to_kick == current_player
       redirect_to room_hand_path(room.code), alert: "You cannot kick yourself."
       return
@@ -84,7 +74,8 @@ class PlayersController < ApplicationController
     # Move to waiting room instead of destroying
     player_name = player_to_kick.name
     player_to_kick.kick!
-    Rails.logger.info "Player #{player_name} was kicked from room #{room.code} by host #{current_player.name}"
+    moderator = current_player ? "host #{current_player.name}" : "room owner (user #{current_user.id})"
+    Rails.logger.info "Player #{player_name} was kicked from room #{room.code} by #{moderator}"
 
     # Broadcast removal from active lists and add to waiting room
     GameBroadcaster.broadcast_player_kicked(room:, player: player_to_kick)
@@ -96,33 +87,27 @@ class PlayersController < ApplicationController
   def approve
     player = Player.find(params[:id])
     room = player.room
-    current_player = Player.find_by!(session_id: session[:player_session_id])
 
-    unless current_player == room.host
-      redirect_to room_hand_path(room.code), alert: "Only the host can approve players."
-      return
-    end
+    # Check moderation permissions
+    authorize_moderator!(room)
 
     player.approve!
     GameBroadcaster.broadcast_player_approved(room:, player:)
 
-    redirect_to room_backstage_path(room.code), notice: "#{player.name} approved!"
+    redirect_back fallback_location: room_backstage_path(room.code), notice: "#{player.name} approved!"
   end
 
   def reject
     player = Player.find(params[:id])
     room = player.room
-    current_player = Player.find_by!(session_id: session[:player_session_id])
 
-    unless current_player == room.host
-      redirect_to room_hand_path(room.code), alert: "Only the host can reject players."
-      return
-    end
+    # Check moderation permissions
+    authorize_moderator!(room)
 
     player_name = player.name
     player.reject!  # Permanently removes player
 
-    redirect_to room_backstage_path(room.code), notice: "#{player_name} permanently removed."
+    redirect_back fallback_location: room_backstage_path(room.code), notice: "#{player_name} permanently removed."
   end
 
   private
