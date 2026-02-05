@@ -40,9 +40,12 @@ export default class extends Controller {
             navigator.vibrate(50)
         }
 
-        // Disable button to prevent double-voting
-        button.disabled = true
-        button.classList.add("opacity-75", "cursor-not-allowed")
+        // Disable ALL vote buttons to prevent multiple votes
+        const allVoteButtons = document.querySelectorAll('button[data-action*="vote-feedback#vote"]')
+        allVoteButtons.forEach(btn => {
+            btn.disabled = true
+            btn.classList.add("opacity-75", "cursor-not-allowed")
+        })
 
         // Show quick feedback message
         this.showFeedback(button)

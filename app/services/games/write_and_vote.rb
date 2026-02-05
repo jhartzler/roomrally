@@ -52,7 +52,7 @@ module Games
         Rails.logger.info({ event: "process_vote", game_id: game.id, round: game.round, prompt_index: game.current_prompt_index, vote_id: vote.id })
 
         total_votes = Vote.where(response: current_prompt.responses).count
-        players_count = game.room.players.count
+        players_count = game.room.players.active_players.count
         # Authors cannot vote on the prompt they responded to
         required_votes = players_count - current_prompt.responses.count
 

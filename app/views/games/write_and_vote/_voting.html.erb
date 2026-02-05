@@ -44,7 +44,11 @@
       </div>
     <% else %>
       <%
-         player_voted = Vote.exists?(player: player, response: responses)
+         # Check if player has already voted for this specific prompt instance
+         player_voted = Vote.joins(:response)
+                           .where(player: player)
+                           .where(responses: { prompt_instance_id: current_prompt.id })
+                           .exists?
          available_responses = responses.shuffle
       %>
       <% available_responses.each do |response| %>
