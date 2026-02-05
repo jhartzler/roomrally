@@ -51,20 +51,16 @@ RSpec.describe "Backstages", type: :request do
         expect(response.body).to include("Alice")
       end
 
-      it "only shows active players in main player list" do
+      it "shows active players in main player list" do
         create(:player, room:, name: "Active Alice", status: :active)
-        pending_player = create(:player, room:, name: "Pending Bob", status: :pending_approval)
         get room_backstage_path(room.code)
-
-        # Active Alice should be in the main player list
         expect(response.body).to include("Active Alice")
+      end
 
-        # Pending Bob should be in waiting room section, not main player list
-        # Check that the waiting room section exists and contains Pending Bob
-        expect(response.body).to include("Waiting for Approval")
-        expect(response.body).to include("Pending Bob")
-
-        # Only 1 active player should be counted (not including pending)
+      it "counts only active players" do
+        create(:player, room:, status: :active)
+        create(:player, room:, status: :pending_approval)
+        get room_backstage_path(room.code)
         expect(response.body).to include("1 connected")
       end
 
@@ -74,38 +70,50 @@ RSpec.describe "Backstages", type: :request do
         expect(response.body).to include("Waiting for Approval")
         expect(response.body).to include("Pending Bob")
       end
+    end
 
-      context "with Write And Vote game" do
-        let(:game) { create(:write_and_vote_game) }
+    context "with Write And Vote game" do
+      let(:game) { create(:write_and_vote_game) }
 
-        before do
-          room.update!(current_game: game)
-        end
-
-        it "displays moderation queue" do
-          get room_backstage_path(room.code)
-          expect(response.body).to include("Moderation Queue")
-        end
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+        room.update!(current_game: game)
       end
 
-      context "with Speed Trivia game" do
-        let(:game) { create(:speed_trivia_game) }
+      it "displays moderation queue" do
+        get room_backstage_path(room.code)
+        expect(response.body).to include("Moderation Queue")
+      end
+    end
 
-        before do
-          room.update!(current_game: game)
-        end
+    context "with Speed Trivia game" do
+      let(:game) { create(:speed_trivia_game) }
 
-        it "does not display moderation queue" do
-          get room_backstage_path(room.code)
-          expect(response.body).not_to include("Moderation Queue")
-        end
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+        room.update!(current_game: game)
       end
 
-      context "without a game" do
-        it "does not display moderation queue" do
-          get room_backstage_path(room.code)
-          expect(response.body).not_to include("Moderation Queue")
-        end
+      it "does not display moderation queue" do
+        get room_backstage_path(room.code)
+        expect(response.body).not_to include("Moderation Queue")
+      end
+    end
+
+    context "without a game" do
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+      end
+
+      it "does not display moderation queue" do
+        get room_backstage_path(room.code)
+        expect(response.body).not_to include("Moderation Queue")
       end
     end
   end

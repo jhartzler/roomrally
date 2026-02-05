@@ -44,19 +44,19 @@ RSpec.describe Player, type: :model do
 
   describe 'scopes' do
     let(:room) { create(:room) }
-    let!(:active_player1) { create(:player, room:, status: :active) }
-    let!(:active_player2) { create(:player, room:, status: :active) }
-    let!(:pending_player) { create(:player, room:, status: :pending_approval) }
+    let!(:alice) { create(:player, room:, status: :active) }
+    let!(:bob) { create(:player, room:, status: :active) }
+    let!(:charlie) { create(:player, room:, status: :pending_approval) }
 
     describe '.active_players' do
       it 'returns only active players' do
-        expect(room.players.active_players).to contain_exactly(active_player1, active_player2)
+        expect(room.players.active_players).to contain_exactly(alice, bob)
       end
     end
 
     describe '.pending_approval' do
       it 'returns only pending approval players' do
-        expect(room.players.pending_approval).to contain_exactly(pending_player)
+        expect(room.players.pending_approval).to contain_exactly(charlie)
       end
     end
   end

@@ -121,6 +121,21 @@ RSpec.describe WriteAndVoteGame, type: :model do
       game.calculate_scores!
       expect(player.reload.score).to eq(1000)
     end
+
+    context "with pending approval players" do
+      # rubocop:disable RSpec/ExampleLength
+      it "only calculates scores for active players" do
+        active = create(:player, room:, status: :active)
+        pending = create(:player, room:, status: :pending_approval)
+        create(:vote, response: create(:response, player: active, prompt_instance: prompt))
+        create(:vote, response: create(:response, player: pending, prompt_instance: prompt))
+        game.calculate_scores!
+
+        expect(active.reload.score).to eq(500)
+        expect(pending.reload.score).to eq(0)
+      end
+      # rubocop:enable RSpec/ExampleLength
+    end
   end
 
   describe "#all_responses_submitted?" do
@@ -238,37 +253,6 @@ RSpec.describe WriteAndVoteGame, type: :model do
   describe ".supports_response_moderation?" do
     it "returns true" do
       expect(described_class.supports_response_moderation?).to be true
-    end
-  end
-
-  describe "#calculate_scores!" do
-    let(:room) { create(:room) }
-    let(:game) { create(:write_and_vote_game) }
-    let(:active_player) { create(:player, room:, status: :active) }
-    let(:pending_player) { create(:player, room:, status: :pending_approval) }
-    let(:prompt_instance) { create(:prompt_instance, write_and_vote_game: game) }
-
-    before do
-      room.update!(current_game: game)
-    end
-
-    it "only calculates scores for active players" do
-      # Create responses for both players
-      active_response = create(:response, player: active_player, prompt_instance:)
-      pending_response = create(:response, player: pending_player, prompt_instance:)
-
-      # Create votes for both responses
-      create(:vote, response: active_response)
-      create(:vote, response: pending_response)
-
-      # Calculate scores
-      game.calculate_scores!
-
-      # Active player should have score calculated
-      expect(active_player.reload.score).to eq(500)
-
-      # Pending player should not have score calculated (score remains 0)
-      expect(pending_player.reload.score).to eq(0)
     end
   end
 end

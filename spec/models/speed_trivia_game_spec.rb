@@ -171,6 +171,20 @@ RSpec.describe SpeedTriviaGame, type: :model do
         expect(game.all_answers_submitted?).to be true
       end
     end
+
+    context 'with pending approval players' do
+      # rubocop:disable RSpec/ExampleLength
+      it 'only counts active players' do
+        alice.update!(status: :active)
+        bob.update!(status: :active)
+        create(:player, room:, status: :pending_approval)
+        create(:trivia_answer, player: alice, trivia_question_instance: question)
+        create(:trivia_answer, player: bob, trivia_question_instance: question)
+
+        expect(game.all_answers_submitted?).to be true
+      end
+      # rubocop:enable RSpec/ExampleLength
+    end
   end
 
   describe 'HasRoundTimer' do
@@ -255,42 +269,23 @@ RSpec.describe SpeedTriviaGame, type: :model do
       expect(player.reload.score).to eq(1400)
     end
 
+    # rubocop:disable RSpec/ExampleLength
     it 'only calculates scores for active players' do
-      active_player = create(:player, room:, status: :active, score: 0)
-      pending_player = create(:player, room:, status: :pending_approval, score: 0)
-
-      create(:trivia_answer, player: active_player, trivia_question_instance: question, points_awarded: 800)
-      create(:trivia_answer, player: pending_player, trivia_question_instance: question, points_awarded: 600)
-
+      active = create(:player, room:, status: :active, score: 0)
+      pending = create(:player, room:, status: :pending_approval, score: 0)
+      create(:trivia_answer, player: active, trivia_question_instance: question, points_awarded: 800)
+      create(:trivia_answer, player: pending, trivia_question_instance: question, points_awarded: 600)
       game.calculate_scores!
 
-      expect(active_player.reload.score).to eq(800)
-      expect(pending_player.reload.score).to eq(0) # Score not updated for pending players
+      expect(active.reload.score).to eq(800)
+      expect(pending.reload.score).to eq(0)
     end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   describe ".supports_response_moderation?" do
     it "returns false" do
       expect(described_class.supports_response_moderation?).to be false
-    end
-  end
-
-  describe "#all_answers_submitted?" do
-    let(:game) { create(:speed_trivia_game, current_question_index: 0) }
-    let(:room) { create(:room, current_game: game) }
-    let(:question) { create(:trivia_question_instance, speed_trivia_game: game, position: 0) }
-
-    it "only counts active players" do
-      active_player1 = create(:player, room:, status: :active)
-      active_player2 = create(:player, room:, status: :active)
-      pending_player = create(:player, room:, status: :pending_approval)
-
-      # Only active players submit answers
-      create(:trivia_answer, player: active_player1, trivia_question_instance: question)
-      create(:trivia_answer, player: active_player2, trivia_question_instance: question)
-
-      # Should return true even though pending player didn't answer
-      expect(game.all_answers_submitted?).to be true
     end
   end
 end
