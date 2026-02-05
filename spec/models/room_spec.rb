@@ -67,13 +67,25 @@ RSpec.describe Room, type: :model do
   describe '#enough_players?' do
     let(:room) { create(:room) }
 
-    it 'returns false when there are fewer than 3 players' do
-      create_list(:player, 2, room:)
+    it 'returns false when there are fewer than 3 active players' do
+      create_list(:player, 2, room:, status: :active)
       expect(room.enough_players?).to be false
     end
 
-    it 'returns true when there are 3 or more players' do
-      create_list(:player, 3, room:)
+    it 'returns true when there are 3 or more active players' do
+      create_list(:player, 3, room:, status: :active)
+      expect(room.enough_players?).to be true
+    end
+
+    it 'only counts active players, not pending players' do
+      create_list(:player, 2, room:, status: :active)
+      create_list(:player, 5, room:, status: :pending_approval)
+      expect(room.enough_players?).to be false
+    end
+
+    it 'returns true with 3 active players even if there are pending players' do
+      create_list(:player, 3, room:, status: :active)
+      create_list(:player, 2, room:, status: :pending_approval)
       expect(room.enough_players?).to be true
     end
   end

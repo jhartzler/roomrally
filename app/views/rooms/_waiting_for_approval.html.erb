@@ -14,7 +14,7 @@
       <p class="text-xl font-bold text-white"><%= player.name %></p>
     </div>
 
-    <%= link_to "Change Name", new_player_path(code: room.code),
+    <%= link_to "Change Name", join_room_path(code: room.code),
         class: "inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all" %>
   </div>
 </div>

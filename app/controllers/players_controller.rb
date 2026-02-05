@@ -94,7 +94,7 @@ class PlayersController < ApplicationController
     player.approve!
     GameBroadcaster.broadcast_player_approved(room:, player:)
 
-    redirect_to backstage_path(room.code), notice: "#{player.name} approved!"
+    redirect_to room_backstage_path(room.code), notice: "#{player.name} approved!"
   end
 
   def reject
@@ -110,7 +110,7 @@ class PlayersController < ApplicationController
     player_name = player.name
     player.reject!  # Permanently removes player
 
-    redirect_to backstage_path(room.code), notice: "#{player_name} permanently removed."
+    redirect_to room_backstage_path(room.code), notice: "#{player_name} permanently removed."
   end
 
   private

@@ -234,4 +234,41 @@ RSpec.describe WriteAndVoteGame, type: :model do
       end
     end
   end
+
+  describe ".supports_response_moderation?" do
+    it "returns true" do
+      expect(described_class.supports_response_moderation?).to be true
+    end
+  end
+
+  describe "#calculate_scores!" do
+    let(:room) { create(:room) }
+    let(:game) { create(:write_and_vote_game) }
+    let(:active_player) { create(:player, room:, status: :active) }
+    let(:pending_player) { create(:player, room:, status: :pending_approval) }
+    let(:prompt_instance) { create(:prompt_instance, write_and_vote_game: game) }
+
+    before do
+      room.update!(current_game: game)
+    end
+
+    it "only calculates scores for active players" do
+      # Create responses for both players
+      active_response = create(:response, player: active_player, prompt_instance:)
+      pending_response = create(:response, player: pending_player, prompt_instance:)
+
+      # Create votes for both responses
+      create(:vote, response: active_response)
+      create(:vote, response: pending_response)
+
+      # Calculate scores
+      game.calculate_scores!
+
+      # Active player should have score calculated
+      expect(active_player.reload.score).to eq(500)
+
+      # Pending player should not have score calculated (score remains 0)
+      expect(pending_player.reload.score).to eq(0)
+    end
+  end
 end
