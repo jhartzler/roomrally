@@ -55,9 +55,9 @@ RSpec.describe "Prompt Packs UI", type: :system do
     end
   end
 
-  describe "Homepage" do
+  describe "Play page" do
     it "shows Go to Dashboard link when logged in" do
-      visit root_path
+      visit play_path
       expect(page).to have_link("Go to Dashboard", href: dashboard_path)
       expect(page).not_to have_button("Sign in with Google")
     end

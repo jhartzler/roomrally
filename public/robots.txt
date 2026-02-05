@@ -1,1 +1,16 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Don't index game sessions or user areas
+Disallow: /rooms/*/hand
+Disallow: /rooms/*/stage
+Disallow: /rooms/*/backstage
+Disallow: /dashboard
+Disallow: /prompt_packs
+Disallow: /trivia_packs
+Disallow: /customize
+Disallow: /dev/
+
+# Sitemap location
+Sitemap: https://roomrally.app/sitemap.xml

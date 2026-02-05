@@ -1,7 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= content_for(:title) || "RoomRally" %></title>
+    <title><%= content_for(:title) || "RoomRally - Free Party Games for Groups, Youth Groups & Classrooms" %></title>
+    
+    <%# Primary Meta Tags %>
+    <meta name="title" content="<%= content_for(:title) || "RoomRally - Free Party Games for Groups" %>">
+    <meta name="description" content="<%= content_for(:description) || "Host fun, safe multiplayer party games like Quiplash for your youth group, classroom, or friends. No app download needed—players join from their phones." %>">
+    <meta name="keywords" content="party games, youth group games, classroom games, quiplash alternative, jackbox alternative, group games, ice breaker games, free party games">
+    <meta name="author" content="RoomRally">
+
+    <%# Open Graph / Facebook %>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:title" content="<%= content_for(:title) || "RoomRally - Free Party Games for Groups" %>">
+    <meta property="og:description" content="<%= content_for(:description) || "Host fun, safe multiplayer party games for your youth group, classroom, or friends. Players join from their phones—no app needed." %>">
+    <meta property="og:image" content="<%= image_url('og-image.png') %>">
+
+    <%# Twitter %>
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<%= request.original_url %>">
+    <meta property="twitter:title" content="<%= content_for(:title) || "RoomRally - Free Party Games for Groups" %>">
+    <meta property="twitter:description" content="<%= content_for(:description) || "Host fun, safe multiplayer party games for your youth group, classroom, or friends." %>">
+    <meta property="twitter:image" content="<%= image_url('og-image.png') %>">
+
+    <%# Additional SEO %>
+    <link rel="canonical" href="<%= request.original_url.split('?').first %>">
+
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="RoomRally">
@@ -22,6 +46,7 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">

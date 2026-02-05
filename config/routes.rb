@@ -22,7 +22,8 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "home#index"
+  root "pages#landing"
+  get "play", to: "home#index"
 
   resources :rooms, only: %i[create show], param: :code do
     resource :stage, only: :show
