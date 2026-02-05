@@ -22,7 +22,10 @@ export default class extends Controller {
 
     checkMilestone() {
         const milestones = [3, 5, 8]
-        if (milestones.includes(this.totalPlayersValue)) {
+        // Only celebrate if THIS player is the one who hit the milestone
+        // (i.e., they're the last player in the list)
+        const isNewPlayer = (this.indexValue + 1) === this.totalPlayersValue
+        if (isNewPlayer && milestones.includes(this.totalPlayersValue)) {
             this.celebrateMilestone()
         }
     }
