@@ -1,4 +1,7 @@
-<div id="stage_player_<%= player.id %>" class="bg-blue-600/20 border-2 border-blue-400/30 rounded-2xl px-8 py-4 flex items-center shadow-lg transform transition-all duration-300 hover:scale-105">
+<div id="stage_player_<%= player.id %>"
+     data-controller="player-entrance"
+     data-player-entrance-player-id-value="<%= player.id %>"
+     class="bg-blue-600/20 border-2 border-blue-400/30 rounded-2xl px-8 py-4 flex items-center shadow-lg transform transition-all duration-300 hover:scale-105">
   <div class="h-12 w-12 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 flex items-center justify-center mr-4 text-2xl">
     👤
   </div>

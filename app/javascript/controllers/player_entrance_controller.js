@@ -2,35 +2,45 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     static values = {
-        index: Number,
-        totalPlayers: Number
+        playerId: Number
     }
 
     connect() {
-        // Stagger animation by index (150ms per player)
-        const delay = this.indexValue * 150
+        // Detect if this is a Turbo Stream append (new player joining)
+        // vs initial page load
+        const isTurboStreamAppend = document.readyState === "complete"
+
+        if (isTurboStreamAppend) {
+            // New player joining - trigger animation immediately
+            this.animateEntrance()
+            this.checkMilestone()
+        }
+        // On initial page load, don't animate (players are already there)
+    }
+
+    animateEntrance() {
         this.element.style.opacity = "0"
 
-        setTimeout(() => {
+        // Use requestAnimationFrame to ensure the opacity change is applied
+        requestAnimationFrame(() => {
             this.element.style.opacity = "1"
             this.element.classList.add("animate-slide-in-right")
-
-            // Check for milestone celebrations
-            this.checkMilestone()
-        }, delay)
+        })
     }
 
     checkMilestone() {
         const milestones = [3, 5, 8]
-        // Only celebrate if THIS player is the one who hit the milestone
-        // (i.e., they're the last player in the list)
-        const isNewPlayer = (this.indexValue + 1) === this.totalPlayersValue
-        if (isNewPlayer && milestones.includes(this.totalPlayersValue)) {
-            this.celebrateMilestone()
+
+        // Count total players in the list
+        const playerList = document.getElementById("stage_player_list")
+        const totalPlayers = playerList ? playerList.children.length : 0
+
+        if (milestones.includes(totalPlayers)) {
+            this.celebrateMilestone(totalPlayers)
         }
     }
 
-    celebrateMilestone() {
+    celebrateMilestone(totalPlayers) {
         // Create a celebration overlay
         const celebration = document.createElement("div")
         celebration.className = "fixed inset-0 flex items-center justify-center z-[9999] pointer-events-none"
@@ -38,7 +48,7 @@ export default class extends Controller {
             <div class="text-center animate-bounce-in">
                 <div class="text-7xl mb-4">🎉</div>
                 <div class="text-3xl font-black text-white drop-shadow-lg">
-                    ${this.totalPlayersValue} Players!
+                    ${totalPlayers} Players!
                 </div>
             </div>
         `
