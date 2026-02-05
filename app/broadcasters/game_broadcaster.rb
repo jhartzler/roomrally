@@ -111,12 +111,20 @@ module GameBroadcaster
 
   def self.broadcast_waiting_player_updated(room:, player:)
     Rails.logger.info({ event: "broadcast_waiting_player_updated", room_code: room.code, player_id: player.id })
-    # Update the waiting room card with new name
+    # Update the waiting room card with new name in backstage
     Turbo::StreamsChannel.broadcast_replace_to(
       room,
       target: "waiting_player_#{player.id}",
       partial: "players/waiting_player",
       locals: { player: }
+    )
+
+    # Update the player's own hand view to show updated name
+    Turbo::StreamsChannel.broadcast_update_to(
+      player,
+      target: "hand_screen",
+      partial: "rooms/waiting_for_approval",
+      locals: { room:, player: }
     )
   end
 
