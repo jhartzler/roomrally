@@ -46,6 +46,26 @@ RSpec.describe PlayersController, type: :controller do
       end
     end
 
+    context 'when rejoining as an active player' do
+      let(:active_player) { create(:player, room:, status: :active) }
+
+      before do
+        session[:player_session_id] = active_player.session_id
+      end
+
+      it 'does not create a new player' do
+        expect do
+          post :create, params: { code: room.code, player: { name: 'New Name' } }
+        end.not_to change(Player, :count)
+      end
+
+      it 'redirects to hand view' do
+        post :create, params: { code: room.code, player: { name: 'New Name' } }
+        expect(response).to redirect_to(room_hand_path(room))
+        expect(flash[:notice]).to include('already in this room')
+      end
+    end
+
     context 'when rejoining as a kicked player' do
       let(:kicked_player) { create(:player, room:, status: :pending_approval) }
 

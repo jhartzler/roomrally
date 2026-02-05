@@ -10,24 +10,29 @@ class PlayersController < ApplicationController
   end
 
   def create
-    # Check if this session has a pending player in this room
+    # Check if this session already has a player in this room
     existing_player = @room.players.find_by(session_id: session[:player_session_id])
 
-    if existing_player&.pending_approval?
-      # They were kicked - update their name and keep them in waiting room
-      old_name = existing_player.name
-      if existing_player.update(name: player_params[:name])
-        @player = existing_player
+    if existing_player
+      if existing_player.pending_approval?
+        # They were kicked - update their name and keep them in waiting room
+        old_name = existing_player.name
+        if existing_player.update(name: player_params[:name])
+          @player = existing_player
 
-        # Only broadcast if name actually changed
-        if old_name != existing_player.name
-          GameBroadcaster.broadcast_waiting_player_updated(room: @room, player: existing_player)
+          # Only broadcast if name actually changed
+          if old_name != existing_player.name
+            GameBroadcaster.broadcast_waiting_player_updated(room: @room, player: existing_player)
+          end
+
+          redirect_to room_hand_path(@room), notice: "Name updated. Waiting for host approval..."
+        else
+          flash[:error] = existing_player.errors.full_messages.join(", ")
+          redirect_to join_room_path(code: @room.code)
         end
-
-        redirect_to room_hand_path(@room), notice: "Name updated. Waiting for host approval..."
       else
-        flash[:error] = existing_player.errors.full_messages.join(", ")
-        redirect_to new_player_path(code: @room.code)
+        # They're already in the room as an active player - just redirect them
+        redirect_to room_hand_path(@room), notice: "You're already in this room!"
       end
       return
     end
