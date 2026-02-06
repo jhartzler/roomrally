@@ -1,0 +1,19 @@
+<%# app/views/games/category_list/_hand.html.erb %>
+<%# Main view router for a player's hand in Category List %>
+
+<% game = room.current_game %>
+
+<% if game.finished? %>
+  <%= render "games/category_list/game_over", room:, player:, game: %>
+<% elsif game.filling? %>
+  <%= render "games/category_list/answer_form", room:, player:, game: %>
+<% elsif game.instructions? %>
+  <%= render "games/shared/hand_instructions",
+      emoji: "📝",
+      start_game_path: category_list_game_game_start_path(game),
+      room:,
+      player: %>
+<% else %>
+  <%# reviewing or scoring %>
+  <%= render "games/category_list/waiting", room:, player:, game: %>
+<% end %>

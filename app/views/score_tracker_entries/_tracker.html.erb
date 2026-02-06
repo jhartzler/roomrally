@@ -1,0 +1,21 @@
+<%# Score tracker panel for backstage %>
+<div class="space-y-4">
+  <% room.score_tracker_entries.order(score: :desc, name: :asc).each do |entry| %>
+    <%= render "score_tracker_entries/entry", room:, entry: %>
+  <% end %>
+
+  <% if room.score_tracker_entries.empty? %>
+    <p class="text-blue-300/50 text-center italic font-medium py-2">No teams/players added yet.</p>
+  <% end %>
+
+  <!-- Add new entry form -->
+  <%= form_with url: room_score_tracker_entries_path(room.code), method: :post, class: "flex gap-2 mt-4" do |f| %>
+    <%= f.text_field :name,
+        placeholder: "Team/Player name",
+        required: true,
+        class: "flex-grow px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-sm",
+        name: "score_tracker_entry[name]" %>
+    <%= f.submit "Add",
+        class: "px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition text-sm cursor-pointer" %>
+  <% end %>
+</div>

@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     resource :stage, only: :show
     resource :hand, only: :show
     resource :backstage, only: :show
+    resources :score_tracker_entries, only: %i[create update destroy]
     member do
       post :start_game
       post :claim_host
@@ -68,6 +69,16 @@ Rails.application.routes.draw do
       resource :game_start, only: :create
     end
   end
+
+  resources :category_list_games, only: [] do
+    scope module: :category_list do
+      resource :game_start, only: :create
+      resources :submissions, only: :create
+      resources :rounds, only: :create
+      resource :review, only: :update
+    end
+  end
+  resources :category_answers, only: :update
 
   get "/auth/:provider/callback", to: "sessions#omniauth"
   get "/auth/failure", to: redirect("/")

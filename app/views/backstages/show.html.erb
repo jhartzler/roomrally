@@ -18,7 +18,7 @@
     <!-- Host Controls -->
     <div id="backstage-host-controls" class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
       <h2 class="text-xl font-bold mb-4 text-white tracking-wide border-b border-white/10 pb-2">Host Controls</h2>
-      
+
       <%= render "rooms/host_controls", room: @room, backstage: true %>
     </div>
 
@@ -54,6 +54,18 @@
       <% end %>
     </ul>
   </div>
+
+  <% if @room.stage_only? %>
+    <!-- Score Tracker -->
+    <div class="mt-8">
+      <h2 class="text-xl font-bold mb-4 text-white tracking-wide">Score Tracker</h2>
+      <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
+        <div id="score-tracker">
+          <%= render "score_tracker_entries/tracker", room: @room %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <!-- Moderation Stream -->
   <% if @room.current_game&.class&.supports_response_moderation? %>

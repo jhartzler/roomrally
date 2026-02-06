@@ -1,0 +1,33 @@
+<%# Single score tracker entry row %>
+<div class="flex items-center justify-between bg-black/30 rounded-xl px-4 py-3 border border-white/10">
+  <span class="text-white font-bold text-lg"><%= entry.name %></span>
+
+  <div class="flex items-center gap-3">
+    <!-- Decrement -->
+    <%= button_to room_score_tracker_entry_path(room.code, entry),
+        method: :patch,
+        params: { increment: -1 },
+        class: "w-8 h-8 bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg flex items-center justify-center font-bold transition text-lg" do %>
+      &minus;
+    <% end %>
+
+    <!-- Score -->
+    <span class="text-2xl font-black text-yellow-400 font-mono w-12 text-center"><%= entry.score %></span>
+
+    <!-- Increment -->
+    <%= button_to room_score_tracker_entry_path(room.code, entry),
+        method: :patch,
+        params: { increment: 1 },
+        class: "w-8 h-8 bg-green-600/30 hover:bg-green-600/50 text-green-300 rounded-lg flex items-center justify-center font-bold transition text-lg" do %>
+      +
+    <% end %>
+
+    <!-- Delete -->
+    <%= button_to room_score_tracker_entry_path(room.code, entry),
+        method: :delete,
+        data: { turbo_confirm: "Remove #{entry.name}?" },
+        class: "w-8 h-8 bg-gray-600/30 hover:bg-gray-600/50 text-gray-400 rounded-lg flex items-center justify-center transition text-sm" do %>
+      ✕
+    <% end %>
+  </div>
+</div>
