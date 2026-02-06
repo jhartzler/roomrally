@@ -12,6 +12,23 @@ RSpec.describe Player, type: :model do
       expect(player).to be_valid # because the before_validation will set it
       expect(player.session_id).not_to be_nil
     end
+
+    it 'allows the same session_id in different rooms' do
+      session_id = SecureRandom.uuid
+      player_a = create(:player, session_id:)
+      player_b = build(:player, session_id:)
+
+      expect(player_b).to be_valid
+      expect(player_a.room).not_to eq(player_b.room)
+    end
+
+    it 'rejects duplicate session_id within the same room' do
+      room = create(:room)
+      existing = create(:player, room:)
+      duplicate = build(:player, room:, session_id: existing.session_id)
+
+      expect(duplicate).not_to be_valid
+    end
   end
 
   describe 'associations' do

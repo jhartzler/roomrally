@@ -34,7 +34,15 @@ class ApplicationController < ActionController::Base
   def set_current_player
     return unless session[:player_session_id]
 
-    @current_player = Player.find_by(session_id: session[:player_session_id])
+    # session_id is scoped to room_id (not globally unique), so we must
+    # resolve the player within the correct room when possible.
+    room_code = params[:room_code] || params[:code]
+    if room_code
+      room = Room.find_by(code: room_code)
+      @current_player = room&.players&.find_by(session_id: session[:player_session_id])
+    else
+      @current_player = Player.find_by(session_id: session[:player_session_id])
+    end
   end
 
   def current_player

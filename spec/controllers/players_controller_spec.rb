@@ -223,6 +223,37 @@ RSpec.describe PlayersController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy (multi-room session resolution)' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    let(:shared_session_id) { SecureRandom.uuid }
+    let(:room_a) { create(:room) }
+    let(:room_b) { create(:room) }
+    let(:host_in_b) { create(:player, room: room_b, session_id: shared_session_id) }
+    let(:player_in_a) { create(:player, room: room_a, session_id: shared_session_id) }
+    let(:player_to_kick) { create(:player, room: room_b) }
+
+    before do
+      # Player has same session_id in both rooms, but is host only in room B
+      player_in_a
+      room_b.update!(host: host_in_b)
+      session[:player_session_id] = shared_session_id
+    end
+
+    it 'resolves current_player to the correct room and authorizes the kick' do
+      player_to_kick # ensure exists
+      expect {
+        delete :destroy, params: { id: player_to_kick.id }
+      }.not_to change(Player, :count)
+      expect(player_to_kick.reload.status).to eq('pending_approval')
+    end
+
+    it 'does not authorize when the player is not host in the target room' do
+      other_player_in_a = create(:player, room: room_a)
+      delete :destroy, params: { id: other_player_in_a.id }
+      # player_in_a is NOT host in room_a, so authorization should fail
+      expect(other_player_in_a.reload.status).to eq('active')
+    end
+  end
+
   describe 'PATCH #approve' do
     let(:room) { create(:room) }
     let(:host_player) { create(:player, room:) }

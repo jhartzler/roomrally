@@ -64,10 +64,10 @@ RSpec.describe "Backstages", type: :request do
         expect(response.body).to include("1 connected")
       end
 
-      it "shows waiting room section when there are pending players" do
+      it "shows pending players in waiting room section" do
         create(:player, room:, status: :pending_approval, name: "Pending Bob")
         get room_backstage_path(room.code)
-        expect(response.body).to include("Waiting for Approval")
+        expect(response.body).to include("Waiting Room")
         expect(response.body).to include("Pending Bob")
       end
     end

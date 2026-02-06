@@ -39,22 +39,21 @@
     </div>
   </div>
 
-  <!-- Waiting Room Section -->
-  <% if @room.players.pending_approval.any? %>
-    <div class="mt-8 bg-orange-500/10 backdrop-blur-md rounded-3xl p-6 border-2 border-orange-400/50 shadow-xl">
-      <div class="flex justify-between items-center mb-4 border-b border-orange-400/30 pb-2">
-        <h2 class="text-xl font-bold text-white tracking-wide">⏳ Waiting for Approval</h2>
-        <span class="text-sm font-bold text-orange-200 tracking-wider">
-          <%= @room.players.pending_approval.count %> pending
-        </span>
-      </div>
-      <ul id="waiting-room-list" class="space-y-2">
-        <% @room.players.pending_approval.each do |player| %>
-          <%= render "players/waiting_player", player: player %>
-        <% end %>
-      </ul>
+  <!-- Waiting Room Section (always rendered so Turbo Stream appends have a target) -->
+  <% pending_players = @room.players.pending_approval %>
+  <div class="mt-8 bg-orange-500/10 backdrop-blur-md rounded-3xl p-6 border-2 border-orange-400/50 shadow-xl">
+    <div class="flex justify-between items-center mb-4 border-b border-orange-400/30 pb-2">
+      <h2 class="text-xl font-bold text-white tracking-wide">Waiting Room</h2>
+      <span class="text-sm font-bold text-orange-200 tracking-wider">
+        <%= pending_players.count %> pending
+      </span>
     </div>
-  <% end %>
+    <ul id="waiting-room-list" class="space-y-2">
+      <% pending_players.each do |player| %>
+        <%= render "players/waiting_player", player: player %>
+      <% end %>
+    </ul>
+  </div>
 
   <!-- Moderation Stream -->
   <% if @room.current_game&.class&.supports_response_moderation? %>

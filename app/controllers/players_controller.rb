@@ -2,6 +2,7 @@ class PlayersController < ApplicationController
   include ActionView::RecordIdentifier
 
   before_action :set_room, only: %i[new create]
+  before_action :resolve_current_player_from_target, only: %i[destroy approve reject]
   rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
 
   def new
@@ -118,6 +119,16 @@ class PlayersController < ApplicationController
 
   def player_params
     params.require(:player).permit(:name)
+  end
+
+  # destroy/approve/reject routes have no room code in params, so
+  # set_current_player can't scope by room. Re-resolve here using the
+  # target player's room so authorization checks compare the right records.
+  def resolve_current_player_from_target
+    target_player = Player.find_by(id: params[:id])
+    return unless target_player && session[:player_session_id]
+
+    @current_player = target_player.room.players.find_by(session_id: session[:player_session_id])
   end
 
   def room_not_found

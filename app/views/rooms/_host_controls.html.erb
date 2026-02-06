@@ -1,48 +1,23 @@
 <div class="max-w-md mx-auto">
   <% if local_assigns[:backstage] %>
     <% if room.status == "lobby" %>
-       <%# Lobby logic for backstage (similar to regular host controls but without "You're the host" header) %>
        <% if room.enough_players? %>
         <%= form_with url: start_game_room_path(room.code), method: :post, local: true, class: "space-y-4" do |f| %>
           <div class="bg-white/5 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/10">
             <h3 class="font-bold text-white mb-4 border-b border-white/10 pb-2">Game Settings</h3>
             <div class="flex flex-col gap-4">
-              <% if room.game_type == "Speed Trivia" %>
-                <% max_questions = TriviaPack.default.trivia_questions.count %>
-                <label class="flex items-center gap-3">
-                  <span class="text-blue-100 font-medium text-sm">Number of questions:</span>
-                  <%= number_field_tag :question_count, 5, min: 1, max: max_questions, class: "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" %>
-                </label>
-              <% end %>
-
-              <% if room.user.present? %>
-                <label class="flex items-center gap-3 cursor-pointer group">
-                  <%= check_box_tag :show_instructions, "1", true, class: "form-checkbox h-5 w-5 text-indigo-500 rounded border-white/30 bg-white/10 focus:ring-indigo-500 focus:ring-offset-0 transition-colors" %>
-                  <span class="text-blue-100 font-medium group-hover:text-white transition-colors">Show game instructions</span>
-                </label>
-              <% end %>
-
-              <label class="flex items-center gap-3 cursor-pointer group">
-                <%= check_box_tag :timer_enabled, "1", false, class: "form-checkbox h-5 w-5 text-indigo-500 rounded border-white/30 bg-white/10 focus:ring-indigo-500 focus:ring-offset-0 transition-colors" %>
-                <span class="text-blue-100 font-medium group-hover:text-white transition-colors">Enable Timer</span>
-              </label>
-
-              <label class="flex items-center gap-3">
-                 <span class="text-blue-100 font-medium text-sm">Seconds per round:</span>
-                 <%= number_field_tag :timer_increment, 60, min: 10, max: 300, class: "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" %>
-              </label>
+              <%= render "rooms/game_settings_fields", room: room, backstage: true %>
             </div>
           </div>
           <%= f.submit "Start Game", class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
         <% end %>
       <% else %>
         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
-          <p class="text-yellow-700 font-medium">Waiting for players (<%= room.players.count %>/3)...</p>
+          <p class="text-yellow-700 font-medium">Waiting for players (<%= room.players.active_players.count %>/3)...</p>
           <p class="text-yellow-600 text-sm mt-1">Need at least 3 players to start.</p>
         </div>
       <% end %>
     <% elsif room.current_game.present? %>
-      <%# Render game-specific controls based on game type %>
       <% game_type_folder = room.game_type.parameterize.underscore %>
       <% if lookup_context.template_exists?("host_controls", "games/#{game_type_folder}", true) %>
         <%= render "games/#{game_type_folder}/host_controls", room: room, game: room.current_game %>
@@ -58,7 +33,6 @@
   <% else %>
     <%# Standard Host Controls (Hand View) %>
     <% if room.current_game.present? %>
-      <%# Render game-specific controls based on game type %>
       <% game_type_folder = room.game_type.parameterize.underscore %>
       <% if lookup_context.template_exists?("host_controls", "games/#{game_type_folder}", true) %>
         <%= render "games/#{game_type_folder}/host_controls", room: room, game: room.current_game %>
@@ -82,37 +56,14 @@
           <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
             <h3 class="font-bold text-gray-700 mb-2">Game Settings</h3>
             <div class="flex flex-col gap-3">
-              <% if room.game_type == "Speed Trivia" %>
-                <% max_questions = TriviaPack.default.trivia_questions.count %>
-                <label class="flex items-center gap-2">
-                  <span class="text-gray-700 font-medium text-sm">Number of questions:</span>
-                  <%= number_field_tag :question_count, 5, min: 1, max: max_questions, class: "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-                </label>
-              <% end %>
-
-              <% if room.user.present? %>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <%= check_box_tag :show_instructions, "1", true, class: "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
-                  <span class="text-gray-700 font-medium">Show game instructions</span>
-                </label>
-              <% end %>
-
-              <label class="flex items-center gap-2 cursor-pointer">
-                <%= check_box_tag :timer_enabled, "1", false, class: "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
-                <span class="text-gray-700 font-medium">Enable Timer</span>
-              </label>
-
-              <label class="flex items-center gap-2">
-                 <span class="text-gray-700 font-medium text-sm">Seconds per round:</span>
-                 <%= number_field_tag :timer_increment, 60, min: 10, max: 300, class: "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
-              </label>
+              <%= render "rooms/game_settings_fields", room: room, backstage: false %>
             </div>
           </div>
           <%= f.submit "Start Game", id: "start-game-btn", class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
         <% end %>
       <% else %>
         <button class="w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl cursor-not-allowed text-lg" disabled>
-          Waiting for players (<%= room.players.count %>/3)...
+          Waiting for players (<%= room.players.active_players.count %>/3)...
         </button>
       <% end %>
     <% end %>
