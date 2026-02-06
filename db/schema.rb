@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_161411) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_205813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,9 +20,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_161411) do
     t.bigint "room_id", null: false
     t.integer "score", default: 0, null: false
     t.string "session_id", null: false
+    t.string "status", default: "active", null: false
     t.datetime "updated_at", null: false
     t.index ["room_id"], name: "index_players_on_room_id"
-    t.index ["session_id"], name: "index_players_on_session_id", unique: true
+    t.index ["session_id", "room_id"], name: "index_players_on_session_id_and_room_id", unique: true
+    t.index ["status"], name: "index_players_on_status"
   end
 
   create_table "prompt_instances", force: :cascade do |t|

@@ -42,7 +42,7 @@
           </div>
         <% end %>
 
-        <% players_without_answers = game.room.players.where.not(id: current_question.trivia_answers.select(:player_id)) %>
+        <% players_without_answers = game.room.players.active_players.where.not(id: current_question.trivia_answers.select(:player_id)) %>
         <% players_without_answers.each do |player| %>
           <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 border-gray-500/50">
             <div class="flex-grow flex items-center gap-4">

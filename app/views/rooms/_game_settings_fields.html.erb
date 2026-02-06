@@ -1,0 +1,38 @@
+<%# Game settings fields shared between backstage and hand host controls.
+    Accepts: room, backstage (boolean for dark/light theme) %>
+<% if room.game_type == "Speed Trivia" %>
+  <% max_questions = TriviaPack.default.trivia_questions.count %>
+  <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
+    <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Number of questions:</span>
+    <%= number_field_tag :question_count, 5, min: 1, max: max_questions,
+        class: backstage ?
+          "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
+          "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+  </label>
+<% end %>
+
+<% if room.user.present? %>
+  <label class="flex items-center gap-<%= backstage ? 3 : 2 %> cursor-pointer <%= 'group' if backstage %>">
+    <%= check_box_tag :show_instructions, "1", true,
+        class: backstage ?
+          "form-checkbox h-5 w-5 text-indigo-500 rounded border-white/30 bg-white/10 focus:ring-indigo-500 focus:ring-offset-0 transition-colors" :
+          "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
+    <span class="<%= backstage ? 'text-blue-100 font-medium group-hover:text-white transition-colors' : 'text-gray-700 font-medium' %>">Show game instructions</span>
+  </label>
+<% end %>
+
+<label class="flex items-center gap-<%= backstage ? 3 : 2 %> cursor-pointer <%= 'group' if backstage %>">
+  <%= check_box_tag :timer_enabled, "1", false,
+      class: backstage ?
+        "form-checkbox h-5 w-5 text-indigo-500 rounded border-white/30 bg-white/10 focus:ring-indigo-500 focus:ring-offset-0 transition-colors" :
+        "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
+  <span class="<%= backstage ? 'text-blue-100 font-medium group-hover:text-white transition-colors' : 'text-gray-700 font-medium' %>">Enable Timer</span>
+</label>
+
+<label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
+  <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Seconds per round:</span>
+  <%= number_field_tag :timer_increment, 60, min: 10, max: 300,
+      class: backstage ?
+        "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
+        "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+</label>

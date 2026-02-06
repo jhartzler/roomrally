@@ -10,7 +10,7 @@ module Games
       Rails.logger.info({
         event: "speed_trivia_game_started",
         room_code: room.code,
-        player_count: room.players.count,
+        player_count: room.players.active_players.count,
         question_count:,
         timer_enabled:,
         time_limit: effective_time_limit,

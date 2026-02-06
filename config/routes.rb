@@ -37,7 +37,12 @@ Rails.application.routes.draw do
   end
 
   get "/rooms/:code/join", to: "players#new", as: :join_room
-  resources :players, only: [ :create, :destroy ]
+  resources :players, only: [ :create, :destroy ] do
+    member do
+      patch :approve
+      patch :reject
+    end
+  end
   resources :responses, only: [ :update ] do
     resources :rejections, only: [ :create, :new ]
   end

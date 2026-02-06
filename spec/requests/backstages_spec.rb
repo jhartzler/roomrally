@@ -51,9 +51,69 @@ RSpec.describe "Backstages", type: :request do
         expect(response.body).to include("Alice")
       end
 
+      it "shows active players in main player list" do
+        create(:player, room:, name: "Active Alice", status: :active)
+        get room_backstage_path(room.code)
+        expect(response.body).to include("Active Alice")
+      end
+
+      it "counts only active players" do
+        create(:player, room:, status: :active)
+        create(:player, room:, status: :pending_approval)
+        get room_backstage_path(room.code)
+        expect(response.body).to include("1 connected")
+      end
+
+      it "shows pending players in waiting room section" do
+        create(:player, room:, status: :pending_approval, name: "Pending Bob")
+        get room_backstage_path(room.code)
+        expect(response.body).to include("Waiting Room")
+        expect(response.body).to include("Pending Bob")
+      end
+    end
+
+    context "with Write And Vote game" do
+      let(:game) { create(:write_and_vote_game) }
+
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+        room.update!(current_game: game)
+      end
+
       it "displays moderation queue" do
         get room_backstage_path(room.code)
         expect(response.body).to include("Moderation Queue")
+      end
+    end
+
+    context "with Speed Trivia game" do
+      let(:game) { create(:speed_trivia_game) }
+
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+        room.update!(current_game: game)
+      end
+
+      it "does not display moderation queue" do
+        get room_backstage_path(room.code)
+        expect(response.body).not_to include("Moderation Queue")
+      end
+    end
+
+    context "without a game" do
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+      end
+
+      it "does not display moderation queue" do
+        get room_backstage_path(room.code)
+        expect(response.body).not_to include("Moderation Queue")
       end
     end
   end

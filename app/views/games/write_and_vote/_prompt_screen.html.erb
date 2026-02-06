@@ -1,25 +1,31 @@
-<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
-  <div class="flex flex-col">
-    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Write your best answer...</span>
-  </div>
-  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
-    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
-    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
-  </div>
+<header class="max-w-md mx-auto mb-6 px-2">
+  <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Write your best answer...</span>
 </header>
 
 <div class="max-w-md mx-auto space-y-4">
+  <%# Calculate active index: First prompt with blank/pending response or rejected status %>
+  <% active_index = active_prompt_index(player, prompts) %>
+
+  <!-- Progress Indicator -->
+  <div class="bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 mb-4 text-center">
+    <p class="text-xs text-blue-200 font-bold uppercase tracking-wider">
+      Round <%= game.round %> • Prompt <%= active_index + 1 %> of <%= prompts.count %>
+    </p>
+  </div>
+
   <% if game.timer_enabled? %>
-    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-white/20 mb-4 shadow-lg">
-      <span class="text-orange-400 text-xs font-black tracking-widest uppercase animate-pulse ml-2" data-timer-target="visual">Time Left</span>
-      <div class="bg-indigo-950/40 rounded-lg px-3 py-1 border border-white/10 shadow-inner">
-        <span class="text-2xl font-black text-white font-mono leading-none drop-shadow-md" data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
+    <div data-controller="dramatic-timer"
+         data-dramatic-timer-end-value="<%= game.timer_expires_at_iso8601 %>"
+         data-dramatic-timer-target="container"
+         class="bg-blue-950/40 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-blue-400/30 mb-4 shadow-lg transition-all">
+      <span class="text-blue-400 text-xs font-black tracking-widest uppercase ml-2"
+            data-dramatic-timer-target="visual">Time Left</span>
+      <div class="rounded-lg px-3 py-1">
+        <span class="text-2xl font-black text-white font-mono leading-none drop-shadow-md"
+              data-dramatic-timer-target="output"><%= game.time_remaining.ceil %>s</span>
       </div>
     </div>
   <% end %>
-
-  <%# Calculate active index: First prompt with blank/pending response or rejected status %>
-  <% active_index = active_prompt_index(player, prompts) %>
 
   <% prompts.each_with_index do |prompt, index| %>
     <% response = player.responses.find_by(prompt_instance: prompt) %>

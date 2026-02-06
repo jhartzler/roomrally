@@ -121,6 +121,21 @@ RSpec.describe WriteAndVoteGame, type: :model do
       game.calculate_scores!
       expect(player.reload.score).to eq(1000)
     end
+
+    context "with pending approval players" do
+      # rubocop:disable RSpec/ExampleLength
+      it "only calculates scores for active players" do
+        active = create(:player, room:, status: :active)
+        pending = create(:player, room:, status: :pending_approval)
+        create(:vote, response: create(:response, player: active, prompt_instance: prompt))
+        create(:vote, response: create(:response, player: pending, prompt_instance: prompt))
+        game.calculate_scores!
+
+        expect(active.reload.score).to eq(500)
+        expect(pending.reload.score).to eq(0)
+      end
+      # rubocop:enable RSpec/ExampleLength
+    end
   end
 
   describe "#all_responses_submitted?" do
@@ -232,6 +247,12 @@ RSpec.describe WriteAndVoteGame, type: :model do
         game.process_timeout(game.round, 1)
         expect(Games::WriteAndVote).not_to have_received(:handle_timeout)
       end
+    end
+  end
+
+  describe ".supports_response_moderation?" do
+    it "returns true" do
+      expect(described_class.supports_response_moderation?).to be true
     end
   end
 end

@@ -1,0 +1,13 @@
+<%# app/views/shared/_countdown_overlay.html.erb %>
+<%# partial locals: duration (optional, defaults to 3) %>
+<% duration ||= 3 %>
+
+<div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center"
+     data-controller="countdown"
+     data-countdown-duration-value="<%= duration %>">
+  <div class="text-center">
+    <div class="text-[20rem] font-black text-white leading-none drop-shadow-2xl"
+         data-countdown-target="number"><%= duration %></div>
+    <p class="text-4xl font-bold text-blue-200 mt-8 uppercase tracking-widest">Get Ready!</p>
+  </div>
+</div>

@@ -3,7 +3,7 @@ module Games
     MAX_ROUNDS = 2
 
     def self.game_started(room:, timer_enabled: false, timer_increment: 60, question_count: nil, show_instructions: true)
-      Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.count, timer_enabled:, timer_increment:, show_instructions: })
+      Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, timer_increment:, show_instructions: })
 
       return if room.current_game.present?
 
@@ -52,7 +52,7 @@ module Games
         Rails.logger.info({ event: "process_vote", game_id: game.id, round: game.round, prompt_index: game.current_prompt_index, vote_id: vote.id })
 
         total_votes = Vote.where(response: current_prompt.responses).count
-        players_count = game.room.players.count
+        players_count = game.room.players.active_players.count
         # Authors cannot vote on the prompt they responded to
         required_votes = players_count - current_prompt.responses.count
 
@@ -82,7 +82,7 @@ module Games
 
     def self.assign_prompts_for_round(game:, round_number:)
       room = game.room
-      players = room.players.to_a
+      players = room.players.active_players.to_a
       num_players = players.size
 
 

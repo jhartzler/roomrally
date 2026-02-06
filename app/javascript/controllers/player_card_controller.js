@@ -6,19 +6,17 @@ export default class extends Controller {
   static targets = [ "actions" ]
 
   connect() {
-    const currentPlayerIdSelector = document.querySelector("meta[name='current-player-id']")
-    if (!currentPlayerIdSelector || !currentPlayerIdSelector.content) {
-      this.actionsTarget.classList.add("hidden")
-      return
-    }
+    const meta = document.querySelector("meta[name='current-player-id']")
+    if (!meta || !meta.content) return
 
-    const currentPlayerId = parseInt(currentPlayerIdSelector.content)
-    const shouldShowActions = currentPlayerId === this.hostIdValue && this.playerIdValue !== currentPlayerId
+    const currentPlayerId = parseInt(meta.content)
+    const isHost = currentPlayerId === this.hostIdValue
+    const isSelf = this.playerIdValue === currentPlayerId
 
-    if (shouldShowActions) {
+    if (isHost && !isSelf) {
+      // Show actions on hover for the host viewing other players
       this.actionsTarget.classList.remove("hidden")
-    } else {
-      this.actionsTarget.classList.add("hidden")
+      this.actionsTarget.classList.add("flex")
     }
   }
 }

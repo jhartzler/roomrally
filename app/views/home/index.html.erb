@@ -58,13 +58,10 @@
         <%= form.submit "Create Room", class: "w-full bg-orange-500 text-white font-black py-4 px-6 rounded-xl hover:bg-orange-600 active:scale-[0.98] transform hover:shadow-lg shadow-orange-900/20 transition-all duration-200 text-lg tracking-tight" %>
       <% end %>
 
-      <div class="relative">
-        <div class="absolute inset-0 flex items-center">
-          <div class="w-full border-t border-white/20"></div>
-        </div>
-        <div class="relative flex justify-center text-sm">
-          <span class="px-4 text-blue-200 font-bold text-[10px] tracking-widest bg-transparent">or</span>
-        </div>
+      <div class="flex items-center gap-4">
+        <div class="flex-1 border-t border-white/20"></div>
+        <span class="text-blue-200 font-bold text-[10px] tracking-widest">or</span>
+        <div class="flex-1 border-t border-white/20"></div>
       </div>
 
       <%# Join Room Form %>

@@ -1,4 +1,6 @@
-  <% if room.current_game.present? %>
+  <% if player&.pending_approval? %>
+    <%= render "rooms/waiting_for_approval", room: room, player: player %>
+  <% elsif room.current_game.present? %>
     <%= render "games/#{room.game_type.parameterize.underscore}/hand", room: room, player: player %>
   <% else %>
     <%= render "rooms/lobby", room: room, player: player %>

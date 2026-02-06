@@ -9,6 +9,14 @@ class ApplicationController < ActionController::Base
   before_action :set_sentry_context
   helper_method :current_player
 
+  # Custom exception for moderation authorization failures
+  class NotAuthorizedToModerate < StandardError; end
+
+  # Catch authorization failures and redirect with error
+  rescue_from NotAuthorizedToModerate do |exception|
+    redirect_to room_hand_path(params[:code] || @room&.code), alert: "Only the room owner or host can perform this action."
+  end
+
   private
 
   def set_sentry_context
@@ -26,7 +34,15 @@ class ApplicationController < ActionController::Base
   def set_current_player
     return unless session[:player_session_id]
 
-    @current_player = Player.find_by(session_id: session[:player_session_id])
+    # session_id is scoped to room_id (not globally unique), so we must
+    # resolve the player within the correct room when possible.
+    room_code = params[:room_code] || params[:code]
+    if room_code
+      room = Room.find_by(code: room_code)
+      @current_player = room&.players&.find_by(session_id: session[:player_session_id])
+    else
+      @current_player = Player.find_by(session_id: session[:player_session_id])
+    end
   end
 
   def current_player
@@ -40,5 +56,25 @@ class ApplicationController < ActionController::Base
 
   def authenticate_user!
     redirect_to root_path, alert: "Please log in." unless current_user
+  end
+
+  # Check if current user/player can moderate a room (kick, approve, reject players)
+  def can_moderate_room?(room)
+    # Room owner (User) can moderate from backstage
+    return true if current_user && room.user == current_user
+
+    # Host player can moderate from hand view
+    return true if current_player && current_player == room.host
+
+    false
+  end
+  helper_method :can_moderate_room?
+
+  # Enforce moderation permissions or raise exception
+  def authorize_moderator!(room)
+    return if can_moderate_room?(room)
+
+    @room = room # Store for redirect in rescue_from
+    raise NotAuthorizedToModerate
   end
 end

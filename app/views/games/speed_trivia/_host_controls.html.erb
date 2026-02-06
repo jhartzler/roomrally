@@ -43,7 +43,7 @@
     </div>
 
     <% answers_count = current_q&.trivia_answers&.count || 0 %>
-    <% players_count = room.players.count %>
+    <% players_count = room.players.active_players.count %>
     <p class="text-blue-200 text-sm mb-4">
       Answers: <%= answers_count %>/<%= players_count %> players
       <% if game.timer_enabled? && game.round_ends_at %>

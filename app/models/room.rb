@@ -58,7 +58,7 @@ class Room < ApplicationRecord
   end
 
   def enough_players?
-    players.count >= 3
+    players.active_players.count >= 3
   end
 
 

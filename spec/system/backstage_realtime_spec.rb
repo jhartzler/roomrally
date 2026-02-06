@@ -96,11 +96,11 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     # Verify player sees rejection reason
     Capybara.using_session("player_bob") do
-      expect(page).to have_content("Revision Requested")
+      expect(page).to have_content("Let's try another answer")
       expect(page).to have_content("Too inappropriate")
 
       # Resubmit
-      within find("[data-test-id='player-prompt']", text: "Revision Requested") do
+      within find("[data-test-id='player-prompt']", text: "Let's try another answer") do
         fill_in "response[body]", with: "Clean Answer"
         click_on "Submit Revision"
       end

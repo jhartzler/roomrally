@@ -8,7 +8,7 @@
   </div>
 
   <div class="py-8 w-full max-w-2xl">
-    <% sorted_players = room.players.order(score: :desc) %>
+    <% sorted_players = room.players.active_players.order(score: :desc) %>
     <% winner = sorted_players.first %>
     <% runner_up = sorted_players.second %>
 
