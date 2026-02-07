@@ -1,6 +1,8 @@
 class DevTestingController < ApplicationController
+  before_action :ensure_dev_environment!
+
   def index
-    # This is the page where you can create a test game.
+    @game_types = DevPlaytest::Registry.game_types
   end
 
   def set_player_session
@@ -12,6 +14,11 @@ class DevTestingController < ApplicationController
   def show_test_game
     @room = Room.find_by!(code: params[:id])
     @players = @room.players
+    @game = @room.current_game
+    @game_status = @game&.status || "lobby"
+    @handler = DevPlaytest::Registry.handler_for(@game) if @game
+    @dashboard_actions = @handler&.dashboard_actions(@game_status) || DevPlaytest::Registry.lobby_actions
+    @progress_label = @handler&.progress_label(game: @game)
   end
 
   def create_test_game
@@ -24,6 +31,68 @@ class DevTestingController < ApplicationController
       players << Player.create!(room:, name: "Player #{i + 1}")
     end
 
+    room.update!(host: players.first)
+    session[:player_session_id] = players.first.session_id
+
     redirect_to show_test_game_path(room)
+  end
+
+  def start_game
+    room = Room.find_by!(code: params[:id])
+    room.start_game!
+
+    handler = playtest_handler_for(room)
+    handler.start(room:)
+
+    redirect_to show_test_game_path(room)
+  end
+
+  def advance
+    room = Room.find_by!(code: params[:id])
+    handler = playtest_handler_for(room)
+    handler.advance(game: room.current_game)
+
+    redirect_to show_test_game_path(room)
+  end
+
+  def bot_act
+    room = Room.find_by!(code: params[:id])
+    game = room.current_game
+    human_player = params[:human_player_id] ? Player.find(params[:human_player_id]) : nil
+
+    handler = DevPlaytest::Registry.handler_for(game)
+    handler.bot_act(game:, exclude_player: human_player)
+
+    redirect_to show_test_game_path(room)
+  end
+
+  def auto_play
+    room = Room.find_by!(code: params[:id])
+    game = room.current_game
+    handler = DevPlaytest::Registry.handler_for(game)
+
+    100.times do
+      game.reload
+      break if game.finished?
+
+      handler.auto_play_step(game:)
+    end
+
+    redirect_to show_test_game_path(room)
+  end
+
+  private
+
+  def ensure_dev_environment!
+    raise ActionController::RoutingError, "Not Found" unless Rails.env.local?
+  end
+
+  def playtest_handler_for(room)
+    # Look up handler by game type name since game model may not exist yet
+    game_class_name = room.game_type.delete(" ") + "Game"
+    handler = DevPlaytest::Registry.handler_for_class_name(game_class_name)
+    raise "No dev playtest handler registered for #{room.game_type}" unless handler
+
+    handler
   end
 end

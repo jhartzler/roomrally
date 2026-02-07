@@ -7,10 +7,16 @@ Rails.application.routes.draw do
   resources :trivia_packs
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "customize", to: "customize#index", as: :customize
-  get "dev/testing", to: "dev_testing#index"
-  post "dev/testing/create_test_game", to: "dev_testing#create_test_game"
-  get "dev/testing/show_test_game/:id", to: "dev_testing#show_test_game", as: :show_test_game
-  get "dev/testing/set_player_session/:id", to: "dev_testing#set_player_session", as: :set_player_session
+  if Rails.env.local?
+    get "dev/testing", to: "dev_testing#index", as: :dev_testing
+    post "dev/testing/create_test_game", to: "dev_testing#create_test_game"
+    get "dev/testing/show_test_game/:id", to: "dev_testing#show_test_game", as: :show_test_game
+    get "dev/testing/set_player_session/:id", to: "dev_testing#set_player_session", as: :set_player_session
+    post "dev/testing/:id/start_game", to: "dev_testing#start_game", as: :dev_start_game
+    post "dev/testing/:id/bot_act", to: "dev_testing#bot_act", as: :dev_bot_act
+    post "dev/testing/:id/advance", to: "dev_testing#advance", as: :dev_advance
+    post "dev/testing/:id/auto_play", to: "dev_testing#auto_play", as: :dev_auto_play
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

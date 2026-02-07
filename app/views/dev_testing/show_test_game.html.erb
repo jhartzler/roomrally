@@ -1,26 +1,85 @@
-<div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
-    <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Test Game Created</h1>
+<%
+  action_paths = {
+    start: dev_start_game_path(@room.code),
+    advance: dev_advance_path(@room.code),
+    bot_act: dev_bot_act_path(@room.code)
+  }
+  button_styles = {
+    primary: "w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md text-sm",
+    bot: "w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md text-sm"
+  }
+  badge_colors = {
+    "lobby" => "bg-gray-100 text-gray-800",
+    "instructions" => "bg-yellow-100 text-yellow-800",
+    "finished" => "bg-blue-100 text-blue-800"
+  }
+  badge_default = "bg-green-100 text-green-800"
+  color = badge_colors[@game_status] || badge_default
+%>
 
-    <div class="text-center">
-      <p class="text-lg font-medium text-gray-700">Room code: <span class="font-bold text-indigo-600"><%= @room.code %></span></p>
-      <p class="text-lg font-medium text-gray-700">Game type: <span class="font-bold text-indigo-600"><%= @room.game_type %></span></p>
+<div class="flex h-screen">
+  <%# Left Panel — Controls %>
+  <div class="w-[350px] flex-shrink-0 bg-white border-r border-gray-200 p-6 overflow-y-auto">
+    <%# Room Info %>
+    <div class="mb-6">
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Room</p>
+      <p class="text-3xl font-bold text-indigo-600 tracking-widest"><%= @room.code %></p>
+      <p class="text-sm text-gray-600 mt-1"><%= @room.game_type %></p>
     </div>
 
-    <div class="mt-8">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Player Links</h2>
-      <div class="space-y-4">
-        <% @players.each do |player| %>
-          <div class="flex items-center justify-between bg-gray-50 p-4 rounded-md shadow-sm">
-            <span class="text-gray-700 font-medium"><%= player.name %>:</span>
-            <%= link_to "Go to Session", set_player_session_path(player), target: "_blank", class: "inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    <%# Game State %>
+    <div class="mb-6">
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Status</p>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium <%= color %>">
+        <%= @game_status %>
+      </span>
+      <% if @progress_label %>
+        <p class="text-sm text-gray-600 mt-1"><%= @progress_label %></p>
+      <% end %>
+    </div>
+
+    <%# Action Buttons %>
+    <div class="mb-6 space-y-2">
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Actions</p>
+
+      <% if @game_status == "finished" %>
+        <p class="text-sm font-medium text-green-700 bg-green-50 rounded-md p-3 text-center">Game Complete!</p>
+      <% else %>
+        <% @dashboard_actions.each do |btn| %>
+          <%= button_to btn[:label], action_paths[btn[:action]], class: button_styles[btn[:style]] %>
+        <% end %>
+
+        <%= button_to "Auto-play to End", dev_auto_play_path(@room.code),
+              class: "w-full py-2 px-4 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-md text-sm mt-3" %>
+      <% end %>
+    </div>
+
+    <%# Players %>
+    <div class="mb-6">
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Players</p>
+      <div class="space-y-2">
+        <% @players.each_with_index do |player, i| %>
+          <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-md text-sm">
+            <span class="text-gray-700 font-medium">
+              <%= player.name %><%= " (host)" if i == 0 %>
+            </span>
+            <%= link_to "Open Hand", set_player_session_path(player), target: "_blank", class: "text-indigo-600 hover:text-indigo-800 text-xs font-medium" %>
           </div>
         <% end %>
       </div>
     </div>
 
-    <div class="mt-8 text-center">
-      <%= link_to "Create Another Test Game", dev_testing_path, class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
+    <%# Quick Links %>
+    <div class="border-t border-gray-200 pt-4 space-y-2">
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Quick Links</p>
+      <%= link_to "Open Stage (full)", room_stage_path(@room), target: "_blank", class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
+      <%= link_to "Open Backstage", room_backstage_path(@room), target: "_blank", class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
+      <%= link_to "Create Another Game", dev_testing_path, class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
     </div>
+  </div>
+
+  <%# Right Panel — Stage View %>
+  <div class="flex-1">
+    <iframe src="<%= room_stage_path(@room) %>" class="w-full h-full border-0"></iframe>
   </div>
 </div>
