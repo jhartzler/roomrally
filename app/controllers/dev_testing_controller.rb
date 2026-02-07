@@ -68,7 +68,18 @@ class DevTestingController < ApplicationController
 
   def auto_play
     room = Room.find_by!(code: params[:id])
+
+    # Start the game first if still in lobby
+    if room.lobby?
+      room.start_game!
+      handler = playtest_handler_for(room)
+      handler.start(room:)
+      room.reload
+    end
+
     game = room.current_game
+    return redirect_to show_test_game_path(room) unless game
+
     handler = DevPlaytest::Registry.handler_for(game)
 
     100.times do
