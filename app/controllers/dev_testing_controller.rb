@@ -25,7 +25,7 @@ class DevTestingController < ApplicationController
     num_players = params[:num_players].to_i
     game_type = params[:game_type]
 
-    room = Room.create!(game_type:)
+    room = Room.create!(game_type:, user: current_user)
     players = []
     num_players.times do |i|
       players << Player.create!(room:, name: "Player #{i + 1}")

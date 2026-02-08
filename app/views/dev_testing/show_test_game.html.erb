@@ -95,7 +95,11 @@
     <div class="border-t border-gray-200 pt-4 space-y-2">
       <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Quick Links</p>
       <%= link_to "Open Stage (full)", room_stage_path(@room), target: "_blank", class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
-      <%= link_to "Open Backstage", room_backstage_path(@room), target: "_blank", class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
+      <% if current_user && @room.user == current_user %>
+        <%= link_to "Open Backstage", room_backstage_path(@room), target: "_blank", class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
+      <% else %>
+        <span class="block text-sm text-gray-400">Backstage (log in to access)</span>
+      <% end %>
       <%= link_to "Create Another Game", dev_testing_path, class: "block text-sm text-indigo-600 hover:text-indigo-800" %>
     </div>
   </div>
