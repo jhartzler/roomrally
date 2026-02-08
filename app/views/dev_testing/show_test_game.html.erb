@@ -49,8 +49,30 @@
           <%= button_to btn[:label], action_paths[btn[:action]], class: button_styles[btn[:style]] %>
         <% end %>
 
-        <%= button_to "Auto-play to End", dev_auto_play_path(@room.code),
-              class: "w-full py-2 px-4 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-md text-sm mt-3" %>
+        <div class="mt-3 border-t border-gray-200 pt-3"
+             data-controller="dev-auto-play"
+             data-dev-auto-play-url-value="<%= dev_auto_play_path(@room.code) %>"
+             data-dev-auto-play-finished-value="<%= @game_status == 'finished' %>">
+          <div class="flex items-center gap-2 mb-2">
+            <input type="range" min="500" max="5000" step="500" value="2000"
+                   data-dev-auto-play-target="slider"
+                   data-action="input->dev-auto-play#updateInterval"
+                   class="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+            <span data-dev-auto-play-target="label" class="text-xs text-gray-500 w-8 text-right">2.0s</span>
+          </div>
+          <button type="button"
+                  data-dev-auto-play-target="startButton"
+                  data-action="dev-auto-play#start"
+                  class="w-full py-2 px-4 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-md text-sm">
+            Auto-play to End
+          </button>
+          <button type="button"
+                  data-dev-auto-play-target="stopButton"
+                  data-action="dev-auto-play#stop"
+                  class="hidden w-full py-2 px-4 border border-red-300 bg-red-50 hover:bg-red-100 text-red-700 font-medium rounded-md text-sm">
+            Stop Auto-play
+          </button>
+        </div>
       <% end %>
     </div>
 

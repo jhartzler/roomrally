@@ -78,18 +78,12 @@ class DevTestingController < ApplicationController
     end
 
     game = room.current_game
-    return redirect_to show_test_game_path(room) unless game
-
-    handler = DevPlaytest::Registry.handler_for(game)
-
-    100.times do
-      game.reload
-      break if game.finished?
-
+    if game && !game.finished?
+      handler = DevPlaytest::Registry.handler_for(game)
       handler.auto_play_step(game:)
     end
 
-    redirect_to show_test_game_path(room)
+    redirect_to show_test_game_path(room, auto_play: params[:auto_play], interval: params[:interval])
   end
 
   private
