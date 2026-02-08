@@ -16,6 +16,9 @@ RSpec.describe Player, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:room) }
+    it { is_expected.to have_many(:responses).dependent(:destroy) }
+    it { is_expected.to have_many(:votes).dependent(:destroy) }
+    it { is_expected.to have_many(:trivia_answers).dependent(:destroy) }
   end
 
   describe 'defaults' do

@@ -3,6 +3,8 @@ class Player < ApplicationRecord
 
   belongs_to :room
   has_many :responses, dependent: :destroy
+  has_many :votes, dependent: :destroy
+  has_many :trivia_answers, dependent: :destroy
 
   validates :name, presence: true
   validates :session_id, presence: true, uniqueness: true
