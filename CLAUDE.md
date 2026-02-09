@@ -34,9 +34,10 @@ bin/rspec spec/path/to/specific_spec.rb             # Run a specific test file
 bin/rspec spec/path/to/specific_spec.rb:42          # Run a specific test by line number
 bin/rspec spec/system                               # Run system tests (most important)
 
-# Code quality
+# Code quality (run both before every commit)
 rubocop                # Check code style
-rubocop -A             # Auto-fix code style issues (run before committing)
+rubocop -A             # Auto-fix code style issues
+brakeman -q            # Check for security vulnerabilities
 
 # Worktrees
 # After creating a new worktree, rebuild Tailwind CSS for tests:
