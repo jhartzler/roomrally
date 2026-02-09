@@ -6,11 +6,11 @@
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
           <%= form.label :num_players, "Number of players:", class: "sr-only" %>
-          <%= form.number_field :num_players, value: 2, min: 2, class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm", placeholder: "Number of players" %>
+          <%= form.number_field :num_players, value: 4, min: 3, class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm", placeholder: "Number of players" %>
         </div>
         <div>
           <%= form.label :game_type, "Game type:", class: "sr-only" %>
-          <%= form.select :game_type, ["Write And Vote"], {}, class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" %>
+          <%= form.select :game_type, @game_types, {}, class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" %>
         </div>
       </div>
 

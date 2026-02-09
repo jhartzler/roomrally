@@ -28,7 +28,11 @@ RSpec/MultipleExpectations:
   Max: 2
   Exclude:
     - 'spec/system/**/*'
+    - 'spec/requests/dev_testing_spec.rb'
+    - 'spec/services/dev_playtest/**/*'
 
 RSpec/ExampleLength:
   Exclude:
-  - 'spec/system/**/*'
+    - 'spec/system/**/*'
+    - 'spec/requests/dev_testing_spec.rb'
+    - 'spec/services/dev_playtest/**/*'
