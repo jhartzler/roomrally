@@ -74,8 +74,12 @@
       <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
         <div id="moderation-queue" class="space-y-4">
           <% if @moderation_queue.any? %>
-            <% @moderation_queue.each do |response| %>
-              <%= render "responses/backstage_response", response: response %>
+            <% @moderation_queue.each do |item| %>
+              <% if item.is_a?(CategoryAnswer) %>
+                <%= render "category_answers/backstage_answer", answer: item %>
+              <% else %>
+                <%= render "responses/backstage_response", response: item %>
+              <% end %>
             <% end %>
           <% else %>
             <p class="text-blue-300/50 text-center italic font-medium">No active responses to moderate.</p>

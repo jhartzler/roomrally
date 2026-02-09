@@ -13,12 +13,32 @@
 </header>
 
 <div class="max-w-md mx-auto">
-  <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
-    <% if game.reviewing? %>
-      <div class="text-6xl mb-6">🔍</div>
-      <p class="text-2xl text-white font-bold mb-4">Reviewing Answers</p>
-      <p class="text-lg text-blue-200">The host is checking answers...</p>
-    <% elsif game.scoring? %>
+  <% if game.reviewing? %>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 mb-4">
+      <p class="text-lg text-white font-bold mb-1">Your Answers</p>
+      <p class="text-sm text-blue-200 mb-4">Round <%= game.current_round %> &mdash; Letter "<%= game.current_letter %>"</p>
+
+      <div class="space-y-3">
+        <% game.current_round_categories.each do |ci| %>
+          <% answer = ci.category_answers.find_by(player: player) %>
+          <div class="bg-black/30 rounded-xl px-4 py-3 border <%= answer&.rejected? ? 'border-red-500/50' : 'border-white/10' %>">
+            <span class="text-[10px] uppercase font-bold text-blue-300 tracking-wider block mb-1"><%= ci.name %></span>
+            <% if answer&.body.present? %>
+              <span class="text-white font-medium <%= 'line-through opacity-50' if answer.rejected? %>"><%= answer.body %></span>
+              <% if answer.rejected? %>
+                <span class="text-xs bg-red-400/20 text-red-400 px-2 py-1 rounded-full font-bold ml-2">REJECTED</span>
+              <% end %>
+            <% else %>
+              <span class="text-gray-500 italic">No answer</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <p class="text-center text-blue-300 animate-pulse text-sm">The host is checking answers...</p>
+  <% elsif game.scoring? %>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
       <div class="text-6xl mb-6">🏆</div>
       <p class="text-2xl text-white font-bold mb-4">Round Results</p>
       <p class="text-lg text-blue-200">Check the screen for scores!</p>
@@ -26,6 +46,6 @@
       <% player_score = game.category_answers.where(player:).sum(:points_awarded) %>
       <p class="text-4xl text-yellow-400 font-black font-mono mt-4"><%= player_score %></p>
       <p class="text-blue-200">your total points</p>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>

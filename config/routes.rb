@@ -76,6 +76,7 @@ Rails.application.routes.draw do
       resources :submissions, only: :create
       resources :rounds, only: :create
       resource :review, only: :update
+      resource :review_navigation, only: :update
     end
   end
   resources :category_answers, only: :update

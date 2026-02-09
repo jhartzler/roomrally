@@ -3,6 +3,10 @@ class CategoryListGame < ApplicationRecord
   include HasRoundTimer
 
   ELIGIBLE_LETTERS = ("A".."Z").to_a - %w[Q U X Z]
+
+  def self.supports_response_moderation?
+    true
+  end
   POINTS_NORMAL = 1
   POINTS_ALLITERATIVE = 2
 

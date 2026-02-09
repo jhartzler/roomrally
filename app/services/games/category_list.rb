@@ -58,9 +58,25 @@ module Games
     end
 
     def self.finish_review(game:)
+      game.update!(reviewing_category_position: 0)
       calculate_round_scores(game:)
       game.begin_scoring!
       broadcast_all(game)
+    end
+
+    def self.navigate_review(game:, direction:)
+      max_position = game.current_round_categories.count - 1
+      new_position = if direction == "next"
+        [ game.reviewing_category_position + 1, max_position ].min
+      else
+        [ game.reviewing_category_position - 1, 0 ].max
+      end
+      game.update!(reviewing_category_position: new_position)
+      broadcast_all(game)
+    end
+
+    def self.hide_answer(answer:)
+      answer.update!(status: :hidden, points_awarded: 0)
     end
 
     def self.next_round(game:)
@@ -156,7 +172,7 @@ module Games
         groups = normalized.group_by { |_, norm| norm }
 
         normalized.each do |answer, norm|
-          next if answer.rejected?
+          next if answer.rejected? || answer.hidden?
 
           if norm.blank?
             answer.update!(points_awarded: 0)

@@ -6,4 +6,5 @@ Rails.application.config.to_prepare do
 
   DevPlaytest::Registry.register(WriteAndVoteGame, DevPlaytest::WriteAndVote)
   DevPlaytest::Registry.register(SpeedTriviaGame, DevPlaytest::SpeedTrivia)
+  DevPlaytest::Registry.register(CategoryListGame, DevPlaytest::CategoryList)
 end

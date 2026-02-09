@@ -52,38 +52,84 @@
     <% end %>
 
   <% elsif game.reviewing? %>
-    <!-- Show all answers grouped by category with reject buttons -->
-    <div class="space-y-4 mb-4 max-h-96 overflow-y-auto">
-      <% game.current_round_categories.each do |ci| %>
-        <div class="bg-white/5 rounded-xl p-3 border border-white/10">
-          <h4 class="text-sm font-bold text-yellow-400 mb-2"><%= ci.name %></h4>
-          <% ci.category_answers.includes(:player).each do |answer| %>
-            <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
-              <div class="flex items-center gap-2">
-                <span class="text-white text-sm font-medium"><%= answer.player.name %>:</span>
-                <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %>">
-                  <%= answer.body.present? ? answer.body : "blank" %>
-                </span>
-              </div>
-              <% if answer.body.present? && !answer.rejected? %>
+    <% categories = game.current_round_categories.to_a %>
+    <% position = game.reviewing_category_position %>
+    <% ci = categories[position] %>
+    <% max_position = categories.size - 1 %>
+
+    <p class="text-blue-300 text-xs font-medium mb-3 text-center">
+      Category <%= position + 1 %> of <%= categories.size %>
+    </p>
+
+    <% if ci %>
+      <div class="bg-white/5 rounded-xl p-3 border border-white/10 mb-4">
+        <h4 class="text-sm font-bold text-yellow-400 mb-2"><%= ci.name %></h4>
+        <%
+          answers = ci.category_answers.includes(:player).to_a
+          normalized_groups = answers.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
+          duplicate_norms = normalized_groups.select { |norm, group| norm.present? && group.size > 1 }.keys.to_set
+        %>
+        <% answers.each do |answer| %>
+          <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
+          <% is_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.hidden? %>
+          <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
+            <div class="flex items-center gap-2">
+              <span class="text-white text-sm font-medium"><%= answer.player.name %>:</span>
+              <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through' if answer.rejected? || is_duplicate %>">
+                <%= answer.body.present? ? answer.body : "blank" %>
+              </span>
+              <% if answer.rejected? %>
+                <span class="text-[10px] bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">REJECTED</span>
+              <% elsif answer.hidden? %>
+                <span class="text-[10px] bg-gray-400/20 text-gray-400 px-1.5 py-0.5 rounded-full font-bold">HIDDEN</span>
+              <% elsif is_duplicate %>
+                <span class="text-[10px] bg-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded-full font-bold">DUPLICATE</span>
+              <% end %>
+            </div>
+            <% if answer.body.present? && !answer.rejected? && !answer.hidden? %>
+              <div class="flex gap-1">
                 <%= button_to "Reject",
                     category_answer_path(answer),
                     method: :patch,
                     params: { category_answer: { status: "rejected" } },
                     class: "text-xs bg-red-600/30 hover:bg-red-600/50 text-red-300 px-2 py-1 rounded-lg transition" %>
-              <% elsif answer.rejected? %>
-                <span class="text-xs text-red-400">Rejected</span>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
+                <%= button_to "Hide from Audience",
+                    category_answer_path(answer),
+                    method: :patch,
+                    params: { category_answer: { status: "hidden" } },
+                    class: "text-xs bg-gray-600/30 hover:bg-gray-600/50 text-gray-300 px-2 py-1 rounded-lg transition" %>
+              </div>
+            <% elsif answer.rejected? %>
+              <span class="text-xs text-red-400">Rejected</span>
+            <% elsif answer.hidden? %>
+              <span class="text-xs text-gray-400">Hidden</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="flex gap-2 mb-3">
+      <%= button_to "← Prev",
+          category_list_game_review_navigation_path(game),
+          method: :patch,
+          params: { direction: "prev" },
+          disabled: position == 0,
+          class: "flex-1 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl transition text-sm cursor-pointer" %>
+      <%= button_to "Next →",
+          category_list_game_review_navigation_path(game),
+          method: :patch,
+          params: { direction: "next" },
+          disabled: position == max_position,
+          class: "flex-1 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl transition text-sm cursor-pointer" %>
     </div>
 
-    <%= button_to "Finish Review & Show Scores",
-        category_list_game_review_path(game),
-        method: :patch,
-        class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+    <% if position == max_position %>
+      <%= button_to "Finish Review & Show Scores",
+          category_list_game_review_path(game),
+          method: :patch,
+          class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+    <% end %>
 
   <% elsif game.scoring? %>
     <% if game.last_round? %>

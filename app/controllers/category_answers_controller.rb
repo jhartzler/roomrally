@@ -19,10 +19,14 @@ class CategoryAnswersController < ApplicationController
       Games::CategoryList.reject_answer(answer: @answer)
     elsif answer_params[:status] == "approved"
       Games::CategoryList.approve_answer(answer: @answer)
+    elsif answer_params[:status] == "hidden"
+      Games::CategoryList.hide_answer(answer: @answer)
     end
 
     respond_to do |format|
-      format.turbo_stream { head :ok }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@answer))
+      end
       format.html do
         if current_user && current_user == room.user
           redirect_to room_backstage_path(room)
