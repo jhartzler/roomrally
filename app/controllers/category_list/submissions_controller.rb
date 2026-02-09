@@ -30,7 +30,8 @@ module CategoryList
     end
 
     def submission_params
-      params.require(:answers).permit!.to_h
+      allowed_keys = @game.current_round_categories.pluck(:id).map(&:to_s)
+      params.require(:answers).permit(*allowed_keys).to_h
     end
   end
 end
