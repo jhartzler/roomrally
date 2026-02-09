@@ -68,7 +68,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
           input.fill_in with: "#{letter}nswer#{idx}-#{ci_idx}"
         end
         click_on "Submit Answers"
-        expect(page).to have_content("Answers submitted!", wait: 5).or have_content("Reviewing", wait: 5)
+        expect(page).to have_content("Answers submitted!", wait: 5).or have_content(/reviewing/i, wait: 5)
       end
     end
 
