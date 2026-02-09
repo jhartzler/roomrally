@@ -83,7 +83,8 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
     [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         # Click the first answer option (which is correct based on our seed data)
-        first('[data-test-id="answer-option-0"]').click
+        # Use find instead of first — find retries on StaleElementReferenceError
+        find('[data-test-id="answer-option-0"]', match: :first).click
         expect(page).to have_content("Answer submitted!", wait: 5)
       end
     end
