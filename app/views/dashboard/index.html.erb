@@ -13,6 +13,54 @@
     <p class="text-blue-200 font-bold tracking-widest text-sm">Ready to make some memories?</p>
   </header>
 
+  <section class="max-w-5xl mx-auto mb-8">
+    <details class="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <summary class="px-6 py-4 cursor-pointer text-blue-200 font-bold hover:text-white transition-colors flex items-center gap-2">
+        <span class="text-lg">New to RoomRally?</span>
+        <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-400/20">Quick Guide</span>
+      </summary>
+      <div class="px-6 pb-6 pt-2">
+        <ol class="space-y-3 text-sm">
+          <li class="flex gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">1</span>
+            <div>
+              <span class="text-white font-bold">Create a room</span>
+              <span class="text-blue-200/70"> — pick a game type and hit Create</span>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">2</span>
+            <div>
+              <span class="text-white font-bold">Share the code</span>
+              <span class="text-blue-200/70"> — players visit the site and enter the 4-letter code on their phones</span>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">3</span>
+            <div>
+              <span class="text-white font-bold">Open the Stage view</span>
+              <span class="text-blue-200/70"> — project it on a big screen or share your screen — this is what the audience sees</span>
+            </div>
+          </li>
+          <li class="flex gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">4</span>
+            <div>
+              <span class="text-white font-bold">Run from Backstage</span>
+              <span class="text-blue-200/70"> — control the game, moderate responses, and advance rounds from your backstage panel</span>
+            </div>
+          </li>
+        </ol>
+        <div class="mt-4 pt-4 border-t border-white/10">
+          <p class="text-xs font-bold text-blue-300 mb-2">Quick tips</p>
+          <ul class="text-xs text-blue-200/60 space-y-1">
+            <li>Test with a second browser tab as a player before your event</li>
+            <li>Use Stage-Only mode for in-person events without phones</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </section>
+
   <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
     <% if @active_rooms.any? %>
       <div class="md:col-span-2">

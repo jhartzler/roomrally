@@ -40,8 +40,32 @@
       <%# Create Room Form %>
       <%= form_with url: rooms_path, method: :post, class: "space-y-4" do |form| %>
         <div>
-          <%= form.label :game_type, "Select Game", class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
-          <%= form.select :game_type, Room::GAME_TYPES.map { |game| [Room::GAME_DISPLAY_NAMES[game] || game, game] }, {}, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white [&>option]:text-gray-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-lg placeholder-white/50" %>
+          <span class="block text-blue-200 font-bold text-xs tracking-widest mb-3">Select Game</span>
+          <div class="space-y-2">
+            <% Room::GAME_TYPES.each_with_index do |game_type, index| %>
+              <% info = game_info(game_type) %>
+              <label class="block cursor-pointer">
+                <%= form.radio_button :game_type, game_type,
+                    checked: index == 0,
+                    class: "hidden peer" %>
+                <div class="px-4 py-3 bg-white/10 border-2 border-white/10 rounded-xl transition-all peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:bg-white/15">
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl"><%= info[:emoji] %></span>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="text-white font-bold"><%= Room::GAME_DISPLAY_NAMES[game_type] || game_type %></span>
+                      </div>
+                      <p class="text-blue-200/70 text-xs mt-0.5"><%= info[:tagline] %></p>
+                    </div>
+                  </div>
+                  <div class="flex gap-2 mt-2 ml-9">
+                    <span class="text-[10px] text-blue-300/60 bg-white/5 px-2 py-0.5 rounded-full"><%= info[:player_count] %></span>
+                    <span class="text-[10px] text-blue-300/60 bg-white/5 px-2 py-0.5 rounded-full"><%= info[:duration] %></span>
+                  </div>
+                </div>
+              </label>
+            <% end %>
+          </div>
         </div>
         <% if current_user %>
           <details class="mt-2">
