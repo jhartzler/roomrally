@@ -13,6 +13,6 @@
   </div>
 
   <div class="flex justify-end gap-2">
-     <%= button_to "Reject", new_response_rejection_path(response), method: :get, class: "text-xs bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all uppercase tracking-wide", data: { turbo_frame: "modal" } %>
+     <%= button_to "Reject", new_response_rejection_path(response), method: :get, class: "text-xs bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all uppercase tracking-wide", data: { turbo_frame: "modal", turbo_submits_with: "Rejecting…" } %>
   </div>
 </div>

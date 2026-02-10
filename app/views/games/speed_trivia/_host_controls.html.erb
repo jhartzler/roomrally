@@ -26,6 +26,7 @@
     <%= button_to "Start Game",
         speed_trivia_game_game_start_path(game),
         method: :post,
+        data: { turbo_submits_with: "Starting…" },
         class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
   <% elsif game.waiting? %>
@@ -33,6 +34,7 @@
     <%= button_to "Start First Question",
         speed_trivia_game_question_path(game),
         method: :post,
+        data: { turbo_submits_with: "Loading…" },
         class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
   <% elsif game.answering? %>
@@ -56,6 +58,7 @@
     <%= button_to "Close Round & Show Answer",
         speed_trivia_game_round_closure_path(game),
         method: :post,
+        data: { turbo_submits_with: "Closing…" },
         class: "w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
   <% elsif game.reviewing? %>
@@ -69,11 +72,13 @@
       <%= button_to "Next Question",
           speed_trivia_game_advancement_path(game),
           method: :post,
+          data: { turbo_submits_with: "Loading…" },
           class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% else %>
       <%= button_to "Finish Game",
           speed_trivia_game_advancement_path(game),
           method: :post,
+          data: { turbo_submits_with: "Finishing…" },
           class: "w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
 

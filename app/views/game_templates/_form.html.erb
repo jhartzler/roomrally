@@ -81,22 +81,26 @@
         </div>
       </label>
 
-      <label class="flex items-center gap-3 cursor-pointer">
-        <%= f.check_box "settings[timer_enabled]",
-          { checked: settings["timer_enabled"], class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500" },
-          "true", "false" %>
-        <div>
-          <span class="text-white font-bold text-sm">Timer</span>
-          <p class="text-xs text-blue-300/70"><%= setting_description(:timer_enabled) %></p>
-        </div>
-      </label>
+      <div data-controller="checkbox-toggle">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <%= f.check_box "settings[timer_enabled]",
+            { checked: settings["timer_enabled"],
+              class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500",
+              data: { checkbox_toggle_target: "checkbox", action: "change->checkbox-toggle#toggle" } },
+            "true", "false" %>
+          <div>
+            <span class="text-white font-bold text-sm">Timer</span>
+            <p class="text-xs text-blue-300/70"><%= setting_description(:timer_enabled) %></p>
+          </div>
+        </label>
 
-      <div class="ml-8">
-        <label class="block text-xs font-bold text-blue-300 mb-1">Timer Duration (seconds)</label>
-        <%= f.number_field "settings[timer_increment]",
-          value: settings["timer_increment"],
-          min: 10, max: 300, step: 5,
-          class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <div class="ml-8 mt-3 <%= 'hidden' unless settings['timer_enabled'] %>" data-checkbox-toggle-target="content">
+          <label class="block text-xs font-bold text-blue-300 mb-1">Timer Duration (seconds)</label>
+          <%= f.number_field "settings[timer_increment]",
+            value: settings["timer_increment"],
+            min: 10, max: 300, step: 5,
+            class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
       </div>
 
       <label class="flex items-center gap-3 cursor-pointer">

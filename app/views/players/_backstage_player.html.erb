@@ -18,7 +18,7 @@
   </div>
   <% unless player.room.host == player %>
     <div class="flex gap-2">
-       <%= button_to "Kick", player_path(player), method: :delete, class: "text-[10px] bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg transition-all uppercase tracking-wide", data: { turbo_confirm: "Kick #{player.name}?" } %>
+       <%= button_to "Kick", player_path(player), method: :delete, class: "text-[10px] bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg transition-all uppercase tracking-wide", data: { turbo_confirm: "Kick #{player.name}?", turbo_submits_with: "…" } %>
     </div>
   <% end %>
 </li>
