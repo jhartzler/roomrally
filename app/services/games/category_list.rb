@@ -126,6 +126,15 @@ module Games
       broadcast_all(game)
     end
 
+    def self.toggle_stage_scores(game:)
+      return unless game.scoring?
+
+      # Toggle: 0 = categories only, 1 = show scores on stage
+      new_value = game.reviewing_category_position == 0 ? 1 : 0
+      game.update!(reviewing_category_position: new_value)
+      broadcast_all(game)
+    end
+
     def self.reject_answer(answer:)
       answer.update!(status: :rejected, points_awarded: 0)
     end

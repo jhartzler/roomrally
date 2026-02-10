@@ -30,11 +30,13 @@
     </div>
   <% end %>
 
-  <!-- Submission progress -->
-  <% submitted_players = game.room.players.select { |p| game.current_round_categories.all? { |ci| ci.category_answers.exists?(player: p) } }.count %>
-  <div class="mt-4">
-    <p class="text-xl text-blue-200 animate-pulse font-semibold">
-      <%= submitted_players %>/<%= game.room.players.count %> players submitted
-    </p>
-  </div>
+  <% unless game.room.stage_only? %>
+    <!-- Submission progress -->
+    <% submitted_players = game.room.players.select { |p| game.current_round_categories.all? { |ci| ci.category_answers.exists?(player: p) } }.count %>
+    <div class="mt-4">
+      <p class="text-xl text-blue-200 animate-pulse font-semibold">
+        <%= submitted_players %>/<%= game.room.players.count %> players submitted
+      </p>
+    </div>
+  <% end %>
 </div>

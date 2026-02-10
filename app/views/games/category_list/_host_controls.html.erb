@@ -138,6 +138,14 @@
     <% end %>
 
   <% elsif game.scoring? %>
+    <% if room.stage_only? %>
+      <% scores_visible = game.reviewing_category_position == 1 %>
+      <%= button_to scores_visible ? "Hide Scores on Stage" : "Show Scores on Stage",
+          category_list_game_stage_scores_path(game),
+          method: :patch,
+          class: "w-full #{scores_visible ? 'bg-white/10 hover:bg-white/20' : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500'} text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10 mb-3" %>
+    <% end %>
+
     <% if game.last_round? %>
       <%= button_to "Finish Game",
           category_list_game_rounds_path(game),

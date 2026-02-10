@@ -83,6 +83,7 @@ Rails.application.routes.draw do
       resources :rounds, only: :create
       resource :review, only: :update
       resource :review_navigation, only: :update
+      resource :stage_scores, only: :update
     end
   end
   resources :category_answers, only: :update
