@@ -103,7 +103,14 @@ module Games
 
       # Fill empty answers for players who haven't submitted
       fill_missing_answers(game:)
-      game.begin_review!
+
+      if game.room.stage_only?
+        # Stage-only: skip reviewing, go straight to scoring
+        game.begin_review!
+        game.begin_scoring!
+      else
+        game.begin_review!
+      end
       broadcast_all(game)
     end
 

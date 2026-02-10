@@ -26,7 +26,7 @@
   <!-- Timer -->
   <% if game.timer_enabled? && game.round_ends_at %>
     <div class="text-3xl text-yellow-400 font-black font-mono" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
-      <span data-timer-target="output"><%= game.time_remaining.ceil %></span>s
+      <span data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
   <% end %>
 
