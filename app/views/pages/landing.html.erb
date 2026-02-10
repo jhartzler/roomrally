@@ -16,12 +16,10 @@
       <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
         Host epic group games<br>you can get behind.
       </h1>
-      <p class="text-blue-100 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
+      <p class="text-primary-100 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
         An interactive game platform designed for classrooms and youth groups. Players join with their phones—you control what appears on the screen.
       </p>
-      <%= link_to play_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
-        Start Hosting Free
-      <% end %>
+      <%= ui_button "Start Hosting Free", play_path, variant: :accent, size: :xl %>
     </div>
 
     <%# Visual: Laptop (Host) + TV (Game) Screenshot %>
@@ -35,7 +33,7 @@
   <%# Section 2: The Main Feature (Safety & Control) %>
   <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
     <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">The "Backstage" Advantage</h2>
-    <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
+    <p class="text-primary-100 text-lg leading-relaxed mb-8 max-w-3xl">
       Most party games put player answers directly on the big screen. RoomRally gives you a Host Dashboard. You see every submission first. You decide what is funny enough to show, and what needs to be skipped.
     </p>
 
@@ -43,21 +41,21 @@
       <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
         <div class="text-4xl mb-4">✓</div>
         <h3 class="text-xl font-bold text-white mb-3">Approve or Reject</h3>
-        <p class="text-blue-200">
+        <p class="text-primary-200">
           Filter content instantly. Keep your event appropriate and fun.
         </p>
       </div>
       <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
         <div class="text-4xl mb-4">🔓</div>
         <h3 class="text-xl font-bold text-white mb-3">No Accounts Needed</h3>
-        <p class="text-blue-200">
+        <p class="text-primary-200">
           Players join via QR code. No emails, no sign-ups.
         </p>
       </div>
       <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
         <div class="text-4xl mb-4">🌐</div>
         <h3 class="text-xl font-bold text-white mb-3">Browser Based</h3>
-        <p class="text-blue-200">
+        <p class="text-primary-200">
           Works on any phone, tablet, or laptop. Nothing to install.
         </p>
       </div>
@@ -69,36 +67,36 @@
     <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12">How It Works</h2>
     <div class="space-y-10 max-w-3xl mx-auto">
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
+        <div class="flex-shrink-0 w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center text-white font-black text-xl">
           1
         </div>
         <div>
           <h3 class="text-2xl font-bold text-white mb-2">Launch</h3>
-          <p class="text-blue-200 text-lg">
+          <p class="text-primary-200 text-lg">
             Pick a game mode and start a session on your main screen.
           </p>
         </div>
       </div>
 
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
+        <div class="flex-shrink-0 w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center text-white font-black text-xl">
           2
         </div>
         <div>
           <h3 class="text-2xl font-bold text-white mb-2">Join</h3>
-          <p class="text-blue-200 text-lg">
+          <p class="text-primary-200 text-lg">
             Players scan the QR code to enter the lobby.
           </p>
         </div>
       </div>
 
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
+        <div class="flex-shrink-0 w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center text-white font-black text-xl">
           3
         </div>
         <div>
           <h3 class="text-2xl font-bold text-white mb-2">Curate</h3>
-          <p class="text-blue-200 text-lg">
+          <p class="text-primary-200 text-lg">
             As answers come in, you approve the best ones from your device to keep the room laughing.
           </p>
         </div>
@@ -109,16 +107,14 @@
   <%# Section 4: Footer / Call to Action %>
   <section class="text-center py-16 md:py-20 px-8 bg-white/5 rounded-3xl border border-white/10">
     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Upgrade Your Next Event.</h2>
-    <p class="text-blue-200 text-lg mb-10">
+    <p class="text-primary-200 text-lg mb-10">
       Reliable, moderated, and free to try.
     </p>
     <% if current_user %>
-      <%= link_to dashboard_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
-        Go to Dashboard
-      <% end %>
+      <%= ui_button "Go to Dashboard", dashboard_path, variant: :accent, size: :xl %>
     <% else %>
       <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "inline-block" do |f| %>
-        <%= f.submit "Create Host Account", class: "bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl cursor-pointer" %>
+        <%= ui_button "Create Host Account", nil, variant: :accent, size: :xl, type: "submit" %>
       <% end %>
     <% end %>
 

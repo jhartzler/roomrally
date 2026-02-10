@@ -1,1 +1,96 @@
 @import "tailwindcss";
+
+@theme {
+    /* Semantic Color Mapping */
+
+    /* Primary (Blue) - Main branding, links, primary buttons */
+    --color-primary-50: var(--color-blue-50);
+    --color-primary-100: var(--color-blue-100);
+    --color-primary-200: var(--color-blue-200);
+    --color-primary-300: var(--color-blue-300);
+    --color-primary-400: var(--color-blue-400);
+    --color-primary-500: var(--color-blue-500);
+    --color-primary-600: var(--color-blue-600);
+    --color-primary-700: var(--color-blue-700);
+    --color-primary-800: var(--color-blue-800);
+    --color-primary-900: var(--color-blue-900);
+    --color-primary-950: var(--color-blue-950);
+
+    /* Secondary (Indigo) - Darker backgrounds, gradients, depth */
+    --color-secondary-50: var(--color-indigo-50);
+    --color-secondary-100: var(--color-indigo-100);
+    --color-secondary-200: var(--color-indigo-200);
+    --color-secondary-300: var(--color-indigo-300);
+    --color-secondary-400: var(--color-indigo-400);
+    --color-secondary-500: var(--color-indigo-500);
+    --color-secondary-600: var(--color-indigo-600);
+    --color-secondary-700: var(--color-indigo-700);
+    --color-secondary-800: var(--color-indigo-800);
+    --color-secondary-900: var(--color-indigo-900);
+    --color-secondary-950: var(--color-indigo-950);
+
+    /* Accent (Orange) - CTAs, highlights, active states */
+    --color-accent-50: var(--color-orange-50);
+    --color-accent-100: var(--color-orange-100);
+    --color-accent-200: var(--color-orange-200);
+    --color-accent-300: var(--color-orange-300);
+    --color-accent-400: var(--color-orange-400);
+    --color-accent-500: var(--color-orange-500);
+    --color-accent-600: var(--color-orange-600);
+    --color-accent-700: var(--color-orange-700);
+    --color-accent-800: var(--color-orange-800);
+    --color-accent-900: var(--color-orange-900);
+    --color-accent-950: var(--color-orange-950);
+
+    /* Success (Green) - Valid states, success messages */
+    --color-success-50: var(--color-green-50);
+    --color-success-100: var(--color-green-100);
+    --color-success-200: var(--color-green-200);
+    --color-success-300: var(--color-green-300);
+    --color-success-400: var(--color-green-400);
+    --color-success-500: var(--color-green-500);
+    --color-success-600: var(--color-green-600);
+    --color-success-700: var(--color-green-700);
+    --color-success-800: var(--color-green-800);
+    --color-success-900: var(--color-green-900);
+    --color-success-950: var(--color-green-950);
+
+    /* Warning (Yellow) - Cautions, waiting states */
+    --color-warning-50: var(--color-yellow-50);
+    --color-warning-100: var(--color-yellow-100);
+    --color-warning-200: var(--color-yellow-200);
+    --color-warning-300: var(--color-yellow-300);
+    --color-warning-400: var(--color-yellow-400);
+    --color-warning-500: var(--color-yellow-500);
+    --color-warning-600: var(--color-yellow-600);
+    --color-warning-700: var(--color-yellow-700);
+    --color-warning-800: var(--color-yellow-800);
+    --color-warning-900: var(--color-yellow-900);
+    --color-warning-950: var(--color-yellow-950);
+
+    /* Error (Red) - Errors, destructive actions */
+    --color-error-50: var(--color-red-50);
+    --color-error-100: var(--color-red-100);
+    --color-error-200: var(--color-red-200);
+    --color-error-300: var(--color-red-300);
+    --color-error-400: var(--color-red-400);
+    --color-error-500: var(--color-red-500);
+    --color-error-600: var(--color-red-600);
+    --color-error-700: var(--color-red-700);
+    --color-error-800: var(--color-red-800);
+    --color-error-900: var(--color-red-900);
+    --color-error-950: var(--color-red-950);
+
+    /* Neutral (Gray) - Text, borders, backgrounds */
+    --color-neutral-50: var(--color-gray-50);
+    --color-neutral-100: var(--color-gray-100);
+    --color-neutral-200: var(--color-gray-200);
+    --color-neutral-300: var(--color-gray-300);
+    --color-neutral-400: var(--color-gray-400);
+    --color-neutral-500: var(--color-gray-500);
+    --color-neutral-600: var(--color-gray-600);
+    --color-neutral-700: var(--color-gray-700);
+    --color-neutral-800: var(--color-gray-800);
+    --color-neutral-900: var(--color-gray-900);
+    --color-neutral-950: var(--color-gray-950);
+}
