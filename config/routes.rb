@@ -6,9 +6,9 @@ Rails.application.routes.draw do
   resources :prompt_packs
   resources :trivia_packs
   resources :game_templates do
-    member do
-      post :launch
-      post :duplicate
+    scope module: :game_templates do
+      resource :launch, only: :create
+      resource :duplication, only: :create
     end
   end
   get "dashboard", to: "dashboard#index", as: :dashboard

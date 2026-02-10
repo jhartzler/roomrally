@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_10_153529) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_10_204001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_153529) do
     t.integer "reviewing_category_position", default: 0
     t.datetime "round_ends_at"
     t.boolean "show_instructions", default: true, null: false
+    t.boolean "show_stage_scores", default: false, null: false
     t.string "status"
     t.integer "timer_duration"
     t.boolean "timer_enabled", default: false, null: false

@@ -107,6 +107,7 @@ module Games
       if game.room.stage_only?
         # Stage-only: skip reviewing, go straight to scoring
         game.begin_review!
+        calculate_round_scores(game:)
         game.begin_scoring!
       else
         game.begin_review!
@@ -117,7 +118,9 @@ module Games
     def self.show_scores(game:)
       # Stage-only mode: skip reviewing, go straight to scoring
       if game.filling?
+        fill_missing_answers(game:)
         game.begin_review!
+        calculate_round_scores(game:)
         game.begin_scoring!
       elsif game.reviewing?
         calculate_round_scores(game:)
@@ -129,9 +132,7 @@ module Games
     def self.toggle_stage_scores(game:)
       return unless game.scoring?
 
-      # Toggle: 0 = categories only, 1 = show scores on stage
-      new_value = game.reviewing_category_position == 0 ? 1 : 0
-      game.update!(reviewing_category_position: new_value)
+      game.update!(show_stage_scores: !game.show_stage_scores)
       broadcast_all(game)
     end
 

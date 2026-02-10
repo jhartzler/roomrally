@@ -139,7 +139,7 @@
 
   <% elsif game.scoring? %>
     <% if room.stage_only? %>
-      <% scores_visible = game.reviewing_category_position == 1 %>
+      <% scores_visible = game.show_stage_scores? %>
       <%= button_to scores_visible ? "Hide Scores on Stage" : "Show Scores on Stage",
           category_list_game_stage_scores_path(game),
           method: :patch,

@@ -25,6 +25,12 @@ RSpec.describe GameTemplate, type: :model do
         expect(template).to be_valid
       end
     end
+
+    it "validates name length" do
+      template = build(:game_template, name: "a" * 101)
+      expect(template).not_to be_valid
+      expect(template.errors[:name]).to be_present
+    end
   end
 
   describe "pack-type mismatch validation" do
@@ -105,6 +111,20 @@ RSpec.describe GameTemplate, type: :model do
     it "handles nil settings" do
       template = build(:game_template, settings: nil)
       expect(template.merged_settings).to eq(GameTemplate::SETTING_DEFAULTS)
+    end
+  end
+
+  describe "settings type casting" do
+    it "casts string booleans to actual booleans" do
+      template = create(:game_template, settings: { "timer_enabled" => "true", "stage_only" => "false" })
+      expect(template.settings["timer_enabled"]).to be true
+      expect(template.settings["stage_only"]).to be false
+    end
+
+    it "casts string integers to actual integers" do
+      template = create(:game_template, settings: { "timer_increment" => "90", "total_rounds" => "5" })
+      expect(template.settings["timer_increment"]).to eq(90)
+      expect(template.settings["total_rounds"]).to eq(5)
     end
   end
 

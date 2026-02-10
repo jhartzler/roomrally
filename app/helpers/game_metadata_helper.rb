@@ -39,12 +39,12 @@ module GameMetadataHelper
   }.freeze
 
   SETTING_DESCRIPTIONS = {
-    show_instructions: "Shows a how-to-play screen before the game starts. Recommended for first-time players.",
-    timer_enabled: "Automatically ends rounds after a set time. Without this, rounds wait for all players to submit.",
-    timer_increment: "How long each timed round lasts (10–300 seconds).",
-    question_count: "Number of trivia questions. More questions = longer game.",
-    categories_per_round: "How many categories players fill in each round.",
-    total_rounds: "Total number of rounds to play."
+    "show_instructions" => "Shows a how-to-play screen before the game starts. Recommended for first-time players.",
+    "timer_enabled" => "Automatically ends rounds after a set time. Without this, rounds wait for all players to submit.",
+    "timer_increment" => "How long each timed round lasts (10–300 seconds).",
+    "question_count" => "Number of trivia questions. More questions = longer game.",
+    "categories_per_round" => "How many categories players fill in each round.",
+    "total_rounds" => "Total number of rounds to play."
   }.freeze
 
   def game_info(game_type)
@@ -52,6 +52,6 @@ module GameMetadataHelper
   end
 
   def setting_description(setting_key)
-    SETTING_DESCRIPTIONS[setting_key]
+    SETTING_DESCRIPTIONS[setting_key.to_s]
   end
 end

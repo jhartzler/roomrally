@@ -6,7 +6,7 @@
   </div>
 
   <% if room.stage_only? %>
-    <% if game.reviewing_category_position == 1 %>
+    <% if game.show_stage_scores? %>
       <!-- Stage-only: Show score tracker standings -->
       <div class="w-full max-w-4xl px-4">
         <h3 class="text-2xl text-white font-bold mb-4 text-center">Standings</h3>

@@ -5,10 +5,12 @@ class GameTemplate < ApplicationRecord
   belongs_to :category_pack, optional: true
   has_many :rooms, dependent: :nullify
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 100 }
   validates :game_type, presence: true, inclusion: { in: Room::GAME_TYPES }
   validate :pack_matches_game_type
   validate :pack_accessible_to_user
+
+  before_validation :cast_settings
 
   SETTING_DEFAULTS = {
     "timer_enabled" => false,
@@ -45,6 +47,20 @@ class GameTemplate < ApplicationRecord
   end
 
   private
+
+  def cast_settings
+    return if settings.blank?
+
+    settings.each do |key, value|
+      default = SETTING_DEFAULTS[key]
+      settings[key] =
+        case default
+        when true, false then ActiveModel::Type::Boolean.new.cast(value)
+        when Integer then value.to_i
+        else value
+        end
+    end
+  end
 
   def pack_matches_game_type
     if prompt_pack_id.present? && game_type != Room::WRITE_AND_VOTE

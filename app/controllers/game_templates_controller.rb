@@ -1,6 +1,6 @@
 class GameTemplatesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_game_template, only: %i[edit update destroy launch duplicate]
+  before_action :set_game_template, only: %i[edit update destroy]
 
   def index
     @game_templates = current_user.game_templates
@@ -40,25 +40,6 @@ class GameTemplatesController < ApplicationController
   def destroy
     @game_template.destroy
     redirect_to game_templates_path, notice: "Game deleted."
-  end
-
-  def launch
-    room = @game_template.build_room
-    room.save!
-    redirect_to room_backstage_path(room)
-  end
-
-  def duplicate
-    redirect_to new_game_template_path(
-      game_template: {
-        name: "#{@game_template.name} (copy)",
-        game_type: @game_template.game_type,
-        settings: @game_template.settings,
-        prompt_pack_id: @game_template.prompt_pack_id,
-        trivia_pack_id: @game_template.trivia_pack_id,
-        category_pack_id: @game_template.category_pack_id
-      }
-    )
   end
 
   private
