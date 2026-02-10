@@ -5,6 +5,12 @@ Rails.application.routes.draw do
 
   resources :prompt_packs
   resources :trivia_packs
+  resources :game_templates do
+    member do
+      post :launch
+      post :duplicate
+    end
+  end
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "customize", to: "customize#index", as: :customize
   if Rails.env.local?

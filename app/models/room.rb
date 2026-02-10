@@ -7,6 +7,7 @@ class Room < ApplicationRecord
   belongs_to :prompt_pack, optional: true
   belongs_to :trivia_pack, optional: true
   belongs_to :category_pack, optional: true
+  belongs_to :game_template, optional: true
   has_many :score_tracker_entries, dependent: :destroy
 
 
