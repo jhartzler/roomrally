@@ -25,24 +25,17 @@
           %>
           <% answers.each do |answer| %>
             <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
-            <% is_duplicate = duplicate_norms.include?(norm) && !answer.rejected? %>
+            <% is_auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.duplicate? %>
+            <% is_struck = answer.rejected? || answer.duplicate? || is_auto_duplicate %>
             <div class="flex items-center justify-between bg-black/30 rounded-xl px-4 py-3
-              <%= if answer.rejected?
-                    'border border-red-500/50 opacity-50'
-                  elsif is_duplicate
-                    'border border-orange-500/50 opacity-50'
-                  else
-                    'border border-white/10'
-                  end %>">
+              <%= is_struck ? 'border border-white/5 opacity-50' : 'border border-white/10' %>">
               <div class="flex items-center gap-4">
                 <span class="text-lg text-white font-medium"><%= answer.player.name %></span>
                 <span class="text-lg <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
-                  <%= 'line-through' if answer.rejected? || is_duplicate %>">
+                  <%= 'line-through' if is_struck %>">
                   <%= answer.body.present? ? answer.body : "No answer" %>
                 </span>
-                <% if answer.rejected? %>
-                  <span class="text-xs bg-red-400/20 text-red-400 px-2 py-1 rounded-full font-bold">REJECTED</span>
-                <% elsif is_duplicate %>
+                <% if answer.duplicate? || is_auto_duplicate %>
                   <span class="text-xs bg-orange-400/20 text-orange-400 px-2 py-1 rounded-full font-bold">DUPLICATE</span>
                 <% end %>
               </div>

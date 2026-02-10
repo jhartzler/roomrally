@@ -79,6 +79,10 @@ module Games
       answer.update!(status: :hidden, points_awarded: 0)
     end
 
+    def self.mark_duplicate(answer:)
+      answer.update!(duplicate: true, points_awarded: 0)
+    end
+
     def self.next_round(game:)
       if game.last_round?
         calculate_total_scores(game:)
@@ -172,7 +176,7 @@ module Games
         groups = normalized.group_by { |_, norm| norm }
 
         normalized.each do |answer, norm|
-          next if answer.rejected? || answer.hidden?
+          next if answer.rejected? || answer.hidden? || answer.duplicate?
 
           if norm.blank?
             answer.update!(points_awarded: 0)

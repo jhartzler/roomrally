@@ -15,13 +15,19 @@ class CategoryAnswersController < ApplicationController
       return
     end
 
-    if answer_params[:status] == "rejected"
+    case answer_params[:status]
+    when "rejected"
       Games::CategoryList.reject_answer(answer: @answer)
-    elsif answer_params[:status] == "approved"
+    when "approved"
       Games::CategoryList.approve_answer(answer: @answer)
-    elsif answer_params[:status] == "hidden"
+    when "hidden"
       Games::CategoryList.hide_answer(answer: @answer)
+    when "duplicate"
+      Games::CategoryList.mark_duplicate(answer: @answer)
     end
+
+    GameBroadcaster.broadcast_stage(room:)
+    GameBroadcaster.broadcast_host_controls(room:)
 
     respond_to do |format|
       format.turbo_stream do

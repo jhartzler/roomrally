@@ -71,36 +71,42 @@
         %>
         <% answers.each do |answer| %>
           <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
-          <% is_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.hidden? %>
+          <% is_auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.hidden? && !answer.duplicate? %>
+          <% is_struck = answer.rejected? || answer.duplicate? || is_auto_duplicate %>
           <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
             <div class="flex items-center gap-2">
               <span class="text-white text-sm font-medium"><%= answer.player.name %>:</span>
-              <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through' if answer.rejected? || is_duplicate %>">
+              <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through opacity-50' if is_struck %>">
                 <%= answer.body.present? ? answer.body : "blank" %>
               </span>
-              <% if answer.rejected? %>
-                <span class="text-[10px] bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">REJECTED</span>
-              <% elsif answer.hidden? %>
+              <% if answer.hidden? %>
                 <span class="text-[10px] bg-gray-400/20 text-gray-400 px-1.5 py-0.5 rounded-full font-bold">HIDDEN</span>
-              <% elsif is_duplicate %>
+              <% elsif answer.duplicate? || is_auto_duplicate %>
                 <span class="text-[10px] bg-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded-full font-bold">DUPLICATE</span>
+              <% elsif answer.rejected? %>
+                <span class="text-[10px] bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">0 PTS</span>
               <% end %>
             </div>
-            <% if answer.body.present? && !answer.rejected? && !answer.hidden? %>
+            <% if answer.body.present? && !answer.rejected? && !answer.hidden? && !answer.duplicate? %>
               <div class="flex gap-1">
                 <%= button_to "Reject",
                     category_answer_path(answer),
                     method: :patch,
                     params: { category_answer: { status: "rejected" } },
                     class: "text-xs bg-red-600/30 hover:bg-red-600/50 text-red-300 px-2 py-1 rounded-lg transition" %>
+                <%= button_to "Duplicate",
+                    category_answer_path(answer),
+                    method: :patch,
+                    params: { category_answer: { status: "duplicate" } },
+                    class: "text-xs bg-orange-600/30 hover:bg-orange-600/50 text-orange-300 px-2 py-1 rounded-lg transition" %>
                 <%= button_to "Hide from Audience",
                     category_answer_path(answer),
                     method: :patch,
                     params: { category_answer: { status: "hidden" } },
                     class: "text-xs bg-gray-600/30 hover:bg-gray-600/50 text-gray-300 px-2 py-1 rounded-lg transition" %>
               </div>
-            <% elsif answer.rejected? %>
-              <span class="text-xs text-red-400">Rejected</span>
+            <% elsif answer.rejected? || answer.duplicate? %>
+              <span class="text-xs text-gray-500">0 pts</span>
             <% elsif answer.hidden? %>
               <span class="text-xs text-gray-400">Hidden</span>
             <% end %>

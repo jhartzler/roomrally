@@ -15,15 +15,7 @@ class BackstagesController < ApplicationController
 
     case game
     when CategoryListGame
-      CategoryAnswer.joins(:category_instance)
-                    .where(category_instances: {
-                      category_list_game_id: game.id,
-                      round: game.current_round
-                    })
-                    .where.not(body: [ nil, "" ])
-                    .where(status: "pending")
-                    .includes(:player, category_instance: :category)
-                    .order(created_at: :desc)
+      [] # Moderation handled via the reviewing pane in host controls
     when WriteAndVoteGame
       Response.joins(:prompt_instance)
               .where(prompt_instances: {
