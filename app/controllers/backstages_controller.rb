@@ -4,21 +4,30 @@ class BackstagesController < ApplicationController
   before_action :authorize_owner!
 
   def show
-    @moderation_queue = if @room.current_game.present? &&
-                          @room.current_game.class.supports_response_moderation?
+    @moderation_queue = build_moderation_queue
+  end
+
+  private
+
+  def build_moderation_queue
+    game = @room.current_game
+    return [] unless game.present? && game.class.supports_response_moderation?
+
+    case game
+    when CategoryListGame
+      [] # Moderation handled via the reviewing pane in host controls
+    when WriteAndVoteGame
       Response.joins(:prompt_instance)
               .where(prompt_instances: {
-                write_and_vote_game_id: @room.current_game.id,
-                round: @room.current_game.round
+                write_and_vote_game_id: game.id,
+                round: game.round
               })
               .where(status: "submitted")
               .order(created_at: :desc)
     else
-      Response.none
+      []
     end
   end
-
-  private
 
   def set_room
     @room = Room.find_by!(code: params[:room_code])

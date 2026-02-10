@@ -11,6 +11,23 @@
   </label>
 <% end %>
 
+<% if room.game_type == "Category List" %>
+  <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
+    <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Categories per round:</span>
+    <%= number_field_tag :categories_per_round, 6, min: 3, max: 12,
+        class: backstage ?
+          "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
+          "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+  </label>
+  <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
+    <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Number of rounds:</span>
+    <%= number_field_tag :total_rounds, 3, min: 1, max: 10,
+        class: backstage ?
+          "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
+          "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+  </label>
+<% end %>
+
 <% if room.user.present? %>
   <label class="flex items-center gap-<%= backstage ? 3 : 2 %> cursor-pointer <%= 'group' if backstage %>">
     <%= check_box_tag :show_instructions, "1", true,

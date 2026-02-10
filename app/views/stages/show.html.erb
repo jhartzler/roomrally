@@ -4,21 +4,37 @@
 <div class="min-h-screen text-white p-8">
   <div class="max-w-7xl mx-auto text-center">
     <!-- Header -->
-    <div class="mb-12">
-      <h1 class="text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
-        <%= @room.display_name %>
-      </h1>
-      <div class="inline-block bg-white/10 backdrop-blur-md rounded-3xl px-12 py-8 border border-white/20">
-        <p class="text-gray-400 text-xl font-bold tracking-wider mb-4">Join via your phone!</p>
-        <div class="bg-white rounded-2xl p-6 inline-flex items-center justify-center mb-4">
-          <div class="w-[250px] h-[250px]">
-            <%= qr_code_svg(join_room_url(@room.code), size: 250) %>
+    <% if @room.current_game.present? %>
+      <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-3xl font-black text-white tracking-tighter drop-shadow-lg">
+          <%= @room.display_name %>
+        </h1>
+        <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 border border-white/20">
+          <div class="bg-white rounded-lg p-1 inline-flex">
+            <div class="w-[40px] h-[40px]">
+              <%= qr_code_svg(join_room_url(@room.code), size: 40) %>
+            </div>
           </div>
+          <span class="text-lg font-black font-mono tracking-widest text-white"><%= @room.code %></span>
         </div>
-        <p class="text-gray-400 text-sm font-bold tracking-wider mt-2">Room Code</p>
-        <p class="text-4xl font-black font-mono tracking-widest"><%= @room.code %></p>
       </div>
-    </div>
+    <% else %>
+      <div class="mb-12">
+        <h1 class="text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
+          <%= @room.display_name %>
+        </h1>
+        <div class="inline-block bg-white/10 backdrop-blur-md rounded-3xl px-12 py-8 border border-white/20">
+          <p class="text-gray-400 text-xl font-bold tracking-wider mb-4">Join via your phone!</p>
+          <div class="bg-white rounded-2xl p-6 inline-flex items-center justify-center mb-4">
+            <div class="w-[250px] h-[250px]">
+              <%= qr_code_svg(join_room_url(@room.code), size: 250) %>
+            </div>
+          </div>
+          <p class="text-gray-400 text-sm font-bold tracking-wider mt-2">Room Code</p>
+          <p class="text-4xl font-black font-mono tracking-widest"><%= @room.code %></p>
+        </div>
+      </div>
+    <% end %>
 
     <!-- Main Content Area -->
     <div id="stage_content" class="relative">

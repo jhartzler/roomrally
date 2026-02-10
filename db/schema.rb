@@ -10,9 +10,74 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_205813) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "categories", force: :cascade do |t|
+    t.bigint "category_pack_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_pack_id"], name: "index_categories_on_category_pack_id"
+  end
+
+  create_table "category_answers", force: :cascade do |t|
+    t.boolean "alliterative", default: false
+    t.string "body"
+    t.bigint "category_instance_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "duplicate", default: false
+    t.bigint "player_id", null: false
+    t.integer "points_awarded", default: 0
+    t.string "status", default: "pending"
+    t.datetime "updated_at", null: false
+    t.index ["category_instance_id"], name: "index_category_answers_on_category_instance_id"
+    t.index ["player_id", "category_instance_id"], name: "index_category_answers_on_player_id_and_category_instance_id", unique: true
+    t.index ["player_id"], name: "index_category_answers_on_player_id"
+  end
+
+  create_table "category_instances", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.bigint "category_list_game_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", null: false
+    t.integer "round", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_category_instances_on_category_id"
+    t.index ["category_list_game_id"], name: "index_category_instances_on_category_list_game_id"
+  end
+
+  create_table "category_list_games", force: :cascade do |t|
+    t.integer "categories_per_round", default: 6
+    t.bigint "category_pack_id"
+    t.datetime "created_at", null: false
+    t.string "current_letter"
+    t.integer "current_round", default: 1
+    t.integer "reviewing_category_position", default: 0
+    t.datetime "round_ends_at"
+    t.boolean "show_instructions", default: true, null: false
+    t.string "status"
+    t.integer "timer_duration"
+    t.boolean "timer_enabled", default: false, null: false
+    t.integer "timer_increment", default: 90, null: false
+    t.integer "total_rounds", default: 3
+    t.datetime "updated_at", null: false
+    t.string "used_letters", default: [], array: true
+    t.index ["category_pack_id"], name: "index_category_list_games_on_category_pack_id"
+  end
+
+  create_table "category_packs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "game_type", default: "Category List"
+    t.boolean "is_default", default: false
+    t.string "name"
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_category_packs_on_user_id"
+  end
 
   create_table "players", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -71,6 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_205813) do
   end
 
   create_table "rooms", force: :cascade do |t|
+    t.bigint "category_pack_id"
     t.string "code"
     t.datetime "created_at", null: false
     t.bigint "current_game_id"
@@ -80,14 +146,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_205813) do
     t.bigint "host_id"
     t.datetime "last_host_claim_at"
     t.bigint "prompt_pack_id"
+    t.boolean "stage_only", default: false, null: false
     t.string "status"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.index ["category_pack_id"], name: "index_rooms_on_category_pack_id"
     t.index ["code"], name: "index_rooms_on_code", unique: true
     t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
     t.index ["host_id"], name: "index_rooms_on_host_id"
     t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
     t.index ["user_id"], name: "index_rooms_on_user_id"
+  end
+
+  create_table "score_tracker_entries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "room_id", null: false
+    t.integer "score", default: 0
+    t.datetime "updated_at", null: false
+    t.index ["room_id"], name: "index_score_tracker_entries_on_room_id"
   end
 
   create_table "speed_trivia_games", force: :cascade do |t|
@@ -188,6 +265,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_205813) do
     t.index ["prompt_pack_id"], name: "index_write_and_vote_games_on_prompt_pack_id"
   end
 
+  add_foreign_key "categories", "category_packs"
+  add_foreign_key "category_answers", "category_instances"
+  add_foreign_key "category_answers", "players"
+  add_foreign_key "category_instances", "categories"
+  add_foreign_key "category_instances", "category_list_games"
+  add_foreign_key "category_list_games", "category_packs"
+  add_foreign_key "category_packs", "users"
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
@@ -195,9 +279,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_205813) do
   add_foreign_key "prompts", "prompt_packs"
   add_foreign_key "responses", "players"
   add_foreign_key "responses", "prompt_instances"
+  add_foreign_key "rooms", "category_packs"
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "users"
+  add_foreign_key "score_tracker_entries", "rooms"
   add_foreign_key "speed_trivia_games", "trivia_packs"
   add_foreign_key "trivia_answers", "players"
   add_foreign_key "trivia_answers", "trivia_question_instances"

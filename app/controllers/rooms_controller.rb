@@ -54,7 +54,10 @@ class RoomsController < ApplicationController
           end
         end
 
-        publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:, show_instructions:)
+        total_rounds = start_game_params[:total_rounds].to_i
+        categories_per_round = start_game_params[:categories_per_round].to_i
+
+        publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:, show_instructions:, total_rounds:, categories_per_round:)
 
         if current_user && current_user == @room.user
           redirect_to room_backstage_path(@room.code), notice: "Game started!"
@@ -126,14 +129,16 @@ class RoomsController < ApplicationController
   end
 
   def room_params
-    permitted = params.permit(:game_type, :prompt_pack_id, :trivia_pack_id)
+    permitted = params.permit(:game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id)
     # Only allow display_name customization for logged-in users
     permitted[:display_name] = params[:display_name] if current_user && params[:display_name].present?
+    # Only allow stage_only for logged-in users
+    permitted[:stage_only] = params[:stage_only] == "1" if current_user && params[:stage_only].present?
     permitted
   end
 
   def start_game_params
-    params.permit(:timer_enabled, :timer_increment, :question_count, :show_instructions)
+    params.permit(:timer_enabled, :timer_increment, :question_count, :show_instructions, :total_rounds, :categories_per_round)
   end
 
 

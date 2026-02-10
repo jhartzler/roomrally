@@ -45,3 +45,18 @@ standard_trivia.each do |question_data|
     q.options = question_data["options"]
   end
 end
+
+# Category List: "Standard Categories" pack
+category_pack = CategoryPack.find_or_create_by!(
+  name: "Standard Categories",
+  game_type: "Category List",
+  user_id: nil,
+  is_default: true,
+  status: :live
+)
+
+standard_categories = YAML.load_file(Rails.root.join("config/standard_categories.yml"))
+
+standard_categories.each do |category_name|
+  Category.find_or_create_by!(name: category_name, category_pack:)
+end
