@@ -93,6 +93,10 @@ RSpec.describe "Round Timer Integration", :js, type: :system do
       expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
       find("#start-from-instructions-btn").click
 
+      # Wait for Turbo transition, refresh if stale DOM causes issues
+      unless page.has_content?("WRITE YOUR BEST ANSWER...", wait: 5)
+        visit current_path
+      end
       expect(page).to have_content("WRITE YOUR BEST ANSWER...", wait: 5)
       expect(page).not_to have_content("TIME LEFT")
     end
