@@ -6,22 +6,37 @@
   </div>
 
   <% if room.stage_only? %>
-    <!-- Stage-only: Show score tracker standings -->
-    <div class="w-full max-w-4xl px-4">
-      <h3 class="text-2xl text-white font-bold mb-4 text-center">Standings</h3>
-      <div class="space-y-3">
-        <% room.score_tracker_entries.order(score: :desc).each_with_index do |entry, index| %>
-          <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 <%= index == 0 ? 'scale-105 border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
-            <div class="text-3xl w-12 font-bold text-gray-400">#<%= index + 1 %></div>
-            <div class="text-2xl font-bold text-white flex-grow text-left mx-6"><%= entry.name %></div>
-            <div class="text-3xl font-black text-yellow-400 font-mono"><%= entry.score %></div>
+    <% if game.show_stage_scores? %>
+      <!-- Stage-only: Show score tracker standings -->
+      <div class="w-full max-w-4xl px-4">
+        <h3 class="text-2xl text-white font-bold mb-4 text-center">Standings</h3>
+        <div class="space-y-3">
+          <% room.score_tracker_entries.order(score: :desc).each_with_index do |entry, index| %>
+            <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 <%= index == 0 ? 'scale-105 border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
+              <div class="text-3xl w-12 font-bold text-gray-400">#<%= index + 1 %></div>
+              <div class="text-2xl font-bold text-white flex-grow text-left mx-6"><%= entry.name %></div>
+              <div class="text-3xl font-black text-yellow-400 font-mono"><%= entry.score %></div>
+            </div>
+          <% end %>
+          <% if room.score_tracker_entries.empty? %>
+            <p class="text-blue-300/50 text-center italic">No scores tracked yet.</p>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <!-- Stage-only: Show categories + scoring message -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-4 mb-8">
+        <% game.current_round_categories.each do |ci| %>
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center">
+            <p class="text-2xl text-white font-bold"><%= ci.name %></p>
           </div>
         <% end %>
-        <% if room.score_tracker_entries.empty? %>
-          <p class="text-blue-300/50 text-center italic">No scores tracked yet.</p>
-        <% end %>
       </div>
-    </div>
+
+      <div class="text-center">
+        <p class="text-3xl text-yellow-400 font-black">Scoring Time!</p>
+      </div>
+    <% end %>
   <% else %>
     <!-- Phone mode: Show category results -->
     <div class="w-full max-w-6xl px-4 space-y-6 mb-12">

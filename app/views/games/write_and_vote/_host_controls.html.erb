@@ -9,6 +9,7 @@
     <%= button_to "Start Game",
         write_and_vote_game_game_start_path(game),
         method: :post,
+        data: { turbo_submits_with: "Starting…" },
         class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
   <% else %>

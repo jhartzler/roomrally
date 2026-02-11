@@ -9,7 +9,7 @@
               <%= render "rooms/game_settings_fields", room: room, backstage: true %>
             </div>
           </div>
-          <%= f.submit "Start Game", class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+          <%= f.submit "Start Game", data: { turbo_submits_with: "Starting…" }, class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
         <% end %>
       <% else %>
         <div class="bg-yellow-500/10 border border-yellow-400/30 rounded-xl p-4 text-center">
@@ -59,7 +59,7 @@
               <%= render "rooms/game_settings_fields", room: room, backstage: false %>
             </div>
           </div>
-          <%= f.submit "Start Game", id: "start-game-btn", class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
+          <%= f.submit "Start Game", id: "start-game-btn", data: { turbo_submits_with: "Starting…" }, class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-200 shadow-lg text-lg cursor-pointer" %>
         <% end %>
       <% else %>
         <button class="w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl cursor-not-allowed text-lg" disabled>

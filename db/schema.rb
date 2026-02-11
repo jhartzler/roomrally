@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_10_204001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
     t.integer "reviewing_category_position", default: 0
     t.datetime "round_ends_at"
     t.boolean "show_instructions", default: true, null: false
+    t.boolean "show_stage_scores", default: false, null: false
     t.string "status"
     t.integer "timer_duration"
     t.boolean "timer_enabled", default: false, null: false
@@ -77,6 +78,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_category_packs_on_user_id"
+  end
+
+  create_table "game_templates", force: :cascade do |t|
+    t.bigint "category_pack_id"
+    t.datetime "created_at", null: false
+    t.string "game_type", null: false
+    t.string "name", null: false
+    t.bigint "prompt_pack_id"
+    t.jsonb "settings", default: {}
+    t.bigint "trivia_pack_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["category_pack_id"], name: "index_game_templates_on_category_pack_id"
+    t.index ["prompt_pack_id"], name: "index_game_templates_on_prompt_pack_id"
+    t.index ["trivia_pack_id"], name: "index_game_templates_on_trivia_pack_id"
+    t.index ["user_id"], name: "index_game_templates_on_user_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -142,6 +159,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
     t.bigint "current_game_id"
     t.string "current_game_type"
     t.string "display_name"
+    t.bigint "game_template_id"
     t.string "game_type", default: "Write And Vote"
     t.bigint "host_id"
     t.datetime "last_host_claim_at"
@@ -153,6 +171,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
     t.index ["category_pack_id"], name: "index_rooms_on_category_pack_id"
     t.index ["code"], name: "index_rooms_on_code", unique: true
     t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
+    t.index ["game_template_id"], name: "index_rooms_on_game_template_id"
     t.index ["host_id"], name: "index_rooms_on_host_id"
     t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
     t.index ["user_id"], name: "index_rooms_on_user_id"
@@ -272,6 +291,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
   add_foreign_key "category_instances", "category_list_games"
   add_foreign_key "category_list_games", "category_packs"
   add_foreign_key "category_packs", "users"
+  add_foreign_key "game_templates", "category_packs", on_delete: :nullify
+  add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
+  add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
+  add_foreign_key "game_templates", "users"
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
@@ -280,6 +303,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_041339) do
   add_foreign_key "responses", "players"
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "category_packs"
+  add_foreign_key "rooms", "game_templates", on_delete: :nullify
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "users"

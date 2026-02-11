@@ -5,6 +5,12 @@ Rails.application.routes.draw do
 
   resources :prompt_packs
   resources :trivia_packs
+  resources :game_templates do
+    scope module: :game_templates do
+      resource :launch, only: :create
+      resource :duplication, only: :create
+    end
+  end
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "customize", to: "customize#index", as: :customize
   if Rails.env.local?
@@ -77,6 +83,7 @@ Rails.application.routes.draw do
       resources :rounds, only: :create
       resource :review, only: :update
       resource :review_navigation, only: :update
+      resource :stage_scores, only: :update
     end
   end
   resources :category_answers, only: :update
