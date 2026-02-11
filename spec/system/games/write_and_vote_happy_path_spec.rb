@@ -18,6 +18,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
       expect(page).to have_button("Waiting for players (1/3)...", disabled: true)
+      screenshot_checkpoint("lobby")
     end
 
     Capybara.using_session(:player2) do
@@ -25,6 +26,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       fill_in "player[name]", with: "Player 2"
       click_on "Join Game"
       expect(page).to have_content("Waiting for players to join...")
+      screenshot_checkpoint("lobby")
     end
 
     Capybara.using_session(:player3) do
@@ -32,6 +34,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       fill_in "player[name]", with: "Player 3"
       click_on "Join Game"
       expect(page).to have_content("Waiting for players to join...")
+      screenshot_checkpoint("lobby")
     end
 
     Capybara.using_session(:host) do
@@ -48,17 +51,20 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
 
       # Host must advance past instructions - wait for and click the button with specific ID
       expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      screenshot_checkpoint("instructions")
       find("#start-from-instructions-btn").click
 
       # Wait for turbo stream broadcast to update the page
       expect(page).to have_content("WRITE YOUR BEST ANSWER...", wait: 10)
       expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
+      screenshot_checkpoint("writing_phase")
     end
 
     [ :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
-      expect(page).to have_content("WRITE YOUR BEST ANSWER...")
+        expect(page).to have_content("WRITE YOUR BEST ANSWER...")
         expect(page).to have_selector('[data-test-id="player-prompt"]', count: 2)
+        screenshot_checkpoint("writing_phase")
       end
     end
 
@@ -101,6 +107,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
 
         expect(page).to have_content("Vote for the best answer!", wait: 10)
         expect(page).to have_selector(".voting-screen")
+        screenshot_checkpoint("voting_phase")
       end
     end
   end
