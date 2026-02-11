@@ -24,6 +24,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       expect(page).to have_content("Game Lobby")
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
+      screenshot_checkpoint("lobby")
     end
 
     # Other players join
@@ -32,6 +33,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       fill_in "player[name]", with: "Alice"
       click_on "Join Game"
       expect(page).to have_content("Waiting for players to join...")
+      screenshot_checkpoint("lobby")
     end
 
     Capybara.using_session(:player3) do
@@ -39,11 +41,16 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       fill_in "player[name]", with: "Bob"
       click_on "Join Game"
       expect(page).to have_content("Waiting for players to join...")
+      screenshot_checkpoint("lobby")
     end
 
     # Host starts the game
     Capybara.using_session(:host) do
-      expect(page).to have_button("Start Game")
+      # Wait for turbo stream to update, or refresh if needed
+      unless page.has_button?("Start Game", wait: 3)
+        visit current_path
+      end
+      expect(page).to have_button("Start Game", wait: 5)
       click_on "Start Game"
       expect(page).to have_content("Game started!")
 
@@ -52,16 +59,19 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
 
       # Host advances past instructions
       expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      screenshot_checkpoint("instructions")
       find("#start-from-instructions-btn").click
 
       # Now in waiting state
       expect(page).to have_content("Get Ready!", wait: 5)
+      screenshot_checkpoint("get_ready")
     end
 
     # All players should see "Get Ready" state
     [ :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         expect(page).to have_content("Get Ready!", wait: 5)
+        screenshot_checkpoint("get_ready")
       end
     end
 
@@ -76,6 +86,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
         visit current_path
         expect(page).to have_content(/question 1/i, wait: 5)
         expect(page).to have_selector('[data-test-id^="answer-option"]', minimum: 4)
+        screenshot_checkpoint("answering")
       end
     end
 
@@ -86,6 +97,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
         # Use find instead of first — find retries on StaleElementReferenceError
         find('[data-test-id="answer-option-0"]', match: :first).click
         expect(page).to have_content("Answer submitted!", wait: 5)
+        screenshot_checkpoint("answer_submitted")
       end
     end
 
@@ -97,6 +109,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       Capybara.using_session(session) do
         visit current_path
         expect(page).to have_content("Correct!", wait: 5).or have_content("Wrong!", wait: 5)
+        screenshot_checkpoint("reviewing")
       end
     end
 
@@ -110,6 +123,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       Capybara.using_session(session) do
         visit current_path
         expect(page).to have_content(/game over/i, wait: 5).or have_content("Place", wait: 5)
+        screenshot_checkpoint("game_over")
       end
     end
   end

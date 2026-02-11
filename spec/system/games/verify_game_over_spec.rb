@@ -52,6 +52,7 @@ RSpec.describe "Game Over Screen", type: :system do
 
     expect(page).to have_content("Runner Up")
     expect(page).to have_content("1000")
+    screenshot_checkpoint("game_over_leaderboard")
 
     # Loser might not be shown if top 2 only? check implementation
     # Implementation:

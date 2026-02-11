@@ -10,6 +10,7 @@ RSpec.describe "Stage View Flow", type: :system do
     expect(page).to have_content(Room.default_display_name_for(Room::WRITE_AND_VOTE))
     expect(page).to have_content(room.code)
     expect(page).to have_content("Join via your phone!")
+    screenshot_checkpoint("stage_lobby_empty")
 
     # Simulate player joining in another session
     using_session "player1" do
@@ -30,6 +31,7 @@ RSpec.describe "Stage View Flow", type: :system do
     end
 
     expect(page).to have_content("Bob")
+    screenshot_checkpoint("stage_lobby_with_players")
 
     # Simulate host kicking a player
     using_session "player1" do

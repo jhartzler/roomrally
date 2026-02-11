@@ -49,6 +49,7 @@ RSpec.describe "Stage View Game Integration", type: :system do
     within_window stage_window do
       expect(page).to have_content("Look at your device!", wait: 5)
       expect(page).to have_content("Writing Phase: Round 1")
+      screenshot_checkpoint("stage_writing")
     end
 
     # 4. Submit Responses to trigger Voting
@@ -92,6 +93,7 @@ RSpec.describe "Stage View Game Integration", type: :system do
       expect(page).to have_content("Prompt")
       # Expect to see the prompt body. We need to fetch it from DB
       expect(page).to have_content(game.current_round_prompts.first.body)
+      screenshot_checkpoint("stage_voting")
     end
 
     # 6. Verify Game Over
@@ -109,6 +111,7 @@ RSpec.describe "Stage View Game Integration", type: :system do
       expect(page).to have_content("Game Over!")
       # Verify leaderboard
       expect(page).to have_content("Player 0")
+      screenshot_checkpoint("stage_game_over")
     end
   end
 end

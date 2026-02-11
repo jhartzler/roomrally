@@ -17,6 +17,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     expect(page).to have_content("Backstage: #{room.code}")
     expect(page).to have_content("0 connected")
+    screenshot_checkpoint("backstage_empty")
 
     # Simulate player joining in another session
     Capybara.using_session("player1") do
@@ -28,6 +29,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     # Facilitator should see the update without refreshing
     expect(page).to have_content("Alice")
     expect(page).to have_content("1 connected")
+    screenshot_checkpoint("backstage_with_players")
 
     # And empty message should disappear
     expect(page).not_to have_content("No players yet")
@@ -76,6 +78,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     # Facilitator should see the response
     expect(page).to have_content("Funny Answer")
     expect(page).to have_content("BOB")
+    screenshot_checkpoint("backstage_moderation_queue")
 
     # Rejection flow
     # Click Reject button to open modal (simulated by finding the button)
@@ -93,6 +96,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
 
     expect(page).not_to have_content("Funny Answer")
     expect(page).to have_content("No active responses to moderate")
+    screenshot_checkpoint("backstage_after_rejection")
 
     # Verify player sees rejection reason
     Capybara.using_session("player_bob") do
