@@ -13,11 +13,13 @@ RSpec.describe "Prompt Packs UI", type: :system do
     before { visit prompt_packs_path }
 
     it "links system packs to the show page" do
+      screenshot_checkpoint("prompt_pack_library")
       find("h3", text: "System Standard").click_link
       expect(page).to have_current_path(prompt_pack_path(system_pack))
       expect(page).to have_content("System Standard")
       expect(page).to have_content(/system pack/i)
       expect(page).not_to have_link("Edit Pack")
+      screenshot_checkpoint("system_prompt_pack_show")
     end
 
     it "links user packs to the show page" do
@@ -25,6 +27,7 @@ RSpec.describe "Prompt Packs UI", type: :system do
       expect(page).to have_current_path(prompt_pack_path(user_pack))
       expect(page).to have_content("My Cool Pack")
       expect(page).to have_link("Edit Pack")
+      screenshot_checkpoint("user_prompt_pack_show")
     end
 
     it "allows clicking the edit button directly from the card" do
@@ -60,6 +63,7 @@ RSpec.describe "Prompt Packs UI", type: :system do
       visit play_path
       expect(page).to have_link("Go to Dashboard", href: dashboard_path)
       expect(page).not_to have_button("Sign in with Google")
+      screenshot_checkpoint("play_page_logged_in")
     end
   end
 end

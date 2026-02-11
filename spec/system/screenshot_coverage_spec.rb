@@ -21,6 +21,51 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
     end
   end
 
+  describe "Dashboard" do
+    let(:user) { FactoryBot.create(:user) }
+
+    before { sign_in(user) }
+
+    it "captures the empty dashboard" do
+      visit dashboard_path
+      expect(page).to have_content(user.name)
+      screenshot_checkpoint("dashboard_empty")
+    end
+
+    it "captures the dashboard with active rooms and packs" do
+      room = FactoryBot.create(:room, user:, game_type: "Write And Vote")
+      FactoryBot.create(:prompt_pack, user:, name: "My Comedy Pack")
+      FactoryBot.create(:prompt_pack, user:, name: "Party Pack")
+
+      visit dashboard_path
+      expect(page).to have_content(room.code)
+      expect(page).to have_content("My Comedy Pack")
+      screenshot_checkpoint("dashboard_with_content")
+    end
+  end
+
+  describe "Customize page" do
+    let(:user) { FactoryBot.create(:user) }
+
+    before { sign_in(user) }
+
+    it "captures the customize hub" do
+      visit customize_path
+      expect(page).to have_content("Customize")
+      screenshot_checkpoint("customize_page")
+    end
+
+    it "captures the customize hub with existing packs" do
+      FactoryBot.create_list(:prompt_pack, 3, user:)
+      FactoryBot.create_list(:trivia_pack, 2, user:)
+
+      visit customize_path
+      expect(page).to have_content("3")
+      expect(page).to have_content("2")
+      screenshot_checkpoint("customize_page_with_packs")
+    end
+  end
+
   describe "Speed Trivia stage views" do
     let!(:room) { FactoryBot.create(:room, game_type: "Speed Trivia", user: nil) }
 
