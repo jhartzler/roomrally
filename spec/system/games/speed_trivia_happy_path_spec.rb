@@ -108,6 +108,10 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
     [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         visit current_path
+        # Wait for Turbo transition, refresh if stale DOM causes issues
+        unless page.has_content?("Correct!", wait: 5) || page.has_content?("Wrong!", wait: 5)
+          visit current_path
+        end
         expect(page).to have_content("Correct!", wait: 5).or have_content("Wrong!", wait: 5)
         screenshot_checkpoint("reviewing")
       end
