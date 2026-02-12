@@ -21,6 +21,7 @@ Room Rally is a real-time multiplayer party game engine inspired by Jackbox Game
 - **Never push directly to main** - Always create a feature branch for changes
 - Create descriptive branch names (e.g., `feature/game-instructions-screen`, `fix/timer-bug`)
 - Commit changes to the feature branch, then create a PR for review
+- **Never run `git diff` on `config/credentials.yml.enc`** — the master key is present locally, so git decrypts and displays secrets in plain text. Always exclude it: `git diff -- . ':!config/credentials.yml.enc'`
 
 ## Development Commands
 

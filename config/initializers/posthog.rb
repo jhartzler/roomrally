@@ -1,3 +1,5 @@
+require "posthog"
+
 api_key = ENV["POSTHOG_API_KEY"] || Rails.application.credentials.dig(:posthog, :api_key)
 
 if api_key.present?
