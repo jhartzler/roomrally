@@ -12,6 +12,11 @@ class RoomsController < ApplicationController
 
   def create
     room = Room.create!(room_params)
+    Analytics.track(
+      distinct_id: current_user ? "user_#{current_user.id}" : "room_#{room.code}",
+      event: "room_created",
+      properties: { game_type: room.game_type, room_code: room.code }
+    )
     if current_user
       room.update(user: current_user)
       redirect_to room_backstage_path(room)

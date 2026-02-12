@@ -1,0 +1,11 @@
+require "posthog"
+
+api_key = ENV["POSTHOG_API_KEY"] || Rails.application.credentials.dig(:posthog, :api_key)
+
+if api_key.present?
+  $posthog = PostHog::Client.new(
+    api_key:,
+    host: ENV.fetch("POSTHOG_HOST", "https://us.i.posthog.com"),
+    on_error: ->(status, msg) { Rails.logger.warn("[PostHog] #{status}: #{msg}") }
+  )
+end

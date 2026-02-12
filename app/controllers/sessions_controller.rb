@@ -6,6 +6,10 @@ class SessionsController < ApplicationController
     if user.valid?
       reset_session
       session[:user_id] = user.id
+      Analytics.identify(
+        distinct_id: "user_#{user.id}",
+        properties: { name: user.name, email: user.email }
+      )
       redirect_to dashboard_path, notice: "Logged in successfully!"
     else
       redirect_to root_path, alert: "Login failed."

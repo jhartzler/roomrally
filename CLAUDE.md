@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Room Rally is a real-time multiplayer party game engine inspired by Jackbox Games. Players connect via 4-letter room codes using their phones (Hand clients) while viewing a shared screen (Stage client). The system uses HTML-Over-The-Wire architecture with Rails backend and Hotwire frontend.
+Room Rally is a real-time multiplayer party game engine inspired by Jackbox Games, designed for **in-person play** (classrooms, youth groups, living rooms, parties). A host projects the Stage client on a shared screen while players join on their phones via 4-letter room codes. This is NOT an online/remote multiplayer platform — the shared physical space is core to the experience. The system uses HTML-Over-The-Wire architecture with Rails backend and Hotwire frontend.
 
 ## Technology Stack
 
@@ -21,6 +21,7 @@ Room Rally is a real-time multiplayer party game engine inspired by Jackbox Game
 - **Never push directly to main** - Always create a feature branch for changes
 - Create descriptive branch names (e.g., `feature/game-instructions-screen`, `fix/timer-bug`)
 - Commit changes to the feature branch, then create a PR for review
+- **Never run `git diff` on `config/credentials.yml.enc`** — the master key is present locally, so git decrypts and displays secrets in plain text. Always exclude it: `git diff -- . ':!config/credentials.yml.enc'`
 
 ## Development Commands
 

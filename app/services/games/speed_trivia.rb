@@ -17,6 +17,12 @@ module Games
         show_instructions:
       })
 
+      Analytics.track(
+        distinct_id: "room_#{room.code}",
+        event: "game_started",
+        properties: { game_type: "Speed Trivia", room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, show_instructions: }
+      )
+
       return if room.current_game.present?
 
       pack = TriviaPack.default
@@ -86,6 +92,11 @@ module Games
       else
         game.calculate_scores!
         game.finish_game!
+        Analytics.track(
+          distinct_id: "room_#{game.room.code}",
+          event: "game_completed",
+          properties: { game_type: "Speed Trivia", room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
+        )
         game.room.finish!
         broadcast_all(game)
       end

@@ -265,6 +265,8 @@ GEM
     pg (1.6.3-arm64-darwin)
     pg (1.6.3-x86_64-linux)
     pg (1.6.3-x86_64-linux-musl)
+    posthog-ruby (3.5.3)
+      concurrent-ruby (~> 1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -510,6 +512,7 @@ DEPENDENCIES
   omniauth-google-oauth2 (~> 1.2)
   omniauth-rails_csrf_protection (~> 2.0)
   pg (~> 1.6)
+  posthog-ruby
   propshaft
   pry-byebug
   puma (>= 5.0)

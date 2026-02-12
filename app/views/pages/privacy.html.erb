@@ -26,6 +26,7 @@
           <li><strong>If you log in with Google:</strong> Your name and email address from your Google account, used solely to identify you as a host.</li>
           <li><strong>During gameplay:</strong> Your game responses and votes (the fun stuff you create during games).</li>
           <li><strong>Technical data:</strong> Session cookies to keep you connected to your game.</li>
+          <li><strong>Usage analytics:</strong> We track anonymous game events (e.g., games started, games completed, player counts) to understand how the service is used. These events are tied to random session identifiers, not to you personally.</li>
         </ul>
         <p class="mt-4 text-blue-200">
           We do not collect your location, browsing history, device fingerprints, or any other tracking data.
@@ -54,9 +55,10 @@
 
       <section>
         <h2 class="text-xl font-semibold text-white mt-6 mb-3">4. Third-Party Services</h2>
-        <p>
-          We use Google OAuth for optional authentication. Please review Google's privacy policy for information about how they handle your data.
-        </p>
+        <ul class="list-disc list-inside space-y-2 ml-4">
+          <li><strong>Google OAuth:</strong> Used for optional host authentication. Please review Google's privacy policy for information about how they handle your data.</li>
+          <li><strong>PostHog:</strong> We use PostHog for anonymous usage analytics (e.g., how many games are played, which game types are popular). No personally identifiable information about players is sent to PostHog. Host account information (name and email) is associated with analytics events for hosts who log in with Google.</li>
+        </ul>
       </section>
 
       <section>
