@@ -6,6 +6,7 @@ RSpec.describe 'Room Creation Flow', type: :system do
     expect(page).to have_button('Create Room')
     expect(page).to have_field('room_code', type: 'text')
     expect(page).to have_button('Join Room')
+    screenshot_checkpoint("play_page")
   end
 
   it 'allows a user to create a new room and redirects them to the join page' do
@@ -24,5 +25,6 @@ RSpec.describe 'Room Creation Flow', type: :system do
     expect(page).to have_content(room.code)
     # The stage lobby should be visible
     expect(page).to have_selector("#stage_content")
+    screenshot_checkpoint("stage_after_create")
   end
 end

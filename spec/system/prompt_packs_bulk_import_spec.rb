@@ -15,6 +15,8 @@ RSpec.describe "Prompt Pack Bulk Import", type: :system do
     # Open the details element
     find("summary", text: "Bulk Import").click
 
+    screenshot_checkpoint("bulk_import_open")
+
     # Paste prompts
     prompts_text = <<~TEXT
       Why did the chicken cross the road?
@@ -34,6 +36,8 @@ RSpec.describe "Prompt Pack Bulk Import", type: :system do
 
     # Verify input is cleared and details closed (optional but good UX)
     expect(find("textarea[placeholder*='Why did the chicken cross the road?']", visible: :all).value).to eq("")
+
+    screenshot_checkpoint("bulk_import_after_import")
 
     # Save check
     click_button "Save Pack"

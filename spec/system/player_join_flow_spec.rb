@@ -12,6 +12,7 @@ RSpec.describe 'Player Join Flow', type: :system do
     expect(page).to have_content(room.code)
     expect(page).to have_field("What's your name?")
     expect(page).to have_button('Join Game')
+    screenshot_checkpoint("join_form")
 
     # 3. Fill in name and submit
     fill_in "What's your name?", with: 'Reynard Muldoon'
@@ -38,6 +39,7 @@ RSpec.describe 'Player Join Flow', type: :system do
     expect(page).to have_current_path(room_hand_path(room))
     expect(page).to have_content("Waiting for players to join...")
     expect(page).to have_content("Reynard Muldoon")
+    screenshot_checkpoint("lobby_as_host")
   end
 
   it "shows host controls only to the host in a multi-player lobby" do
@@ -67,6 +69,7 @@ RSpec.describe 'Player Join Flow', type: :system do
         expect(page).to have_button("Make Host")
         expect(page).to have_button("Kick")
       end
+      screenshot_checkpoint("lobby_host_controls")
     end
 
     # 4. Assert other player's view: they should see the host, but no action buttons
@@ -77,6 +80,7 @@ RSpec.describe 'Player Join Flow', type: :system do
         # This is the key fix: we assert the buttons' container is in the DOM but hidden.
         expect(page).to have_selector("[data-player-card-target='actions']", visible: :hidden)
       end
+      screenshot_checkpoint("lobby_non_host")
     end
   end
 end

@@ -11,6 +11,7 @@ RSpec.describe "TriviaPack CRUD", type: :system do
   describe "creating a trivia pack" do
     it "allows adding and removing questions" do
       visit new_trivia_pack_path
+      screenshot_checkpoint("new_trivia_pack")
 
       fill_in "Name", with: "My Trivia Pack"
 
@@ -58,11 +59,13 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       button = wrapper.find("button[data-action='trivia-editor#removeQuestion']", visible: :all)
       page.execute_script("arguments[0].click();", button)
 
+      screenshot_checkpoint("new_trivia_pack_filled")
       click_button "Save Pack"
 
       expect(page).to have_content("Trivia pack created successfully")
       expect(page).to have_content("My Trivia Pack")
       expect(page).to have_content("1 Players") # Capacity badge on index page
+      screenshot_checkpoint("trivia_pack_index_after_create")
     end
   end
 
@@ -78,11 +81,13 @@ RSpec.describe "TriviaPack CRUD", type: :system do
 
     it "allows updating the pack and modifying questions" do
       visit trivia_packs_path
+      screenshot_checkpoint("trivia_pack_library")
       click_link "Original Trivia Pack"
       click_link "Edit Pack"
 
       expect(page).to have_field("Name", with: pack.name)
       expect(page).to have_field(with: question.body)
+      screenshot_checkpoint("edit_trivia_pack")
 
       fill_in "Name", with: "Updated Trivia Pack"
 
@@ -154,6 +159,7 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       within(".bg-green-500\\/20") do
         expect(page).to have_content("Paris")
       end
+      screenshot_checkpoint("trivia_pack_show")
     end
   end
 end

@@ -11,6 +11,7 @@ RSpec.describe "PromptPack CRUD", type: :system do
   describe "creating a prompt pack" do
     it "allows adding and removing prompts with dynamic count updates" do
       visit new_prompt_pack_path
+      screenshot_checkpoint("new_prompt_pack")
 
       fill_in "Name", with: "My Fun Pack"
 
@@ -38,12 +39,14 @@ RSpec.describe "PromptPack CRUD", type: :system do
       page.execute_script("arguments[0].click();", button)
       expect(page).to have_content("Supports up to 1 players")
 
+      screenshot_checkpoint("new_prompt_pack_filled")
       click_button "Save Pack"
 
       expect(page).to have_content("Prompt pack created successfully")
       expect(page).to have_content("My Fun Pack")
       # We have 2 prompts left ("Prompt 3", "Prompt 2") -> 1 Player (ratio 2)
       expect(page).to have_content("1 Players")
+      screenshot_checkpoint("prompt_pack_index_after_create")
     end
   end
 
@@ -59,6 +62,7 @@ RSpec.describe "PromptPack CRUD", type: :system do
       expect(page).to have_field("Name", with: pack.name)
       expect(page).to have_content("Supports up to 0 players")
       expect(page).to have_field(with: prompt.body)
+      screenshot_checkpoint("edit_prompt_pack")
 
       fill_in "Name", with: "Updated Pack"
 
@@ -83,6 +87,7 @@ RSpec.describe "PromptPack CRUD", type: :system do
 
       expect(page).to have_content("Prompt pack deleted")
       expect(page).not_to have_content("Original Pack")
+      screenshot_checkpoint("prompt_pack_index_after_delete")
     end
   end
 end

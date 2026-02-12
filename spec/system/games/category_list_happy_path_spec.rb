@@ -19,6 +19,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
       expect(page).to have_content("Game Lobby")
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
+      screenshot_checkpoint("lobby")
     end
 
     # Other players join
@@ -27,6 +28,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
       fill_in "player[name]", with: "Alice"
       click_on "Join Game"
       expect(page).to have_content("Waiting for players to join...")
+      screenshot_checkpoint("lobby")
     end
 
     Capybara.using_session(:player3) do
@@ -34,6 +36,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
       fill_in "player[name]", with: "Bob"
       click_on "Join Game"
       expect(page).to have_content("Waiting for players to join...")
+      screenshot_checkpoint("lobby")
     end
 
     # Host starts the game
@@ -47,10 +50,12 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
 
       # Host advances past instructions
       expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      screenshot_checkpoint("instructions")
       find("#start-from-instructions-btn").click
 
       # Wait for redirect to complete and filling state to show
       expect(page).to have_button("Submit Answers", wait: 10)
+      screenshot_checkpoint("filling")
     end
 
     # Get the game and letter
@@ -62,6 +67,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
       Capybara.using_session(session) do
         visit room_hand_path(room)
         expect(page).to have_button("Submit Answers", wait: 10)
+        screenshot_checkpoint("filling") if session != :host # host already captured above
 
         # Fill in answer fields (text inputs inside the answer form)
         all("input[name^='answers']").each_with_index do |input, ci_idx|
@@ -69,17 +75,30 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
         end
         click_on "Submit Answers"
         expect(page).to have_content("Answers submitted!", wait: 5).or have_content(/reviewing/i, wait: 5)
+        screenshot_checkpoint("answers_submitted")
       end
     end
 
     # Game should now be in reviewing state
     expect(game.reload).to be_reviewing
 
+    # Capture reviewing state from a player's perspective
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      screenshot_checkpoint("reviewing")
+    end
+
     # Host finishes review (via service — simulating backstage action)
     Games::CategoryList.finish_review(game: game.reload)
 
     # Game should be in scoring state
     expect(game.reload).to be_scoring
+
+    # Capture scoring state from a player's perspective
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      screenshot_checkpoint("scoring")
+    end
 
     # Advance to next round
     Games::CategoryList.next_round(game: game.reload)
