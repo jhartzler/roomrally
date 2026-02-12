@@ -1,3 +1,7 @@
+require "base64"
+require "set"
+require "cgi"
+
 namespace :screenshots do
   BASELINE_DIR = Rails.root.join("spec", "screenshots")
   NEW_DIR = Rails.root.join("tmp", "screenshots_new")
@@ -147,7 +151,7 @@ def render_checkpoint(row)
     <div class="checkpoint">
       <div class="checkpoint-header">
         <span class="badge #{row[:status]}">#{row[:status]}</span>
-        <h2>#{row[:key]}</h2>
+        <h2>#{CGI.escapeHTML(row[:key])}</h2>
       </div>
       <div class="comparison">
         <div class="side">
