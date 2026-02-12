@@ -42,7 +42,41 @@ brakeman -q            # Check for security vulnerabilities
 # Worktrees
 # After creating a new worktree, rebuild Tailwind CSS for tests:
 RAILS_ENV=test bin/rails tailwindcss:build
+
+# Visual regression testing (screenshots)
+# When making UI changes, use screenshot checkpoints to verify visual changes are intentional:
+rake screenshots:capture  # Before coding: generate baseline screenshots
+rake screenshots:approve  # Move new screenshots to baseline directory
+# ... make your code changes ...
+rake screenshots:capture  # After coding: capture new screenshots
+rake screenshots:report   # Compare and open side-by-side diff in browser
+rake screenshots:clean    # Clean up after review (baselines are not committed)
 ```
+
+## Visual Regression Testing (Screenshots)
+
+When making UI changes, use screenshot checkpoints to verify visual changes are intentional:
+
+1. **Before coding:** Generate baseline screenshots from current state:
+   ```bash
+   rake screenshots:capture
+   rake screenshots:approve  # Moves new → baseline
+   ```
+
+2. **After coding:** Capture new screenshots and compare:
+   ```bash
+   rake screenshots:capture
+   rake screenshots:report   # Opens side-by-side diff in browser
+   ```
+
+3. **Review the report** to ensure visual changes match your intentions
+
+4. **Clean up** after review (baselines are not committed):
+   ```bash
+   rake screenshots:clean
+   ```
+
+**Note:** Baseline screenshots are ephemeral and not committed to git. They exist only during active development for comparison purposes.
 
 ## Troubleshooting
 
