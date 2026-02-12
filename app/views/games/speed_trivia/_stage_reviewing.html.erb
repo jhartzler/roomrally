@@ -19,9 +19,66 @@
     </div>
   </div>
 
-  <!-- Players Who Got It Right -->
+  <!-- Vote Summary -->
+  <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 max-w-6xl w-full mb-8">
+    <h3 class="text-2xl text-white font-bold mb-6 text-center">How Everyone Voted</h3>
+
+    <% vote_counts = current_question.trivia_answers.group(:selected_option).count %>
+    <% total_votes = vote_counts.values.sum %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <% current_question.options.each_with_index do |option, index| %>
+        <% votes = vote_counts[option] || 0 %>
+        <% is_correct = option == current_question.correct_answer %>
+
+        <div class="bg-black/40 backdrop-blur-md border-2 <%= is_correct ? 'border-green-500' : 'border-gray-600' %> rounded-xl p-6 flex items-center justify-between">
+          <div class="flex items-center gap-4 flex-grow">
+            <div class="bg-white text-black font-black text-2xl h-12 w-12 rounded-full flex items-center justify-center shrink-0">
+              <%= (index + 65).chr %>
+            </div>
+            <p class="text-xl text-white font-bold flex-grow">
+              <%= option %>
+            </p>
+          </div>
+          <div class="flex flex-col items-end ml-4 relative">
+            <!-- Pie Chart Circle -->
+            <div class="relative w-20 h-20 flex items-center justify-center mb-1">
+              <svg class="absolute inset-0 w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+                <!-- Background circle -->
+                <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+                <!-- Progress circle (pie chart effect) -->
+                <% percentage = total_votes > 0 ? (votes.to_f / total_votes * 100) : 0 %>
+                <% circumference = 2 * Math::PI * 32 %>
+                <% stroke_dashoffset = circumference - (percentage / 100.0 * circumference) %>
+                <circle
+                  cx="40"
+                  cy="40"
+                  r="32"
+                  fill="none"
+                  stroke="<%= is_correct ? 'rgb(74, 222, 128)' : 'rgb(147, 197, 253)' %>"
+                  stroke-width="8"
+                  stroke-dasharray="<%= circumference %>"
+                  stroke-dashoffset="<%= stroke_dashoffset %>"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <!-- Vote count number -->
+              <div class="relative text-3xl font-black <%= is_correct ? 'text-green-400' : 'text-blue-300' %> font-mono z-10">
+                <%= votes %>
+              </div>
+            </div>
+            <div class="text-sm text-gray-400">
+              <%= votes == 1 ? 'vote' : 'votes' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Individual Scores -->
   <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 max-w-4xl w-full">
-    <h3 class="text-2xl text-white font-bold mb-6 text-center">Results</h3>
+    <h3 class="text-2xl text-white font-bold mb-6 text-center">Individual Scores</h3>
     <div class="space-y-4">
       <% if current_question %>
         <% current_question.trivia_answers.includes(:player).order(points_awarded: :desc).each do |answer| %>
