@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Room Rally is a real-time multiplayer party game engine inspired by Jackbox Games. Players connect via 4-letter room codes using their phones (Hand clients) while viewing a shared screen (Stage client). The system uses HTML-Over-The-Wire architecture with Rails backend and Hotwire frontend.
+Room Rally is a real-time multiplayer party game engine inspired by Jackbox Games, designed for **in-person play** (classrooms, youth groups, living rooms, parties). A host projects the Stage client on a shared screen while players join on their phones via 4-letter room codes. This is NOT an online/remote multiplayer platform — the shared physical space is core to the experience. The system uses HTML-Over-The-Wire architecture with Rails backend and Hotwire frontend.
 
 ## Technology Stack
 

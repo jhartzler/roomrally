@@ -48,6 +48,12 @@ class PlayersController < ApplicationController
     if @player.save
       Rails.logger.info "Player #{@player.name} created in room #{@room.code}"
 
+      Analytics.track(
+        distinct_id: "player_#{@player.session_id}",
+        event: "player_joined",
+        properties: { room_code: @room.code, game_type: @room.game_type, player_count_after: @room.players.active_players.count }
+      )
+
       # Broadcast the new player to all clients viewing this room
       GameBroadcaster.broadcast_player_joined(room: @room, player: @player)
 

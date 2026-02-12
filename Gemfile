@@ -94,3 +94,5 @@ gem "sentry-ruby"
 gem "sentry-rails"
 
 gem "rqrcode", "~> 2.0"
+
+gem "posthog-ruby"
