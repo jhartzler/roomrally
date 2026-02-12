@@ -19,9 +19,11 @@
     </div>
   </div>
 
-  <!-- Players Who Got It Right -->
+  <%= render "games/speed_trivia/vote_summary", question: current_question %>
+
+  <!-- Individual Scores -->
   <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 max-w-4xl w-full">
-    <h3 class="text-2xl text-white font-bold mb-6 text-center">Results</h3>
+    <h3 class="text-2xl text-white font-bold mb-6 text-center">Individual Scores</h3>
     <div class="space-y-4">
       <% if current_question %>
         <% current_question.trivia_answers.includes(:player).order(points_awarded: :desc).each do |answer| %>
