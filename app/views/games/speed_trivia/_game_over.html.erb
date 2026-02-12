@@ -13,10 +13,10 @@
       <p class="text-3xl text-yellow-400 font-black mb-2">You Won!</p>
     <% elsif rank <= 3 %>
       <div class="text-6xl mb-4"><%= ["🥈", "🥉"][rank - 2] %></div>
-      <p class="text-3xl text-white font-bold mb-2">#<%= rank %> Place</p>
+      <p class="text-3xl text-white font-bold mb-2"><%= rank.ordinalize %> Place</p>
     <% else %>
       <div class="text-6xl mb-4">🎮</div>
-      <p class="text-3xl text-white font-bold mb-2">#<%= rank %> Place</p>
+      <p class="text-3xl text-white font-bold mb-2"><%= rank.ordinalize %> Place</p>
     <% end %>
 
     <p class="text-5xl text-yellow-400 font-black font-mono my-6"><%= player.score %></p>

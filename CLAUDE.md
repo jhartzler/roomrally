@@ -142,6 +142,41 @@ Game logic calls `GameBroadcaster` methods directly. Convention for stage partia
 
 Games with timed phases include `HasRoundTimer` concern and implement `process_timeout(round_number, step_number)`.
 
+### Use Ruby/Rails Built-in Helpers
+
+**Always prefer Ruby and Rails built-in methods over handrolling solutions.** Rails provides extensive helper methods that are tested, optimized, and idiomatic.
+
+**Example - Ordinal Numbers:**
+```ruby
+# ❌ DON'T handroll a custom ordinal helper
+def ordinal(number)
+  suffix = case number % 100
+  when 11, 12, 13 then "th"
+  else
+    case number % 10
+    when 1 then "st"
+    when 2 then "nd"
+    when 3 then "rd"
+    else "th"
+    end
+  end
+  "#{number}#{suffix}"
+end
+
+# ✅ DO use Rails built-in
+<%= rank.ordinalize %>  # "1st", "2nd", "3rd", etc.
+```
+
+**Other common built-ins to remember:**
+- `pluralize(count, 'item')` - "1 item", "2 items"
+- `truncate(text, length: 30)` - Smart text truncation
+- `time_ago_in_words(time)` - "3 minutes ago"
+- `number_to_currency(price)` - "$12.50"
+- `number_with_delimiter(1000)` - "1,000"
+- `titleize`, `humanize`, `parameterize` - String transformations
+
+Before writing a helper, check if Rails already provides it in ActiveSupport or ActionView helpers.
+
 ## Important Notes
 
 - **No Channels Directory**: Uses Turbo Streams directly, no custom Action Cable channels

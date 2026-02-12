@@ -5,17 +5,18 @@
   <div class="max-w-7xl mx-auto text-center">
     <!-- Header -->
     <% if @room.current_game.present? %>
-      <div class="mb-6 flex justify-between items-center">
-        <h1 class="text-3xl font-black text-white tracking-tighter drop-shadow-lg">
+      <div class="mb-8 relative">
+        <!-- Prominent Game Name -->
+        <h1 class="text-6xl font-black text-white tracking-tighter drop-shadow-lg text-center">
           <%= @room.display_name %>
         </h1>
-        <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 border border-white/20">
-          <div class="bg-white rounded-lg p-1 inline-flex">
-            <div class="w-[40px] h-[40px]">
-              <%= qr_code_svg(join_room_url(@room.code), size: 40) %>
-            </div>
+
+        <!-- Small Room Code in Corner -->
+        <div class="absolute top-0 right-0 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-lg px-2 py-1 border border-white/10">
+          <div class="bg-white rounded p-0.5">
+            <%= qr_code_svg(join_room_url(@room.code), size: 24) %>
           </div>
-          <span class="text-lg font-black font-mono tracking-widest text-white"><%= @room.code %></span>
+          <span class="text-xs font-bold font-mono tracking-wider text-white/70"><%= @room.code %></span>
         </div>
       </div>
     <% else %>
