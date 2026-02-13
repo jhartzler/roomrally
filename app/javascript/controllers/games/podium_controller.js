@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = {
     players: Array,    // current top-4 player IDs
-    previous: Array    // previous top-4 player IDs
+    previous: Array    // previous top-4 player IDs (by position)
   }
 
   connect() {
@@ -16,80 +16,50 @@ export default class extends Controller {
 
     const currentSet = new Set(current)
     const previousSet = new Set(previous)
+    const entering = new Set(current.filter(id => !previousSet.has(id)))
 
-    const entering = current.filter(id => !previousSet.has(id))
-    const exiting = previous.filter(id => !currentSet.has(id))
-    const hasBonk = entering.length > 0 && exiting.length > 0
+    const PAIR_STAGGER = 300
+    const COLLISION_OFFSET = 450
+    let pairIndex = 0
 
-    const PAIR_STAGGER = 200  // stagger between each enter/bonk pair
-    const COLLISION_OFFSET = 300  // ms into rise when bonked player reacts
+    current.forEach((id, i) => {
+      const slot = this.element.querySelector(`[data-podium-slot="${i}"]`)
+      if (!slot) return
 
-    // Pair entering players with exiting players for synchronized bonk collisions
-    // First entering player bonks last exiting player (bottom of old podium)
-    const exitReversed = [...exiting].reverse()
+      const isEntering = entering.has(id)
+      const prevOccupant = previous[i]
+      const prevWasBonked = prevOccupant && !currentSet.has(prevOccupant)
 
-    if (hasBonk) {
-      const pairCount = Math.min(entering.length, exitReversed.length)
+      if (isEntering && prevWasBonked) {
+        // Slot has ghost (old player) + entering (new player)
+        const enterEl = slot.querySelector("[data-podium-role='entering']")
+        const ghostEl = slot.querySelector("[data-podium-role='ghost']")
 
-      for (let i = 0; i < pairCount; i++) {
-        const enterEl = this.element.querySelector(`[data-podium-player-id="${entering[i]}"]`)
-        const exitEl = this.element.querySelector(`[data-podium-player-id="${exitReversed[i]}"]`)
-        const pairDelay = i * PAIR_STAGGER
+        const delay = pairIndex * PAIR_STAGGER
 
-        // Entering player starts rising
         if (enterEl) {
-          enterEl.style.animationDelay = `${pairDelay}ms`
+          enterEl.style.animationDelay = `${delay}ms`
           enterEl.classList.add("podium-enter")
         }
 
-        // Bonked player reacts mid-rise — collision moment
-        if (exitEl) {
-          exitEl.style.animationDelay = `${pairDelay + COLLISION_OFFSET}ms`
-          exitEl.classList.add("podium-bonked")
-          exitEl.addEventListener("animationend", () => exitEl.remove(), { once: true })
+        if (ghostEl) {
+          ghostEl.style.animationDelay = `${delay + COLLISION_OFFSET}ms`
+          ghostEl.classList.add("podium-bonked")
+          ghostEl.addEventListener("animationend", () => ghostEl.remove(), { once: true })
         }
+
+        pairIndex++
+      } else if (isEntering) {
+        const el = slot.querySelector("[data-podium-role='card']")
+        if (el) {
+          el.style.animationDelay = `${pairIndex * PAIR_STAGGER}ms`
+          el.classList.add("podium-enter")
+          pairIndex++
+        }
+      } else if (previousSet.has(id)) {
+        const el = slot.querySelector("[data-podium-role='card']")
+        if (el) el.classList.add("podium-stay")
       }
-
-      // Any remaining entering players without a bonk partner
-      for (let i = pairCount; i < entering.length; i++) {
-        const el = this.element.querySelector(`[data-podium-player-id="${entering[i]}"]`)
-        if (!el) continue
-        el.style.animationDelay = `${i * PAIR_STAGGER}ms`
-        el.classList.add("podium-enter")
-      }
-
-      // Any remaining exiting players without an entering partner
-      for (let i = pairCount; i < exitReversed.length; i++) {
-        const el = this.element.querySelector(`[data-podium-player-id="${exitReversed[i]}"]`)
-        if (!el) continue
-        el.style.animationDelay = `${i * PAIR_STAGGER}ms`
-        el.classList.add("podium-exit")
-        el.addEventListener("animationend", () => el.remove(), { once: true })
-      }
-    } else {
-      // No bonk — simple enter/exit
-      entering.forEach((id, i) => {
-        const el = this.element.querySelector(`[data-podium-player-id="${id}"]`)
-        if (!el) return
-        el.style.animationDelay = `${i * PAIR_STAGGER}ms`
-        el.classList.add("podium-enter")
-      })
-
-      exiting.forEach((id, i) => {
-        const el = this.element.querySelector(`[data-podium-player-id="${id}"]`)
-        if (!el) return
-        el.style.animationDelay = `${i * PAIR_STAGGER}ms`
-        el.classList.add("podium-exit")
-        el.addEventListener("animationend", () => el.remove(), { once: true })
-      })
-    }
-
-    // Staying players settle
-    current.forEach(id => {
-      if (entering.includes(id)) return
-      const el = this.element.querySelector(`[data-podium-player-id="${id}"]`)
-      if (!el || !previousSet.has(id)) return
-      el.classList.add("podium-stay")
     })
   }
 }
