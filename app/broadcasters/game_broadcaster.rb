@@ -177,7 +177,10 @@ module GameBroadcaster
   def self.update_all_player_lists(room, player:, action:)
     PLAYER_LIST_TARGETS.each do |target_info|
       if action == :append
-        Turbo::StreamsChannel.broadcast_append_to(
+        # Prepend to stage so newest players appear at the top of the cloud
+        broadcast_method = target_info[:id] == "stage_player_list" ? :broadcast_prepend_to : :broadcast_append_to
+        Turbo::StreamsChannel.public_send(
+          broadcast_method,
           room,
           target: target_info[:id],
           partial: target_info[:partial],
