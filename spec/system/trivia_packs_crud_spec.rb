@@ -25,13 +25,8 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       all("input[name*='[options]']")[3].set("Madrid")
 
       # Select correct answer (Option A - Paris) - use JS click to avoid interception
-      radio_button = all("input[name*='[correct_answer_index]']")[0]
-      page.execute_script("arguments[0].click();", radio_button)
-
-      # Manually set the correct answer hidden field (workaround for Stimulus event handling in tests)
-      wrapper = all(".question-field-wrapper").first
-      correct_answer_field = wrapper.find("input[name*='[correct_answer]']", visible: :all)
-      page.execute_script("arguments[0].value = 'Paris';", correct_answer_field)
+      checkbox = all("input[name*='[correct_answer_indices]']")[0]
+      page.execute_script("arguments[0].click();", checkbox)
 
       # Add second question
       click_button "Add Question"
@@ -47,12 +42,8 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       first_wrapper.all("input[name*='[options]']")[3].set("6")
 
       # Select correct answer (Option B - 4) - use JS click
-      radio_button = first_wrapper.all("input[name*='[correct_answer_index]']")[1]
-      page.execute_script("arguments[0].click();", radio_button)
-
-      # Manually set the correct answer hidden field
-      correct_answer_field = first_wrapper.find("input[name*='[correct_answer]']", visible: :all)
-      page.execute_script("arguments[0].value = '4';", correct_answer_field)
+      checkbox = first_wrapper.all("input[name*='[correct_answer_indices]']")[1]
+      page.execute_script("arguments[0].click();", checkbox)
 
       # Remove the second question (bottom one)
       wrapper = all(".question-field-wrapper").last
@@ -76,7 +67,7 @@ RSpec.describe "TriviaPack CRUD", type: :system do
              trivia_pack: pack,
              body: "Original Question?",
              options: [ "A", "B", "C", "D" ],
-             correct_answer: "A")
+             correct_answers: ["A"])
     end
 
     it "allows updating the pack and modifying questions" do
@@ -103,12 +94,8 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       first_wrapper.all("input[name*='[options]']")[3].set("Option 4")
 
       # Select correct answer using JS click
-      radio_button = first_wrapper.all("input[name*='[correct_answer_index]']")[0]
-      page.execute_script("arguments[0].click();", radio_button)
-
-      # Manually set the correct answer hidden field
-      correct_answer_field = first_wrapper.find("input[name*='[correct_answer]']", visible: :all)
-      page.execute_script("arguments[0].value = 'Option 1';", correct_answer_field)
+      checkbox = first_wrapper.all("input[name*='[correct_answer_indices]']")[0]
+      page.execute_script("arguments[0].click();", checkbox)
 
       click_button "Save Pack"
 
@@ -142,7 +129,7 @@ RSpec.describe "TriviaPack CRUD", type: :system do
              trivia_pack: pack,
              body: "What is the capital of France?",
              options: [ "Paris", "London", "Berlin", "Madrid" ],
-             correct_answer: "Paris")
+             correct_answers: ["Paris"])
     end
 
     it "displays questions with correct answer highlighted" do

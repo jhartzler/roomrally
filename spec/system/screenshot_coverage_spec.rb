@@ -75,7 +75,7 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
         FactoryBot.create(:trivia_question,
           trivia_pack: default_pack,
           body: "Test Question #{i + 1}?",
-          correct_answer: "Answer #{i + 1}",
+          correct_answers: ["Answer #{i + 1}"],
           options: [ "Answer #{i + 1}", "Wrong A", "Wrong B", "Wrong C" ])
       end
     end
@@ -133,7 +133,7 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
         TriviaAnswer.create!(
           player:,
           trivia_question_instance: tqi,
-          selected_option: tqi.correct_answer,
+          selected_option: tqi.correct_answers.first,
           correct: true,
           submitted_at: Time.current
         )
