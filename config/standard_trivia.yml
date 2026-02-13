@@ -1,6 +1,7 @@
 # Nature & Science
 - body: "What is the only fruit that has its seeds on the outside?"
-  correct_answer: "Strawberry"
+  correct_answers:
+    - "Strawberry"
   options:
     - "Raspberry"
     - "Strawberry"
@@ -8,7 +9,8 @@
     - "Pomegranate"
 
 - body: "What is the hardest natural substance on Earth?"
-  correct_answer: "Diamond"
+  correct_answers:
+    - "Diamond"
   options:
     - "Gold"
     - "Iron"
@@ -16,7 +18,8 @@
     - "Quartz"
 
 - body: "What is the most common gas found in Earth's atmosphere?"
-  correct_answer: "Nitrogen"
+  correct_answers:
+    - "Nitrogen"
   options:
     - "Oxygen"
     - "Nitrogen"
@@ -24,7 +27,8 @@
     - "Hydrogen"
 
 - body: "Which planet is known as the \"Red Planet\"?"
-  correct_answer: "Mars"
+  correct_answers:
+    - "Mars"
   options:
     - "Venus"
     - "Jupiter"
@@ -32,7 +36,8 @@
     - "Saturn"
 
 - body: "What is the largest organ in the human body?"
-  correct_answer: "The Skin"
+  correct_answers:
+    - "The Skin"
   options:
     - "The Liver"
     - "The Brain"
@@ -41,7 +46,8 @@
 
 # Geography & History
 - body: "Which country gifted the Statue of Liberty to the United States?"
-  correct_answer: "France"
+  correct_answers:
+    - "France"
   options:
     - "United Kingdom"
     - "Italy"
@@ -49,7 +55,8 @@
     - "France"
 
 - body: "In what year did the Titanic sink on its maiden voyage?"
-  correct_answer: "1912"
+  correct_answers:
+    - "1912"
   options:
     - "1905"
     - "1912"
@@ -57,7 +64,8 @@
     - "1898"
 
 - body: "Which of these is the capital city of Australia?"
-  correct_answer: "Canberra"
+  correct_answers:
+    - "Canberra"
   options:
     - "Sydney"
     - "Melbourne"
@@ -65,7 +73,8 @@
     - "Perth"
 
 - body: "Which continent is the least populated on Earth?"
-  correct_answer: "Antarctica"
+  correct_answers:
+    - "Antarctica"
   options:
     - "Australia"
     - "Antarctica"
@@ -73,7 +82,8 @@
     - "Europe"
 
 - body: "How many feet are in a single mile?"
-  correct_answer: "5,280"
+  correct_answers:
+    - "5,280"
   options:
     - "2,140"
     - "5,280"
@@ -82,7 +92,8 @@
 
 # Art, Literature & Pop Culture
 - body: "Which artist famously painted the ceiling of the Sistine Chapel?"
-  correct_answer: "Michelangelo"
+  correct_answers:
+    - "Michelangelo"
   options:
     - "Leonardo da Vinci"
     - "Michelangelo"
@@ -90,7 +101,8 @@
     - "Donatello"
 
 - body: "In the original 1939 film The Wizard of Oz, what color were Dorothy's slippers?"
-  correct_answer: "Ruby"
+  correct_answers:
+    - "Ruby"
   options:
     - "Silver"
     - "Ruby"
@@ -98,7 +110,8 @@
     - "Emerald"
 
 - body: "Which classic novel begins with the line, \"Call me Ishmael\"?"
-  correct_answer: "Moby-Dick"
+  correct_answers:
+    - "Moby-Dick"
   options:
     - "Great Expectations"
     - "Moby-Dick"
@@ -106,7 +119,8 @@
     - "The Old Man and the Sea"
 
 - body: "How many strings does a standard violin have?"
-  correct_answer: "4"
+  correct_answers:
+    - "4"
   options:
     - "4"
     - "5"
@@ -114,7 +128,8 @@
     - "8"
 
 - body: "Which mythical creature is the national animal of Scotland?"
-  correct_answer: "Unicorn"
+  correct_answers:
+    - "Unicorn"
   options:
     - "Dragon"
     - "Loch Ness Monster"
@@ -123,7 +138,8 @@
 
 # General Knowledge & Food
 - body: "How many hearts does an octopus have?"
-  correct_answer: "3"
+  correct_answers:
+    - "3"
   options:
     - "1"
     - "2"
@@ -131,7 +147,8 @@
     - "4"
 
 - body: "What is the main ingredient in traditional Hummus?"
-  correct_answer: "Chickpeas"
+  correct_answers:
+    - "Chickpeas"
   options:
     - "Black beans"
     - "Lentils"
@@ -139,7 +156,8 @@
     - "Soybeans"
 
 - body: "Which company first released the \"iPhone\" in 2007?"
-  correct_answer: "Apple"
+  correct_answers:
+    - "Apple"
   options:
     - "Microsoft"
     - "Apple"
@@ -147,7 +165,8 @@
     - "Nokia"
 
 - body: "What is the primary ingredient in a Japanese Miso soup base?"
-  correct_answer: "Fermented soybean paste"
+  correct_answers:
+    - "Fermented soybean paste"
   options:
     - "Seaweed"
     - "Tofu"
@@ -155,7 +174,8 @@
     - "Fish stock"
 
 - body: "Which animal is known as the \"Ship of the Desert\"?"
-  correct_answer: "Camel"
+  correct_answers:
+    - "Camel"
   options:
     - "Elephant"
     - "Ostrich"
@@ -164,7 +184,8 @@
 
 # Logic, Math & Tech
 - body: "In the world of computers, what does \"ROM\" stand for?"
-  correct_answer: "Read-Only Memory"
+  correct_answers:
+    - "Read-Only Memory"
   options:
     - "Random Only Memory"
     - "Real-time Operating Monitor"
@@ -172,7 +193,8 @@
     - "Rapid Output Module"
 
 - body: "What is the square root of 144?"
-  correct_answer: "12"
+  correct_answers:
+    - "12"
   options:
     - "10"
     - "12"
@@ -180,7 +202,8 @@
     - "16"
 
 - body: "How many elements are currently listed on the Periodic Table?"
-  correct_answer: "118"
+  correct_answers:
+    - "118"
   options:
     - "102"
     - "112"
@@ -188,7 +211,8 @@
     - "124"
 
 - body: "How many holes are played in a standard professional round of golf?"
-  correct_answer: "18"
+  correct_answers:
+    - "18"
   options:
     - "9"
     - "12"
@@ -196,9 +220,20 @@
     - "24"
 
 - body: "Which planet in our solar system has the most rings?"
-  correct_answer: "Saturn"
+  correct_answers:
+    - "Saturn"
   options:
     - "Jupiter"
     - "Neptune"
     - "Saturn"
     - "Uranus"
+
+- body: "Which of these animals can fly?"
+  correct_answers:
+    - "Eagle"
+    - "Bat"
+  options:
+    - "Eagle"
+    - "Penguin"
+    - "Bat"
+    - "Ostrich"

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswerField"]
+    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer"]
     static values = { ratio: { type: Number, default: 1 } }
 
     connect() {
@@ -10,7 +10,7 @@ export default class extends Controller {
 
     addQuestion(event) {
         if (event) event.preventDefault()
-        this.createQuestionField({ body: "", options: ["", "", "", ""], correct_answer: "" })
+        this.createQuestionField({ body: "", options: ["", "", "", ""], correct_answers: [] })
     }
 
     createQuestionField(data) {
@@ -40,17 +40,16 @@ export default class extends Controller {
             })
         }
 
-        // Set correct answer
-        const correctAnswerField = wrapper.querySelector("input[name*='[correct_answer]']")
-        if (correctAnswerField && data.correct_answer) {
-            correctAnswerField.value = data.correct_answer
-
-            // Select the correct radio button
-            const correctIndex = data.options?.indexOf(data.correct_answer) ?? 0
-            const radioButtons = wrapper.querySelectorAll("input[name*='[correct_answer_index]']")
-            if (radioButtons[correctIndex]) {
-                radioButtons[correctIndex].checked = true
-            }
+        // Set correct answers
+        if (data.correct_answers && Array.isArray(data.correct_answers)) {
+            const checkboxes = wrapper.querySelectorAll("input[name*='[correct_answer_indices]']")
+            data.correct_answers.forEach(answer => {
+                const correctIndex = data.options?.indexOf(answer) ?? -1
+                if (correctIndex >= 0 && checkboxes[correctIndex]) {
+                    checkboxes[correctIndex].checked = true
+                }
+            })
+            this.syncCorrectAnswersFields(wrapper)
         }
 
         this.updateCount()
@@ -71,40 +70,45 @@ export default class extends Controller {
         this.updateCount()
     }
 
-    updateCorrectAnswer(event) {
-        const radio = event.target
-        const questionWrapper = radio.closest(".question-field-wrapper")
-        const optionIndex = parseInt(radio.value)
+    updateCorrectAnswers(event) {
+        const questionWrapper = event.target.closest(".question-field-wrapper")
+        this.syncCorrectAnswersFields(questionWrapper)
+    }
 
-        // Get the option fields for this question
+    syncCorrectAnswersFields(questionWrapper) {
+        const checkboxes = questionWrapper.querySelectorAll("input[name*='[correct_answer_indices]']")
         const optionFields = questionWrapper.querySelectorAll("input[name*='[options]']")
-        const correctAnswerField = questionWrapper.querySelector("input[name*='[correct_answer]']")
 
-        if (optionFields[optionIndex] && correctAnswerField) {
-            correctAnswerField.value = optionFields[optionIndex].value
-        }
+        // Find the correct answers container
+        const container = questionWrapper.querySelector("[data-trivia-editor-target='correctAnswersContainer']")
+        if (!container) return
+
+        // Clear existing hidden fields
+        container.innerHTML = ""
+
+        // Derive the base name from any existing field in the wrapper
+        const anyField = questionWrapper.querySelector("textarea[name*='[body]']")
+        if (!anyField) return
+        const baseName = anyField.name.replace("[body]", "[correct_answers][]")
+
+        // Add a hidden field for each checked option
+        checkboxes.forEach((checkbox, index) => {
+            if (checkbox.checked && optionFields[index] && optionFields[index].value) {
+                const hidden = document.createElement("input")
+                hidden.type = "hidden"
+                hidden.name = baseName
+                hidden.value = optionFields[index].value
+                container.appendChild(hidden)
+            }
+        })
     }
 
     optionChanged(event) {
-        const optionField = event.target
-        const questionWrapper = optionField.closest(".question-field-wrapper")
-        const optionIndex = parseInt(optionField.dataset.optionIndex)
-
-        // Check if this option is currently selected as correct
-        const radioButtons = questionWrapper.querySelectorAll("input[name*='[correct_answer_index]']")
-        const selectedRadio = Array.from(radioButtons).find(radio => radio.checked)
-
-        if (selectedRadio && parseInt(selectedRadio.value) === optionIndex) {
-            // Update the correct answer hidden field
-            const correctAnswerField = questionWrapper.querySelector("input[name*='[correct_answer]']")
-            if (correctAnswerField) {
-                correctAnswerField.value = optionField.value
-            }
-        }
+        const questionWrapper = event.target.closest(".question-field-wrapper")
+        this.syncCorrectAnswersFields(questionWrapper)
     }
 
     updateCount() {
-        // Count visible question fields that are not marked for destruction
         const visibleQuestions = this.questionFieldTargets.filter(field => {
             const wrapper = field.closest(".question-field-wrapper")
             const destroyInput = wrapper.querySelector("input[name*='_destroy']")
@@ -113,8 +117,6 @@ export default class extends Controller {
         })
 
         const count = visibleQuestions.length
-
-        // Use the ratio passed from the server
         const playerCapacity = Math.floor(count / this.ratioValue)
         this.countDisplayTarget.textContent = playerCapacity
 

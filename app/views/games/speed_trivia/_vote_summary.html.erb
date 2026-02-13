@@ -7,7 +7,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <% question.options.each_with_index do |option, index| %>
       <% votes = vote_counts[option] || 0 %>
-      <% is_correct = option == question.correct_answer %>
+      <% is_correct = question.correct_answers.include?(option) %>
 
       <div class="bg-black/40 backdrop-blur-md border-2 <%= is_correct ? 'border-green-500' : 'border-gray-600' %> rounded-xl p-6 flex items-center justify-between">
         <div class="flex items-center gap-4 flex-grow">

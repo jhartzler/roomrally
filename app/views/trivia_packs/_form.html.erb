@@ -92,17 +92,17 @@
               <% end %>
             </div>
 
-            <!-- Correct Answer Selection -->
+            <!-- Correct Answer(s) Selection -->
             <div class="mb-3">
-              <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Correct Answer</label>
+              <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Correct Answer(s)</label>
               <div class="flex gap-2">
                 <% 4.times do |i| %>
                   <label class="flex-1 cursor-pointer">
-                    <input type="radio"
-                           name="<%= q.object_name %>[correct_answer_index]"
+                    <input type="checkbox"
+                           name="<%= q.object_name %>[correct_answer_indices][]"
                            value="<%= i %>"
-                           <%= 'checked' if q.object.options&.at(i) == q.object.correct_answer %>
-                           data-action="change->trivia-editor#updateCorrectAnswer"
+                           <%= 'checked' if q.object.correct_answers&.include?(q.object.options&.at(i)) %>
+                           data-action="change->trivia-editor#updateCorrectAnswers"
                            data-question-index="<%= q.index %>"
                            class="sr-only peer">
                     <div class="text-center py-2 px-3 rounded-lg bg-white/10 border-2 border-white/10 peer-checked:border-green-500 peer-checked:bg-green-500/20 peer-checked:text-green-300 text-blue-200 font-bold text-xs transition-all hover:bg-white/20">
@@ -113,7 +113,11 @@
               </div>
             </div>
 
-            <%= q.hidden_field :correct_answer, data: { trivia_editor_target: "correctAnswerField" } %>
+            <div data-trivia-editor-target="correctAnswersContainer">
+              <% q.object.correct_answers&.each do |answer| %>
+                <input type="hidden" name="<%= q.object_name %>[correct_answers][]" value="<%= answer %>">
+              <% end %>
+            </div>
 
             <!-- Delete Button -->
             <%= q.hidden_field :_destroy %>
@@ -156,17 +160,16 @@
         <% end %>
       </div>
 
-      <!-- Correct Answer Selection -->
+      <!-- Correct Answer(s) Selection -->
       <div class="mb-3">
-        <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Correct Answer</label>
+        <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Correct Answer(s)</label>
         <div class="flex gap-2">
           <% 4.times do |i| %>
             <label class="flex-1 cursor-pointer">
-              <input type="radio"
-                     name="trivia_pack[trivia_questions_attributes][NEW_RECORD][correct_answer_index]"
+              <input type="checkbox"
+                     name="trivia_pack[trivia_questions_attributes][NEW_RECORD][correct_answer_indices][]"
                      value="<%= i %>"
-                     <%= 'checked' if i == 0 %>
-                     data-action="change->trivia-editor#updateCorrectAnswer"
+                     data-action="change->trivia-editor#updateCorrectAnswers"
                      data-question-index="NEW_RECORD"
                      class="sr-only peer">
               <div class="text-center py-2 px-3 rounded-lg bg-white/10 border-2 border-white/10 peer-checked:border-green-500 peer-checked:bg-green-500/20 peer-checked:text-green-300 text-blue-200 font-bold text-xs transition-all hover:bg-white/20">
@@ -177,7 +180,7 @@
         </div>
       </div>
 
-      <input type="hidden" name="trivia_pack[trivia_questions_attributes][NEW_RECORD][correct_answer]" data-trivia-editor-target="correctAnswerField">
+      <div data-trivia-editor-target="correctAnswersContainer"></div>
 
       <!-- Delete Button -->
       <div class="flex justify-end">

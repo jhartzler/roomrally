@@ -57,7 +57,7 @@ class TriviaPacksController < ApplicationController
       trivia_questions_attributes: [
         :id,
         :body,
-        :correct_answer,
+        correct_answers: [],
         :_destroy,
         options: []
       ]
