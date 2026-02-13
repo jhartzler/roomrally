@@ -12,8 +12,8 @@ module GameBroadcaster
     end
   end
 
-  def self.broadcast_stage(room:)
-    game = room.current_game
+  def self.broadcast_stage(room:, game: nil)
+    game ||= room.current_game
     return unless game
 
     status_suffix = game.status

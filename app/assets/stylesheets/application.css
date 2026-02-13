@@ -236,7 +236,7 @@
 }
 
 .podium-bonked {
-  animation: podium-bonk-fall 600ms ease-in-out 250ms both;
+  animation: podium-bonk-fall 600ms ease-in-out both;
 }
 
 .podium-stay {

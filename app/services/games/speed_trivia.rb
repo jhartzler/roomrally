@@ -132,7 +132,7 @@ module Games
 
     def self.broadcast_all(game)
       room = game.room
-      GameBroadcaster.broadcast_stage(room:)
+      GameBroadcaster.broadcast_stage(room:, game:)
       GameBroadcaster.broadcast_hand(room:)
       GameBroadcaster.broadcast_host_controls(room:)
     end
