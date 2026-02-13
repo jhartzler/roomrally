@@ -9,37 +9,65 @@ RSpec.describe TriviaAnswer, type: :model do
   end
 
   describe '#determine_correctness' do
-    let(:question) { create(:trivia_question_instance, correct_answer: "Paris") }
     let(:player) { create(:player) }
 
-    def build_answer(option)
-      build(:trivia_answer, trivia_question_instance: question, player:, selected_option: option)
+    context 'with single correct answer' do
+      let(:question) { create(:trivia_question_instance, correct_answers: ["Paris"]) }
+
+      def build_answer(option)
+        build(:trivia_answer, trivia_question_instance: question, player:, selected_option: option)
+      end
+
+      it 'sets correct to true when answer matches' do
+        answer = build_answer("Paris")
+        answer.determine_correctness
+        expect(answer.correct).to be true
+      end
+
+      it 'sets correct to false when answer does not match' do
+        answer = build_answer("London")
+        answer.determine_correctness
+        expect(answer.correct).to be false
+      end
+
+      it 'is case sensitive' do
+        answer = build_answer("paris")
+        answer.determine_correctness
+        expect(answer.correct).to be false
+      end
     end
 
+    context 'with multiple correct answers' do
+      let(:question) { create(:trivia_question_instance, correct_answers: ["Paris", "Berlin"]) }
 
-    it 'sets correct to true when answer matches' do
-      answer = build_answer("Paris")
-      answer.determine_correctness
-      expect(answer.correct).to be true
-    end
+      def build_answer(option)
+        build(:trivia_answer, trivia_question_instance: question, player:, selected_option: option)
+      end
 
-    it 'sets correct to false when answer does not match' do
-      answer = build_answer("London")
-      answer.determine_correctness
-      expect(answer.correct).to be false
-    end
+      it 'sets correct to true when answer matches first correct answer' do
+        answer = build_answer("Paris")
+        answer.determine_correctness
+        expect(answer.correct).to be true
+      end
 
-    it 'is case sensitive' do
-      answer = build_answer("paris")
-      answer.determine_correctness
-      expect(answer.correct).to be false
+      it 'sets correct to true when answer matches second correct answer' do
+        answer = build_answer("Berlin")
+        answer.determine_correctness
+        expect(answer.correct).to be true
+      end
+
+      it 'sets correct to false when answer matches no correct answer' do
+        answer = build_answer("London")
+        answer.determine_correctness
+        expect(answer.correct).to be false
+      end
     end
   end
 
   describe '#calculate_points' do
     # rubocop:disable RSpec/ExampleLength, RSpec/NoExpectationExample
     let(:game) { create(:speed_trivia_game, time_limit: 20) }
-    let(:question) { create(:trivia_question_instance, speed_trivia_game: game, correct_answer: "Paris") }
+    let(:question) { create(:trivia_question_instance, speed_trivia_game: game, correct_answers: ["Paris"]) }
     let(:player) { create(:player) }
 
     def build_correct_answer(submitted_at)

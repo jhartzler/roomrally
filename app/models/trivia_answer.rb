@@ -3,7 +3,7 @@ class TriviaAnswer < ApplicationRecord
   belongs_to :trivia_question_instance
 
   def determine_correctness
-    self.correct = selected_option == trivia_question_instance.correct_answer
+    self.correct = trivia_question_instance.correct_answers.include?(selected_option)
   end
 
   def calculate_points(time_limit:, round_started_at:, round_closed_at:)
