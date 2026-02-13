@@ -68,7 +68,13 @@
       <p class="text-green-400">Answer: <%= current_q&.correct_answers&.join(", ") %></p>
     </div>
 
-    <% if game.questions_remaining? %>
+    <% if game.reviewing_step == 1 %>
+      <%= button_to "Show Scores",
+          speed_trivia_game_score_reveal_path(game),
+          method: :post,
+          data: { turbo_submits_with: "Revealing…" },
+          class: "w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+    <% elsif game.questions_remaining? %>
       <%= button_to "Next Question",
           speed_trivia_game_advancement_path(game),
           method: :post,
