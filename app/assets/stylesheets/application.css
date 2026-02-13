@@ -165,3 +165,80 @@
 .animate-bounce-in {
   animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
+/* Podium Animations */
+
+@keyframes podium-rise {
+  0% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-8%);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(3%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes podium-bonk-fall {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 1;
+  }
+  15% {
+    transform: translateY(-12%) translateX(0);
+  }
+  30% {
+    transform: translateY(-5%) translateX(8px);
+  }
+  45% {
+    transform: translateY(10%) translateX(-6px);
+  }
+  100% {
+    transform: translateY(150%) translateX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes podium-fall {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(150%);
+    opacity: 0;
+  }
+}
+
+@keyframes podium-settle {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.podium-enter {
+  animation: podium-rise 600ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.podium-exit {
+  animation: podium-fall 400ms ease-in both;
+}
+
+.podium-bonked {
+  animation: podium-bonk-fall 600ms ease-in-out 250ms both;
+}
+
+.podium-stay {
+  animation: podium-settle 300ms ease-out both;
+}
