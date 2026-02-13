@@ -10,7 +10,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       FactoryBot.create(:trivia_question,
         trivia_pack: default_pack,
         body: "Test Question #{i + 1}?",
-        correct_answers: ["Answer #{i + 1}"],
+        correct_answers: [ "Answer #{i + 1}" ],
         options: [ "Answer #{i + 1}", "Wrong A", "Wrong B", "Wrong C" ])
     end
   end

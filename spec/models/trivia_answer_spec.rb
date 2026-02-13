@@ -12,7 +12,7 @@ RSpec.describe TriviaAnswer, type: :model do
     let(:player) { create(:player) }
 
     context 'with single correct answer' do
-      let(:question) { create(:trivia_question_instance, correct_answers: ["Paris"]) }
+      let(:question) { create(:trivia_question_instance, correct_answers: [ "Paris" ]) }
 
       def build_answer(option)
         build(:trivia_answer, trivia_question_instance: question, player:, selected_option: option)
@@ -38,7 +38,7 @@ RSpec.describe TriviaAnswer, type: :model do
     end
 
     context 'with multiple correct answers' do
-      let(:question) { create(:trivia_question_instance, correct_answers: ["Paris", "Berlin"]) }
+      let(:question) { create(:trivia_question_instance, correct_answers: [ "Paris", "Berlin" ]) }
 
       def build_answer(option)
         build(:trivia_answer, trivia_question_instance: question, player:, selected_option: option)
@@ -67,7 +67,7 @@ RSpec.describe TriviaAnswer, type: :model do
   describe '#calculate_points' do
     # rubocop:disable RSpec/ExampleLength, RSpec/NoExpectationExample
     let(:game) { create(:speed_trivia_game, time_limit: 20) }
-    let(:question) { create(:trivia_question_instance, speed_trivia_game: game, correct_answers: ["Paris"]) }
+    let(:question) { create(:trivia_question_instance, speed_trivia_game: game, correct_answers: [ "Paris" ]) }
     let(:player) { create(:player) }
 
     def build_correct_answer(submitted_at)

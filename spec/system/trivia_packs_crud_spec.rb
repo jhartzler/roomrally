@@ -71,7 +71,7 @@ RSpec.describe "TriviaPack CRUD", type: :system do
              trivia_pack: pack,
              body: "Original Question?",
              options: [ "A", "B", "C", "D" ],
-             correct_answers: ["A"])
+             correct_answers: [ "A" ])
     end
 
     it "allows updating the pack and modifying questions" do
@@ -133,7 +133,7 @@ RSpec.describe "TriviaPack CRUD", type: :system do
              trivia_pack: pack,
              body: "What is the capital of France?",
              options: [ "Paris", "London", "Berlin", "Madrid" ],
-             correct_answers: ["Paris"])
+             correct_answers: [ "Paris" ])
     end
 
     it "displays questions with correct answer highlighted" do

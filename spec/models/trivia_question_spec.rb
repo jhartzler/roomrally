@@ -11,7 +11,7 @@ RSpec.describe TriviaQuestion, type: :model do
 
     it 'validates options must be array of four' do
       trivia_pack = create(:trivia_pack)
-      question = build(:trivia_question, trivia_pack:, options: ["A", "B", "C"])
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C" ])
       expect(question).not_to be_valid
       expect(question.errors[:options]).to include("must contain exactly 4 choices")
     end
@@ -32,22 +32,22 @@ RSpec.describe TriviaQuestion, type: :model do
 
     it 'validates all correct_answers must be in options' do
       trivia_pack = create(:trivia_pack)
-      question = build(:trivia_question, trivia_pack:, options: ["A", "B", "C", "D"], correct_answers: ["E"])
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answers: [ "E" ])
       expect(question).not_to be_valid
       expect(question.errors[:correct_answers]).to include("must all be included in options")
     end
 
     it 'allows multiple correct answers' do
       trivia_pack = create(:trivia_pack)
-      question = build(:trivia_question, trivia_pack:, options: ["A", "B", "C", "D"], correct_answers: ["A", "B"])
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answers: [ "A", "B" ])
       expect(question).to be_valid
     end
   end
 
   describe 'options' do
     it 'stores options as an array' do
-      question = create(:trivia_question, options: ["Paris", "London", "Berlin", "Madrid"])
-      expect(question.reload.options).to eq(["Paris", "London", "Berlin", "Madrid"])
+      question = create(:trivia_question, options: [ "Paris", "London", "Berlin", "Madrid" ])
+      expect(question.reload.options).to eq([ "Paris", "London", "Berlin", "Madrid" ])
     end
   end
 end

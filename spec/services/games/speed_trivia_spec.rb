@@ -89,7 +89,7 @@ RSpec.describe Games::SpeedTrivia do
       create(:trivia_question_instance,
         speed_trivia_game: game,
         position: 0,
-        correct_answers: ["Paris"],
+        correct_answers: [ "Paris" ],
         options: [ "Paris", "London", "Berlin", "Madrid" ])
       game.update!(round_started_at: 5.seconds.ago)
       allow(GameBroadcaster).to receive(:broadcast_stage)
