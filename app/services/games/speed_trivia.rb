@@ -137,7 +137,7 @@ module Games
           speed_trivia_game: game,
           trivia_question: question,
           body: question.body,
-          correct_answer: question.correct_answer,
+          correct_answers: question.correct_answers,
           options: question.options,
           position: index
         )

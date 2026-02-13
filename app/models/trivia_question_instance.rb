@@ -4,7 +4,7 @@ class TriviaQuestionInstance < ApplicationRecord
   has_many :trivia_answers, dependent: :destroy
 
   validates :body, presence: true
-  validates :correct_answer, presence: true
+  validates :correct_answers, presence: true
   validates :position, presence: true
 
   def vote_counts

@@ -72,8 +72,8 @@ RSpec.describe TriviaPack, type: :model do
       pack = user.trivia_packs.create!(
         name: "Test Pack",
         trivia_questions_attributes: [
-          { body: "Question 1?", options: [ "A", "B", "C", "D" ], correct_answer: "A" },
-          { body: "Question 2?", options: [ "W", "X", "Y", "Z" ], correct_answer: "Z" }
+          { body: "Question 1?", options: [ "A", "B", "C", "D" ], correct_answers: [ "A" ] },
+          { body: "Question 2?", options: [ "W", "X", "Y", "Z" ], correct_answers: [ "Z" ] }
         ]
       )
       expect(pack.trivia_questions.count).to eq(2)
@@ -85,8 +85,8 @@ RSpec.describe TriviaPack, type: :model do
       pack = user.trivia_packs.create!(
         name: "Test Pack",
         trivia_questions_attributes: [
-          { body: "Question 1?", options: [ "A", "B", "C", "D" ], correct_answer: "A" },
-          { body: "", options: [ "W", "X", "Y", "Z" ], correct_answer: "Z" }
+          { body: "Question 1?", options: [ "A", "B", "C", "D" ], correct_answers: [ "A" ] },
+          { body: "", options: [ "W", "X", "Y", "Z" ], correct_answers: [ "Z" ] }
         ]
       )
       expect(pack.trivia_questions.count).to eq(1)

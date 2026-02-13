@@ -93,8 +93,8 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-11">
                   <% question.options.each_with_index do |option, opt_index| %>
-                    <div class="flex items-center gap-2 p-3 rounded-lg <%= option == question.correct_answer ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5 border border-white/10' %>">
-                      <% if option == question.correct_answer %>
+                    <div class="flex items-center gap-2 p-3 rounded-lg <%= question.correct_answers.include?(option) ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5 border border-white/10' %>">
+                      <% if question.correct_answers.include?(option) %>
                         <span class="flex items-center justify-center w-6 h-6 bg-green-500/30 rounded flex-shrink-0">
                           <%= lucide_icon('check', class: "w-4 h-4 text-green-400") %>
                         </span>

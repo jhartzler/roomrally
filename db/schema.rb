@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_10_204001) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_13_150843) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -189,6 +189,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_204001) do
   create_table "speed_trivia_games", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "current_question_index", default: 0
+    t.integer "reviewing_step", default: 1, null: false
     t.datetime "round_closed_at"
     t.datetime "round_ends_at"
     t.datetime "round_started_at"
@@ -228,7 +229,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_204001) do
 
   create_table "trivia_question_instances", force: :cascade do |t|
     t.text "body"
-    t.string "correct_answer"
+    t.jsonb "correct_answers"
     t.datetime "created_at", null: false
     t.jsonb "options"
     t.integer "position"
@@ -241,7 +242,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_204001) do
 
   create_table "trivia_questions", force: :cascade do |t|
     t.text "body"
-    t.string "correct_answer"
+    t.jsonb "correct_answers"
     t.datetime "created_at", null: false
     t.jsonb "options"
     t.bigint "trivia_pack_id", null: false

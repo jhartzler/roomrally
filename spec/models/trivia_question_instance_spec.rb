@@ -9,7 +9,11 @@ RSpec.describe TriviaQuestionInstance, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:body) }
-    it { is_expected.to validate_presence_of(:correct_answer) }
     it { is_expected.to validate_presence_of(:position) }
+
+    it 'validates correct_answers presence' do
+      instance = build(:trivia_question_instance, correct_answers: [])
+      expect(instance).not_to be_valid
+    end
   end
 end

@@ -3,7 +3,7 @@ FactoryBot.define do
     speed_trivia_game
     trivia_question
     body { "What is the capital of France?" }
-    correct_answer { "Paris" }
+    correct_answers { [ "Paris" ] }
     options { [ "Paris", "London", "Berlin", "Madrid" ] }
     sequence(:position) { |n| n }
   end

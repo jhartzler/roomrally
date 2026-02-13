@@ -41,7 +41,7 @@ standard_trivia.each do |question_data|
     body: question_data["body"],
     trivia_pack:
   ) do |q|
-    q.correct_answer = question_data["correct_answer"]
+    q.correct_answers = question_data["correct_answers"]
     q.options = question_data["options"]
   end
 end

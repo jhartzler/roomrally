@@ -7,7 +7,6 @@ RSpec.describe TriviaQuestion, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:body) }
-    it { is_expected.to validate_presence_of(:correct_answer) }
     it { is_expected.to validate_presence_of(:options) }
 
     it 'validates options must be array of four' do
@@ -17,11 +16,31 @@ RSpec.describe TriviaQuestion, type: :model do
       expect(question.errors[:options]).to include("must contain exactly 4 choices")
     end
 
-    it 'validates correct answer must be in options' do
+    it 'validates correct_answers must be present' do
       trivia_pack = create(:trivia_pack)
-      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answer: "E")
+      question = build(:trivia_question, trivia_pack:, correct_answers: [])
       expect(question).not_to be_valid
-      expect(question.errors[:correct_answer]).to include("must be one of the provided options")
+      expect(question.errors[:correct_answers]).to include("must have at least one correct answer")
+    end
+
+    it 'validates correct_answers must be an array' do
+      trivia_pack = create(:trivia_pack)
+      question = build(:trivia_question, trivia_pack:, correct_answers: "Paris")
+      expect(question).not_to be_valid
+      expect(question.errors[:correct_answers]).to include("must be an array")
+    end
+
+    it 'validates all correct_answers must be in options' do
+      trivia_pack = create(:trivia_pack)
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answers: [ "E" ])
+      expect(question).not_to be_valid
+      expect(question.errors[:correct_answers]).to include("must all be included in options")
+    end
+
+    it 'allows multiple correct answers' do
+      trivia_pack = create(:trivia_pack)
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answers: [ "A", "B" ])
+      expect(question).to be_valid
     end
   end
 

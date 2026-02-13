@@ -11,11 +11,13 @@
   <!-- Question with Answer -->
   <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-12 shadow-2xl text-center max-w-6xl w-full mb-8">
     <p class="text-2xl text-blue-200 mb-4"><%= current_question&.body %></p>
-    <div class="flex items-center justify-center gap-4">
-      <span class="text-6xl">✓</span>
-      <h2 class="text-5xl md:text-7xl font-black text-green-400">
-        <%= current_question&.correct_answer %>
-      </h2>
+    <div class="flex flex-wrap items-center justify-center gap-6">
+      <% current_question&.correct_answers&.each do |answer| %>
+        <div class="flex items-center gap-2">
+          <span class="text-4xl">✓</span>
+          <h2 class="text-5xl md:text-7xl font-black text-green-400"><%= answer %></h2>
+        </div>
+      <% end %>
     </div>
   </div>
 
