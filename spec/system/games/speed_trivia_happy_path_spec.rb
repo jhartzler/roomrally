@@ -117,6 +117,9 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       end
     end
 
+    # Host advances to score podium (step 2 of reviewing)
+    Games::SpeedTrivia.show_scores(game: game.reload)
+
     # Host advances to finish (only had 1 question set up for simplicity)
     # In a real game there would be more questions
     game.update!(current_question_index: game.trivia_question_instances.count - 1)
