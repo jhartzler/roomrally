@@ -64,6 +64,7 @@ RSpec.describe GameBroadcaster do
 
     before do
        allow(Turbo::StreamsChannel).to receive(:broadcast_append_to)
+       allow(Turbo::StreamsChannel).to receive(:broadcast_prepend_to)
     end
 
     it 'broadcasts append to player-list' do
@@ -77,10 +78,10 @@ RSpec.describe GameBroadcaster do
       )
     end
 
-    it 'broadcasts append to stage_player_list' do
+    it 'broadcasts prepend to stage_player_list' do
       described_class.broadcast_player_joined(room:, player:)
 
-      expect(Turbo::StreamsChannel).to have_received(:broadcast_append_to).with(
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_prepend_to).with(
         room,
         target: "stage_player_list",
         partial: "players/stage_player",
