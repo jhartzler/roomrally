@@ -82,6 +82,7 @@ module Games
     def self.close_round(game:)
       game.close_round!
       broadcast_all(game)
+      schedule_score_reveal(game)
     end
 
     def self.show_scores(game:)
@@ -158,6 +159,11 @@ module Games
       end
     end
 
-    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all
+    def self.schedule_score_reveal(game)
+      GameTimerJob.set(wait: SpeedTriviaGame::SCORE_REVEAL_DELAY.seconds)
+        .perform_later(game, game.current_question_index, "score_reveal")
+    end
+
+    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all, :schedule_score_reveal
   end
 end
