@@ -81,7 +81,19 @@ module Games
 
     def self.close_round(game:)
       game.close_round!
+      broadcast_all(game)
+    end
+
+    def self.show_scores(game:)
+      return unless game.reviewing?
+
+      # Capture current top-4 before recalculating
+      game.previous_top_player_ids = game.room.players.active_players
+        .order(score: :desc).limit(4).pluck(:id)
+
       game.calculate_scores!
+      game.update!(reviewing_step: 2)
+
       broadcast_all(game)
     end
 
@@ -90,6 +102,8 @@ module Games
         game.next_question!
         start_question(game:)
       else
+        game.previous_top_player_ids = game.room.players.active_players
+          .order(score: :desc).limit(4).pluck(:id)
         game.calculate_scores!
         game.finish_game!
         Analytics.track(

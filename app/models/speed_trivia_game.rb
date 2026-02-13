@@ -8,6 +8,8 @@ class SpeedTriviaGame < ApplicationRecord
   DECAY_FACTOR = 0.5 # Score drops to 50% at max time
   GRACE_PERIOD = 0.5.seconds
 
+  attr_accessor :previous_top_player_ids
+
   has_one :room, as: :current_game
   belongs_to :trivia_pack, optional: true
   has_many :trivia_question_instances, dependent: :destroy
@@ -33,7 +35,7 @@ class SpeedTriviaGame < ApplicationRecord
     end
 
     event :close_round do
-      transitions from: :answering, to: :reviewing, after: :record_round_close
+      transitions from: :answering, to: :reviewing, after: [ :record_round_close, :reset_reviewing_step ]
     end
 
     event :next_question do
@@ -93,5 +95,9 @@ class SpeedTriviaGame < ApplicationRecord
 
   def increment_question_index
     increment!(:current_question_index)
+  end
+
+  def reset_reviewing_step
+    update!(reviewing_step: 1)
   end
 end
