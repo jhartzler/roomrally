@@ -56,6 +56,10 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       expect(page).to have_content("Trivia pack created successfully")
       expect(page).to have_content("My Trivia Pack")
       expect(page).to have_content("1 Players") # Capacity badge on index page
+
+      # Verify correct_answers persisted via Stimulus hidden field sync
+      pack = TriviaPack.last
+      expect(pack.trivia_questions.first.correct_answers).to include("4")
       screenshot_checkpoint("trivia_pack_index_after_create")
     end
   end
