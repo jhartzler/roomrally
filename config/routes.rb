@@ -67,6 +67,7 @@ Rails.application.routes.draw do
       resource :round_closure, only: :create
       resource :advancement, only: :create
       resource :game_start, only: :create
+      resource :score_reveal, only: :create
     end
   end
 

@@ -12,20 +12,30 @@ module GameBroadcaster
     end
   end
 
-  def self.broadcast_stage(room:)
-    game = room.current_game
+  def self.broadcast_stage(room:, game: nil)
+    game ||= room.current_game
     return unless game
 
-    # Convention: games/[game_type]/stage_[status]
-    partial_name = "games/#{game_folder_name(room.game_type)}/stage_#{game.status}"
+    status_suffix = game.status
+    # Reviewing step 2 gets its own partial for the score podium
+    if game.respond_to?(:reviewing_step) && game.status == "reviewing" && game.reviewing_step == 2
+      status_suffix = "reviewing_scores"
+    end
+
+    partial_name = "games/#{game_folder_name(room.game_type)}/stage_#{status_suffix}"
 
     Rails.logger.info({ event: "broadcast_stage", room_code: room.code, partial: partial_name })
+
+    locals = { room:, game: }
+    if game.respond_to?(:previous_top_player_ids) && game.previous_top_player_ids.present?
+      locals[:previous_top_player_ids] = game.previous_top_player_ids
+    end
 
     Turbo::StreamsChannel.broadcast_update_to(
       room,
       target: "stage_content",
       partial: partial_name,
-      locals: { room:, game: }
+      locals:
     )
   end
 

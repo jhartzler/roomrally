@@ -7,6 +7,9 @@ class SpeedTriviaGame < ApplicationRecord
   MINIMUM_POINTS = 100
   DECAY_FACTOR = 0.5 # Score drops to 50% at max time
   GRACE_PERIOD = 0.5.seconds
+  SCORE_REVEAL_DELAY = 5 # seconds to show answer before auto-advancing to scores
+
+  attr_accessor :previous_top_player_ids
 
   has_one :room, as: :current_game
   belongs_to :trivia_pack, optional: true
@@ -33,7 +36,7 @@ class SpeedTriviaGame < ApplicationRecord
     end
 
     event :close_round do
-      transitions from: :answering, to: :reviewing, after: :record_round_close
+      transitions from: :answering, to: :reviewing, after: [ :record_round_close, :reset_reviewing_step ]
     end
 
     event :next_question do
@@ -73,12 +76,21 @@ class SpeedTriviaGame < ApplicationRecord
     current_question_index
   end
 
-  def process_timeout(job_question_index, _step_number)
-    # Verify this timeout is still relevant (guard against race conditions)
+  def process_timeout(job_question_index, step_number)
     return unless current_question_index == job_question_index
-    return unless answering?
 
-    Games::SpeedTrivia.handle_timeout(game: self)
+    case step_number
+    when "score_reveal"
+      # Auto-advance from answer reveal to score podium
+      return unless reviewing? && reviewing_step == 1
+
+      Games::SpeedTrivia.show_scores(game: self)
+    else
+      # Round timer expired — auto-close the round
+      return unless answering?
+
+      Games::SpeedTrivia.handle_timeout(game: self)
+    end
   end
 
   private
@@ -93,5 +105,9 @@ class SpeedTriviaGame < ApplicationRecord
 
   def increment_question_index
     increment!(:current_question_index)
+  end
+
+  def reset_reviewing_step
+    update!(reviewing_step: 1)
   end
 end

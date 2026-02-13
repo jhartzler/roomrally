@@ -81,7 +81,20 @@ module Games
 
     def self.close_round(game:)
       game.close_round!
+      broadcast_all(game)
+      schedule_score_reveal(game)
+    end
+
+    def self.show_scores(game:)
+      return unless game.reviewing?
+
+      # Capture current top-4 before recalculating
+      game.previous_top_player_ids = game.room.players.active_players
+        .order(score: :desc).limit(4).pluck(:id)
+
       game.calculate_scores!
+      game.update!(reviewing_step: 2)
+
       broadcast_all(game)
     end
 
@@ -90,6 +103,8 @@ module Games
         game.next_question!
         start_question(game:)
       else
+        game.previous_top_player_ids = game.room.players.active_players
+          .order(score: :desc).limit(4).pluck(:id)
         game.calculate_scores!
         game.finish_game!
         Analytics.track(
@@ -117,7 +132,7 @@ module Games
 
     def self.broadcast_all(game)
       room = game.room
-      GameBroadcaster.broadcast_stage(room:)
+      GameBroadcaster.broadcast_stage(room:, game:)
       GameBroadcaster.broadcast_hand(room:)
       GameBroadcaster.broadcast_host_controls(room:)
     end
@@ -144,6 +159,11 @@ module Games
       end
     end
 
-    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all
+    def self.schedule_score_reveal(game)
+      GameTimerJob.set(wait: SpeedTriviaGame::SCORE_REVEAL_DELAY.seconds)
+        .perform_later(game, game.current_question_index, "score_reveal")
+    end
+
+    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all, :schedule_score_reveal
   end
 end
