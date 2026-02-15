@@ -1,13 +1,13 @@
 <% content_for(:hide_footer, true) %>
 <%= turbo_stream_from @room %>
 
-<div class="min-h-screen text-white p-8">
-  <div class="max-w-7xl mx-auto text-center">
+<div class="h-screen overflow-hidden text-white p-[2vh] flex flex-col">
+  <div class="max-w-7xl mx-auto text-center w-full flex flex-col flex-1 min-h-0">
     <!-- Header -->
     <% if @room.current_game.present? %>
-      <div class="mb-8 relative">
+      <div class="mb-[2vh] relative shrink-0">
         <!-- Prominent Game Name -->
-        <h1 class="text-6xl font-black text-white tracking-tighter drop-shadow-lg text-center">
+        <h1 class="text-vh-5xl font-black text-white tracking-tighter drop-shadow-lg text-center">
           <%= @room.display_name %>
         </h1>
 
@@ -20,25 +20,25 @@
         </div>
       </div>
     <% else %>
-      <div class="mb-6">
-        <h1 class="text-6xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">
+      <div class="mb-[2vh] shrink-0">
+        <h1 class="text-vh-5xl font-black text-white mb-[2vh] tracking-tighter drop-shadow-lg">
           <%= @room.display_name %>
         </h1>
-        <div class="inline-block bg-white/10 backdrop-blur-md rounded-3xl px-8 py-4 border border-white/20">
-          <p class="text-gray-400 text-lg font-bold tracking-wider mb-3">Join via your phone!</p>
-          <div class="bg-white rounded-2xl p-3 inline-flex items-center justify-center mb-3">
+        <div class="inline-block bg-white/10 backdrop-blur-md rounded-3xl px-[3vh] py-[2vh] border border-white/20">
+          <p class="text-gray-400 text-vh-lg font-bold tracking-wider mb-[1vh]">Join via your phone!</p>
+          <div class="bg-white rounded-2xl p-3 inline-flex items-center justify-center mb-[1vh]">
             <div class="w-[150px] h-[150px]">
               <%= qr_code_svg(join_room_url(@room.code), size: 150) %>
             </div>
           </div>
-          <p class="text-gray-400 text-sm font-bold tracking-wider mt-1">Room Code</p>
-          <p class="text-3xl font-black font-mono tracking-widest"><%= @room.code %></p>
+          <p class="text-gray-400 text-vh-sm font-bold tracking-wider mt-1">Room Code</p>
+          <p class="text-vh-3xl font-black font-mono tracking-widest"><%= @room.code %></p>
         </div>
       </div>
     <% end %>
 
     <!-- Main Content Area -->
-    <div id="stage_content" class="relative">
+    <div id="stage_content" class="relative flex-1 min-h-0 flex flex-col items-center justify-center overflow-hidden">
       <% if @room.current_game.present? %>
         <% game = @room.current_game %>
         <% game_type_folder = @room.game_type.parameterize.underscore %>

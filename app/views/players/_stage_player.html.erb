@@ -3,11 +3,11 @@
      data-player-entrance-player-id-value="<%= player.id %>"
      data-name-reveal-joined-at-value="<%= player.created_at.to_i %>"
      style="animation: name-float <%= 6 + (player.id % 5) %>s ease-in-out infinite; animation-delay: -<%= (player.id * 2.7) % 30 %>s"
-     class="bg-blue-600/20 border-2 border-blue-400/30 rounded-2xl px-4 py-2 flex items-center shadow-lg">
-  <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 flex items-center justify-center mr-2 text-base">
+     class="bg-blue-600/20 border-2 border-blue-400/30 rounded-2xl px-[2vh] py-[1vh] flex items-center shadow-lg">
+  <div class="h-[3vh] w-[3vh] rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 flex items-center justify-center mr-[1vh] text-vh-sm">
     👤
   </div>
-  <span class="text-lg font-bold text-white"
+  <span class="text-vh-xl font-bold text-white"
         data-name-reveal-target="name">
     <%= player.name %>
   </span>

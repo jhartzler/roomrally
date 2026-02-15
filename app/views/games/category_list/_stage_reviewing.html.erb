@@ -1,6 +1,6 @@
-<div id="stage_reviewing" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-  <div class="mb-8">
-    <span class="text-2xl text-blue-200 font-bold uppercase tracking-widest">
+<div id="stage_reviewing" class="flex flex-col items-center justify-center max-h-[88vh] animate-fade-in">
+  <div class="mb-[2vh]">
+    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
       Round <%= game.current_round %> &mdash; Letter "<%= game.current_letter %>"
     </span>
   </div>
@@ -9,15 +9,15 @@
   <% position = game.reviewing_category_position %>
   <% ci = categories[position] %>
 
-  <p class="text-blue-300 text-sm font-medium mb-4">
+  <p class="text-blue-300 text-vh-sm font-medium mb-[1vh]">
     Category <%= position + 1 %> of <%= categories.size %>
   </p>
 
   <% if ci %>
-    <div class="w-full max-w-4xl px-4 mb-12">
-      <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-        <h3 class="text-xl font-bold text-yellow-400 mb-4"><%= ci.name %></h3>
-        <div class="space-y-2">
+    <div class="w-full max-w-4xl px-[2vh] mb-[3vh] max-h-[60vh] overflow-y-auto">
+      <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[2vh]">
+        <h3 class="text-vh-xl font-bold text-yellow-400 mb-[2vh]"><%= ci.name %></h3>
+        <div class="space-y-[1vh]">
           <%
             answers = ci.category_answers.where.not(status: :hidden).includes(:player).to_a
             normalized_groups = answers.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
@@ -27,16 +27,16 @@
             <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
             <% is_auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.duplicate? %>
             <% is_struck = answer.rejected? || answer.duplicate? || is_auto_duplicate %>
-            <div class="flex items-center justify-between bg-black/30 rounded-xl px-4 py-3
+            <div class="flex items-center justify-between bg-black/30 rounded-xl px-[2vh] py-[1vh]
               <%= is_struck ? 'border border-white/5 opacity-50' : 'border border-white/10' %>">
-              <div class="flex items-center gap-4">
-                <span class="text-lg text-white font-medium"><%= answer.player.name %></span>
-                <span class="text-lg <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
+              <div class="flex items-center gap-[1vh]">
+                <span class="text-vh-lg text-white font-medium"><%= answer.player.name %></span>
+                <span class="text-vh-lg <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
                   <%= 'line-through' if is_struck %>">
                   <%= answer.body.present? ? answer.body : "No answer" %>
                 </span>
                 <% if answer.duplicate? || is_auto_duplicate %>
-                  <span class="text-xs bg-orange-400/20 text-orange-400 px-2 py-1 rounded-full font-bold">DUPLICATE</span>
+                  <span class="text-vh-xs bg-orange-400/20 text-orange-400 px-2 py-1 rounded-full font-bold">DUPLICATE</span>
                 <% end %>
               </div>
             </div>
@@ -46,7 +46,7 @@
     </div>
   <% end %>
 
-  <p class="text-xl text-blue-300 animate-pulse">
+  <p class="text-vh-xl text-blue-300 animate-pulse">
     Host is reviewing answers...
   </p>
 </div>
