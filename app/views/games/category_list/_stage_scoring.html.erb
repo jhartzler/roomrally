@@ -1,6 +1,6 @@
-<div id="stage_scoring" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-  <div class="mb-8">
-    <span class="text-2xl text-blue-200 font-bold uppercase tracking-widest">
+<div id="stage_scoring" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
+  <div class="mb-[2vh]">
+    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
       Round <%= game.current_round %> Results &mdash; Letter "<%= game.current_letter %>"
     </span>
   </div>
@@ -8,14 +8,14 @@
   <% if room.stage_only? %>
     <% if game.show_stage_scores? %>
       <!-- Stage-only: Show score tracker standings -->
-      <div class="w-full max-w-4xl px-4">
-        <h3 class="text-2xl text-white font-bold mb-4 text-center">Standings</h3>
-        <div class="space-y-3">
+      <div class="w-full max-w-4xl px-[2vh]">
+        <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">Standings</h3>
+        <div class="space-y-[1vh]">
           <% room.score_tracker_entries.order(score: :desc).each_with_index do |entry, index| %>
-            <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 <%= index == 0 ? 'scale-105 border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
-              <div class="text-3xl w-12 font-bold text-gray-400">#<%= index + 1 %></div>
-              <div class="text-2xl font-bold text-white flex-grow text-left mx-6"><%= entry.name %></div>
-              <div class="text-3xl font-black text-yellow-400 font-mono"><%= entry.score %></div>
+            <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
+              <div class="text-vh-3xl w-[6vh] font-bold text-gray-400">#<%= index + 1 %></div>
+              <div class="text-vh-xl font-bold text-white flex-grow text-left mx-[2vh]"><%= entry.name %></div>
+              <div class="text-vh-3xl font-black text-yellow-400 font-mono"><%= entry.score %></div>
             </div>
           <% end %>
           <% if room.score_tracker_entries.empty? %>
@@ -25,27 +25,27 @@
       </div>
     <% else %>
       <!-- Stage-only: Show categories + scoring message -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-4 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1vh] w-full max-w-6xl px-[2vh] mb-[2vh]">
         <% game.current_round_categories.each do |ci| %>
-          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center">
-            <p class="text-2xl text-white font-bold"><%= ci.name %></p>
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-[2vh] text-center">
+            <p class="text-vh-xl text-white font-bold"><%= ci.name %></p>
           </div>
         <% end %>
       </div>
 
       <div class="text-center">
-        <p class="text-3xl text-yellow-400 font-black">Scoring Time!</p>
+        <p class="text-vh-2xl text-yellow-400 font-black">Scoring Time!</p>
       </div>
     <% end %>
   <% else %>
     <!-- Phone mode: Show category results -->
-    <div class="w-full max-w-6xl px-4 space-y-6 mb-12">
+    <div class="w-full max-w-6xl px-[2vh] space-y-[2vh] mb-[3vh] max-h-[50vh] overflow-y-auto">
       <% game.current_round_categories.each do |ci| %>
-        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-          <h3 class="text-xl font-bold text-yellow-400 mb-4"><%= ci.name %></h3>
-          <div class="space-y-2">
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[2vh]">
+          <h3 class="text-vh-lg font-bold text-yellow-400 mb-[1vh]"><%= ci.name %></h3>
+          <div class="space-y-[1vh]">
             <% ci.category_answers.includes(:player).each do |answer| %>
-              <div class="flex items-center justify-between bg-black/30 rounded-xl px-4 py-3
+              <div class="flex items-center justify-between bg-black/30 rounded-xl px-[2vh] py-[1vh]
                 <%= if answer.rejected?
                       'border border-red-500/50 opacity-50'
                     elsif answer.duplicate?
@@ -55,23 +55,23 @@
                     else
                       'border border-white/10'
                     end %>">
-                <div class="flex items-center gap-4">
-                  <span class="text-lg text-white font-medium"><%= answer.player.name %></span>
-                  <span class="text-lg <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
+                <div class="flex items-center gap-[1vh]">
+                  <span class="text-vh-base text-white font-medium"><%= answer.player.name %></span>
+                  <span class="text-vh-base <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
                     <%= 'line-through' if answer.duplicate? || answer.rejected? %>">
                     <%= answer.body.present? ? answer.body : "No answer" %>
                   </span>
                   <% if answer.alliterative? %>
-                    <span class="text-xs bg-yellow-400/20 text-yellow-300 px-2 py-1 rounded-full font-bold">2x ALLITERATIVE</span>
+                    <span class="text-vh-xs bg-yellow-400/20 text-yellow-300 px-2 py-1 rounded-full font-bold">2x ALLITERATIVE</span>
                   <% end %>
                   <% if answer.duplicate? %>
-                    <span class="text-xs bg-gray-400/20 text-gray-400 px-2 py-1 rounded-full font-bold">DUPLICATE</span>
+                    <span class="text-vh-xs bg-gray-400/20 text-gray-400 px-2 py-1 rounded-full font-bold">DUPLICATE</span>
                   <% end %>
                   <% if answer.rejected? %>
-                    <span class="text-xs bg-red-400/20 text-red-400 px-2 py-1 rounded-full font-bold">REJECTED</span>
+                    <span class="text-vh-xs bg-red-400/20 text-red-400 px-2 py-1 rounded-full font-bold">REJECTED</span>
                   <% end %>
                 </div>
-                <span class="text-xl font-black font-mono <%= answer.points_awarded > 0 ? 'text-green-400' : 'text-gray-500' %>">
+                <span class="text-vh-lg font-black font-mono <%= answer.points_awarded > 0 ? 'text-green-400' : 'text-gray-500' %>">
                   +<%= answer.points_awarded %>
                 </span>
               </div>
@@ -82,15 +82,15 @@
     </div>
 
     <!-- Running leaderboard -->
-    <div class="w-full max-w-4xl px-4">
-      <h3 class="text-2xl text-white font-bold mb-4 text-center">Leaderboard</h3>
-      <div class="space-y-3">
+    <div class="w-full max-w-4xl px-[2vh]">
+      <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">Leaderboard</h3>
+      <div class="space-y-[1vh]">
         <% game.room.players.sort_by { |p| -game.category_answers.where(player: p).sum(:points_awarded) }.each_with_index do |player, index| %>
           <% player_score = game.category_answers.where(player:).sum(:points_awarded) %>
-          <div class="flex items-center bg-black/40 rounded-xl p-4 border border-white/10 <%= index == 0 ? 'scale-105 border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
-            <div class="text-3xl w-12 font-bold text-gray-400">#<%= index + 1 %></div>
-            <div class="text-2xl font-bold text-white flex-grow text-left mx-6"><%= player.name %></div>
-            <div class="text-3xl font-black text-yellow-400 font-mono"><%= player_score %></div>
+          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
+            <div class="text-vh-3xl w-[6vh] font-bold text-gray-400">#<%= index + 1 %></div>
+            <div class="text-vh-xl font-bold text-white flex-grow text-left mx-[2vh]"><%= player.name %></div>
+            <div class="text-vh-3xl font-black text-yellow-400 font-mono"><%= player_score %></div>
           </div>
         <% end %>
       </div>

@@ -1,29 +1,29 @@
-<div id="stage_voting" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+<div id="stage_voting" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
   <!-- Prompt Display -->
-  <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-12 shadow-2xl text-center max-w-6xl w-full mb-12 transform hover:scale-[1.02] transition-transform">
+  <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[3vh]">
 
-    <div class="absolute top-6 right-8"
+    <div class="absolute top-[2vh] right-[3vh]"
          data-controller="dramatic-timer"
          data-dramatic-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
-       <span class="text-5xl font-black text-white/50 block font-mono"
+       <span class="text-vh-4xl font-black text-white/50 block font-mono"
              data-dramatic-timer-target="output visual"><%= game.time_remaining.ceil %>s</span>
     </div>
     <% current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index] %>
-    <p class="text-2xl text-blue-200 font-bold uppercase tracking-widest mb-4">Prompt</p>
-    <h2 class="text-5xl md:text-7xl font-black text-white leading-tight">
+    <p class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest mb-[2vh]">Prompt</p>
+    <h2 class="text-vh-4xl font-black text-white leading-tight">
       <%= current_prompt&.body || "Loading prompt..." %>
     </h2>
   </div>
 
   <!-- Responses Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl px-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh] w-full max-w-7xl px-[2vh]">
     <% if current_prompt %>
       <% current_prompt.responses.shuffle.each_with_index do |response, index| %>
-        <div class="bg-blue-600/20 backdrop-blur-md border-2 border-blue-400/30 rounded-2xl p-8 flex items-center shadow-lg">
-          <div class="bg-white text-black font-black text-4xl h-16 w-16 rounded-full flex items-center justify-center mr-6 shrink-0 shadow-md">
+        <div class="bg-blue-600/20 backdrop-blur-md border-2 border-blue-400/30 rounded-2xl p-[2vh] flex items-center shadow-lg">
+          <div class="bg-white text-black font-black text-vh-3xl h-[6vh] w-[6vh] rounded-full flex items-center justify-center mr-[2vh] shrink-0 shadow-md">
             <%= (index + 65).chr %>
           </div>
-          <p class="text-3xl md:text-4xl text-white font-bold font-handwriting">
+          <p class="text-vh-xl text-white font-bold font-handwriting">
             <%= response.body %>
           </p>
         </div>
@@ -31,7 +31,7 @@
     <% end %>
   </div>
 
-  <div class="mt-12">
-    <p class="text-3xl text-blue-200 animate-pulse font-semibold">Cast your votes now!</p>
+  <div class="mt-[3vh]">
+    <p class="text-vh-2xl text-blue-200 animate-pulse font-semibold">Cast your votes now!</p>
   </div>
 </div>

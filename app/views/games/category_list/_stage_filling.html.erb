@@ -1,31 +1,31 @@
-<div id="stage_filling" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+<div id="stage_filling" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
   <!-- Round indicator -->
-  <div class="mb-6">
-    <span class="text-2xl text-blue-200 font-bold uppercase tracking-widest">
+  <div class="mb-[2vh]">
+    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
       Round <%= game.current_round %> of <%= game.total_rounds %>
     </span>
   </div>
 
   <!-- Letter display -->
-  <div class="relative bg-white/10 backdrop-blur-xl border-2 border-yellow-400/30 rounded-3xl p-12 shadow-2xl text-center max-w-2xl w-full mb-8">
-    <p class="text-2xl text-blue-200 font-bold mb-4 uppercase tracking-widest">The Letter Is</p>
-    <div class="text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-tr from-yellow-300 via-yellow-100 to-yellow-500 leading-none drop-shadow-xl">
+  <div class="relative bg-white/10 backdrop-blur-xl border-2 border-yellow-400/30 rounded-3xl p-[3vh] shadow-2xl text-center max-w-2xl w-full mb-[2vh]">
+    <p class="text-vh-2xl text-blue-200 font-bold mb-[1vh] uppercase tracking-widest">The Letter Is</p>
+    <div class="text-[15vh] font-black text-transparent bg-clip-text bg-gradient-to-tr from-yellow-300 via-yellow-100 to-yellow-500 leading-none drop-shadow-xl">
       <%= game.current_letter %>
     </div>
   </div>
 
   <!-- Categories grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-4 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1vh] w-full max-w-6xl px-[2vh] mb-[2vh]">
     <% game.current_round_categories.each do |ci| %>
-      <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center">
-        <p class="text-2xl text-white font-bold"><%= ci.name %></p>
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-[2vh] text-center">
+        <p class="text-vh-xl text-white font-bold"><%= ci.name %></p>
       </div>
     <% end %>
   </div>
 
   <!-- Timer -->
   <% if game.timer_enabled? && game.round_ends_at %>
-    <div class="text-3xl text-yellow-400 font-black font-mono" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
+    <div class="text-vh-2xl text-yellow-400 font-black font-mono" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
       <span data-timer-target="output"><%= game.time_remaining.ceil %>s</span>
     </div>
   <% end %>
@@ -33,8 +33,8 @@
   <% unless game.room.stage_only? %>
     <!-- Submission progress -->
     <% submitted_players = game.room.players.select { |p| game.current_round_categories.all? { |ci| ci.category_answers.exists?(player: p) } }.count %>
-    <div class="mt-4">
-      <p class="text-xl text-blue-200 animate-pulse font-semibold">
+    <div class="mt-[1vh]">
+      <p class="text-vh-lg text-blue-200 animate-pulse font-semibold">
         <%= submitted_players %>/<%= game.room.players.count %> players submitted
       </p>
     </div>

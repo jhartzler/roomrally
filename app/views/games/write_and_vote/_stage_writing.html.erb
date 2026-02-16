@@ -1,19 +1,19 @@
-<div id="stage_writing" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-16 shadow-2xl text-center max-w-4xl">
-    <div class="text-9xl mb-8 animate-pulse">📱</div>
+<div id="stage_writing" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
+  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[4vh] shadow-2xl text-center max-w-4xl">
+    <div class="text-[8vh] mb-[2vh] animate-pulse">📱</div>
 
-    <div class="mb-8"
+    <div class="mb-[2vh]"
          data-controller="dramatic-timer"
          data-dramatic-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
-       <span class="text-8xl font-black text-white block font-mono"
+       <span class="text-vh-5xl font-black text-white block font-mono"
              data-dramatic-timer-target="output visual"><%= game.time_remaining.ceil %>s</span>
     </div>
 
-    <h2 class="text-4xl font-bold text-white mb-8">Look at your device!</h2>
-    <p class="text-3xl text-blue-200 font-medium">
+    <h2 class="text-vh-3xl font-bold text-white mb-[2vh]">Look at your device!</h2>
+    <p class="text-vh-2xl text-blue-200 font-medium">
       Writing Phase: Round <%= game.round %>
     </p>
-    <div class="mt-12 w-full bg-white/10 h-4 rounded-full overflow-hidden border border-white/10">
+    <div class="mt-[3vh] w-full bg-white/10 h-[0.5vh] rounded-full overflow-hidden border border-white/10">
       <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-full w-full animate-shrink-width" style="animation-duration: 90s;"></div>
     </div>
   </div>

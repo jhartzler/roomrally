@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@theme {
+  /* vh-based spacing utilities */
+  --spacing-1vh: 1vh;
+  --spacing-2vh: 2vh;
+  --spacing-3vh: 3vh;
+  --spacing-4vh: 4vh;
+  --spacing-5vh: 5vh;
+  --spacing-6vh: 6vh;
+  --spacing-8vh: 8vh;
+  --spacing-10vh: 10vh;
+  --spacing-12vh: 12vh;
+  --spacing-15vh: 15vh;
+  --spacing-20vh: 20vh;
+  --spacing-60vh: 60vh;
+  --spacing-88vh: 88vh;
+
+  /* vh-based font size utilities with clamp() */
+  --text-vh-xs: clamp(0.75rem, 1.5vh, 1.5rem);    /* Labels, metadata */
+  --text-vh-sm: clamp(0.875rem, 1.75vh, 1.75rem); /* Small text */
+  --text-vh-base: clamp(1rem, 2vh, 2rem);         /* Base text */
+  --text-vh-lg: clamp(1.125rem, 2.25vh, 2.5rem);  /* Large text */
+  --text-vh-xl: clamp(1.25rem, 2.5vh, 3rem);      /* Answers, player names */
+  --text-vh-2xl: clamp(1.5rem, 3vh, 3.5rem);      /* Subheadings */
+  --text-vh-3xl: clamp(1.875rem, 3.75vh, 4rem);   /* Headings */
+  --text-vh-4xl: clamp(2rem, 4vh, 5rem);          /* Prompts, questions */
+  --text-vh-5xl: clamp(2.5rem, 5vh, 6rem);        /* Large prompts */
+}

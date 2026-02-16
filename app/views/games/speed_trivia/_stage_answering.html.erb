@@ -1,29 +1,29 @@
-<div id="stage_answering" class="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+<div id="stage_answering" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
   <% current_question = game.current_question %>
 
   <!-- Question Counter -->
-  <div class="mb-8">
-    <span class="text-2xl text-blue-200 font-bold uppercase tracking-widest">
+  <div class="mb-[2vh]">
+    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
       Question <%= game.current_question_index + 1 %> of <%= game.trivia_question_instances.count %>
     </span>
   </div>
 
   <!-- Question Display -->
-  <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-12 shadow-2xl text-center max-w-6xl w-full mb-12">
-    <h2 class="text-4xl md:text-6xl font-black text-white leading-tight">
+  <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[3vh]">
+    <h2 class="text-vh-4xl font-black text-white leading-tight">
       <%= current_question&.body || "Loading question..." %>
     </h2>
   </div>
 
   <!-- Options Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl px-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh] w-full max-w-6xl px-[2vh]">
     <% if current_question %>
       <% current_question.options&.each_with_index do |option, index| %>
-        <div class="bg-gray-800/80 backdrop-blur-md border-2 border-gray-600 rounded-2xl p-8 flex items-center shadow-lg transform hover:scale-105 transition-transform">
-          <div class="bg-white text-black font-black text-4xl h-16 w-16 rounded-full flex items-center justify-center mr-6 shrink-0 shadow-md">
+        <div class="bg-gray-800/80 backdrop-blur-md border-2 border-gray-600 rounded-2xl p-[2vh] flex items-center shadow-lg">
+          <div class="bg-white text-black font-black text-vh-3xl h-[6vh] w-[6vh] rounded-full flex items-center justify-center mr-[2vh] shrink-0 shadow-md">
             <%= (index + 65).chr %>
           </div>
-          <p class="text-2xl md:text-3xl text-white font-bold">
+          <p class="text-vh-xl text-white font-bold">
             <%= option %>
           </p>
         </div>
@@ -31,7 +31,7 @@
     <% end %>
   </div>
 
-  <div class="mt-12">
-    <p class="text-3xl text-blue-200 animate-pulse font-semibold">Answer on your device!</p>
+  <div class="mt-[3vh]">
+    <p class="text-vh-2xl text-blue-200 animate-pulse font-semibold">Answer on your device!</p>
   </div>
 </div>
