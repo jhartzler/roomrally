@@ -1,5 +1,18 @@
 <div id="stage_lobby" class="flex flex-col items-center w-full flex-1 min-h-0">
-  <div id="stage_player_list" class="flex flex-wrap justify-center content-start gap-[1vh] max-w-7xl flex-1 min-h-0 overflow-hidden">
+  <!-- Big QR code for joining -->
+  <div class="inline-block bg-white/10 backdrop-blur-md rounded-3xl px-[3vh] py-[2vh] border border-white/20 shrink-0 mb-[2vh]">
+    <p class="text-gray-400 text-vh-lg font-bold tracking-wider mb-[1vh]">Join via your phone!</p>
+    <div class="bg-white rounded-2xl p-3 inline-flex items-center justify-center mb-[1vh]">
+      <div class="w-[150px] h-[150px]">
+        <%= qr_code_svg(join_room_url(@room.code), size: 150) %>
+      </div>
+    </div>
+    <p class="text-gray-400 text-vh-sm font-bold tracking-wider mt-1">Room Code</p>
+    <p class="text-vh-3xl font-black font-mono tracking-widest"><%= @room.code %></p>
+  </div>
+
+  <!-- Player list -->
+  <div id="stage_player_list" class="flex flex-wrap justify-center content-start gap-[1vh] max-w-7xl flex-1 min-h-0 overflow-hidden pt-[2vh]">
     <% @room.players.active_players.order(created_at: :desc).each do |player| %>
       <%= render "players/stage_player", player: player, room: @room %>
     <% end %>
