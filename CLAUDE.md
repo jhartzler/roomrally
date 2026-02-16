@@ -143,6 +143,36 @@ Game logic calls `GameBroadcaster` methods directly. Convention for stage partia
 
 Games with timed phases include `HasRoundTimer` concern and implement `process_timeout(round_number, step_number)`.
 
+### Viewport-Relative Units (vh)
+
+Stage views are projected on shared screens (typically 1920x1080) and **must never scroll**. Use viewport-relative units (`vh`) instead of fixed pixel sizes (`px`, `rem`) for all spacing and text in stage views. Favor `vh` over `px` in other views when updating existing code.
+
+**Custom Tailwind text utilities** are defined in `app/assets/tailwind/application.css` using `clamp()` for responsive scaling with min/max bounds:
+
+| Class | Use for |
+|-------|---------|
+| `text-vh-xs` / `text-vh-sm` | Labels, metadata |
+| `text-vh-base` / `text-vh-lg` | Body text |
+| `text-vh-xl` / `text-vh-2xl` | Player names, answers |
+| `text-vh-3xl` / `text-vh-4xl` | Headings, questions |
+| `text-vh-5xl` | Large titles |
+
+**Spacing** uses Tailwind arbitrary values: `p-[2vh]`, `mb-[3vh]`, `gap-[1vh]`, `h-[6vh]`, `w-[8vh]`, etc.
+
+**Stage layout** (`app/views/stages/show.html.erb`): Fixed full-viewport flex container. Header is `shrink-0` (~12vh), content area is `flex-1` (~88vh). Do not add scrolling to the stage root.
+
+```erb
+<%# ✅ DO — vh-based sizing %>
+<div class="bg-black/40 rounded-xl p-[2vh]">
+  <h2 class="text-vh-4xl font-black"><%= question.body %></h2>
+</div>
+
+<%# ❌ DON'T — fixed pixel sizing in stage views %>
+<div class="bg-black/40 rounded-xl p-6">
+  <h2 class="text-4xl font-black"><%= question.body %></h2>
+</div>
+```
+
 ### Use Ruby/Rails Built-in Helpers
 
 **Always prefer Ruby and Rails built-in methods over handrolling solutions.** Rails provides extensive helper methods that are tested, optimized, and idiomatic.
