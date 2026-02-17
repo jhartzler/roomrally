@@ -139,6 +139,39 @@ RSpec.describe Games::SpeedTrivia do
     end
   end
 
+  describe '.assign_questions' do
+    let(:pack) { create(:trivia_pack) }
+    let(:game) { create(:speed_trivia_game, trivia_pack: pack) }
+
+    context 'when a question has an image' do
+      it 'copies the image blob to the question instance' do
+        question = create(:trivia_question, trivia_pack: pack)
+        question.image.attach(
+          io: StringIO.new("fake image"),
+          filename: "test.jpg",
+          content_type: "image/jpeg"
+        )
+
+        Games::SpeedTrivia.send(:assign_questions, game:, question_count: 1)
+
+        instance = game.trivia_question_instances.first
+        expect(instance.image).to be_attached
+        expect(instance.image.blob).to eq(question.image.blob)
+      end
+    end
+
+    context 'when a question has no image' do
+      it 'creates an instance with no image' do
+        create(:trivia_question, trivia_pack: pack)
+
+        Games::SpeedTrivia.send(:assign_questions, game:, question_count: 1)
+
+        instance = game.trivia_question_instances.first
+        expect(instance.image).not_to be_attached
+      end
+    end
+  end
+
   describe '.close_round' do
     let(:game) { create(:speed_trivia_game, status: "answering") }
 
