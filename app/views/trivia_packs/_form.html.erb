@@ -56,12 +56,23 @@
 
     <!-- Right Column: Questions -->
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 h-fit">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-black text-white tracking-wide">Questions</h3>
          <button type="button" data-action="trivia-editor#addQuestion" class="text-sm text-white font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-white/10">
             <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
             Add Question
          </button>
+      </div>
+
+      <%# Image count info + live counter %>
+      <div class="mb-4 flex items-center gap-2 text-xs text-blue-300 font-semibold">
+        <%= lucide_icon('image', class: "w-3.5 h-3.5 shrink-0", "aria-hidden": true) %>
+        <span>Up to 20 questions can have images &mdash;</span>
+        <span data-trivia-editor-target="imageCountDisplay">0 / 20 used</span>
+      </div>
+      <div data-trivia-editor-target="imageCountWarning"
+           class="hidden mb-4 bg-amber-500/20 border border-amber-500/40 text-amber-200 rounded-xl px-4 py-2 text-xs font-bold">
+        Image limit reached (20 / 20). Remove an existing image to add a new one.
       </div>
 
       <div data-trivia-editor-target="questionList" class="space-y-6">
@@ -117,6 +128,37 @@
               <% q.object.correct_answers&.each do |answer| %>
                 <input type="hidden" name="<%= q.object_name %>[correct_answers][]" value="<%= answer %>">
               <% end %>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mt-3 mb-3">
+              <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Question Image (optional)</label>
+
+              <%# Show existing image thumbnail and remove option %>
+              <% if q.object.image.attached? %>
+                <div class="mb-2 flex items-start gap-3" data-trivia-editor-target="existingImageContainer">
+                  <%= image_tag q.object.image.variant(resize_to_limit: [400, 225]),
+                        class: "rounded-lg object-cover h-24 w-auto border border-white/20",
+                        alt: "Question image" %>
+                  <label class="flex items-center gap-1.5 cursor-pointer text-red-300 hover:text-red-200 text-xs font-bold mt-1">
+                    <%= q.check_box :remove_image, { class: "sr-only peer", data: { action: "change->trivia-editor#removeImage" } } %>
+                    <%= lucide_icon('trash-2', class: "w-4 h-4", "aria-hidden": true) %>
+                    Remove image
+                  </label>
+                </div>
+              <% end %>
+
+              <%# Preview shown after user picks a new file (hidden until JS shows it) %>
+              <img data-trivia-editor-target="imagePreview"
+                   class="hidden mb-2 rounded-lg object-cover h-24 w-auto border border-white/20"
+                   alt="Image preview" />
+
+              <%# File input — direct_upload sends file straight to R2, bypassing Rails server %>
+              <%= q.file_field :image,
+                    accept: "image/jpeg,image/png,image/webp,image/gif",
+                    direct_upload: true,
+                    class: "block w-full text-xs text-blue-200 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:font-bold hover:file:bg-white/20 cursor-pointer",
+                    data: { action: "change->trivia-editor#previewImage", trivia_editor_target: "imageInput" } %>
             </div>
 
             <!-- Delete Button -->
@@ -181,6 +223,21 @@
       </div>
 
       <div data-trivia-editor-target="correctAnswersContainer"></div>
+
+      <!-- Image Upload -->
+      <div class="mt-3 mb-3">
+        <label class="block text-xs font-bold text-blue-200 mb-2 uppercase tracking-widest">Question Image (optional)</label>
+        <img data-trivia-editor-target="imagePreview"
+             class="hidden mb-2 rounded-lg object-cover h-24 w-auto border border-white/20"
+             alt="Image preview" />
+        <input type="file"
+               name="trivia_pack[trivia_questions_attributes][NEW_RECORD][image]"
+               accept="image/jpeg,image/png,image/webp,image/gif"
+               data-direct-upload-url="<%= rails_direct_uploads_url %>"
+               data-action="change->trivia-editor#previewImage"
+               data-trivia-editor-target="imageInput"
+               class="block w-full text-xs text-blue-200 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:font-bold hover:file:bg-white/20 cursor-pointer">
+      </div>
 
       <!-- Delete Button -->
       <div class="flex justify-end">
