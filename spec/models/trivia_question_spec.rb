@@ -44,6 +44,48 @@ RSpec.describe TriviaQuestion, type: :model do
     end
   end
 
+    describe 'image attachment' do
+      it 'is valid with no image attached' do
+        question = build(:trivia_question)
+        expect(question).to be_valid
+      end
+
+      it 'is valid with an acceptable image type' do
+        question = build(:trivia_question)
+        question.image.attach(
+          io: StringIO.new("fake image content"),
+          filename: "photo.jpg",
+          content_type: "image/jpeg"
+        )
+        expect(question).to be_valid
+      end
+
+      it 'is invalid with a disallowed content type' do
+        question = build(:trivia_question)
+        question.image.attach(
+          io: StringIO.new("fake pdf content"),
+          filename: "doc.pdf",
+          content_type: "application/pdf"
+        )
+        expect(question).not_to be_valid
+        expect(question.errors[:image]).to be_present
+      end
+
+      it 'is invalid when image exceeds 5MB' do
+        question = build(:trivia_question)
+        # Attach a blob whose byte_size is over the limit without uploading 5MB of data
+        question.image.attach(
+          io: StringIO.new("x"),
+          filename: "big.jpg",
+          content_type: "image/jpeg"
+        )
+        # Stub byte_size to simulate an oversized file
+        allow(question.image.blob).to receive(:byte_size).and_return(6.megabytes)
+        expect(question).not_to be_valid
+        expect(question.errors[:image]).to be_present
+      end
+    end
+
   describe 'options' do
     it 'stores options as an array' do
       question = create(:trivia_question, options: [ "Paris", "London", "Berlin", "Madrid" ])
