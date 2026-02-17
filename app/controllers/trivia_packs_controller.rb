@@ -58,6 +58,8 @@ class TriviaPacksController < ApplicationController
         :id,
         :body,
         :_destroy,
+        :image,
+        :remove_image,
         correct_answers: [],
         options: []
       ]
