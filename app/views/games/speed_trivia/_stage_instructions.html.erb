@@ -1,3 +1,10 @@
+<%# Preload all question images so they display instantly when questions appear %>
+<% game.trivia_question_instances.each do |q| %>
+  <% if q.image.attached? %>
+    <link rel="preload" as="image" href="<%= url_for(q.image) %>">
+  <% end %>
+<% end %>
+
 <div id="stage_instructions" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
   <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[4vh] shadow-2xl text-center max-w-4xl">
     <div class="text-[8vh] mb-[2vh]">🧠</div>
