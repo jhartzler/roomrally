@@ -32,7 +32,7 @@ namespace :r2 do
         bucket: bucket_name,
         key: filename,
         body: File.open(path, "rb"),
-        content_type: content_type,
+        content_type:,
         cache_control: "public, max-age=31536000, immutable"
       )
       puts "  Done: #{filename}"
