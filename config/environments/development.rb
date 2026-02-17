@@ -32,7 +32,6 @@ Rails.application.configure do
   config.active_storage.service = :r2
 
   # Cloudflare R2 asset CDN (static assets like hero image, OG images)
-  # Set to your dev bucket's r2.dev public URL (e.g., "https://pub-abc123.r2.dev")
   config.x.r2_assets_url = Rails.application.credentials.dig(:r2, :dev_assets_url) || ""
 
   # Don't care if the mailer can't send.
