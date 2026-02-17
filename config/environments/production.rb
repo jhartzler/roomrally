@@ -25,8 +25,7 @@ Rails.application.configure do
   config.active_storage.service = :r2
 
   # Cloudflare R2 asset CDN (static assets like hero image, OG images)
-  config.x.r2_assets_url = Rails.application.credentials.dig(:r2, :prod_assets_url) ||
-    raise("Missing r2.prod_assets_url in credentials — hero and OG images will not load")
+  config.x.r2_assets_url = "https://assets.roomrally.app"
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
