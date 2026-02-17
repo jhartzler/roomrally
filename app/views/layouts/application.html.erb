@@ -14,14 +14,14 @@
     <meta property="og:url" content="<%= request.original_url %>">
     <meta property="og:title" content="<%= content_for(:title) || "RoomRally - Free Party Games for Groups" %>">
     <meta property="og:description" content="<%= content_for(:description) || "Host fun, safe multiplayer party games for your youth group, classroom, or friends. Players join from their phones—no app needed." %>">
-    <meta property="og:image" content="<%= image_url('og-image.png') %>">
+    <meta property="og:image" content="<%= "#{Rails.configuration.x.r2_assets_url}/og-image.png" %>">
 
     <%# Twitter %>
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="<%= request.original_url %>">
     <meta property="twitter:title" content="<%= content_for(:title) || "RoomRally - Free Party Games for Groups" %>">
     <meta property="twitter:description" content="<%= content_for(:description) || "Host fun, safe multiplayer party games for your youth group, classroom, or friends." %>">
-    <meta property="twitter:image" content="<%= image_url('og-image.png') %>">
+    <meta property="twitter:image" content="<%= "#{Rails.configuration.x.r2_assets_url}/og-image.png" %>">
 
     <%# Additional SEO %>
     <link rel="canonical" href="<%= request.original_url.split('?').first %>">
