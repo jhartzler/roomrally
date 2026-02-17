@@ -10,6 +10,7 @@ class TriviaPack < ApplicationRecord
   accepts_nested_attributes_for :trivia_questions, allow_destroy: true, reject_if: :reject_question?
 
   before_validation :set_default_name
+  validate :image_count_within_limit
 
   def self.default
     find_by(is_default: true) || global.first
@@ -26,6 +27,13 @@ class TriviaPack < ApplicationRecord
   end
 
   private
+
+  def image_count_within_limit
+    count = trivia_questions.joins(:image_attachment).count
+    if count > 20
+      errors.add(:base, "cannot have more than 20 questions with images")
+    end
+  end
 
   def reject_question?(attributes)
     # Reject if the question body is blank
