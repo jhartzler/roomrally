@@ -29,7 +29,10 @@ Rails.application.configure do
   config.cache_store = :redis_cache_store, { url: "redis://localhost:6379/0" }
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :r2
+
+  # Cloudflare R2 asset CDN (static assets like hero image, OG images)
+  config.x.r2_assets_url = "https://dev.assets.roomrally.app"
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
