@@ -63,7 +63,12 @@ class Room < ApplicationRecord
   end
 
   def enough_players?
-    stage_only? || players.active_players.count >= 3
+    return true if stage_only?
+
+    handler = GameEventRouter.handler_for(game_type)
+    return true if handler && !handler.requires_capacity_check?
+
+    players.active_players.count >= 3
   end
 
 
