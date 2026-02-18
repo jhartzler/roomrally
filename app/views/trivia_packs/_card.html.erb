@@ -9,9 +9,7 @@
         <%= lucide_icon(is_system ? 'sparkles' : 'brain', class: is_system ? "w-6 h-6" : "w-8 h-8", "aria-hidden": true) %>
       </div>
 
-      <% if is_system %>
-        <%= render "shared/capacity_badge", pack: pack, show_label: false %>
-      <% else %>
+      <% unless is_system %>
         <!-- Status Indicator -->
         <div class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <%= pack.live? ? 'bg-green-500/20 text-green-300' : 'bg-white/5 text-blue-200' %> border border-white/10">
           <div class="w-2 h-2 rounded-full <%= pack.live? ? 'bg-green-400' : 'bg-blue-300/50' %> animate-pulse"></div>
@@ -27,11 +25,6 @@
       <p class="text-sm text-blue-200/70 <%= is_system ? 'mb-4' : 'mb-5' %> font-medium uppercase tracking-widest"><%= pack.game_type %></p>
     </div>
 
-    <% if is_user %>
-      <div class="flex items-center gap-2">
-        <%= render "shared/capacity_badge", pack: pack, show_label: true %>
-      </div>
-    <% end %>
   </div>
 
   <% if is_system %>
