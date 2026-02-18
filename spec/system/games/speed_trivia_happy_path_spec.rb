@@ -120,6 +120,17 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
     # Host advances to score podium (step 2 of reviewing)
     Games::SpeedTrivia.show_scores(game: game.reload)
 
+    # All players should see their score panel on their phone
+    [ :host, :player2, :player3 ].each do |session|
+      Capybara.using_session(session) do
+        visit current_path
+        expect(page).to have_css("[data-controller='score-tally']", wait: 5)
+        expect(page).to have_content(/place/i, wait: 5)
+        expect(page).to have_content("this round", wait: 5)
+        screenshot_checkpoint("score_panel")
+      end
+    end
+
     # Host advances to finish (only had 1 question set up for simplicity)
     # In a real game there would be more questions
     game.update!(current_question_index: game.trivia_question_instances.count - 1)
