@@ -25,21 +25,65 @@
       <% current_question = game.current_question %>
       <% player_answer = current_question&.trivia_answers&.find_by(player:) %>
 
-      <% if player_answer&.correct? %>
-        <div class="text-6xl mb-6">🎉</div>
-        <p class="text-2xl text-green-400 font-bold mb-4">Correct!</p>
-        <p class="text-4xl text-white font-black">+<%= player_answer.points_awarded %></p>
-      <% elsif player_answer %>
-        <div class="text-6xl mb-6">😅</div>
-        <p class="text-2xl text-red-400 font-bold mb-4">Wrong!</p>
-        <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
-      <% else %>
-        <div class="text-6xl mb-6">⏱</div>
-        <p class="text-2xl text-gray-400 font-bold mb-4">Time's Up!</p>
-        <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
-      <% end %>
+      <% if game.reviewing_step == 2 %>
+        <%# ── Step 2: Cumulative score panel ──────────────────────────── %>
+        <% round_points = player_answer&.points_awarded.to_i %>
+        <% previous_score = player.score - round_points %>
 
-      <p class="text-blue-200 mt-6">Watch the screen for standings...</p>
+        <%# Compute ranks (lower number = better rank) %>
+        <% all_players = room.players.active_players.to_a %>
+        <% round_points_by_id = current_question.trivia_answers.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded } %>
+        <% sorted_now = all_players.sort_by { |p| -p.score } %>
+        <% sorted_prev = all_players.sort_by { |p| -(p.score - round_points_by_id.fetch(p.id, 0)) } %>
+        <% current_rank = sorted_now.index { |p| p.id == player.id }.to_i + 1 %>
+        <% previous_rank = sorted_prev.index { |p| p.id == player.id }.to_i + 1 %>
+
+        <%# Pick motivational message %>
+        <% message = if round_points == 0
+          ["Oof!", "Next time!"].sample
+        elsif current_rank <= previous_rank
+          ["Nice one!", "Way to go!"].sample
+        else
+          ["Keep it up!", "You can do it!"].sample
+        end %>
+
+        <div class="text-4xl font-black text-white mb-6"><%= message %></div>
+
+        <div data-controller="score-tally"
+             data-score-tally-from-value="<%= previous_score %>"
+             data-score-tally-to-value="<%= player.score %>">
+          <p class="text-blue-200 text-sm font-bold uppercase tracking-widest mb-1">
+            <%= current_rank.ordinalize %> Place
+          </p>
+          <p class="text-6xl font-black text-white font-mono mb-3"
+             data-score-tally-target="display">
+            <%= previous_score.to_s %>
+          </p>
+          <% if round_points > 0 %>
+            <p class="text-green-400 font-bold text-xl">+<%= round_points %> this round</p>
+          <% else %>
+            <p class="text-gray-400 font-bold text-xl">+0 this round</p>
+          <% end %>
+        </div>
+
+      <% else %>
+        <%# ── Step 1: Answer reveal (unchanged) ──────────────────────── %>
+        <% if player_answer&.correct? %>
+          <div class="text-6xl mb-6">🎉</div>
+          <p class="text-2xl text-green-400 font-bold mb-4">Correct!</p>
+          <p class="text-4xl text-white font-black">+<%= player_answer.points_awarded %></p>
+        <% elsif player_answer %>
+          <div class="text-6xl mb-6">😅</div>
+          <p class="text-2xl text-red-400 font-bold mb-4">Wrong!</p>
+          <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
+        <% else %>
+          <div class="text-6xl mb-6">⏱</div>
+          <p class="text-2xl text-gray-400 font-bold mb-4">Time's Up!</p>
+          <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
+        <% end %>
+
+        <p class="text-blue-200 mt-6">Watch the screen for standings...</p>
+      <% end %>
     <% end %>
   </div>
 </div>
