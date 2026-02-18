@@ -1,7 +1,7 @@
 <%# Preload all question images so they display instantly when questions appear %>
 <% game.trivia_question_instances.each do |q| %>
   <% if q.image.attached? %>
-    <link rel="preload" as="image" href="<%= url_for(q.image) %>">
+    <link rel="preload" as="image" href="<%= rails_blob_path(q.image.blob) %>">
   <% end %>
 <% end %>
 
