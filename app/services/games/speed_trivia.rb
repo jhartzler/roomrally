@@ -25,7 +25,7 @@ module Games
 
       return if room.current_game.present?
 
-      pack = TriviaPack.default
+      pack = room.trivia_pack || TriviaPack.default
       game = SpeedTriviaGame.create!(trivia_pack: pack, time_limit: effective_time_limit, timer_enabled:, show_instructions:)
       room.update!(current_game: game)
 

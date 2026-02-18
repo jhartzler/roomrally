@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_17_153537) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_040815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -194,6 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_153537) do
     t.bigint "prompt_pack_id"
     t.boolean "stage_only", default: false, null: false
     t.string "status"
+    t.bigint "trivia_pack_id"
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["category_pack_id"], name: "index_rooms_on_category_pack_id"
@@ -202,6 +203,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_153537) do
     t.index ["game_template_id"], name: "index_rooms_on_game_template_id"
     t.index ["host_id"], name: "index_rooms_on_host_id"
     t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
+    t.index ["trivia_pack_id"], name: "index_rooms_on_trivia_pack_id"
     t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
@@ -337,6 +339,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_153537) do
   add_foreign_key "rooms", "game_templates", on_delete: :nullify
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
+  add_foreign_key "rooms", "trivia_packs"
   add_foreign_key "rooms", "users"
   add_foreign_key "score_tracker_entries", "rooms"
   add_foreign_key "speed_trivia_games", "trivia_packs"
