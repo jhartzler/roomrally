@@ -1,5 +1,7 @@
 class StagesController < ApplicationController
   before_action :set_room
+  before_action :authenticate_user!, if: -> { @room.user.present? }
+  before_action :authorize_owner!
 
   rescue_from ActiveRecord::RecordNotFound, with: :room_not_found
 
@@ -11,6 +13,13 @@ class StagesController < ApplicationController
 
   def set_room
     @room = Room.find_by!(code: params[:room_code])
+  end
+
+  def authorize_owner!
+    return if @room.user.nil?
+    return if @room.user == current_user
+
+    redirect_to root_path, alert: "You are not authorized to view this stage."
   end
 
   def room_not_found
