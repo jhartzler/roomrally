@@ -1,9 +1,4 @@
 module ApplicationHelper
-  def lucide_icon(name, options = {})
-    options[:class] = [ "lucide", "lucide-#{name}", options[:class] ].compact.join(" ")
-    tag.i(**options)
-  end
-
   def qr_code_svg(content, size: 250)
     require "rqrcode"
     qrcode = RQRCode::QRCode.new(content)

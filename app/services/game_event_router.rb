@@ -7,6 +7,10 @@ module GameEventRouter
     Rails.logger.info "Registered game handler for #{game_type}"
   end
 
+  def self.handler_for(game_type)
+    @game_handlers[game_type]
+  end
+
   def self.method_missing(event_name, *args, **kwargs)
     # Extract room from arguments (either positional first arg or keyword :room)
     if kwargs.key?(:room)

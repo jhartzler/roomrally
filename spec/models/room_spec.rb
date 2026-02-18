@@ -88,6 +88,12 @@ RSpec.describe Room, type: :model do
       create_list(:player, 2, room:, status: :pending_approval)
       expect(room.enough_players?).to be true
     end
+
+    it 'returns true for game types that do not require capacity checking' do
+      allow(Games::SpeedTrivia).to receive(:requires_capacity_check?).and_return(false)
+      room = create(:room, game_type: Room::SPEED_TRIVIA)
+      expect(room.enough_players?).to be true
+    end
   end
 
   describe '#display_name' do

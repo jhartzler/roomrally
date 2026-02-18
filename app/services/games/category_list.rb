@@ -3,6 +3,8 @@ module Games
     DEFAULT_TOTAL_ROUNDS = 3
     DEFAULT_CATEGORIES_PER_ROUND = 6
 
+    def self.requires_capacity_check? = false
+
     def self.game_started(room:, timer_enabled: false, timer_increment: 90, total_rounds: DEFAULT_TOTAL_ROUNDS, categories_per_round: DEFAULT_CATEGORIES_PER_ROUND, show_instructions: true, **_extra)
       total_rounds = DEFAULT_TOTAL_ROUNDS if total_rounds.to_i <= 0
       categories_per_round = DEFAULT_CATEGORIES_PER_ROUND if categories_per_round.to_i <= 0

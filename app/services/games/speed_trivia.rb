@@ -3,6 +3,8 @@ module Games
     DEFAULT_QUESTION_COUNT = 5
     DEFAULT_TIME_LIMIT = 20
 
+    def self.requires_capacity_check? = false
+
     def self.game_started(room:, question_count: DEFAULT_QUESTION_COUNT, time_limit: DEFAULT_TIME_LIMIT, timer_enabled: false, timer_increment: nil, show_instructions: true, **_extra)
       # Use timer_increment if provided (from UI), otherwise fall back to time_limit
       effective_time_limit = timer_increment.presence || time_limit
