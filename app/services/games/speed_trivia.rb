@@ -25,7 +25,7 @@ module Games
 
       return if room.current_game.present?
 
-      pack = TriviaPack.default
+      pack = room.trivia_pack || TriviaPack.default
       game = SpeedTriviaGame.create!(trivia_pack: pack, time_limit: effective_time_limit, timer_enabled:, show_instructions:)
       room.update!(current_game: game)
 
@@ -148,7 +148,7 @@ module Games
       selected_questions = available_questions.sample(question_count)
 
       selected_questions.each_with_index do |question, index|
-        TriviaQuestionInstance.create!(
+        instance = TriviaQuestionInstance.create!(
           speed_trivia_game: game,
           trivia_question: question,
           body: question.body,
@@ -156,6 +156,7 @@ module Games
           options: question.options,
           position: index
         )
+        instance.image.attach(question.image.blob) if question.image.attached?
       end
     end
 

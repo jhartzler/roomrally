@@ -1,11 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer"]
+    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning"]
     static values = { ratio: { type: Number, default: 1 } }
 
     connect() {
         this.updateCount()
+        this.updateImageCount()
     }
 
     addQuestion(event) {
@@ -68,6 +69,7 @@ export default class extends Controller {
         }
 
         this.updateCount()
+        this.updateImageCount()
     }
 
     updateCorrectAnswers(event) {
@@ -106,6 +108,76 @@ export default class extends Controller {
     optionChanged(event) {
         const questionWrapper = event.target.closest(".question-field-wrapper")
         this.syncCorrectAnswersFields(questionWrapper)
+    }
+
+    previewImage(event) {
+        const file = event.target.files[0]
+        if (!file) return
+
+        const wrapper = event.target.closest(".question-field-wrapper")
+        const preview = wrapper.querySelector("[data-trivia-editor-target='imagePreview']")
+
+        // Determine if this question already has an image (replacing doesn't add to the count)
+        const existingContainer = wrapper.querySelector("[data-trivia-editor-target='existingImageContainer']")
+        const hasExisting = existingContainer && existingContainer.style.opacity !== "0.3"
+        const hasNew = preview && !preview.classList.contains("hidden")
+        const alreadyHasImage = hasExisting || hasNew
+
+        if (!alreadyHasImage && this.currentImageCount >= 20) {
+            event.target.value = ""
+            if (this.hasImageCountWarningTarget) {
+                this.imageCountWarningTarget.classList.remove("hidden")
+            }
+            return
+        }
+
+        if (!preview) return
+
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            preview.src = e.target.result
+            preview.classList.remove("hidden")
+            this.updateImageCount()
+        }
+        reader.readAsDataURL(file)
+    }
+
+    removeImage(event) {
+        const wrapper = event.target.closest(".question-field-wrapper")
+        const container = wrapper.querySelector("[data-trivia-editor-target='existingImageContainer']")
+        if (container) {
+            container.style.opacity = event.target.checked ? "0.3" : "1"
+            this.updateImageCount()
+        }
+    }
+
+    get currentImageCount() {
+        const wrappers = this.element.querySelectorAll(".question-field-wrapper")
+        let count = 0
+        wrappers.forEach(wrapper => {
+            if (wrapper.style.display === "none") return
+            const existingContainer = wrapper.querySelector("[data-trivia-editor-target='existingImageContainer']")
+            const preview = wrapper.querySelector("[data-trivia-editor-target='imagePreview']")
+            const hasExisting = existingContainer && existingContainer.style.opacity !== "0.3"
+            const hasNew = preview && !preview.classList.contains("hidden")
+            if (hasExisting || hasNew) count++
+        })
+        return count
+    }
+
+    updateImageCount() {
+        const count = this.currentImageCount
+        const limit = 20
+
+        if (this.hasImageCountDisplayTarget) {
+            this.imageCountDisplayTarget.textContent = `${count} / ${limit} used`
+            this.imageCountDisplayTarget.classList.toggle("text-amber-300", count >= limit)
+            this.imageCountDisplayTarget.classList.toggle("text-blue-300", count < limit)
+        }
+
+        if (this.hasImageCountWarningTarget) {
+            this.imageCountWarningTarget.classList.toggle("hidden", count < limit)
+        }
     }
 
     updateCount() {

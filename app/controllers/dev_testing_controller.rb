@@ -3,6 +3,9 @@ class DevTestingController < ApplicationController
 
   def index
     @game_types = DevPlaytest::Registry.game_types
+    @trivia_packs = TriviaPack.accessible_by(current_user).order(:name)
+    @prompt_packs = PromptPack.accessible_by(current_user).order(:name)
+    @category_packs = CategoryPack.accessible_by(current_user).order(:name)
   end
 
   def set_player_session
@@ -25,7 +28,13 @@ class DevTestingController < ApplicationController
     num_players = params[:num_players].to_i
     game_type = params[:game_type]
 
-    room = Room.create!(game_type:, user: current_user)
+    room = Room.create!(
+      game_type:,
+      user: current_user,
+      trivia_pack_id: params[:trivia_pack_id].presence,
+      prompt_pack_id: params[:prompt_pack_id].presence,
+      category_pack_id: params[:category_pack_id].presence
+    )
     players = []
     num_players.times do |i|
       players << Player.create!(room:, name: "Player #{i + 1}")

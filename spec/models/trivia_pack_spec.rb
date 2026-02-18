@@ -66,6 +66,27 @@ RSpec.describe TriviaPack, type: :model do
     end
   end
 
+  describe 'image count validation' do
+    it 'is valid with 20 or fewer questions that have images' do
+      pack = create(:trivia_pack)
+      20.times do
+        q = create(:trivia_question, trivia_pack: pack)
+        q.image.attach(io: StringIO.new("img"), filename: "x.jpg", content_type: "image/jpeg")
+      end
+      expect(pack).to be_valid
+    end
+
+    it 'is invalid when more than 20 questions have images' do
+      pack = create(:trivia_pack)
+      21.times do
+        q = create(:trivia_question, trivia_pack: pack)
+        q.image.attach(io: StringIO.new("img"), filename: "x.jpg", content_type: "image/jpeg")
+      end
+      expect(pack).not_to be_valid
+      expect(pack.errors[:base]).to include("cannot have more than 20 questions with images")
+    end
+  end
+
   describe 'nested attributes' do
     it 'accepts nested attributes for trivia questions' do # rubocop:disable RSpec/ExampleLength
       user = create(:user)

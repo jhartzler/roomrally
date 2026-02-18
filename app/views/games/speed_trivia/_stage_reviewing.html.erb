@@ -8,6 +8,15 @@
     </span>
   </div>
 
+  <% if current_question&.image&.attached? %>
+    <!-- Question Image -->
+    <div class="w-full max-w-6xl mb-[2vh] px-[2vh]">
+      <%= image_tag rails_blob_path(current_question.image.blob),
+            class: "w-full h-[25vh] object-contain rounded-2xl shadow-2xl",
+            alt: "" %>
+    </div>
+  <% end %>
+
   <!-- Question with Answer -->
   <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[2vh]">
     <p class="text-vh-2xl text-blue-200 mb-[2vh]"><%= current_question&.body %></p>
