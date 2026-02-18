@@ -137,7 +137,7 @@
               <%# Show existing image thumbnail and remove option %>
               <% if q.object.image.attached? %>
                 <div class="mb-2 flex items-start gap-3" data-trivia-editor-target="existingImageContainer">
-                  <%= image_tag q.object.image.variant(resize_to_limit: [400, 225]),
+                  <%= image_tag q.object.image,
                         class: "rounded-lg object-cover h-24 w-auto border border-white/20",
                         alt: "Question image" %>
                   <label class="flex items-center gap-1.5 cursor-pointer text-red-300 hover:text-red-200 text-xs font-bold mt-1">

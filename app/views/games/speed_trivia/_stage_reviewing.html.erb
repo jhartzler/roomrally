@@ -11,7 +11,7 @@
   <% if current_question&.image&.attached? %>
     <!-- Question Image -->
     <div class="w-full max-w-6xl mb-[2vh] px-[2vh]">
-      <%= image_tag current_question.image.variant(resize_to_limit: [1920, 900]),
+      <%= image_tag current_question.image,
             class: "w-full h-[25vh] object-contain rounded-2xl shadow-2xl",
             alt: "" %>
     </div>
