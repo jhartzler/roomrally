@@ -152,7 +152,7 @@ RSpec.describe Games::SpeedTrivia do
           content_type: "image/jpeg"
         )
 
-        Games::SpeedTrivia.send(:assign_questions, game:, question_count: 1)
+        described_class.send(:assign_questions, game:, question_count: 1)
 
         instance = game.trivia_question_instances.first
         expect(instance.image).to be_attached
@@ -164,7 +164,7 @@ RSpec.describe Games::SpeedTrivia do
       it 'creates an instance with no image' do
         create(:trivia_question, trivia_pack: pack)
 
-        Games::SpeedTrivia.send(:assign_questions, game:, question_count: 1)
+        described_class.send(:assign_questions, game:, question_count: 1)
 
         instance = game.trivia_question_instances.first
         expect(instance.image).not_to be_attached

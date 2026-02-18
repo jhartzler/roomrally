@@ -86,6 +86,22 @@ RSpec.describe TriviaQuestion, type: :model do
       end
     end
 
+  describe 'remove_image' do
+    it 'purges the attachment when remove_image is set to "1" and saved' do
+      question = create(:trivia_question)
+      question.image.attach(
+        io: StringIO.new("x"),
+        filename: "test.png",
+        content_type: "image/png"
+      )
+      expect(question.image).to be_attached
+
+      question.update!(remove_image: "1")
+      question.reload
+      expect(question.image).not_to be_attached
+    end
+  end
+
   describe 'options' do
     it 'stores options as an array' do
       question = create(:trivia_question, options: [ "Paris", "London", "Berlin", "Madrid" ])
