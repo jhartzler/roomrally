@@ -26,16 +26,19 @@
       <% player_answer = current_question&.trivia_answers&.find_by(player:) %>
       <% round_points = player_answer&.points_awarded.to_i %>
 
-      <%# Step-aware score formula: produces identical from/to at step 1 and step 2 %>
+      <%# Step-aware score display:
+          Step 1 (answer reveal): animate from pre-round total up to new total.
+          Step 2 (full scoreboard): score_from == score_to so animation is a no-op —
+          player.score already reflects the updated total after calculate_scores! ran. %>
       <% if game.reviewing_step == 1 %>
         <% score_from = player.score %>
         <% score_to   = player.score + round_points %>
       <% else %>
-        <% score_from = player.score - round_points %>
+        <% score_from = player.score %>
         <% score_to   = player.score %>
       <% end %>
 
-      <%# Rank computation: projected at step 1, actual at step 2 — same result %>
+      <%# Rank computation: projected at step 1, actual at step 2 %>
       <% all_players = room.players.active_players.to_a %>
       <% round_points_by_id = current_question.trivia_answers.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded.to_i } %>
       <% if game.reviewing_step == 1 %>
