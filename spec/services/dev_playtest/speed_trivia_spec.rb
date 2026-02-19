@@ -130,6 +130,35 @@ RSpec.describe DevPlaytest::SpeedTrivia do
       game.reload
       expect(game.status).to eq("reviewing")
     end
+
+    context "when game is in reviewing state" do
+      def reach_reviewing!
+        game = start_answering!
+        Games::SpeedTrivia.close_round(game:)
+        game.reload
+        game
+      end
+
+      it "advances to reviewing_step 2 (score podium) when reviewing_step is 1" do
+        game = reach_reviewing!
+        expect(game.reviewing_step).to eq(1)
+
+        described_class.auto_play_step(game:)
+        game.reload
+
+        expect(game.reviewing_step).to eq(2)
+      end
+
+      it "advances to next question when reviewing_step is 2" do
+        game = reach_reviewing!
+        game.update!(reviewing_step: 2)
+
+        described_class.auto_play_step(game:)
+        game.reload
+
+        expect(game.current_question_index).to eq(1)
+      end
+    end
   end
 
   describe ".dashboard_actions" do

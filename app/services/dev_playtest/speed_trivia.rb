@@ -35,7 +35,11 @@ module DevPlaytest
         game.reload
         Games::SpeedTrivia.close_round(game:) if game.answering?
       when "reviewing"
-        Games::SpeedTrivia.next_question(game:)
+        if game.reviewing_step == 1
+          Games::SpeedTrivia.show_scores(game:)
+        else
+          Games::SpeedTrivia.next_question(game:)
+        end
       end
     end
 
