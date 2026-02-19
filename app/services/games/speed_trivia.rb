@@ -102,6 +102,8 @@ module Games
 
     def self.next_question(game:)
       if game.questions_remaining?
+        # Ensure scores are finalized for the round even if show_scores was skipped
+        game.calculate_scores!
         game.next_question!
         start_question(game:)
       else

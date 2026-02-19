@@ -225,6 +225,15 @@ RSpec.describe Games::SpeedTrivia do
           expect(game.reload.round_started_at).to eq(Time.current)
         end
       end
+
+      it 'calculates scores even when show_scores was skipped' do
+        player = create(:player, room:, score: 0)
+        first_question = game.trivia_question_instances.find_by(position: 0)
+        create(:trivia_answer, player:, trivia_question_instance: first_question, points_awarded: 500)
+
+        described_class.next_question(game:)
+        expect(player.reload.score).to eq(500)
+      end
     end
 
     context 'when no more questions' do

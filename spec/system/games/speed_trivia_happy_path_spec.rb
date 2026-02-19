@@ -104,7 +104,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
     # Host closes the round
     Games::SpeedTrivia.close_round(game: game.reload)
 
-    # All players should see their result
+    # All players should see their result AND score panel on the same screen
     [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         visit current_path
@@ -113,6 +113,10 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
           visit current_path
         end
         expect(page).to have_content("Correct!", wait: 5).or have_content("Wrong!", wait: 5)
+        # Score panel should appear on the same screen
+        expect(page).to have_css("[data-controller='score-tally']", wait: 5)
+        expect(page).to have_content(/place/i, wait: 5)
+        expect(page).to have_content("this round", wait: 5)
         screenshot_checkpoint("reviewing")
       end
     end

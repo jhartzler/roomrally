@@ -24,22 +24,77 @@
     <% elsif game.reviewing? %>
       <% current_question = game.current_question %>
       <% player_answer = current_question&.trivia_answers&.find_by(player:) %>
+      <% round_points = player_answer&.points_awarded.to_i %>
 
-      <% if player_answer&.correct? %>
-        <div class="text-6xl mb-6">🎉</div>
-        <p class="text-2xl text-green-400 font-bold mb-4">Correct!</p>
-        <p class="text-4xl text-white font-black">+<%= player_answer.points_awarded %></p>
-      <% elsif player_answer %>
-        <div class="text-6xl mb-6">😅</div>
-        <p class="text-2xl text-red-400 font-bold mb-4">Wrong!</p>
-        <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
+      <%# Step-aware score display:
+          Step 1 (answer reveal): animate from pre-round total up to new total.
+          Step 2 (full scoreboard): score_from == score_to so animation is a no-op —
+          player.score already reflects the updated total after calculate_scores! ran. %>
+      <% if game.reviewing_step == 1 %>
+        <% score_from = player.score %>
+        <% score_to   = player.score + round_points %>
       <% else %>
-        <div class="text-6xl mb-6">⏱</div>
-        <p class="text-2xl text-gray-400 font-bold mb-4">Time's Up!</p>
-        <p class="text-lg text-white">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
+        <% score_from = player.score %>
+        <% score_to   = player.score %>
       <% end %>
 
-      <p class="text-blue-200 mt-6">Watch the screen for standings...</p>
+      <%# Rank computation: projected at step 1, actual at step 2 %>
+      <% all_players = room.players.active_players.to_a %>
+      <% round_points_by_id = current_question.trivia_answers.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded.to_i } %>
+      <% if game.reviewing_step == 1 %>
+        <% sorted_now  = all_players.sort_by { |p| -(p.score + round_points_by_id.fetch(p.id, 0)) } %>
+        <% sorted_prev = all_players.sort_by { |p| -p.score } %>
+      <% else %>
+        <% sorted_now  = all_players.sort_by { |p| -p.score } %>
+        <% sorted_prev = all_players.sort_by { |p| -(p.score - round_points_by_id.fetch(p.id, 0)) } %>
+      <% end %>
+      <% current_rank  = sorted_now.index  { |p| p.id == player.id }.to_i + 1 %>
+      <% previous_rank = sorted_prev.index { |p| p.id == player.id }.to_i + 1 %>
+
+      <%# Motivational message %>
+      <% message = if round_points == 0
+        ["Oof!", "Next time!"].sample
+      elsif current_rank <= previous_rank
+        ["Nice one!", "Way to go!"].sample
+      else
+        ["Keep it up!", "You can do it!"].sample
+      end %>
+
+      <%# Answer result section %>
+      <% if player_answer&.correct? %>
+        <div class="text-5xl mb-3">🎉</div>
+        <p class="text-2xl text-green-400 font-bold mb-1">Correct!</p>
+      <% elsif player_answer %>
+        <div class="text-5xl mb-3">😅</div>
+        <p class="text-2xl text-red-400 font-bold mb-1">Wrong!</p>
+        <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
+      <% else %>
+        <div class="text-5xl mb-3">⏱</div>
+        <p class="text-2xl text-gray-400 font-bold mb-1">Time's Up!</p>
+        <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
+      <% end %>
+
+      <hr class="border-white/20 my-4">
+
+      <%# Score panel section %>
+      <div class="text-xl font-black text-white mb-4"><%= message %></div>
+
+      <div data-controller="score-tally"
+           data-score-tally-from-value="<%= score_from %>"
+           data-score-tally-to-value="<%= score_to %>">
+        <p class="text-blue-200 text-sm font-bold uppercase tracking-widest mb-1">
+          <%= current_rank.ordinalize %> Place
+        </p>
+        <p class="text-5xl font-black text-white font-mono mb-2"
+           data-score-tally-target="display">
+          <%= score_from.to_s %>
+        </p>
+        <% if round_points > 0 %>
+          <p class="text-green-400 font-bold text-lg">+<%= round_points %> this round</p>
+        <% else %>
+          <p class="text-gray-400 font-bold text-lg">+0 this round</p>
+        <% end %>
+      </div>
     <% end %>
   </div>
 </div>
