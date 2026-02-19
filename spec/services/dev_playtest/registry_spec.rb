@@ -4,7 +4,7 @@ RSpec.describe DevPlaytest::Registry do
   describe ".handler_for" do
     it "returns the WriteAndVote handler for a WriteAndVoteGame" do
       game = create(:write_and_vote_game)
-      expect(described_class.handler_for(game)).to eq(DevPlaytest::WriteAndVote)
+      expect(described_class.handler_for(game)).to eq(Games::WriteAndVote::Playtest)
     end
 
     it "returns the SpeedTrivia handler for a SpeedTriviaGame" do
@@ -19,7 +19,7 @@ RSpec.describe DevPlaytest::Registry do
 
   describe ".handler_for_class_name" do
     it "returns handler by class name string" do
-      expect(described_class.handler_for_class_name("WriteAndVoteGame")).to eq(DevPlaytest::WriteAndVote)
+      expect(described_class.handler_for_class_name("WriteAndVoteGame")).to eq(Games::WriteAndVote::Playtest)
       expect(described_class.handler_for_class_name("SpeedTriviaGame")).to eq(Games::SpeedTrivia::Playtest)
     end
   end
