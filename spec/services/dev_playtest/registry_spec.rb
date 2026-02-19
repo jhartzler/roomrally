@@ -9,7 +9,7 @@ RSpec.describe DevPlaytest::Registry do
 
     it "returns the SpeedTrivia handler for a SpeedTriviaGame" do
       game = create(:speed_trivia_game)
-      expect(described_class.handler_for(game)).to eq(DevPlaytest::SpeedTrivia)
+      expect(described_class.handler_for(game)).to eq(Games::SpeedTrivia::Playtest)
     end
 
     it "returns nil for an unregistered game type" do
@@ -20,7 +20,7 @@ RSpec.describe DevPlaytest::Registry do
   describe ".handler_for_class_name" do
     it "returns handler by class name string" do
       expect(described_class.handler_for_class_name("WriteAndVoteGame")).to eq(DevPlaytest::WriteAndVote)
-      expect(described_class.handler_for_class_name("SpeedTriviaGame")).to eq(DevPlaytest::SpeedTrivia)
+      expect(described_class.handler_for_class_name("SpeedTriviaGame")).to eq(Games::SpeedTrivia::Playtest)
     end
   end
 

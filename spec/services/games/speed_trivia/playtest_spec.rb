@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe DevPlaytest::SpeedTrivia do
+RSpec.describe Games::SpeedTrivia::Playtest do
   let(:room) { create(:room, game_type: "Speed Trivia") }
   let(:players) do
     3.times.map { |i| create(:player, room:, name: "Player #{i + 1}") }
