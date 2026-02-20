@@ -9,6 +9,11 @@ module GameTemplates
       room = @game_template.build_room
 
       if room.save
+        Analytics.track(
+          distinct_id: "user_#{current_user.id}",
+          event: "room_created",
+          properties: { game_type: room.game_type, room_code: room.code, from_template: true, template_id: @game_template.id }
+        )
         redirect_to room_backstage_path(room)
       else
         redirect_to game_templates_path, alert: "Could not launch game: #{room.errors.full_messages.to_sentence}"

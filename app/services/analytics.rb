@@ -2,7 +2,7 @@ module Analytics
   def self.track(distinct_id:, event:, properties: {})
     return unless defined?($posthog) && $posthog
 
-    $posthog.capture(distinct_id:, event:, properties:)
+    $posthog.capture(distinct_id:, event:, properties: { environment: Rails.env }.merge(properties))
     Rails.logger.info({ analytics_event: event, distinct_id:, properties: })
   rescue => e
     Rails.logger.warn("[Analytics] Failed to track #{event}: #{e.message}")
