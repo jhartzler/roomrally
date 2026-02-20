@@ -190,11 +190,7 @@ module Games
           game.reload
           Games::SpeedTrivia.close_round(game:) if game.answering?
         when "reviewing"
-          if game.reviewing_step == 1
-            Games::SpeedTrivia.show_scores(game:)
-          else
-            Games::SpeedTrivia.next_question(game:)
-          end
+          Games::SpeedTrivia.next_question(game:)
         end
       end
 
