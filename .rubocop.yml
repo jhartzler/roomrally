@@ -15,6 +15,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'deploy-worktree/**/*'
+    - 'worktrees/**/*'
 
 # RSpec rules
 RSpec:

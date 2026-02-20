@@ -96,6 +96,4 @@ class SpeedTriviaGame < ApplicationRecord
   def increment_question_index
     increment!(:current_question_index)
   end
-
-
 end

@@ -242,7 +242,6 @@ RSpec.describe Games::SpeedTrivia do
           expect(game.reload.round_started_at).to eq(Time.current)
         end
       end
-
     end
 
     context 'when no more questions' do

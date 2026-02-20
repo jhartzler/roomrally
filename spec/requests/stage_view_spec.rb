@@ -71,13 +71,14 @@ RSpec.describe "Stage View", type: :request do
           speed_trivia_game: game,
           position: 0,
           options: %w[Paris London Berlin Madrid],
-          correct_answers: ["Paris"])
+          correct_answers: [ "Paris" ])
         create(:player, room: speed_trivia_room, score: 500, name: "Top Player")
         # rubocop:disable RSpec/AnyInstance
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
         # rubocop:enable RSpec/AnyInstance
       end
 
+      # rubocop:disable RSpec/MultipleExpectations
       it "renders a single stage_reviewing partial containing both vote counts and score podium" do
         get room_stage_path(speed_trivia_room.code)
         expect(response.body).to include('id="stage_reviewing"')
@@ -87,7 +88,7 @@ RSpec.describe "Stage View", type: :request do
         # Score podium present
         expect(response.body).to include("games--podium")
       end
+      # rubocop:enable RSpec/MultipleExpectations
     end
-
   end
 end
