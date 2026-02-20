@@ -62,39 +62,5 @@ RSpec.describe "Stage View", type: :request do
       end
     end
 
-    context "when a SpeedTrivia game is reviewing with step 1 (answer reveal)" do
-      let(:game) { create(:speed_trivia_game, status: "reviewing", current_question_index: 0, reviewing_step: 1) }
-      let(:speed_trivia_room) { create(:room, user:, game_type: "Speed Trivia", current_game: game) }
-
-      before do
-        create(:trivia_question_instance, speed_trivia_game: game, position: 0)
-        # rubocop:disable RSpec/AnyInstance
-        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
-        # rubocop:enable RSpec/AnyInstance
-      end
-
-      it "renders stage_reviewing, not stage_reviewing_scores" do
-        get room_stage_path(speed_trivia_room.code)
-        expect(response.body).to include('id="stage_reviewing"')
-        expect(response.body).not_to include('id="stage_reviewing_scores"')
-      end
-    end
-
-    context "when a SpeedTrivia game is reviewing with step 2 (score podium)" do
-      let(:game) { create(:speed_trivia_game, status: "reviewing", reviewing_step: 2) }
-      let(:speed_trivia_room) { create(:room, user:, game_type: "Speed Trivia", current_game: game) }
-
-      before do
-        # rubocop:disable RSpec/AnyInstance
-        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
-        # rubocop:enable RSpec/AnyInstance
-      end
-
-      it "renders stage_reviewing_scores, not stage_reviewing" do
-        get room_stage_path(speed_trivia_room.code)
-        expect(response.body).to include('id="stage_reviewing_scores"')
-        expect(response.body).not_to include('id="stage_reviewing"')
-      end
-    end
   end
 end

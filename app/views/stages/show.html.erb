@@ -22,11 +22,7 @@
       <% if @room.current_game.present? %>
         <% game = @room.current_game %>
         <% game_type_folder = @room.game_type.parameterize.underscore %>
-        <% status_suffix = game.status %>
-        <% if game.respond_to?(:reviewing_step) && game.status == "reviewing" && game.reviewing_step == 2 %>
-          <% status_suffix = "reviewing_scores" %>
-        <% end %>
-        <% partial_name = "games/#{game_type_folder}/stage_#{status_suffix}" %>
+        <% partial_name = "games/#{game_type_folder}/stage_#{game.status}" %>
         <%= render partial_name, room: @room, game: game %>
       <% else %>
         <%= render "rooms/stage_lobby", room: @room %>
