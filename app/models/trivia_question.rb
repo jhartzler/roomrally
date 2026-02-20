@@ -47,12 +47,12 @@ class TriviaQuestion < ApplicationRecord
 
   def correct_answers_must_be_valid
     unless correct_answers.is_a?(Array)
-      errors.add(:correct_answers, "please select at least one correct answer")
+      errors.add(:correct_answers, "must have at least one selected")
       return
     end
 
     if correct_answers.empty?
-      errors.add(:correct_answers, "please select at least one correct answer")
+      errors.add(:correct_answers, "must have at least one selected")
       return
     end
 
