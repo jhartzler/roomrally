@@ -82,28 +82,16 @@ module Games
     end
 
     def self.close_round(game:)
-      game.close_round!
-      broadcast_all(game)
-      schedule_score_reveal(game)
-    end
-
-    def self.show_scores(game:)
-      return unless game.reviewing?
-
-      # Capture current top-4 before recalculating
       game.previous_top_player_ids = game.room.players.active_players
         .order(score: :desc).limit(4).pluck(:id)
-
+      game.close_round!
       game.calculate_scores!
-      game.update!(reviewing_step: 2)
-
       broadcast_all(game)
     end
 
     def self.next_question(game:)
       if game.questions_remaining?
-        # Ensure scores are finalized for the round even if show_scores was skipped
-        game.calculate_scores!
+        # calculate_scores! removed — close_round now owns this
         game.next_question!
         start_question(game:)
       else
@@ -164,12 +152,7 @@ module Games
       end
     end
 
-    def self.schedule_score_reveal(game)
-      GameTimerJob.set(wait: SpeedTriviaGame::SCORE_REVEAL_DELAY.seconds)
-        .perform_later(game, game.current_question_index, "score_reveal")
-    end
-
-    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all, :schedule_score_reveal
+    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all
 
     module Playtest
       def self.start(room:)
