@@ -17,6 +17,11 @@ class GameTemplatesController < ApplicationController
     @game_template = current_user.game_templates.new(game_template_params)
 
     if @game_template.save
+      Analytics.track(
+        distinct_id: "user_#{current_user.id}",
+        event: "game_template_created",
+        properties: { game_type: @game_template.game_type, template_id: @game_template.id }
+      )
       redirect_to game_templates_path, notice: "Game saved successfully."
     else
       load_packs

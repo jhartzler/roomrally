@@ -10,9 +10,9 @@ module Games
       categories_per_round = DEFAULT_CATEGORIES_PER_ROUND if categories_per_round.to_i <= 0
 
       Analytics.track(
-        distinct_id: "room_#{room.code}",
+        distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
         event: "game_started",
-        properties: { game_type: "Category List", room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, show_instructions: }
+        properties: { game_type: room.game_type, room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, show_instructions: }
       )
 
       return if room.current_game.present?
@@ -96,9 +96,9 @@ module Games
         calculate_total_scores(game:)
         game.finish_game!
         Analytics.track(
-          distinct_id: "room_#{game.room.code}",
+          distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
           event: "game_completed",
-          properties: { game_type: "Category List", room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
+          properties: { game_type: game.room.game_type, room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
         )
         game.room.finish!
         broadcast_all(game)

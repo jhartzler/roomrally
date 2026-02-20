@@ -4,11 +4,17 @@ class SessionsController < ApplicationController
   def omniauth
     user = User.from_omniauth(request.env["omniauth.auth"])
     if user.valid?
+      is_new_user = user.previously_new_record?
       reset_session
       session[:user_id] = user.id
       Analytics.identify(
         distinct_id: "user_#{user.id}",
         properties: { name: user.name, email: user.email }
+      )
+      Analytics.track(
+        distinct_id: "user_#{user.id}",
+        event: is_new_user ? "user_signed_up" : "user_logged_in",
+        properties: {}
       )
       redirect_to dashboard_path, notice: "Logged in successfully!"
     else
