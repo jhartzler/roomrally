@@ -62,5 +62,32 @@ RSpec.describe "Stage View", type: :request do
       end
     end
 
+    context "when a SpeedTrivia game is in reviewing state" do
+      let(:game) { create(:speed_trivia_game, status: "reviewing", current_question_index: 0) }
+      let(:speed_trivia_room) { create(:room, user:, game_type: "Speed Trivia", current_game: game) }
+
+      before do
+        question = create(:trivia_question_instance,
+          speed_trivia_game: game,
+          position: 0,
+          options: %w[Paris London Berlin Madrid],
+          correct_answers: ["Paris"])
+        create(:player, room: speed_trivia_room, score: 500, name: "Top Player")
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+      end
+
+      it "renders a single stage_reviewing partial containing both vote counts and score podium" do
+        get room_stage_path(speed_trivia_room.code)
+        expect(response.body).to include('id="stage_reviewing"')
+        expect(response.body).not_to include('id="stage_reviewing_scores"')
+        # Vote summary present
+        expect(response.body).to include("Paris")
+        # Score podium present
+        expect(response.body).to include("games--podium")
+      end
+    end
+
   end
 end

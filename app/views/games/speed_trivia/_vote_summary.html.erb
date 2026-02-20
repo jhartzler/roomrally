@@ -1,52 +1,20 @@
-<div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[2vh] max-w-6xl w-full mb-[2vh]">
-  <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">How Everyone Voted</h3>
+<%# app/views/games/speed_trivia/_vote_summary.html.erb %>
+<%# Horizontal 4-column row showing vote count per answer option. %>
+<% vote_counts = question.vote_counts %>
+<div class="grid grid-cols-4 gap-[1.5vh] max-w-6xl w-full shrink-0">
+  <% question.options.each_with_index do |option, index| %>
+    <% votes = vote_counts[option] || 0 %>
+    <% is_correct = question.correct_answers.include?(option) %>
 
-  <% vote_counts = question.vote_counts %>
-  <% total_votes = question.total_votes %>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh]">
-    <% question.options.each_with_index do |option, index| %>
-      <% votes = vote_counts[option] || 0 %>
-      <% is_correct = question.correct_answers.include?(option) %>
-
-      <div class="bg-black/40 backdrop-blur-md border-2 <%= is_correct ? 'border-green-500' : 'border-gray-600' %> rounded-xl p-[2vh] flex items-center justify-between">
-        <div class="flex items-center gap-[1vh] flex-grow">
-          <div class="bg-white text-black font-black text-vh-2xl h-[5vh] w-[5vh] rounded-full flex items-center justify-center shrink-0">
-            <%= (index + 65).chr %>
-          </div>
-          <p class="text-vh-xl text-white font-bold flex-grow">
-            <%= option %>
-          </p>
-        </div>
-        <div class="flex flex-col items-end ml-[1vh] relative">
-          <!-- Pie Chart Circle -->
-          <div class="relative w-[8vh] h-[8vh] flex items-center justify-center mb-1">
-            <% percentage = total_votes > 0 ? (votes.to_f / total_votes * 100) : 0 %>
-            <% circumference = 2 * Math::PI * 32 %>
-            <% stroke_dashoffset = circumference - (percentage / 100.0 * circumference) %>
-            <svg class="absolute inset-0 w-[8vh] h-[8vh] -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
-              <circle
-                cx="40"
-                cy="40"
-                r="32"
-                fill="none"
-                stroke="<%= is_correct ? 'rgb(74, 222, 128)' : 'rgb(147, 197, 253)' %>"
-                stroke-width="8"
-                stroke-dasharray="<%= circumference %>"
-                stroke-dashoffset="<%= stroke_dashoffset %>"
-                stroke-linecap="round"
-              />
-            </svg>
-            <div class="relative text-vh-3xl font-black <%= is_correct ? 'text-green-400' : 'text-blue-300' %> font-mono z-10">
-              <%= votes %>
-            </div>
-          </div>
-          <div class="text-vh-xs text-gray-400">
-            <%= votes == 1 ? 'vote' : 'votes' %>
-          </div>
-        </div>
+    <div class="bg-black/40 backdrop-blur-md border-2 <%= is_correct ? 'border-green-500 bg-green-500/10' : 'border-gray-600' %> rounded-xl p-[1.5vh] flex flex-col items-center text-center gap-[0.5vh]">
+      <div class="bg-white text-black font-black text-vh-lg h-[4vh] w-[4vh] rounded-full flex items-center justify-center shrink-0">
+        <%= (index + 65).chr %>
       </div>
-    <% end %>
-  </div>
+      <p class="text-vh-sm text-white font-bold line-clamp-2 flex-grow"><%= option %></p>
+      <div class="text-vh-2xl font-black <%= is_correct ? 'text-green-400' : 'text-blue-300' %> font-mono">
+        <%= votes %>
+      </div>
+      <div class="text-vh-xs text-gray-400"><%= votes == 1 ? "vote" : "votes" %></div>
+    </div>
+  <% end %>
 </div>
