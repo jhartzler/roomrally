@@ -1,34 +1,34 @@
-<div id="stage_reviewing" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
+<%# app/views/games/speed_trivia/_stage_reviewing.html.erb %>
+<%# Combined answer reveal + score podium. Shown immediately after close_round. %>
+<div id="stage_reviewing" class="flex flex-col items-center flex-1 min-h-0 gap-[2vh] animate-fade-in">
   <% current_question = game.current_question %>
 
-  <!-- Question Counter -->
-  <div class="mb-[2vh]">
-    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
+  <!-- Question counter -->
+  <div class="shrink-0">
+    <span class="text-vh-base text-blue-200 font-bold uppercase tracking-widest">
       Question <%= game.current_question_index + 1 %> Results
     </span>
   </div>
 
-  <% if current_question&.image&.attached? %>
-    <!-- Question Image -->
-    <div class="w-full max-w-6xl mb-[2vh] px-[2vh]">
-      <%= image_tag rails_blob_path(current_question.image.blob),
-            class: "w-full h-[25vh] object-contain rounded-2xl shadow-2xl",
-            alt: "" %>
-    </div>
-  <% end %>
-
-  <!-- Question with Answer -->
-  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[2vh]">
-    <p class="text-vh-2xl text-blue-200 mb-[2vh]"><%= current_question&.body %></p>
-    <div class="flex flex-wrap items-center justify-center gap-[2vh]">
+  <!-- Correct answer banner -->
+  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-[1.5vh] text-center max-w-6xl w-full shrink-0">
+    <p class="text-vh-lg text-blue-200 mb-[1vh]"><%= current_question&.body %></p>
+    <div class="flex flex-wrap items-center justify-center gap-[1vh]">
       <% current_question&.correct_answers&.each do |answer| %>
-        <div class="flex items-center gap-2">
-          <span class="text-vh-3xl">✓</span>
-          <h2 class="text-vh-4xl font-black text-green-400"><%= answer %></h2>
+        <div class="flex items-center gap-1">
+          <span class="text-vh-lg">✓</span>
+          <h2 class="text-vh-xl font-black text-green-400"><%= answer %></h2>
         </div>
       <% end %>
     </div>
   </div>
 
+  <!-- Vote distribution row -->
   <%= render "games/speed_trivia/vote_summary", question: current_question %>
+
+  <!-- Score podium -->
+  <%= render "games/speed_trivia/score_podium",
+        game: game,
+        room: room,
+        previous_top_player_ids: local_assigns[:previous_top_player_ids] || [] %>
 </div>

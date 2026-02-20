@@ -15,6 +15,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'deploy-worktree/**/*'
+    - 'worktrees/**/*'
 
 # RSpec rules
 RSpec:
@@ -32,6 +33,7 @@ RSpec/MultipleExpectations:
     - 'spec/requests/trivia_pack_images_spec.rb'
     - 'spec/services/dev_playtest/**/*'
     - 'spec/services/games/category_list_spec.rb'
+    - 'spec/services/games/**/playtest_spec.rb'
 
 RSpec/ExampleLength:
   Exclude:
@@ -41,6 +43,7 @@ RSpec/ExampleLength:
     - 'spec/services/dev_playtest/**/*'
     - 'spec/services/games/category_list_spec.rb'
     - 'spec/services/games/speed_trivia_spec.rb'
+    - 'spec/services/games/**/playtest_spec.rb'
     - 'spec/models/trivia_pack_spec.rb'
     - 'spec/models/trivia_question_spec.rb'
 

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe DevPlaytest::WriteAndVote do
+RSpec.describe Games::WriteAndVote::Playtest do
   let(:room) { create(:room, game_type: "Write And Vote") }
   let(:players) do
     3.times.map { |i| create(:player, room:, name: "Player #{i + 1}") }

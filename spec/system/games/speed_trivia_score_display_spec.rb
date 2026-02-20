@@ -77,9 +77,8 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
       end
     end
 
-    # Close Q1, then show_scores (runs calculate_scores! → player.score = Q1_pts in DB)
+    # Close Q1 — calculate_scores! now runs immediately in close_round
     Games::SpeedTrivia.close_round(game: game.reload)
-    Games::SpeedTrivia.show_scores(game: game.reload)
 
     host_player = room.reload.players.find_by(name: "Host")
     q1_score = host_player.score

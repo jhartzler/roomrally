@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe DevPlaytest::SpeedTrivia do
+RSpec.describe Games::SpeedTrivia::Playtest do
   let(:room) { create(:room, game_type: "Speed Trivia") }
   let(:players) do
     3.times.map { |i| create(:player, room:, name: "Player #{i + 1}") }
@@ -129,6 +129,18 @@ RSpec.describe DevPlaytest::SpeedTrivia do
       described_class.auto_play_step(game:)
       game.reload
       expect(game.status).to eq("reviewing")
+    end
+
+    it "advances to next question from reviewing" do
+      game = start_answering!
+      Games::SpeedTrivia.close_round(game:)
+      game.reload
+      expect(game.status).to eq("reviewing")
+
+      described_class.auto_play_step(game:)
+      game.reload
+
+      expect(game.current_question_index).to eq(1)
     end
   end
 

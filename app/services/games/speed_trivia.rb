@@ -82,28 +82,16 @@ module Games
     end
 
     def self.close_round(game:)
-      game.close_round!
-      broadcast_all(game)
-      schedule_score_reveal(game)
-    end
-
-    def self.show_scores(game:)
-      return unless game.reviewing?
-
-      # Capture current top-4 before recalculating
       game.previous_top_player_ids = game.room.players.active_players
         .order(score: :desc).limit(4).pluck(:id)
-
+      game.close_round!
       game.calculate_scores!
-      game.update!(reviewing_step: 2)
-
       broadcast_all(game)
     end
 
     def self.next_question(game:)
       if game.questions_remaining?
-        # Ensure scores are finalized for the round even if show_scores was skipped
-        game.calculate_scores!
+        # calculate_scores! removed — close_round now owns this
         game.next_question!
         start_question(game:)
       else
@@ -164,11 +152,90 @@ module Games
       end
     end
 
-    def self.schedule_score_reveal(game)
-      GameTimerJob.set(wait: SpeedTriviaGame::SCORE_REVEAL_DELAY.seconds)
-        .perform_later(game, game.current_question_index, "score_reveal")
-    end
+    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all
 
-    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all, :schedule_score_reveal
+    module Playtest
+      def self.start(room:)
+        Games::SpeedTrivia.game_started(room:, show_instructions: true, timer_enabled: false)
+      end
+
+      def self.advance(game:)
+        case game.status
+        when "instructions"
+          Games::SpeedTrivia.start_from_instructions(game:)
+        when "waiting"
+          Games::SpeedTrivia.start_question(game:)
+        when "answering"
+          Games::SpeedTrivia.close_round(game:)
+        when "reviewing"
+          Games::SpeedTrivia.next_question(game:)
+        end
+      end
+
+      def self.bot_act(game:, exclude_player:)
+        case game.status
+        when "answering"
+          submit_answers(game:, exclude_player:)
+        end
+      end
+
+      def self.auto_play_step(game:)
+        case game.status
+        when "instructions"
+          Games::SpeedTrivia.start_from_instructions(game:)
+        when "waiting"
+          Games::SpeedTrivia.start_question(game:)
+        when "answering"
+          bot_act(game:, exclude_player: nil)
+          game.reload
+          Games::SpeedTrivia.close_round(game:) if game.answering?
+        when "reviewing"
+          Games::SpeedTrivia.next_question(game:)
+        end
+      end
+
+      def self.progress_label(game:)
+        "Question #{game.current_question_index + 1} of #{game.trivia_question_instances.count}"
+      end
+
+      def self.dashboard_actions(status)
+        case status
+        when "lobby"
+          [ { label: "Start Game", action: :start, style: :primary } ]
+        when "instructions"
+          [ { label: "Skip Instructions", action: :advance, style: :primary } ]
+        when "waiting"
+          [ { label: "Start Question", action: :advance, style: :primary } ]
+        when "answering"
+          [
+            { label: "Bots: Answer", action: :bot_act, style: :bot },
+            { label: "Close Round", action: :advance, style: :primary }
+          ]
+        when "reviewing"
+          [ { label: "Next Question", action: :advance, style: :primary } ]
+        when "finished"
+          []
+        else
+          []
+        end
+      end
+
+      def self.submit_answers(game:, exclude_player:)
+        current_question = game.current_question
+        return unless current_question
+
+        bot_players = game.room.players
+        bot_players = bot_players.where.not(id: exclude_player.id) if exclude_player
+
+        bot_players.each do |bot_player|
+          next if TriviaAnswer.find_by(player: bot_player, trivia_question_instance: current_question)
+
+          random_option = current_question.options.sample
+          Games::SpeedTrivia.submit_answer(game:, player: bot_player, selected_option: random_option)
+        end
+      end
+
+      private_class_method :submit_answers
+    end
   end
 end

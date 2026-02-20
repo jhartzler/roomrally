@@ -174,9 +174,9 @@ RSpec.describe Games::SpeedTrivia do
 
   describe '.close_round' do
     let(:game) { create(:speed_trivia_game, status: "answering") }
+    let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
 
     before do
-      create(:room, current_game: game, game_type: "Speed Trivia")
       game.update!(round_started_at: 10.seconds.ago)
       allow(GameBroadcaster).to receive(:broadcast_stage)
       allow(GameBroadcaster).to receive(:broadcast_hand)
@@ -193,6 +193,23 @@ RSpec.describe Games::SpeedTrivia do
         described_class.close_round(game:)
         expect(game.reload.round_closed_at).to eq(Time.current)
       end
+    end
+
+    it 'calculates player scores immediately after closing the round' do
+      player = create(:player, room:, score: 0)
+      question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+      create(:trivia_answer, player:, trivia_question_instance: question, points_awarded: 500)
+
+      described_class.close_round(game:)
+      expect(player.reload.score).to eq(500)
+    end
+
+    it 'captures previous_top_player_ids on the game instance before updating scores' do
+      player = create(:player, room:, score: 1000)
+
+      described_class.close_round(game:)
+
+      expect(game.previous_top_player_ids).to include(player.id)
     end
   end
 
@@ -224,15 +241,6 @@ RSpec.describe Games::SpeedTrivia do
           described_class.next_question(game:)
           expect(game.reload.round_started_at).to eq(Time.current)
         end
-      end
-
-      it 'calculates scores even when show_scores was skipped' do
-        player = create(:player, room:, score: 0)
-        first_question = game.trivia_question_instances.find_by(position: 0)
-        create(:trivia_answer, player:, trivia_question_instance: first_question, points_awarded: 500)
-
-        described_class.next_question(game:)
-        expect(player.reload.score).to eq(500)
       end
     end
 
