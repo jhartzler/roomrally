@@ -24,19 +24,51 @@
       <% end %>
     </div>
 
-    <%# Visual: Laptop (Host) + TV (Game) Screenshot %>
+    <%# Visual: Customized game screenshot %>
     <div class="mt-16">
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-screenshot.png" %>"
-           alt="Laptop showing host moderation queue next to TV displaying game with QR code"
+      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-customize-screenshot.png" %>"
+           alt="Trivia game screen showing Mike's Birthday Party with custom questions"
            class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
     </div>
   </section>
 
-  <%# Section 2: The Main Feature (Safety & Control) %>
+  <%# Section 2: Customize Your Game (primary feature) %>
   <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
-    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">The "Backstage" Advantage</h2>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Games Built for Your Group</h2>
     <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
-      Most party games put player answers directly on the big screen. RoomRally gives you a Host Dashboard. You see every submission first. You decide what is funny enough to show, and what needs to be skipped.
+      Pick a game mode, add your own questions or prompts, and save it as a template for your next event — birthday party, Bible study, team meeting. RoomRally remembers your setup so you can launch in seconds.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-8 mt-10">
+      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+        <div class="text-4xl mb-4">🎮</div>
+        <h3 class="text-xl font-bold text-white mb-3">Game Templates</h3>
+        <p class="text-blue-200">
+          Save a game configuration — type, content pack, settings — and reuse it with one click.
+        </p>
+      </div>
+      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+        <div class="text-4xl mb-4">✍️</div>
+        <h3 class="text-xl font-bold text-white mb-3">Custom Prompts</h3>
+        <p class="text-blue-200">
+          Write Comedy Clash prompts tuned to your group's sense of humor.
+        </p>
+      </div>
+      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+        <div class="text-4xl mb-4">🧠</div>
+        <h3 class="text-xl font-bold text-white mb-3">Custom Trivia</h3>
+        <p class="text-blue-200">
+          Add questions about topics your group actually cares about.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <%# Section 3: The Backstage Advantage %>
+  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Plus, you stay in control</h2>
+    <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
+      RoomRally gives you a Host Dashboard — you see every player submission before it hits the big screen. Approve the best ones, skip the rest.
     </p>
 
     <div class="grid md:grid-cols-3 gap-8 mt-10">
@@ -62,9 +94,15 @@
         </p>
       </div>
     </div>
+
+    <div class="mt-10">
+      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-screenshot.png" %>"
+           alt="Laptop showing host moderation queue next to TV displaying game with QR code"
+           class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
+    </div>
   </section>
 
-  <%# Section 3: How It Works (3 Steps) %>
+  <%# Section 4: How It Works %>
   <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
     <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12">How It Works</h2>
     <div class="space-y-10 max-w-3xl mx-auto">
@@ -97,16 +135,29 @@
           3
         </div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Curate</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Customize</h3>
           <p class="text-blue-200 text-lg">
-            As answers come in, you approve the best ones from your device to keep the room laughing.
+            Between sessions, build game templates with your own questions or prompts. Your next launch is one click away.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <%# Section 4: Footer / Call to Action %>
+  <%# Section 5: Login to Customize callout (logged-out only) %>
+  <% unless current_user %>
+    <section class="text-center py-10 md:py-12 px-8 bg-white/5 rounded-3xl border border-white/10 mb-16 md:mb-24">
+      <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">Ready to make it yours?</h2>
+      <p class="text-blue-200 text-lg mb-8">
+        Sign in with Google to save game templates and create custom content — free.
+      </p>
+      <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "inline-block" do |f| %>
+        <%= f.submit "Sign in with Google", class: "bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl cursor-pointer" %>
+      <% end %>
+    </section>
+  <% end %>
+
+  <%# Section 6: Footer / Call to Action %>
   <section class="text-center py-16 md:py-20 px-8 bg-white/5 rounded-3xl border border-white/10">
     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Upgrade Your Next Event.</h2>
     <p class="text-blue-200 text-lg mb-10">

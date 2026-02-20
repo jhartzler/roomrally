@@ -16,6 +16,7 @@ namespace :r2 do
 
     assets = {
       "hero-screenshot.png" => "image/png",
+      "hero-customize-screenshot.png" => "image/png",
       "og-image.png" => "image/png"
     }
 
