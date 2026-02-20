@@ -16,6 +16,13 @@ RSpec.describe TriviaQuestion, type: :model do
       expect(question.errors[:options]).to include("must contain exactly 4 choices")
     end
 
+    it 'rejects options with blank entries' do
+      trivia_pack = create(:trivia_pack)
+      question = build(:trivia_question, trivia_pack:, options: [ "Paris", "London", "", "Madrid" ])
+      expect(question).not_to be_valid
+      expect(question.errors[:options]).to include("must not contain blank choices")
+    end
+
     it 'validates correct_answers must be present' do
       trivia_pack = create(:trivia_pack)
       question = build(:trivia_question, trivia_pack:, correct_answers: [])

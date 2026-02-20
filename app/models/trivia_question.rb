@@ -42,6 +42,11 @@ class TriviaQuestion < ApplicationRecord
   def options_must_be_array_of_four
     unless options.is_a?(Array) && options.length == 4
       errors.add(:options, "must contain exactly 4 choices")
+      return
+    end
+
+    if options.any?(&:blank?)
+      errors.add(:options, "must not contain blank choices")
     end
   end
 

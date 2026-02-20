@@ -9,6 +9,14 @@ class GameTemplate < ApplicationRecord
   validates :game_type, presence: true, inclusion: { in: Room::GAME_TYPES }
   validate :pack_matches_game_type
   validate :pack_accessible_to_user
+  validate :settings_within_bounds
+
+  SETTING_BOUNDS = {
+    "timer_increment"     => 10..300,
+    "question_count"      => 1..50,
+    "total_rounds"        => 1..10,
+    "categories_per_round" => 1..12
+  }.freeze
 
   before_validation :cast_settings
 
@@ -71,6 +79,19 @@ class GameTemplate < ApplicationRecord
     end
     if category_pack_id.present? && game_type != Room::CATEGORY_LIST
       errors.add(:category_pack, "doesn't match game type")
+    end
+  end
+
+  def settings_within_bounds
+    return if settings.blank?
+
+    SETTING_BOUNDS.each do |key, range|
+      next unless settings.key?(key)
+
+      value = settings[key]
+      unless range.cover?(value)
+        errors.add(:settings, "#{key.humanize} must be between #{range.min} and #{range.max}")
+      end
     end
   end
 

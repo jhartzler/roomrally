@@ -7,6 +7,17 @@ RSpec.describe Player, type: :model do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:session_id).scoped_to(:room_id) }
 
+    it 'rejects names longer than 40 characters' do
+      player = build(:player, name: "a" * 41)
+      expect(player).not_to be_valid
+      expect(player.errors[:name]).to be_present
+    end
+
+    it 'accepts names at the 40 character limit' do
+      player = build(:player, name: "a" * 40)
+      expect(player).to be_valid
+    end
+
     it 'validates presence of session_id' do
       player = build(:player, session_id: nil)
       expect(player).to be_valid # because the before_validation will set it
