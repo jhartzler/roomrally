@@ -10,33 +10,11 @@ RSpec.describe "Hand View - Speed Trivia score animation", type: :request do
     # rubocop:enable RSpec/AnyInstance
   end
 
-  context "with reviewing_step 1 (answer reveal) and a player who scored points" do
-    # At step 1, player.score is the pre-round cumulative total; no animation should fire.
-    let(:old_score) { 500 }
+  context "when reviewing and the player scored points this round" do
+    # player.score is already the post-round total (calculate_scores! runs in close_round).
+    # The animation counts from old score to new score.
     let(:game) do
-      g = create(:speed_trivia_game, status: "reviewing", current_question_index: 0, reviewing_step: 1)
-      room.update!(current_game: g)
-      g
-    end
-
-    before do
-      player.update!(score: old_score)
-      question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
-      create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 750, correct: true)
-    end
-
-    it "sets score_from and score_to both to the old score (no animation)" do
-      get room_hand_path(room.code)
-      expect(response.body).to include("data-score-tally-from-value=\"#{old_score}\"")
-      expect(response.body).to include("data-score-tally-to-value=\"#{old_score}\"")
-    end
-  end
-
-  context "with reviewing_step 2 (score reveal) and a player who scored points" do
-    # At step 2, player.score is the post-round cumulative total (calculate_scores! already ran).
-    # The animation should count up from old score to new score.
-    let(:game) do
-      g = create(:speed_trivia_game, status: "reviewing", current_question_index: 0, reviewing_step: 2)
+      g = create(:speed_trivia_game, status: "reviewing", current_question_index: 0)
       room.update!(current_game: g)
       g
     end
@@ -49,18 +27,18 @@ RSpec.describe "Hand View - Speed Trivia score animation", type: :request do
       create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: round_points, correct: true)
     end
 
-    it "sets score_from to old score and score_to to new score (animation plays)" do
+    it "animates from old score to new score" do
       get room_hand_path(room.code)
       expect(response.body).to include("data-score-tally-from-value=\"500\"")
       expect(response.body).to include("data-score-tally-to-value=\"1250\"")
     end
   end
 
-  context "with reviewing_step 2 and a player who scored zero points" do
-    # Zero points this round: score_from == score_to so no animation fires.
+  context "when reviewing and the player scored zero points this round" do
+    # score_from == score_to so no animation fires.
     let(:score) { 500 }
     let(:game) do
-      g = create(:speed_trivia_game, status: "reviewing", current_question_index: 0, reviewing_step: 2)
+      g = create(:speed_trivia_game, status: "reviewing", current_question_index: 0)
       room.update!(current_game: g)
       g
     end
