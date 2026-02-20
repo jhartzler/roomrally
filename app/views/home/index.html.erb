@@ -32,6 +32,7 @@
           <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false } do |f| %>
             <%= f.submit "Login with Google", class: "bg-white text-blue-900 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-blue-50 transition-colors text-sm" %>
           <% end %>
+          <p class="text-blue-300/70 text-xs mt-2">Sign in to save game templates and create custom content.</p>
         <% end %>
       </div>
     </div>
