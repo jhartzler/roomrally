@@ -6,7 +6,7 @@ class Player < ApplicationRecord
   has_many :votes, dependent: :destroy
   has_many :trivia_answers, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 40 }
   validates :session_id, presence: true, uniqueness: { scope: :room_id }
 
   before_validation :generate_session_id, on: :create

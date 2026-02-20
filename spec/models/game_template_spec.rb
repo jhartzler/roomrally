@@ -114,6 +114,66 @@ RSpec.describe GameTemplate, type: :model do
     end
   end
 
+  describe "settings range validation" do
+    it "rejects timer_increment below 10" do
+      template = build(:game_template, settings: { "timer_increment" => 5 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "rejects timer_increment above 300" do
+      template = build(:game_template, settings: { "timer_increment" => 301 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "accepts timer_increment within range" do
+      template = build(:game_template, settings: { "timer_increment" => 60 })
+      expect(template).to be_valid
+    end
+
+    it "rejects question_count of zero" do
+      template = build(:game_template, settings: { "question_count" => 0 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "rejects question_count above 50" do
+      template = build(:game_template, settings: { "question_count" => 51 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "rejects total_rounds of zero" do
+      template = build(:game_template, settings: { "total_rounds" => 0 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "rejects total_rounds above 10" do
+      template = build(:game_template, settings: { "total_rounds" => 11 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "rejects categories_per_round of zero" do
+      template = build(:game_template, settings: { "categories_per_round" => 0 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "rejects categories_per_round above 12" do
+      template = build(:game_template, settings: { "categories_per_round" => 13 })
+      expect(template).not_to be_valid
+      expect(template.errors[:settings]).to be_present
+    end
+
+    it "ignores unknown keys" do
+      template = build(:game_template, settings: { "unknown_key" => 999 })
+      expect(template).to be_valid
+    end
+  end
+
   describe "settings type casting" do
     it "casts string booleans to actual booleans" do
       template = create(:game_template, settings: { "timer_enabled" => "true", "stage_only" => "false" })

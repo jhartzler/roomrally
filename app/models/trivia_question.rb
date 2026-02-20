@@ -1,6 +1,6 @@
 class TriviaQuestion < ApplicationRecord
   belongs_to :trivia_pack
-  has_one_attached :image
+  has_one_attached :image, dependent: :detach
 
   attribute :remove_image, :string
 
@@ -18,7 +18,7 @@ class TriviaQuestion < ApplicationRecord
   ALLOWED_IMAGE_TYPES = %w[image/jpeg image/png image/webp image/gif].freeze
 
   def purge_image_if_marked
-    image.purge if remove_image == "1"
+    image.detach if remove_image == "1"
   end
 
   def image_content_type_acceptable
@@ -42,17 +42,22 @@ class TriviaQuestion < ApplicationRecord
   def options_must_be_array_of_four
     unless options.is_a?(Array) && options.length == 4
       errors.add(:options, "must contain exactly 4 choices")
+      return
+    end
+
+    if options.any?(&:blank?)
+      errors.add(:options, "must not contain blank choices")
     end
   end
 
   def correct_answers_must_be_valid
     unless correct_answers.is_a?(Array)
-      errors.add(:correct_answers, "must be an array")
+      errors.add(:correct_answers, "must have at least one selected")
       return
     end
 
     if correct_answers.empty?
-      errors.add(:correct_answers, "must have at least one correct answer")
+      errors.add(:correct_answers, "must have at least one selected")
       return
     end
 
