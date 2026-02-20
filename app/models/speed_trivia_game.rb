@@ -36,7 +36,7 @@ class SpeedTriviaGame < ApplicationRecord
     end
 
     event :close_round do
-      transitions from: :answering, to: :reviewing, after: [ :record_round_close, :reset_reviewing_step ]
+      transitions from: :answering, to: :reviewing, after: :record_round_close
     end
 
     event :next_question do
@@ -78,19 +78,9 @@ class SpeedTriviaGame < ApplicationRecord
 
   def process_timeout(job_question_index, step_number)
     return unless current_question_index == job_question_index
+    return unless answering?
 
-    case step_number
-    when "score_reveal"
-      # Auto-advance from answer reveal to score podium
-      return unless reviewing? && reviewing_step == 1
-
-      Games::SpeedTrivia.show_scores(game: self)
-    else
-      # Round timer expired — auto-close the round
-      return unless answering?
-
-      Games::SpeedTrivia.handle_timeout(game: self)
-    end
+    Games::SpeedTrivia.handle_timeout(game: self)
   end
 
   private
@@ -107,7 +97,5 @@ class SpeedTriviaGame < ApplicationRecord
     increment!(:current_question_index)
   end
 
-  def reset_reviewing_step
-    update!(reviewing_step: 1)
-  end
+
 end
