@@ -20,14 +20,14 @@ RSpec.describe TriviaQuestion, type: :model do
       trivia_pack = create(:trivia_pack)
       question = build(:trivia_question, trivia_pack:, correct_answers: [])
       expect(question).not_to be_valid
-      expect(question.errors[:correct_answers]).to include("must have at least one correct answer")
+      expect(question.errors[:correct_answers]).to include("please select at least one correct answer")
     end
 
     it 'validates correct_answers must be an array' do
       trivia_pack = create(:trivia_pack)
       question = build(:trivia_question, trivia_pack:, correct_answers: "Paris")
       expect(question).not_to be_valid
-      expect(question.errors[:correct_answers]).to include("must be an array")
+      expect(question.errors[:correct_answers]).to include("please select at least one correct answer")
     end
 
     it 'validates all correct_answers must be in options' do
