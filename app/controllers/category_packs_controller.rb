@@ -1,4 +1,6 @@
 class CategoryPacksController < ApplicationController
+  include PackReturnNavigation
+
   before_action :authenticate_user!
   before_action :set_owned_category_pack, only: %i[show edit update destroy]
 

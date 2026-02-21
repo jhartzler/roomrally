@@ -1,4 +1,6 @@
 class PromptPacksController < ApplicationController
+  include PackReturnNavigation
+
   before_action :authenticate_user!
   before_action :set_owned_prompt_pack, only: %i[edit update destroy]
 

@@ -1,4 +1,6 @@
 class TriviaPacksController < ApplicationController
+  include PackReturnNavigation
+
   before_action :authenticate_user!
   before_action :set_owned_trivia_pack, only: %i[edit update destroy]
 
