@@ -1,4 +1,4 @@
-<% content_for(:title) { "RoomRally - Host Group Games Without the Stress" } %>
+<% content_for(:title) { "RoomRally - Host Group Games You Can Get Behind" } %>
 
 <div class="max-w-6xl mx-auto pb-16">
   <%# Header with Logo %>
@@ -11,33 +11,30 @@
   </header>
 
   <%# Section 1: Hero %>
-  <section class="text-center py-8 mb-16 md:mb-24">
-    <div class="mb-12">
+  <section class="text-center py-8 mb-8 md:mb-12">
+    <div>
       <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
         Host epic group games<br>you can get behind.
       </h1>
-      <p class="text-blue-100 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10">
-        An interactive game platform designed for classrooms and youth groups. Players join with their phones—you control what appears on the screen.
-      </p>
-      <%= link_to play_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
+            <%= link_to play_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
         Host or Play for Free
       <% end %>
-    </div>
-
-    <%# Visual: Customized game screenshot %>
-    <div class="mt-16">
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-customize-screenshot.png" %>"
-           alt="Trivia game screen showing Mike's Birthday Party with custom questions"
-           class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
     </div>
   </section>
 
   <%# Section 2: Customize Your Game (primary feature) %>
-  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
+  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-12 md:p-16 border border-white/20 mb-16 md:mb-24">
     <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Games Built for Your Group</h2>
     <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
       Pick a game mode, add your own questions or prompts, and save it as a template for your next event — birthday party, Bible study, team meeting. RoomRally remembers your setup so you can launch in seconds.
     </p>
+
+    <%# Visual: Customized game screenshot %>
+    <div class="mt-16">
+      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-customize-screenshot.png" %>"
+           alt="Trivia game screen showing Mike's Birthday Party with custom questions - If Mike had a super power, what would it be?"
+           class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
+    </div>
 
     <div class="grid md:grid-cols-3 gap-8 mt-10">
       <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
@@ -62,6 +59,7 @@
         </p>
       </div>
     </div>
+
   </section>
 
   <%# Section 3: The Backstage Advantage %>
