@@ -43,7 +43,7 @@
 
       <div class="pt-2">
         <%= form.submit "Save Pack", class: "w-full rounded-xl py-4 px-6 bg-orange-500 hover:bg-orange-600 text-white block font-black text-lg shadow-lg shadow-orange-900/20 transition-all cursor-pointer transform hover:scale-[1.02] active:scale-95" %>
-        <%= link_to "Cancel", category_packs_path, class: "block w-full text-center mt-4 text-blue-200/50 hover:text-white font-bold text-sm transition-colors" %>
+        <%= link_to "Cancel", (return_to.present? ? return_to : category_packs_path), class: "block w-full text-center mt-4 text-blue-200/50 hover:text-white font-bold text-sm transition-colors" %>
       </div>
     </div>
 
