@@ -89,7 +89,7 @@ class ApplicationController < ActionController::Base
   def append_new_pack_id(return_to_url, pack_id)
     uri = URI.parse(return_to_url)
     existing = URI.decode_www_form(uri.query || "")
-    existing << ["new_pack_id", pack_id.to_s]
+    existing << [ "new_pack_id", pack_id.to_s ]
     uri.query = URI.encode_www_form(existing)
     uri.to_s
   end

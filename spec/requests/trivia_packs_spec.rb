@@ -6,7 +6,7 @@ RSpec.describe "TriviaPacks", type: :request do
   before { sign_in(user) }
 
   describe "GET /index" do
-    let!(:global_pack) { create(:trivia_pack, :global, name: "System Trivia") }
+    let(:global_pack) { create(:trivia_pack, :global, name: "System Trivia") }
 
     it "returns http success" do
       get trivia_packs_path
