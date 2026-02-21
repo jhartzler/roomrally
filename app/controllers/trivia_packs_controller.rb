@@ -1,4 +1,6 @@
 class TriviaPacksController < ApplicationController
+  include PackReturnNavigation
+
   before_action :authenticate_user!
   before_action :set_owned_trivia_pack, only: %i[edit update destroy]
 
@@ -14,14 +16,21 @@ class TriviaPacksController < ApplicationController
   def new
     @trivia_pack = current_user.trivia_packs.new(game_type: "Speed Trivia")
     @trivia_pack.trivia_questions.build
+    @return_to = params[:return_to]
   end
 
   def create
     @trivia_pack = current_user.trivia_packs.new(trivia_pack_params)
 
     if @trivia_pack.save
-      redirect_to trivia_packs_path, notice: "Trivia pack created successfully."
+      if valid_return_to?(params[:return_to])
+        redirect_to append_new_pack_id(params[:return_to], @trivia_pack.id),
+                    notice: "Trivia pack created. Returning to your game."
+      else
+        redirect_to trivia_packs_path, notice: "Trivia pack created successfully."
+      end
     else
+      @return_to = params[:return_to]
       render :new, status: :unprocessable_content
     end
   end

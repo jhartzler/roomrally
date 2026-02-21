@@ -1,4 +1,6 @@
 class PromptPacksController < ApplicationController
+  include PackReturnNavigation
+
   before_action :authenticate_user!
   before_action :set_owned_prompt_pack, only: %i[edit update destroy]
 
@@ -14,14 +16,21 @@ class PromptPacksController < ApplicationController
   def new
     @prompt_pack = current_user.prompt_packs.new(game_type: "Write And Vote")
     @prompt_pack.prompts.build
+    @return_to = params[:return_to]
   end
 
   def create
     @prompt_pack = current_user.prompt_packs.new(prompt_pack_params)
 
     if @prompt_pack.save
-      redirect_to prompt_packs_path, notice: "Prompt pack created successfully."
+      if valid_return_to?(params[:return_to])
+        redirect_to append_new_pack_id(params[:return_to], @prompt_pack.id),
+                    notice: "Prompt pack created. Returning to your game."
+      else
+        redirect_to prompt_packs_path, notice: "Prompt pack created successfully."
+      end
     else
+      @return_to = params[:return_to]
       render :new, status: :unprocessable_content
     end
   end

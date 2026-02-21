@@ -46,6 +46,14 @@
         options_for_select(@prompt_packs.map { |p| [p.name, p.id] }, game_template.prompt_pack_id),
         { include_blank: "(default prompts)" },
         class: "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <div class="mt-2">
+        <%= link_to new_prompt_pack_path(return_to: request.fullpath),
+          class: "text-sm text-blue-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors w-fit",
+          data: { action: "click->game-template-form#saveAndNavigate" } do %>
+          <%= lucide_icon('plus-circle', class: "w-4 h-4", "aria-hidden": true) %>
+          Create a new prompt pack
+        <% end %>
+      </div>
     </div>
 
     <div data-game-template-form-target="packSelect" data-pack-type="trivia_pack" class="<%= 'hidden' unless game_template.game_type == Room::SPEED_TRIVIA %>">
@@ -53,6 +61,14 @@
         options_for_select(@trivia_packs.map { |p| [p.name, p.id] }, game_template.trivia_pack_id),
         { include_blank: "(default trivia)" },
         class: "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <div class="mt-2">
+        <%= link_to new_trivia_pack_path(return_to: request.fullpath),
+          class: "text-sm text-blue-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors w-fit",
+          data: { action: "click->game-template-form#saveAndNavigate" } do %>
+          <%= lucide_icon('plus-circle', class: "w-4 h-4", "aria-hidden": true) %>
+          Create a new trivia pack
+        <% end %>
+      </div>
     </div>
 
     <div data-game-template-form-target="packSelect" data-pack-type="category_pack" class="<%= 'hidden' unless game_template.game_type == Room::CATEGORY_LIST %>">
@@ -60,6 +76,14 @@
         options_for_select(@category_packs.map { |p| [p.name, p.id] }, game_template.category_pack_id),
         { include_blank: "(default categories)" },
         class: "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <div class="mt-2">
+        <%= link_to new_category_pack_path(return_to: request.fullpath),
+          class: "text-sm text-blue-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors w-fit",
+          data: { action: "click->game-template-form#saveAndNavigate" } do %>
+          <%= lucide_icon('plus-circle', class: "w-4 h-4", "aria-hidden": true) %>
+          Create a new category pack
+        <% end %>
+      </div>
     </div>
   </div>
 

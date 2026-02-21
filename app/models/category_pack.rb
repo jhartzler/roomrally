@@ -1,6 +1,7 @@
 class CategoryPack < ApplicationRecord
   belongs_to :user, optional: true
   has_many :categories, dependent: :destroy
+  accepts_nested_attributes_for :categories, allow_destroy: true, reject_if: :all_blank
 
   include SharedScopes
 
