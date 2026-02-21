@@ -44,6 +44,30 @@ RSpec.describe "PromptPacks", type: :request do
 
       expect(response).to redirect_to(prompt_packs_path)
     end
+
+    context "with a valid return_to param" do
+      it "redirects back with new_pack_id appended" do
+        post prompt_packs_path,
+          params: { prompt_pack: valid_attributes, return_to: "/game_templates/new" }
+        expect(response).to redirect_to(%r{/game_templates/new\?.*new_pack_id=\d+})
+      end
+    end
+
+    context "with an external return_to param" do
+      it "falls back to packs index (no open redirect)" do
+        post prompt_packs_path,
+          params: { prompt_pack: valid_attributes, return_to: "https://evil.com" }
+        expect(response).to redirect_to(prompt_packs_path)
+      end
+    end
+
+    context "with a protocol-relative return_to param" do
+      it "falls back to packs index (no open redirect)" do
+        post prompt_packs_path,
+          params: { prompt_pack: valid_attributes, return_to: "//evil.com/path" }
+        expect(response).to redirect_to(prompt_packs_path)
+      end
+    end
   end
 
   describe "GET /edit" do

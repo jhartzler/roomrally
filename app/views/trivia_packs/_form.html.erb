@@ -1,4 +1,5 @@
 <%= form_with(model: trivia_pack, class: "contents", data: { controller: "trivia-editor", trivia_editor_ratio_value: trivia_pack.questions_per_player_ratio }) do |form| %>
+  <%= hidden_field_tag :return_to, @return_to if @return_to.present? %>
   <% if trivia_pack.errors.any? %>
     <div id="error_explanation" class="bg-red-500/20 text-red-200 px-6 py-4 font-medium rounded-2xl mb-8 border border-red-500/30 backdrop-blur-md">
       <h2 class="font-bold mb-2"><%= pluralize(trivia_pack.errors.count, "error") %> prohibited this pack from being saved:</h2>
