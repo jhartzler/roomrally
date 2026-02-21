@@ -77,4 +77,20 @@ class ApplicationController < ActionController::Base
     @room = room # Store for redirect in rescue_from
     raise NotAuthorizedToModerate
   end
+
+  def valid_return_to?(url)
+    return false if url.blank?
+    uri = URI.parse(url)
+    !uri.host && uri.path.start_with?("/")
+  rescue URI::InvalidURIError
+    false
+  end
+
+  def append_new_pack_id(return_to_url, pack_id)
+    uri = URI.parse(return_to_url)
+    existing = URI.decode_www_form(uri.query || "")
+    existing << ["new_pack_id", pack_id.to_s]
+    uri.query = URI.encode_www_form(existing)
+    uri.to_s
+  end
 end
