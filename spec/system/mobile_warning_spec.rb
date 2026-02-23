@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe 'Mobile warning modal on /host', type: :system, js: true do
-  let(:mobile_size) { [390, 844] }   # iPhone 14 viewport
-  let(:desktop_size) { [1280, 800] }
+RSpec.describe 'Mobile warning modal on /host', :js, type: :system do
+  let(:mobile_size) { [ 390, 844 ] }   # iPhone 14 viewport
+  let(:desktop_size) { [ 1280, 800 ] }
 
   describe 'logged-out user on mobile' do
     before { page.driver.browser.manage.window.resize_to(*mobile_size) }
