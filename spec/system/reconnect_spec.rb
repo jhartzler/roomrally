@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Hand screen reconnect", :js, type: :system do
   let!(:room) { FactoryBot.create(:room, user: nil) }
 
-  it "reloads the page when tab has been hidden for more than 30 seconds" do
+  it "reloads the page when tab has been hidden for more than 5 seconds" do
     visit join_room_path(room)
     fill_in "player[name]", with: "Alice"
     click_on "Join Game"
@@ -20,7 +20,7 @@ RSpec.describe "Hand screen reconnect", :js, type: :system do
     page.execute_script(<<~JS)
       const el = document.querySelector('[data-controller~="reconnect"]');
       const ctrl = window.Stimulus?.getControllerForElementAndIdentifier(el, 'reconnect');
-      if (ctrl) ctrl.hiddenAt = Date.now() - 35_000;
+      if (ctrl) ctrl.hiddenAt = Date.now() - 10_000;
     JS
 
     # Simulate page becoming visible — triggers Turbo.visit
