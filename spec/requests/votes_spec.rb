@@ -1,6 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe "Votes", type: :request do
+  # Regression: VotesController called current_player.id unconditionally.
+  # Without a session, current_player is nil → NoMethodError → 500.
+  # Should return 401 instead.
+  describe "POST /votes (unauthenticated)" do
+    it "returns unauthorized instead of crashing when no player session exists" do
+      post votes_path, params: { vote: { response_id: 0 } }, as: :turbo_stream
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
   describe "POST /votes (IDOR check)" do
     let(:player_a) { FactoryBot.create(:player) }
     let(:response_b) do

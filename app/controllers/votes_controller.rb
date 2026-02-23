@@ -1,11 +1,37 @@
 class VotesController < ApplicationController
   def create
+    unless current_player
+      head :unauthorized
+      return
+    end
+
     @response = Response.find(params[:vote][:response_id])
-    Rails.logger.info({ event: "vote_attempt", player_id: current_player.id, response_id: @response.id })
+
+    Analytics.track(
+      distinct_id: "player_#{current_player.session_id}",
+      event: "vote_attempt",
+      properties: {
+        player_id: current_player.id,
+        room_code: current_player.room.code,
+        response_id: @response.id
+      }
+    )
 
     @vote = Vote.new(player: current_player, response: @response)
 
     unless @vote.save
+      failure_reason = @vote.errors[:base].first || "unknown"
+      Analytics.track(
+        distinct_id: "player_#{current_player.session_id}",
+        event: "vote_failed",
+        properties: {
+          player_id: current_player.id,
+          room_code: current_player.room.code,
+          response_id: @response.id,
+          reason: failure_reason
+        }
+      )
+
       if @vote.errors[:base].include?("You cannot vote for your own response")
         head :forbidden
       elsif @vote.errors[:base].include?("You have already voted for this prompt")
@@ -27,10 +53,20 @@ class VotesController < ApplicationController
 
     game = prompt_instance.reload.write_and_vote_game
     if game.nil?
-      # Fallback or retry logic if needed, but for now let's log it
       Rails.logger.error "Game is nil for response #{@response.id}"
     end
-    game = Games::WriteAndVote.process_vote(game:, vote: @vote)
+    Games::WriteAndVote.process_vote(game:, vote: @vote)
+
+    Analytics.track(
+      distinct_id: "player_#{current_player.session_id}",
+      event: "vote_cast",
+      properties: {
+        player_id: current_player.id,
+        room_code: current_player.room.code,
+        response_id: @response.id,
+        game_id: game&.id
+      }
+    )
 
     respond_to do |format|
       format.turbo_stream { head :ok }
