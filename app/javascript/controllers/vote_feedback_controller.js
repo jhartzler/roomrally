@@ -40,12 +40,18 @@ export default class extends Controller {
             navigator.vibrate(50)
         }
 
-        // Disable ALL vote buttons to prevent multiple votes
-        const allVoteButtons = document.querySelectorAll('button[data-action*="vote-feedback#vote"]')
-        allVoteButtons.forEach(btn => {
-            btn.disabled = true
-            btn.classList.add("opacity-75", "cursor-not-allowed")
-        })
+        // Disable ALL vote buttons AFTER the current event loop tick so the
+        // form submission (activation behavior) fires before the button is disabled.
+        // Disabling synchronously in the click handler prevents the browser from
+        // submitting the form because the button is checked for disabled state
+        // after event handlers run but before the default action executes.
+        setTimeout(() => {
+            const allVoteButtons = document.querySelectorAll('button[data-action*="vote-feedback#vote"]')
+            allVoteButtons.forEach(btn => {
+                btn.disabled = true
+                btn.classList.add("opacity-75", "cursor-not-allowed")
+            })
+        }, 0)
 
         // Show quick feedback message
         this.showFeedback(button)
