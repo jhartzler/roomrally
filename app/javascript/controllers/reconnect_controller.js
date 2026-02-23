@@ -14,7 +14,7 @@ export default class extends Controller {
   handleVisibilityChange() {
     if (document.hidden) {
       this.hiddenAt = Date.now()
-    } else if (this.hiddenAt && (Date.now() - this.hiddenAt) > 30_000) {
+    } else if (this.hiddenAt && (Date.now() - this.hiddenAt) > 5_000) {
       this.hiddenAt = null
       Turbo.visit(window.location.href, { action: "replace" })
     } else {
