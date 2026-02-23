@@ -1,24 +1,24 @@
 <% content_for(:title) { "RoomRally - Host Group Games You Can Get Behind" } %>
 
-<div class="max-w-6xl mx-auto pb-16">
-  <%# Header with Logo %>
-  <header class="pt-6 px-4 mb-4 md:mb-0 flex justify-center">
-    <%= link_to root_path, class: "group hover:opacity-80 transition-opacity" do %>
-      <h1 class="roomrally-logo text-3xl md:text-4xl">
-        Room<span>Rally</span>
-      </h1>
-    <% end %>
-  </header>
+<% content_for :topnav do %>
+  <%= render 'shared/topnav' %>
+<% end %>
 
+<div class="max-w-6xl mx-auto pb-16">
   <%# Section 1: Hero %>
   <section class="text-center py-8 mb-8 md:mb-12">
     <div>
       <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
         Host epic group games<br>you can get behind.
       </h1>
-            <%= link_to play_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
-        Host or Play for Free
-      <% end %>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to host_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-10 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
+          Host a Game
+        <% end %>
+        <%= link_to play_path, class: "inline-block bg-white/20 backdrop-blur text-white font-black py-4 px-10 rounded-full hover:bg-white/30 active:scale-95 transform transition-all duration-200 text-xl border border-white/30" do %>
+          Join a Game
+        <% end %>
+      </div>
     </div>
   </section>
 

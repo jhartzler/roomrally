@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "pages#landing"
   get "play", to: "home#index"
+  get "host", to: "hosts#index", as: :host
 
   resources :rooms, only: %i[create show], param: :code do
     resource :stage, only: :show
