@@ -95,19 +95,19 @@
                 <%= button_to "Reject",
                     category_answer_path(answer),
                     method: :patch,
-                    params: { category_answer: { status: "rejected" } },
+                    params: { category_answer: { status: "rejected" }, code: room.code },
                     data: { turbo_submits_with: "…" },
                     class: "text-xs bg-red-600/30 hover:bg-red-600/50 text-red-300 px-2 py-1 rounded-lg transition" %>
                 <%= button_to "Duplicate",
                     category_answer_path(answer),
                     method: :patch,
-                    params: { category_answer: { status: "duplicate" } },
+                    params: { category_answer: { status: "duplicate" }, code: room.code },
                     data: { turbo_submits_with: "…" },
                     class: "text-xs bg-orange-600/30 hover:bg-orange-600/50 text-orange-300 px-2 py-1 rounded-lg transition" %>
                 <%= button_to "Hide from Audience",
                     category_answer_path(answer),
                     method: :patch,
-                    params: { category_answer: { status: "hidden" } },
+                    params: { category_answer: { status: "hidden" }, code: room.code },
                     data: { turbo_submits_with: "…" },
                     class: "text-xs bg-gray-600/30 hover:bg-gray-600/50 text-gray-300 px-2 py-1 rounded-lg transition" %>
               </div>

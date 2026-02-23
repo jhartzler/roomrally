@@ -34,7 +34,7 @@
       <% current_question.options&.each_with_index do |option, index| %>
         <%= button_to trivia_answers_path,
             method: :post,
-            params: { trivia_answer: { selected_option: option } },
+            params: { trivia_answer: { selected_option: option }, code: room.code },
             class: "w-full bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-md border-2 border-gray-600 hover:border-blue-400 rounded-2xl p-5 flex items-center shadow-lg transition-all active:scale-95",
             data: { 
               turbo_frame: "hand_screen", 
