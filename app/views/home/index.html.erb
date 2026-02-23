@@ -1,3 +1,5 @@
+<% content_for(:title) { "Join a Game – RoomRally" } %>
+
 <div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
   <div class="max-w-md w-full">
     <div class="text-center mb-8">
@@ -5,102 +7,27 @@
         <div class="text-8xl mb-4 drop-shadow-xl animate-bounce">📢</div>
         <%= link_to root_path do %>
           <h1 class="roomrally-logo mb-4 hover:opacity-80 transition-opacity">
-              Room<span>Rally</span>
+            Room<span>Rally</span>
           </h1>
         <% end %>
       </div>
-      <p class="text-blue-200 text-lg font-bold tracking-widest">Host epic group games you can get behind</p>
+      <p class="text-blue-200 text-lg font-bold tracking-widest">Enter your room code to join</p>
       <div class="mt-2">
-        <%= link_to root_path, class: "text-blue-300 text-xs hover:text-orange-400 transition-colors" do %>
-          First time? Learn more →
-        <% end %>
-      </div>
-      
-      <div class="mt-4">
-        <% if current_user %>
-          <div class="flex flex-col items-center space-y-2">
-            <%= link_to dashboard_path, class: "bg-white text-blue-900 font-bold py-2 px-6 rounded-full shadow-lg hover:bg-blue-50 transform hover:scale-105 transition-all" do %>
-               Go to Dashboard
-            <% end %>
-            <div class="text-blue-200/80 text-xs mt-2 flex gap-2">
-               <span>Logged in as <%= current_user.name %></span>
-               <span>•</span>
-               <%= button_to "Logout", logout_path, method: :delete, class: "underline hover:text-white" %>
-            </div>
-          </div>
-        <% else %>
-          <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false } do |f| %>
-            <%= f.submit "Login with Google", class: "bg-white text-blue-900 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-blue-50 transition-colors text-sm" %>
-          <% end %>
-          <p class="text-blue-300/70 text-xs mt-2">Sign in to save game templates and create custom content.</p>
+        <%= link_to host_path, class: "text-blue-300 text-xs hover:text-orange-400 transition-colors" do %>
+          Want to host? Set up a game room →
         <% end %>
       </div>
     </div>
 
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 space-y-6 border border-white/20">
-      <%# Create Room Form %>
-      <%= form_with url: rooms_path, method: :post, class: "space-y-4" do |form| %>
-        <div>
-          <span class="block text-blue-200 font-bold text-xs tracking-widest mb-3">Select Game</span>
-          <div class="space-y-2">
-            <% Room::GAME_TYPES.each_with_index do |game_type, index| %>
-              <% info = game_info(game_type) %>
-              <label class="block cursor-pointer">
-                <%= form.radio_button :game_type, game_type,
-                    checked: index == 0,
-                    class: "hidden peer" %>
-                <div class="px-4 py-3 bg-white/10 border-2 border-white/10 rounded-xl transition-all peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:bg-white/15">
-                  <div class="flex items-center gap-3">
-                    <span class="text-2xl"><%= info[:emoji] %></span>
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2">
-                        <span class="text-white font-bold"><%= Room::GAME_DISPLAY_NAMES[game_type] || game_type %></span>
-                      </div>
-                      <p class="text-blue-200/70 text-xs mt-0.5"><%= info[:tagline] %></p>
-                    </div>
-                  </div>
-                  <div class="flex gap-2 mt-2 ml-9">
-                    <span class="text-[10px] text-blue-300/60 bg-white/5 px-2 py-0.5 rounded-full"><%= info[:player_count] %></span>
-                    <span class="text-[10px] text-blue-300/60 bg-white/5 px-2 py-0.5 rounded-full"><%= info[:duration] %></span>
-                  </div>
-                </div>
-              </label>
-            <% end %>
-          </div>
-        </div>
-        <% if current_user %>
-          <details class="mt-2">
-            <summary class="text-blue-200 text-sm cursor-pointer hover:text-white transition-colors">
-              ▸ Game Options
-            </summary>
-            <div class="mt-3">
-              <%= form.label :display_name, "Game Name (optional)", class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
-              <%= form.text_field :display_name, placeholder: "e.g. Mike's Birthday Bash", class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all" %>
-              <p class="text-blue-300/60 text-xs mt-1">Leave blank for default</p>
-            </div>
-            <div class="mt-3">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <%= form.check_box :stage_only, { class: "form-checkbox h-5 w-5 text-orange-500 rounded border-white/30 bg-white/10 focus:ring-orange-500 focus:ring-offset-0 transition-colors" }, "1", "0" %>
-                <span class="text-blue-200 font-medium text-sm">Stage-Only Mode</span>
-              </label>
-              <p class="text-blue-300/60 text-xs mt-1">No phones needed — run from backstage only</p>
-            </div>
-          </details>
-        <% end %>
-        <%= form.submit "Create Room", class: "w-full bg-orange-500 text-white font-black py-4 px-6 rounded-xl hover:bg-orange-600 active:scale-[0.98] transform hover:shadow-lg shadow-orange-900/20 transition-all duration-200 text-lg tracking-tight" %>
-      <% end %>
-
-      <div class="flex items-center gap-4">
-        <div class="flex-1 border-t border-white/20"></div>
-        <span class="text-blue-200 font-bold text-[10px] tracking-widest">or</span>
-        <div class="flex-1 border-t border-white/20"></div>
-      </div>
-
-      <%# Join Room Form %>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-white/20">
       <%= form_with url: "javascript:void(0);", method: :get, data: { turbo: false, controller: "redirect-form", action: "submit->redirect-form#join", "redirect-form-url-template-value": "/rooms/{{value}}/join" }, class: "space-y-4" do |form| %>
         <div>
-          <%= form.label :room_code, "Enter Room Code", class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
-          <%= form.text_field :room_code, data: { "redirect-form-target": "input" }, class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-center text-2xl font-mono font-black uppercase", placeholder: "ABCD" %>
+          <%= form.label :room_code, "Room Code", class: "block text-blue-200 font-bold text-xs tracking-widest mb-2" %>
+          <%= form.text_field :room_code,
+              data: { "redirect-form-target": "input" },
+              autofocus: true,
+              class: "w-full px-4 py-3 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all text-center text-2xl font-mono font-black uppercase",
+              placeholder: "ABCD" %>
         </div>
         <%= form.submit "Join Room", class: "w-full bg-blue-600 text-white font-black py-4 px-6 rounded-xl hover:bg-blue-700 active:scale-[0.98] transform hover:shadow-lg transition-all duration-200 tracking-tight" %>
       <% end %>
