@@ -26,15 +26,20 @@ require "rails_helper"
 RSpec.describe "Write and Vote - Voting", :js, type: :system do
   let!(:room) { create(:room, game_type: "Write And Vote", user: nil) }
 
-  # Players must be created in this order — the prompt assignment ring uses
-  # insertion order (ascending ID). With players [P1, P2, P3]:
-  #   P1 (i=0) → writes responses for PI0 and PI1
-  #   P2 (i=1) → writes responses for PI1 and PI2
-  #   P3 (i=2) → writes responses for PI2 and PI0
-  # Therefore PI0 has authors P1 + P3, meaning P2 is the non-author voter.
-  let!(:player1) { create(:player, name: "Player 1", room: room) }
-  let!(:player2) { create(:player, name: "Player 2", room: room) }
-  let!(:player3) { create(:player, name: "Player 3", room: room) }
+  # Creates all three players in insertion order and returns the middle one (the
+  # non-author voter for the first prompt). The ring assignment uses ascending ID
+  # order: author_a (i=0) writes PI0+PI1, voter (i=1) writes PI1+PI2, author_b
+  # (i=2) writes PI2+PI0. So PI0's authors are author_a + author_b, leaving voter
+  # as the only player who can vote on it.
+  #
+  # All three must be created in the same let! (not split across let!/before) so
+  # that RSpec evaluates them in guaranteed order before the before block runs.
+  let!(:voter) do
+    create(:player, name: "Author A", room:)
+    v = create(:player, name: "Voter", room:)
+    create(:player, name: "Author B", room:)
+    v
+  end
 
   before do
     default_pack = create(:prompt_pack, :default)
@@ -45,7 +50,7 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
     # service does NOT exercise the browser vote submission path tested below.
     Games::WriteAndVote.game_started(room: room.reload, show_instructions: false)
     game = room.reload.current_game
-    Games::WriteAndVote::Playtest.bot_act(game: game, exclude_player: nil)
+    Games::WriteAndVote::Playtest.bot_act(game:, exclude_player: nil)
     game.reload
 
     raise "Setup failed: expected voting state, got: #{game.status}" unless game.voting?
@@ -56,9 +61,8 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
     first_prompt = game.current_round_prompts.order(:id).first
     author_ids = first_prompt.responses.pluck(:player_id)
 
-    voter = room.players.active_players.where.not(id: author_ids).first
-    expect(voter).to eq(player2),
-      "Expected player2 to be the non-author for the first prompt. " \
+    expect(author_ids).not_to include(voter.id),
+      "Expected voter to be the non-author for the first prompt. " \
       "If this fails, the prompt assignment ring logic may have changed."
 
     Capybara.using_session(:voter) do
@@ -71,10 +75,10 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
       expect {
         click_button "Vote for this answer", match: :first
 
-        # After P2 votes on PI0, the game advances to PI1 where P2 IS an author.
-        # The server broadcasts the updated hand, and P2's screen switches to
-        # "Voting in Progress". Waiting for this confirms the request completed
-        # before we assert Vote.count.
+        # After the voter casts a vote on PI0, the game advances to PI1 where the
+        # voter IS an author. The server broadcasts the updated hand, switching the
+        # screen to "Voting in Progress". Waiting for this confirms the server
+        # processed the request before we assert Vote.count.
         expect(page).to have_content("Voting in Progress", wait: 5)
       }.to change(Vote, :count).by(1)
     end
