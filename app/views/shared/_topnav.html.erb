@@ -2,7 +2,7 @@
   <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
     <%# Logo %>
     <%= link_to root_path, class: "group hover:opacity-80 transition-opacity shrink-0" do %>
-      <span class="roomrally-logo text-xl">Room<span>Rally</span></span>
+      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/logo-one-line.png" %>" alt="RoomRally Logo" class="h-16 sm:h-20 w-auto object-contain">
     <% end %>
 
     <%# Actions %>
