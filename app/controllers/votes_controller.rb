@@ -53,7 +53,13 @@ class VotesController < ApplicationController
 
     game = prompt_instance.reload.write_and_vote_game
     if game.nil?
-      Rails.logger.error "Game is nil for response #{@response.id}"
+      Sentry.capture_message(
+        "VotesController: game is nil for response",
+        level: :error,
+        extra: { response_id: @response.id, prompt_instance_id: prompt_instance.id }
+      )
+      head :unprocessable_content
+      return
     end
     Games::WriteAndVote.process_vote(game:, vote: @vote)
 

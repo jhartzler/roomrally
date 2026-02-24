@@ -30,7 +30,7 @@
   <h2 class="text-xl font-bold mb-4 text-center drop-shadow-md">Vote for the best answer!</h2>
 
   <div class="prompt-display mb-6 p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-center shadow-lg">
-    <p class="text-xl font-bold italic text-blue-100"><%= current_prompt.prompt.body %></p>
+    <p class="text-xl font-bold italic text-blue-100"><%= current_prompt&.prompt&.body %></p>
   </div>
 
   <div class="responses-list space-y-4">

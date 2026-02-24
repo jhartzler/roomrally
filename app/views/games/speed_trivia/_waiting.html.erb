@@ -33,7 +33,7 @@
 
       <%# Rank computation: compare actual post-round rank vs pre-round rank. %>
       <% all_players = room.players.active_players.to_a %>
-      <% round_points_by_id = current_question.trivia_answers.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded.to_i } %>
+      <% round_points_by_id = current_question&.trivia_answers&.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded.to_i } || {} %>
       <% sorted_now  = all_players.sort_by { |p| -p.score } %>
       <% sorted_prev = all_players.sort_by { |p| -(p.score - round_points_by_id.fetch(p.id, 0)) } %>
       <% current_rank  = sorted_now.index  { |p| p.id == player.id }.to_i + 1 %>

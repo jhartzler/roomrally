@@ -7,12 +7,19 @@ class ResponsesController < ApplicationController
       @response.prompt_instance.update(status: "submitted")
 
       # Check if all responses are in to start voting
-      game = @response.prompt_instance.write_and_vote_game
+      game = @response.prompt_instance&.write_and_vote_game
+      if game.nil?
+        Sentry.capture_message(
+          "ResponsesController: game is nil after response saved",
+          level: :error,
+          extra: { response_id: @response.id }
+        )
+      end
 
       # Broadcast that a response was submitted (for facilitator/backstage)
       GameBroadcaster.broadcast_response_submitted(response: @response)
 
-      game = Games::WriteAndVote.check_all_responses_submitted(game:)
+      game = Games::WriteAndVote.check_all_responses_submitted(game:) if game
 
       respond_to do |format|
         format.turbo_stream do

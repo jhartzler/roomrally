@@ -49,6 +49,7 @@ class GameTemplate < ApplicationRecord
       game_template: self,
       display_name: name,
       prompt_pack:,
+      trivia_pack:,
       category_pack:,
       stage_only: merged_settings["stage_only"]
     )
