@@ -1,197 +1,435 @@
-<div class="min-h-screen p-6 md:p-12 font-sans text-white">
-  <header class="max-w-5xl mx-auto mb-10">
-    <%= link_to root_path, class: "group flex items-center gap-2 text-blue-200 hover:text-white transition-colors font-bold mb-6 w-fit" do %>
-      <div class="p-2 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors border border-white/10">
-        <%= lucide_icon('arrow-left', class: "w-5 h-5") %>
-      </div>
-      <span>Back to Home</span>
-    <% end %>
+<% content_for(:title) { "Dashboard – RoomRally" } %>
+<% content_for(:full_bleed) {} %>
 
-    <h1 class="text-4xl font-black text-white drop-shadow-lg mb-2">
-      Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400"><%= current_user.name %></span>
-    </h1>
-    <p class="text-blue-200 font-bold tracking-widest text-sm">Ready to make some memories?</p>
-  </header>
+<div class="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]" data-controller="dashboard">
 
-  <section class="max-w-5xl mx-auto mb-8">
-    <details class="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
-      <summary class="px-6 py-4 cursor-pointer text-blue-200 font-bold hover:text-white transition-colors flex items-center gap-2">
-        <span class="text-lg">New to RoomRally?</span>
-        <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-400/20">Quick Guide</span>
-      </summary>
-      <div class="px-6 pb-6 pt-2">
-        <ol class="space-y-3 text-sm">
-          <li class="flex gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">1</span>
-            <div>
-              <span class="text-white font-bold">Create a room</span>
-              <span class="text-blue-200/70"> — pick a game type and hit Create</span>
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">2</span>
-            <div>
-              <span class="text-white font-bold">Share the code</span>
-              <span class="text-blue-200/70"> — players scan the QR code on the Stage or enter the 4-letter room code on their phones</span>
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">3</span>
-            <div>
-              <span class="text-white font-bold">Open the Stage view</span>
-              <span class="text-blue-200/70"> — project it on a big screen or share your screen — this is what the audience sees</span>
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-orange-500/20 text-orange-300 rounded-full flex items-center justify-center text-xs font-bold border border-orange-400/20">4</span>
-            <div>
-              <span class="text-white font-bold">Run from Backstage</span>
-              <span class="text-blue-200/70"> — control the game, moderate responses, and advance rounds from your backstage panel</span>
-            </div>
-          </li>
-        </ol>
-        <div class="mt-4 pt-4 border-t border-white/10">
-          <p class="text-xs font-bold text-blue-300 mb-2">Quick tips</p>
-          <ul class="text-xs text-blue-200/60 space-y-1">
-            <li>Test with a second browser tab as a player before your event</li>
-            <li>Use Stage-Only mode for in-person events without phones</li>
-          </ul>
+  <%# ═══════════════════════════════════════════════
+      LEFT SIDEBAR — desktop only
+  ═══════════════════════════════════════════════ %>
+  <aside class="w-56 shrink-0 hidden md:flex flex-col bg-black/20 backdrop-blur-sm border-r border-white/10 sticky top-0 h-[calc(100vh-4rem)] overflow-y-auto">
+
+    <%# User identity %>
+    <div class="px-5 pt-7 pb-5 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-sm shrink-0 shadow-lg shadow-orange-900/30">
+          <%= current_user.name[0].upcase %>
         </div>
-      </div>
-    </details>
-  </section>
-
-  <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-    <% if @active_rooms.any? %>
-      <div class="md:col-span-2">
-        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span>Active Rooms & Games</span>
-          <span class="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full"><%= @active_rooms.count %></span>
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <% @active_rooms.each do |room| %>
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/10 flex flex-col justify-between h-full hover:bg-white/15 transition-all group">
-              <div>
-                <div class="flex justify-between items-start mb-2">
-                   <h4 class="font-black text-2xl font-mono text-white tracking-wider group-hover:scale-105 transition-transform"><%= room.code %></h4>
-                   <span class="px-2 py-0.5 bg-white/20 text-blue-100 text-xs font-bold rounded border border-white/10"><%= room.status %></span>
-                </div>
-                <p class="text-sm font-bold text-blue-200 mb-1 tracking-wide"><%= room.display_name %></p>
-                <p class="text-[10px] text-blue-300 mb-4 font-mono"><%= time_ago_in_words(room.created_at) %> ago</p>
-              </div>
-
-               <div class="grid grid-cols-2 gap-2 mt-auto">
-                 <%= link_to room_backstage_path(room.code), class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-blue-600/50 hover:bg-blue-600 text-white font-bold text-sm rounded-lg transition-colors border border-blue-400/30" do %>
-                   <%= lucide_icon('settings', class: "w-4 h-4") %>
-                   Manage
-                 <% end %>
-                 <%= link_to room_stage_path(room.code), target: "_blank", class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10" do %>
-                   <%= lucide_icon('external-link', class: "w-4 h-4") %>
-                   Stage
-                 <% end %>
-               </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all group relative overflow-hidden">
-      <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all"></div>
-
-      <div class="relative z-10">
-        <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 border border-blue-400/30">
-          <span class="text-2xl">🎨</span>
-        </div>
-        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Customize a Game</h2>
-        <p class="text-blue-200 mb-6 text-sm leading-relaxed">Create a game template for your next event — pick a game type, add a custom content pack, and save it for one-click launching.</p>
-        <div class="flex flex-col gap-3">
-          <%= link_to new_game_template_path, class: "inline-flex items-center gap-2 font-bold text-blue-300 hover:text-white transition-colors" do %>
-            Create a game template <%= lucide_icon('arrow-right', class: "w-4 h-4") %>
-          <% end %>
-          <%= link_to customize_path, class: "inline-flex items-center gap-2 text-sm font-bold text-blue-300/60 hover:text-blue-300 transition-colors" do %>
-            Manage content packs <%= lucide_icon('arrow-right', class: "w-3 h-3") %>
-          <% end %>
+        <div class="min-w-0">
+          <p class="text-white font-bold text-sm truncate"><%= current_user.name %></p>
+          <p class="text-blue-400/70 text-xs">Game Host</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-gradient-to-br from-orange-500/20 to-amber-600/20 backdrop-blur-md rounded-3xl p-8 border border-white/20 hover:from-orange-500/30 hover:to-amber-600/30 transition-all group relative overflow-hidden">
-       <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-500/20 rounded-full blur-2xl group-hover:bg-orange-500/30 transition-all"></div>
+    <%# Primary navigation %>
+    <nav class="flex-1 px-3 py-4 space-y-0.5">
+      <p class="text-blue-400/50 text-[10px] uppercase tracking-widest font-bold px-3 pb-2">Menu</p>
 
-       <div class="relative z-10">
-        <div class="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6 border border-orange-400/30 text-orange-200">
-          <span class="text-2xl">🏆</span>
-        </div>
-        <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Host a Game</h2>
-        <p class="text-orange-100/80 mb-6 text-sm leading-relaxed">Start a new game room. Launch a Big Screen session for players to join.</p>
-        <%= link_to play_path, class: "block w-full text-center bg-orange-500 hover:bg-orange-400 text-white font-black py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-all tracking-tight text-sm" do %>
-          Start Hosting
-        <% end %>
-      </div>
-    </div>
-  </main>
+      <button data-dashboard-target="tab"
+              data-panel="overview"
+              data-action="click->dashboard#switch"
+              data-active-classes="bg-white/15 text-white"
+              data-inactive-classes="text-blue-300/70"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left font-semibold text-sm transition-all text-blue-300/70 hover:text-white hover:bg-white/10">
+        <%= lucide_icon('layout-dashboard', class: "w-4 h-4 shrink-0") %>
+        <span>Overview</span>
+      </button>
 
-  <section class="max-w-5xl mx-auto mb-12">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-xl font-bold text-white tracking-wide">My Games</h3>
-      <div class="flex items-center gap-4">
+      <button data-dashboard-target="tab"
+              data-panel="games"
+              data-action="click->dashboard#switch"
+              data-active-classes="bg-white/15 text-white"
+              data-inactive-classes="text-blue-300/70"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left font-semibold text-sm transition-all text-blue-300/70 hover:text-white hover:bg-white/10">
+        <%= lucide_icon('gamepad-2', class: "w-4 h-4 shrink-0") %>
+        <span>My Games</span>
         <% if @game_templates.any? %>
-          <%= link_to "View All", game_templates_path, class: "text-xs font-bold text-blue-300 hover:text-white transition-colors tracking-widest" %>
+          <span class="ml-auto bg-white/15 text-blue-200 text-[10px] px-1.5 py-0.5 rounded-full font-bold tabular-nums"><%= @game_templates.count %></span>
         <% end %>
-        <%= link_to new_game_template_path, class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs py-2 px-4 rounded-lg shadow-lg shadow-orange-500/30 transition-all" do %>
-          <%= lucide_icon('plus', class: "w-3 h-3") %>
-          Create Game
+      </button>
+
+      <button data-dashboard-target="tab"
+              data-panel="packs"
+              data-action="click->dashboard#switch"
+              data-active-classes="bg-white/15 text-white"
+              data-inactive-classes="text-blue-300/70"
+              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left font-semibold text-sm transition-all text-blue-300/70 hover:text-white hover:bg-white/10">
+        <%= lucide_icon('package', class: "w-4 h-4 shrink-0") %>
+        <span>Content Packs</span>
+        <% total_packs = @prompt_packs_count + @trivia_packs_count + @category_packs_count %>
+        <% if total_packs > 0 %>
+          <span class="ml-auto bg-white/15 text-blue-200 text-[10px] px-1.5 py-0.5 rounded-full font-bold tabular-nums"><%= total_packs %></span>
+        <% end %>
+      </button>
+    </nav>
+
+    <%# Bottom action CTAs %>
+    <div class="px-3 pb-5 pt-3 border-t border-white/10 space-y-2">
+      <%= link_to new_game_template_path,
+            class: "flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-black py-2.5 px-4 rounded-xl shadow-lg shadow-orange-900/30 transition-all text-sm" do %>
+        <%= lucide_icon('plus', class: "w-4 h-4 shrink-0") %>
+        New Game
+      <% end %>
+
+      <%= link_to host_path,
+            class: "flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold py-2.5 px-4 rounded-xl border border-white/10 transition-all text-sm" do %>
+        <%= lucide_icon('play', class: "w-4 h-4 shrink-0") %>
+        Quick Host
+      <% end %>
+
+      <div class="pt-1">
+        <%= link_to "https://forms.gle/DvBEVC5DwqcGAnHv8",
+              target: "_blank", rel: "noopener noreferrer",
+              class: "flex items-center justify-center gap-1.5 text-blue-400/50 hover:text-blue-300 transition-colors text-xs py-1" do %>
+          <%= lucide_icon('message-square', class: "w-3 h-3") %>
+          Share feedback
         <% end %>
       </div>
     </div>
-    <% if @game_templates.any? %>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <% @game_templates.each do |template| %>
-          <%= render "game_templates/template_card", template: template %>
+  </aside>
+
+  <%# ═══════════════════════════════════════════════
+      MAIN CONTENT AREA
+  ═══════════════════════════════════════════════ %>
+  <div class="flex-1 overflow-y-auto pb-20 md:pb-0">
+
+    <%# Mobile header strip — hidden on desktop %>
+    <div class="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/10">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-xs shrink-0">
+          <%= current_user.name[0].upcase %>
+        </div>
+        <span class="text-white font-bold text-sm"><%= current_user.name.split.first %></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= link_to new_game_template_path,
+              class: "flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white font-black py-1.5 px-3 rounded-lg text-xs transition-all" do %>
+          <%= lucide_icon('plus', class: "w-3.5 h-3.5 shrink-0") %>
+          New Game
+        <% end %>
+        <%= link_to host_path,
+              class: "flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-semibold py-1.5 px-3 rounded-lg border border-white/10 text-xs transition-all" do %>
+          <%= lucide_icon('play', class: "w-3.5 h-3.5 shrink-0") %>
+          Host
         <% end %>
       </div>
-    <% else %>
-      <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 text-center">
-        <p class="text-blue-200/70 text-sm mb-4">Save game configurations to launch with one click.</p>
-        <%= link_to new_game_template_path, class: "inline-flex items-center gap-2 text-blue-300 hover:text-white font-bold transition-colors text-sm" do %>
-          Create your first game <%= lucide_icon('arrow-right', class: "w-4 h-4") %>
-        <% end %>
+    </div>
+
+    <%# Reconnect banner — shown only if there's an active room %>
+    <% if @active_rooms.any? %>
+      <% room = @active_rooms.first %>
+      <div class="mx-3 mt-3 md:mx-6 md:mt-6 flex items-center gap-3 bg-green-500/10 border border-green-400/20 rounded-xl px-4 py-3">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0"></span>
+        <p class="text-green-200 text-sm font-medium flex-1 min-w-0 truncate">
+          Room <span class="font-black font-mono tracking-wider"><%= room.code %></span> is active
+        </p>
+        <div class="flex items-center gap-3 shrink-0">
+          <%= link_to room_backstage_path(room.code),
+                class: "text-green-300 hover:text-white text-xs font-bold transition-colors" do %>
+            Backstage →
+          <% end %>
+          <%= link_to room_stage_path(room.code), target: "_blank",
+                class: "hidden sm:inline text-green-300/60 hover:text-green-300 text-xs font-medium transition-colors" do %>
+            Stage ↗
+          <% end %>
+        </div>
       </div>
     <% end %>
-  </section>
 
-  <% if @recent_packs.any? %>
-    <section class="max-w-5xl mx-auto">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-white tracking-wide">Recent Prompt Packs</h3>
-        <%= link_to "View All", prompt_packs_path, class: "text-xs font-bold text-blue-300 hover:text-white transition-colors tracking-widest" %>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <% @recent_packs.each do |pack| %>
-          <%= link_to edit_prompt_pack_path(pack), class: "bg-white/5 backdrop-blur-sm p-5 rounded-2xl border border-white/10 flex items-center gap-4 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group" do %>
-            <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-blue-200 group-hover:text-white transition-colors">
-              <%= lucide_icon('folder', class: "w-5 h-5") %>
-            </div>
-            <div>
-              <h4 class="font-bold text-white group-hover:text-blue-200 transition-colors"><%= pack.name %></h4>
-              <p class="text-[10px] font-bold text-blue-400 bg-blue-900/30 px-2 py-0.5 rounded-md inline-block border border-blue-500/20 mt-1">
-                <%= pack.prompts.count %> prompts
-              </p>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
+    <%# ─────────────────────────────────────────────
+        PANEL: OVERVIEW
+    ───────────────────────────────────────────── %>
+    <div data-dashboard-target="panel" data-panel="overview" class="p-4 md:p-8">
 
-  <section class="max-w-5xl mx-auto mt-12">
-    <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 text-center">
-      <p class="text-blue-200 font-medium mb-3">Help us improve RoomRally</p>
-      <%= link_to "https://forms.gle/DvBEVC5DwqcGAnHv8", target: "_blank", rel: "noopener noreferrer",
-            class: "inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-blue-200 font-bold rounded-full border border-white/20 transition" do %>
-        Share feedback &rarr;
+      <% is_new_user = @game_templates.empty? %>
+
+      <% if is_new_user %>
+        <%# ── NEW USER: Onboarding workflow ─── %>
+        <header class="mb-6 md:mb-8">
+          <h1 class="text-2xl md:text-3xl font-black text-white mb-1">Welcome, <%= current_user.name.split.first %>!</h1>
+          <p class="text-blue-200/70 text-sm">Here's how to run your first RoomRally game.</p>
+        </header>
+
+        <%# 3-step workflow %>
+        <div class="mb-8 md:mb-10">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 relative">
+            <%# Connecting line — desktop only %>
+            <div class="hidden md:block absolute top-10 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-gradient-to-r from-orange-500/40 via-blue-400/40 to-blue-400/40"></div>
+
+            <%# Step 1 %>
+            <div class="relative bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
+              <div class="w-8 h-8 rounded-full bg-orange-500 text-white text-sm font-black flex items-center justify-center mb-3 shadow-lg shadow-orange-900/30">1</div>
+              <h3 class="font-black text-white text-base mb-1">Pick a game type</h3>
+              <p class="text-blue-200/60 text-xs leading-relaxed mb-3">Choose from Comedy Clash, Think Fast, or A-List. Each uses different content — prompts, trivia, or categories.</p>
+              <div class="space-y-1.5">
+                <% Room::GAME_TYPES.each do |game_type| %>
+                  <% info = game_info(game_type) %>
+                  <div class="flex items-center gap-2 text-xs text-blue-200/70">
+                    <span><%= info[:emoji] %></span>
+                    <span class="font-semibold"><%= Room::GAME_DISPLAY_NAMES[game_type] || game_type %></span>
+                    <span class="text-blue-400/40 hidden sm:inline">·</span>
+                    <span class="text-blue-300/50 truncate hidden sm:inline"><%= info[:tagline] %></span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+
+            <%# Step 2 %>
+            <div class="relative bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
+              <div class="w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-black flex items-center justify-center mb-3 shadow-lg shadow-blue-900/30">2</div>
+              <h3 class="font-black text-white text-base mb-1">Save a game template</h3>
+              <p class="text-blue-200/60 text-xs leading-relaxed mb-3">Name it, choose a game type and settings, and optionally attach a custom content pack. One click to launch later.</p>
+              <%= link_to new_game_template_path,
+                    class: "inline-flex items-center gap-1.5 text-orange-400 hover:text-orange-300 font-bold text-xs transition-colors" do %>
+                <%= lucide_icon('plus-circle', class: "w-3.5 h-3.5") %>
+                Create your first template
+              <% end %>
+            </div>
+
+            <%# Step 3 %>
+            <div class="relative bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
+              <div class="w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-black flex items-center justify-center mb-3 shadow-lg shadow-blue-900/30">3</div>
+              <h3 class="font-black text-white text-base mb-1">Launch &amp; share the code</h3>
+              <p class="text-blue-200/60 text-xs leading-relaxed mb-3">Hit Launch — a 4-letter room code appears. Players enter it on their phones. Project the Stage view for everyone to see.</p>
+              <%= link_to host_path,
+                    class: "inline-flex items-center gap-1.5 text-blue-300 hover:text-white font-bold text-xs transition-colors" do %>
+                <%= lucide_icon('play', class: "w-3.5 h-3.5") %>
+                Skip ahead — Quick Host
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <%# Game type explorer %>
+        <div>
+          <h2 class="text-xs font-bold text-blue-400/60 uppercase tracking-widest mb-3 md:mb-4">Game Types</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+            <% Room::GAME_TYPES.each do |game_type| %>
+              <% info = game_info(game_type) %>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-2xl"><%= info[:emoji] %></span>
+                  <div>
+                    <p class="font-black text-white text-sm"><%= Room::GAME_DISPLAY_NAMES[game_type] || game_type %></p>
+                    <p class="text-[10px] text-blue-400/60 font-mono"><%= info[:player_count] %> · <%= info[:duration] %></p>
+                  </div>
+                </div>
+                <p class="text-blue-200/60 text-xs leading-relaxed mb-3"><%= info[:description] %></p>
+                <div class="space-y-1.5">
+                  <% info[:how_it_works]&.each_with_index do |step, i| %>
+                    <div class="flex items-start gap-2 text-xs text-blue-300/60">
+                      <span class="shrink-0 text-blue-500/60 font-bold mt-px"><%= i + 1 %>.</span>
+                      <span><%= step %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+      <% else %>
+        <%# ── RETURNING USER: Quick launch ─── %>
+        <header class="mb-6 md:mb-8">
+          <h1 class="text-2xl md:text-3xl font-black text-white mb-1">Welcome back, <%= current_user.name.split.first %>!</h1>
+          <p class="text-blue-200/70 text-sm">Ready to make some memories?</p>
+        </header>
+
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xs font-bold text-blue-400/60 uppercase tracking-widest">Your Games</h2>
+            <button data-action="click->dashboard#switch" data-panel="games"
+                    class="text-xs text-blue-300 hover:text-white font-bold transition-colors">
+              See all →
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% @game_templates.first(6).each do |template| %>
+              <%= render "game_templates/template_card", template: template %>
+            <% end %>
+          </div>
+        </div>
       <% end %>
     </div>
-  </section>
+
+    <%# ─────────────────────────────────────────────
+        PANEL: MY GAMES
+    ───────────────────────────────────────────── %>
+    <div data-dashboard-target="panel" data-panel="games" class="p-4 md:p-8" hidden>
+      <header class="mb-6 md:mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black text-white mb-1">My Games</h1>
+          <p class="text-blue-200/70 text-sm">Saved configurations — launch any with one click.</p>
+        </div>
+        <%= link_to new_game_template_path,
+              class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-black py-2 px-4 md:py-2.5 md:px-5 rounded-xl shadow-lg shadow-orange-900/30 transition-all text-sm shrink-0" do %>
+          <%= lucide_icon('plus', class: "w-4 h-4") %>
+          <span class="hidden sm:inline">Create Game</span>
+          <span class="sm:hidden">New</span>
+        <% end %>
+      </header>
+
+      <% if @game_templates.any? %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% @game_templates.each do |template| %>
+            <%= render "game_templates/template_card", template: template %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-16 md:py-20">
+          <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-white/10">
+            <%= lucide_icon('gamepad-2', class: "w-7 h-7 text-blue-300") %>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">No saved games yet</h3>
+          <p class="text-blue-200/60 text-sm mb-6 max-w-sm mx-auto">Create a game template to save your favorite settings and launch with one click.</p>
+          <%= link_to new_game_template_path,
+                class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-black py-3 px-6 rounded-xl shadow-lg shadow-orange-500/30 transition-all" do %>
+            <%= lucide_icon('plus', class: "w-5 h-5") %>
+            Create Your First Game
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ─────────────────────────────────────────────
+        PANEL: CONTENT PACKS
+    ───────────────────────────────────────────── %>
+    <div data-dashboard-target="panel" data-panel="packs" class="p-4 md:p-8" hidden>
+      <header class="mb-6 md:mb-8">
+        <h1 class="text-2xl md:text-3xl font-black text-white mb-1">Content Packs</h1>
+        <p class="text-blue-200/70 text-sm">Custom content makes your game unique. Each game type uses a different kind of pack.</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+
+        <%# Comedy Clash — Prompt Packs %>
+        <div class="bg-gradient-to-br from-blue-500/15 to-purple-600/15 border border-white/10 rounded-2xl p-5 md:p-6 hover:from-blue-500/25 hover:to-purple-600/25 transition-all flex flex-col">
+          <div class="flex items-center gap-3 mb-3 md:mb-4">
+            <span class="text-3xl">✍️</span>
+            <div>
+              <p class="font-black text-white text-base leading-tight">Comedy Clash</p>
+              <p class="text-blue-300/60 text-xs">Write And Vote</p>
+            </div>
+          </div>
+          <p class="text-blue-200/60 text-xs leading-relaxed mb-4 md:mb-5 flex-1">
+            Write prompt packs to give players the questions they respond to. Theme them for school events, holidays, icebreakers, etc.
+          </p>
+          <div class="flex items-center justify-between mb-4">
+            <div class="bg-white/10 rounded-xl px-3 py-2">
+              <p class="text-[10px] text-blue-400/60 uppercase tracking-widest font-bold">Prompt Packs</p>
+              <p class="text-xl font-black text-white tabular-nums"><%= @prompt_packs_count %></p>
+            </div>
+            <% if @prompt_packs_count == 0 %>
+              <p class="text-xs text-orange-300/70 font-medium">Uses default pack</p>
+            <% end %>
+          </div>
+          <%= link_to prompt_packs_path,
+                class: "block text-center bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl transition-all text-sm" do %>
+            Manage Prompt Packs →
+          <% end %>
+        </div>
+
+        <%# Think Fast — Trivia Packs %>
+        <div class="bg-gradient-to-br from-purple-500/15 to-pink-600/15 border border-white/10 rounded-2xl p-5 md:p-6 hover:from-purple-500/25 hover:to-pink-600/25 transition-all flex flex-col">
+          <div class="flex items-center gap-3 mb-3 md:mb-4">
+            <span class="text-3xl">⚡</span>
+            <div>
+              <p class="font-black text-white text-base leading-tight">Think Fast</p>
+              <p class="text-blue-300/60 text-xs">Speed Trivia</p>
+            </div>
+          </div>
+          <p class="text-blue-200/60 text-xs leading-relaxed mb-4 md:mb-5 flex-1">
+            Build trivia packs for any topic — pop culture, history, Bible, sports. Each question has 4 choices. Faster correct answers score more.
+          </p>
+          <div class="flex items-center justify-between mb-4">
+            <div class="bg-white/10 rounded-xl px-3 py-2">
+              <p class="text-[10px] text-blue-400/60 uppercase tracking-widest font-bold">Trivia Packs</p>
+              <p class="text-xl font-black text-white tabular-nums"><%= @trivia_packs_count %></p>
+            </div>
+            <% if @trivia_packs_count == 0 %>
+              <p class="text-xs text-orange-300/70 font-medium">Uses default pack</p>
+            <% end %>
+          </div>
+          <%= link_to trivia_packs_path,
+                class: "block text-center bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition-all text-sm" do %>
+            Manage Trivia Packs →
+          <% end %>
+        </div>
+
+        <%# A-List — Category Packs %>
+        <div class="bg-gradient-to-br from-teal-500/15 to-green-600/15 border border-white/10 rounded-2xl p-5 md:p-6 hover:from-teal-500/25 hover:to-green-600/25 transition-all flex flex-col">
+          <div class="flex items-center gap-3 mb-3 md:mb-4">
+            <span class="text-3xl">📋</span>
+            <div>
+              <p class="font-black text-white text-base leading-tight">A-List</p>
+              <p class="text-blue-300/60 text-xs">Category List</p>
+            </div>
+          </div>
+          <p class="text-blue-200/60 text-xs leading-relaxed mb-4 md:mb-5 flex-1">
+            Create category packs that define the lists players fill in. Mix easy and hard categories, or theme them around a specific topic or event.
+          </p>
+          <div class="flex items-center justify-between mb-4">
+            <div class="bg-white/10 rounded-xl px-3 py-2">
+              <p class="text-[10px] text-blue-400/60 uppercase tracking-widest font-bold">Category Packs</p>
+              <p class="text-xl font-black text-white tabular-nums"><%= @category_packs_count %></p>
+            </div>
+            <% if @category_packs_count == 0 %>
+              <p class="text-xs text-orange-300/70 font-medium">Uses default pack</p>
+            <% end %>
+          </div>
+          <%= link_to category_packs_path,
+                class: "block text-center bg-teal-600 hover:bg-teal-500 text-white font-black py-3 rounded-xl transition-all text-sm" do %>
+            Manage Category Packs →
+          <% end %>
+        </div>
+      </div>
+
+      <% if (@prompt_packs_count + @trivia_packs_count + @category_packs_count) == 0 %>
+        <div class="mt-4 md:mt-6 bg-orange-500/10 border border-orange-400/20 rounded-xl px-4 md:px-5 py-4 flex items-start gap-3">
+          <%= lucide_icon('lightbulb', class: "w-4 h-4 text-orange-300 shrink-0 mt-0.5") %>
+          <p class="text-orange-200/80 text-sm">
+            <span class="font-bold text-orange-200">You don't need custom packs to play.</span>
+            Each game type includes built-in default content. Create custom packs when you want to tailor questions to your group.
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+  </div><%# end main content %>
+
+  <%# ═══════════════════════════════════════════════
+      BOTTOM TAB BAR — mobile only
+  ═══════════════════════════════════════════════ %>
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-blue-950/95 backdrop-blur-md border-t border-white/10 flex">
+    <button data-dashboard-target="tab"
+            data-panel="overview"
+            data-action="click->dashboard#switch"
+            data-active-classes="text-orange-400"
+            data-inactive-classes="text-blue-400/60"
+            class="flex-1 flex flex-col items-center gap-1 py-3 px-2 text-blue-400/60 transition-colors">
+      <%= lucide_icon('layout-dashboard', class: "w-5 h-5") %>
+      <span class="text-[10px] font-semibold">Overview</span>
+    </button>
+
+    <button data-dashboard-target="tab"
+            data-panel="games"
+            data-action="click->dashboard#switch"
+            data-active-classes="text-orange-400"
+            data-inactive-classes="text-blue-400/60"
+            class="flex-1 flex flex-col items-center gap-1 py-3 px-2 text-blue-400/60 transition-colors">
+      <%= lucide_icon('gamepad-2', class: "w-5 h-5") %>
+      <span class="text-[10px] font-semibold">My Games</span>
+    </button>
+
+    <button data-dashboard-target="tab"
+            data-panel="packs"
+            data-action="click->dashboard#switch"
+            data-active-classes="text-orange-400"
+            data-inactive-classes="text-blue-400/60"
+            class="flex-1 flex flex-col items-center gap-1 py-3 px-2 text-blue-400/60 transition-colors">
+      <%= lucide_icon('package', class: "w-5 h-5") %>
+      <span class="text-[10px] font-semibold">Content</span>
+    </button>
+  </nav>
+
 </div>

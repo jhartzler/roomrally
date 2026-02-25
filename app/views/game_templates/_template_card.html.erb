@@ -21,26 +21,28 @@
     </p>
   </div>
 
-  <div class="flex gap-2 mt-auto">
+  <div class="mt-auto space-y-2">
     <%= button_to game_template_launch_path(template),
       method: :post,
       data: { turbo_submits_with: "Starting…" },
-      class: "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-orange-500/80 hover:bg-orange-500 text-white font-bold text-sm rounded-lg transition-colors border border-orange-400/30" do %>
+      class: "w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-orange-500/80 hover:bg-orange-500 text-white font-bold text-sm rounded-lg transition-colors border border-orange-400/30" do %>
       <%= lucide_icon('play', class: "w-4 h-4 shrink-0") %>
       <span>Launch</span>
     <% end %>
 
-    <%= link_to edit_game_template_path(template),
-      class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10" do %>
-      <%= lucide_icon('pencil', class: "w-4 h-4") %>
-      <span>Edit</span>
-    <% end %>
+    <div class="flex gap-2">
+      <%= link_to edit_game_template_path(template),
+        class: "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10" do %>
+        <%= lucide_icon('pencil', class: "w-4 h-4 shrink-0") %>
+        <span>Edit</span>
+      <% end %>
 
-    <%= button_to game_template_duplication_path(template),
-      method: :post,
-      class: "flex items-center justify-center gap-1.5 py-2 px-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10" do %>
-      <%= lucide_icon('copy', class: "w-4 h-4") %>
-      <span>Duplicate</span>
-    <% end %>
+      <%= button_to game_template_duplication_path(template),
+        method: :post,
+        class: "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10" do %>
+        <%= lucide_icon('copy', class: "w-4 h-4 shrink-0") %>
+        <span>Duplicate</span>
+      <% end %>
+    </div>
   </div>
 </div>
