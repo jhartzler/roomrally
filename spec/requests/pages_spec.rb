@@ -28,25 +28,28 @@ RSpec.describe "Pages", type: :request do
   end
 
   describe "GET /" do
+    before { get root_path }
+
     it "returns http success" do
-      get root_path
       expect(response).to have_http_status(:success)
     end
 
     it "displays all three game mode tiles" do
-      get root_path
-      expect(response.body).to include("Comedy Clash")
-      expect(response.body).to include("A-List")
-      expect(response.body).to include("Think Fast")
+      aggregate_failures do
+        expect(response.body).to include("Comedy Clash")
+        expect(response.body).to include("A-List")
+        expect(response.body).to include("Think Fast")
+      end
     end
 
     it "displays the How It Works section with four steps" do
-      get root_path
-      expect(response.body).to include("How It Works")
-      expect(response.body).to include("Pick Your Game Mode")
-      expect(response.body).to include("Make It Yours")
-      expect(response.body).to include("Launch &amp; Display")
-      expect(response.body).to include("Everyone Joins")
+      aggregate_failures do
+        expect(response.body).to include("How It Works")
+        expect(response.body).to include("Pick Your Game Mode")
+        expect(response.body).to include("Make It Yours")
+        expect(response.body).to include("Launch &amp; Display")
+        expect(response.body).to include("Everyone Joins")
+      end
     end
   end
 end
