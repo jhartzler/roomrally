@@ -5,6 +5,19 @@ class VotesController < ApplicationController
       return
     end
 
+    room = current_player.room
+    game = room.current_game
+
+    if game.nil?
+      Sentry.capture_message(
+        "VotesController: no current game for room",
+        level: :error,
+        extra: { room_code: room.code }
+      )
+      head :unprocessable_content
+      return
+    end
+
     @response = Response.find(params[:vote][:response_id])
 
     Analytics.track(
@@ -12,7 +25,7 @@ class VotesController < ApplicationController
       event: "vote_attempt",
       properties: {
         player_id: current_player.id,
-        room_code: current_player.room.code,
+        room_code: room.code,
         response_id: @response.id
       }
     )
@@ -26,7 +39,7 @@ class VotesController < ApplicationController
         event: "vote_failed",
         properties: {
           player_id: current_player.id,
-          room_code: current_player.room.code,
+          room_code: room.code,
           response_id: @response.id,
           reason: failure_reason
         }
@@ -42,25 +55,6 @@ class VotesController < ApplicationController
       return
     end
 
-    # Process the vote in the game service (check for round completion, etc.)
-    # We need to find the game associated with this response
-    prompt_instance = @response.prompt_instance
-    if prompt_instance.nil?
-      Rails.logger.error "PromptInstance missing for response #{@response.id}"
-      head :unprocessable_content
-      return
-    end
-
-    game = prompt_instance.reload.write_and_vote_game
-    if game.nil?
-      Sentry.capture_message(
-        "VotesController: game is nil for response",
-        level: :error,
-        extra: { response_id: @response.id, prompt_instance_id: prompt_instance.id }
-      )
-      head :unprocessable_content
-      return
-    end
     Games::WriteAndVote.process_vote(game:, vote: @vote)
 
     Analytics.track(
@@ -68,9 +62,9 @@ class VotesController < ApplicationController
       event: "vote_cast",
       properties: {
         player_id: current_player.id,
-        room_code: current_player.room.code,
+        room_code: room.code,
         response_id: @response.id,
-        game_id: game&.id
+        game_id: game.id
       }
     )
 
