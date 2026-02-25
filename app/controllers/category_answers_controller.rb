@@ -4,17 +4,7 @@ class CategoryAnswersController < ApplicationController
   before_action :set_answer
 
   def update
-    game = @answer.category_instance&.category_list_game
-    if game.nil?
-      Sentry.capture_message(
-        "CategoryAnswersController: game is nil for answer",
-        level: :error,
-        extra: { answer_id: @answer.id }
-      )
-      head :unprocessable_content
-      return
-    end
-    room = game.room
+    room = Room.find_by!(code: params[:code])
 
     authorized = (current_player && current_player == room.host) ||
                  (current_user && current_user == room.user)

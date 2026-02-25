@@ -76,7 +76,7 @@
           <% if @moderation_queue.any? %>
             <% @moderation_queue.each do |item| %>
               <% if item.is_a?(CategoryAnswer) %>
-                <%= render "category_answers/backstage_answer", answer: item %>
+                <%= render "category_answers/backstage_answer", answer: item, room: @room %>
               <% else %>
                 <%= render "responses/backstage_response", response: item %>
               <% end %>
