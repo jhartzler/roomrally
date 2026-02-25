@@ -86,41 +86,30 @@
 
   </section>
 
-  <%# Section 3: The Backstage Advantage %>
-  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
-    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Plus, you stay in control</h2>
-    <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
-      RoomRally gives you a Host Dashboard — you see every player submission before it hits the big screen. Approve the best ones, skip the rest.
-    </p>
-
-    <div class="grid md:grid-cols-3 gap-8 mt-10">
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <div class="text-4xl mb-4">✓</div>
-        <h3 class="text-xl font-bold text-white mb-3">Approve or Reject</h3>
-        <p class="text-blue-200">
-          Filter content instantly. Keep your event appropriate and fun.
-        </p>
+  <%# Section 3: Moderation (compact) %>
+  <section class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-10 md:mb-16">
+    <div class="flex flex-col sm:flex-row gap-6 justify-around">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">✅</span>
+        <div>
+          <p class="text-white font-bold text-sm">Approve or reject submissions</p>
+          <p class="text-blue-200 text-sm">Filter content before it hits the screen</p>
+        </div>
       </div>
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <div class="text-4xl mb-4">🔓</div>
-        <h3 class="text-xl font-bold text-white mb-3">No Accounts Needed</h3>
-        <p class="text-blue-200">
-          Players join via QR code. No emails, no sign-ups.
-        </p>
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">🔓</span>
+        <div>
+          <p class="text-white font-bold text-sm">No player accounts</p>
+          <p class="text-blue-200 text-sm">Players join via QR code, no sign-up</p>
+        </div>
       </div>
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <div class="text-4xl mb-4">🌐</div>
-        <h3 class="text-xl font-bold text-white mb-3">Browser Based</h3>
-        <p class="text-blue-200">
-          Works on any phone, tablet, or laptop. Nothing to install.
-        </p>
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">🌐</span>
+        <div>
+          <p class="text-white font-bold text-sm">Any device, nothing to install</p>
+          <p class="text-blue-200 text-sm">Works on any phone, tablet, or laptop</p>
+        </div>
       </div>
-    </div>
-
-    <div class="mt-10">
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-screenshot.png" %>"
-           alt="Laptop showing host moderation queue next to TV displaying game with QR code"
-           class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
     </div>
   </section>
 
