@@ -188,6 +188,8 @@ export default class extends Controller {
             return wrapper.style.display !== "none" && (!destroyInput || destroyInput.value !== "1")
         })
 
+        if (!this.hasCountDisplayTarget) return
+
         const count = visibleQuestions.length
         const playerCapacity = Math.floor(count / this.ratioValue)
         this.countDisplayTarget.textContent = playerCapacity
