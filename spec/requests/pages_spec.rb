@@ -26,4 +26,27 @@ RSpec.describe "Pages", type: :request do
       expect(response.body).to include("Alpha Status Disclaimer")
     end
   end
+
+  describe "GET /" do
+    it "returns http success" do
+      get root_path
+      expect(response).to have_http_status(:success)
+    end
+
+    it "displays all three game mode tiles" do
+      get root_path
+      expect(response.body).to include("Comedy Clash")
+      expect(response.body).to include("A-List")
+      expect(response.body).to include("Think Fast")
+    end
+
+    it "displays the How It Works section with four steps" do
+      get root_path
+      expect(response.body).to include("How It Works")
+      expect(response.body).to include("Pick Your Game Mode")
+      expect(response.body).to include("Make It Yours")
+      expect(response.body).to include("Launch &amp; Display")
+      expect(response.body).to include("Everyone Joins")
+    end
+  end
 end
