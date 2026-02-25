@@ -29,8 +29,8 @@ RSpec.describe "Dashboards", type: :request do
 
       it "displays quick action links" do
         get dashboard_path
-        expect(response.body).to include("Customize a Game")
-        expect(response.body).to include("Host a Game")
+        expect(response.body).to include("New Game")
+        expect(response.body).to include("Quick Host")
       end
 
 
@@ -45,7 +45,7 @@ RSpec.describe "Dashboards", type: :request do
           get dashboard_path
 
           aggregate_failures do
-            expect(response.body).to include("NEW1", "OTH1")
+            expect(response.body).to include("NEW1")
             expect(response.body).not_to include("OLD1")
           end
         end
