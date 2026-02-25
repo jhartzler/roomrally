@@ -6,20 +6,43 @@
 
 <div class="max-w-6xl mx-auto pb-16">
   <%# Section 1: Hero %>
-  <section class="text-center py-8 mb-8 md:mb-12">
-    <div>
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/full-logo.png" %>" alt="RoomRally Logo" class="h-48 md:h-64 lg:h-72 mb-10 mx-auto drop-shadow-2xl object-contain">
-      <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-        Where 'you had to be there' begins.
-      </h1>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <%= link_to host_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-10 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
-          Host a Game
-        <% end %>
-        <%= link_to play_path, class: "inline-block bg-white/20 backdrop-blur text-white font-black py-4 px-10 rounded-full hover:bg-white/30 active:scale-95 transform transition-all duration-200 text-xl border border-white/30" do %>
-          Join a Game
-        <% end %>
+  <section class="text-center py-6 mb-8 md:mb-10">
+    <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/full-logo.png" %>" alt="RoomRally Logo" class="h-20 md:h-28 mb-5 mx-auto drop-shadow-2xl object-contain">
+    <h1 class="text-2xl md:text-3xl font-black text-white mb-8 leading-tight">
+      Where 'you had to be there' begins.
+    </h1>
+
+    <%# Game Mode Tiles %>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto text-left">
+      <div class="bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl shadow-xl p-6">
+        <div class="text-4xl mb-3">🎤</div>
+        <h3 class="text-xl font-black text-white mb-1">Comedy Clash</h3>
+        <p class="text-white/90 font-semibold text-sm mb-2">Your words, their laughs</p>
+        <p class="text-white/70 text-sm">Write funny answers to prompts. The room votes for the best.</p>
       </div>
+
+      <div class="bg-gradient-to-br from-teal-600 to-emerald-500 rounded-2xl shadow-xl p-6">
+        <div class="text-4xl mb-3">📋</div>
+        <h3 class="text-xl font-black text-white mb-1">A-List</h3>
+        <p class="text-white/90 font-semibold text-sm mb-2">Think fast, list faster</p>
+        <p class="text-white/70 text-sm">Name as many as you can before time runs out.</p>
+      </div>
+
+      <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-xl p-6">
+        <div class="text-4xl mb-3">⚡</div>
+        <h3 class="text-xl font-black text-white mb-1">Think Fast</h3>
+        <p class="text-white/90 font-semibold text-sm mb-2">Trivia with a twist</p>
+        <p class="text-white/70 text-sm">Answer before the clock does.</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= link_to host_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-10 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
+        Host a Game
+      <% end %>
+      <%= link_to play_path, class: "inline-block bg-white/20 backdrop-blur text-white font-black py-4 px-10 rounded-full hover:bg-white/30 active:scale-95 transform transition-all duration-200 text-xl border border-white/30" do %>
+        Join a Game
+      <% end %>
     </div>
   </section>
 
