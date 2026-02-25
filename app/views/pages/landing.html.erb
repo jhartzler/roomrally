@@ -114,50 +114,62 @@
   </section>
 
   <%# Section 4: How It Works %>
-  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
-    <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12">How It Works</h2>
-    <div class="space-y-10 max-w-3xl mx-auto">
+  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-12 border border-white/20 mb-10 md:mb-16">
+    <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-10">How It Works</h2>
+    <div class="space-y-8 max-w-3xl mx-auto">
+
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-          1
-        </div>
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">1</div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Launch</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Pick Your Game Mode</h3>
           <p class="text-blue-200 text-lg">
-            Pick a game mode and start a session on your main screen.
+            Choose from Comedy Clash, A-List, or Think Fast — each one brings a different kind of fun.
+            Comedy Clash is great for friend groups who love to one-up each other. A-List works for any crowd.
+            Think Fast keeps things moving fast.
           </p>
         </div>
       </div>
 
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-          2
-        </div>
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">2</div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Join</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Make It Yours</h3>
           <p class="text-blue-200 text-lg">
-            Players scan the QR code to enter the lobby.
+            Add your own prompts or questions — inside jokes, group-specific trivia, whatever fits your event.
+            Save it as a template and your next launch is one click.
+            RoomRally remembers your setup so you're not starting from scratch every time.
           </p>
         </div>
       </div>
 
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-          3
-        </div>
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">3</div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Customize</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Launch &amp; Display</h3>
           <p class="text-blue-200 text-lg">
-            Between sessions, build game templates with your own questions or prompts. Your next launch is one click away.
+            Start your session and open the Stage view on your shared screen — TV, projector, or laptop.
+            It's just a browser tab. No cables, no software installs, no setup headaches.
           </p>
         </div>
       </div>
+
+      <div class="flex gap-6 items-start">
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">4</div>
+        <div>
+          <h3 class="text-2xl font-bold text-white mb-2">Everyone Joins &amp; Plays</h3>
+          <p class="text-blue-200 text-lg">
+            A QR code appears on the big screen. Players scan it from their phones — that's it.
+            No accounts, no downloads, no waiting. When everyone's in, you start the game.
+          </p>
+        </div>
+      </div>
+
     </div>
   </section>
 
   <%# Section 5: Login to Customize callout (logged-out only) %>
   <% unless current_user %>
-    <section class="text-center py-10 md:py-12 px-8 bg-white/5 rounded-3xl border border-white/10 mb-16 md:mb-24">
+    <section class="text-center py-10 md:py-12 px-8 bg-white/5 rounded-3xl border border-white/10 mb-10 md:mb-16">
       <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">Ready to make it yours?</h2>
       <p class="text-blue-200 text-lg mb-8">
         Sign in with Google to save game templates and create custom content — free.
