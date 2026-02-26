@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   resources :prompt_packs
   resources :trivia_packs
   resources :category_packs
-  resources :ai_generation_requests, only: [:create] do
+  resources :ai_generation_requests, only: [ :create ] do
     member do
       patch :commit
     end
