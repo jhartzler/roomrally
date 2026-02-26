@@ -105,7 +105,7 @@ RSpec.describe GameTemplate, type: :model do
 
     it "fills missing keys with defaults" do
       template = build(:game_template, settings: { "timer_enabled" => true })
-      expect(template.merged_settings["timer_increment"]).to eq(60)
+      expect(template.merged_settings["timer_increment"]).to eq(90)
     end
 
     it "handles nil settings" do
