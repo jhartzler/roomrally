@@ -7,7 +7,7 @@ RSpec.describe "WriteAndVote Prompt Display", type: :system do
 
   before do
     default_pack = FactoryBot.create(:prompt_pack, :default)
-    3.times { |i| Prompt.create!(body: "Prompt #{i + 1}", prompt_pack: default_pack) }
+    2.times { |i| Prompt.create!(body: "Prompt #{i + 1}", prompt_pack: default_pack) }
 
     Games::WriteAndVote.game_started(room:, show_instructions: false)
     room.update!(status: "playing")

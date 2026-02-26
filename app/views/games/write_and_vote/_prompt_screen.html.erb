@@ -8,13 +8,16 @@
 <div class="max-w-md mx-auto space-y-4">
   <%# Calculate active index: First prompt with blank/pending response or rejected status %>
   <% active_index = active_prompt_index(player, prompts) %>
+  <% responses_map = player.responses
+                           .where(prompt_instance: prompts)
+                           .index_by(&:prompt_instance_id) %>
 
   <%# 2-up Prompt Stepper — shows both prompts at a glance %>
   <div class="flex gap-3" data-test-id="prompt-stepper">
     <% prompts.each_with_index do |prompt_item, idx| %>
-      <% prompt_response = player.responses.find_by(prompt_instance: prompt_item) %>
+      <% prompt_response = responses_map[prompt_item.id] %>
       <% is_active = idx == active_index %>
-      <% is_done = prompt_response&.submitted? %>
+      <% is_done = prompt_response&.submitted? || prompt_response&.published? %>
       <div class="flex-1 rounded-2xl p-3 border <%= is_active ? 'bg-white/15 border-blue-400/50' : 'bg-white/5 border-white/10' %>"
            data-test-id="player-prompt">
         <div class="flex items-center justify-between mb-1.5">
@@ -29,7 +32,7 @@
             <span class="text-[9px] font-black <%= is_active ? 'text-blue-300' : 'text-blue-200/40' %>"><%= idx + 1 %></span>
           <% end %>
         </div>
-        <p class="text-white text-xs font-semibold line-clamp-2 leading-snug <%= is_done || !is_active ? 'opacity-50' : '' %>">
+        <p class="text-white text-xs font-semibold line-clamp-2 leading-snug <%= is_done || !is_active ? 'opacity-50' : 'opacity-100' %>">
           <%= prompt_item.body %>
         </p>
       </div>
@@ -51,7 +54,7 @@
   <% end %>
 
   <% prompts.each_with_index do |prompt, index| %>
-    <% response = player.responses.find_by(prompt_instance: prompt) %>
+    <% response = responses_map[prompt.id] %>
 
     <% if index == active_index %>
       <% if response.pending? || response.rejected? %>
