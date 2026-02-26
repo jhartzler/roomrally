@@ -34,8 +34,8 @@ class AiGenerationJob < ApplicationJob
 
     request.update!(
       status: :failed,
-      error_message: error_message,
-      raw_response: raw_response,
+      error_message:,
+      raw_response:,
       counts_against_limit: grace_used >= User::AI_GRACE_FAILURE_LIMIT
     )
     broadcast_result(request, "ai_generation_requests/error")
@@ -45,7 +45,7 @@ class AiGenerationJob < ApplicationJob
     Turbo::StreamsChannel.broadcast_update_to(
       request,
       target: "ai-panel-status",
-      partial: partial,
+      partial:,
       locals: { request: }
     )
   end

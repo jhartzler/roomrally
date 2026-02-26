@@ -7,7 +7,7 @@ class LlmClient
 
     raw = client.chat(
       parameters: {
-        model: model,
+        model:,
         messages: [
           { role: "system", content: system_prompt },
           { role: "user", content: user_prompt }
@@ -18,7 +18,7 @@ class LlmClient
 
     content = raw.dig("choices", 0, "message", "content")
     if content.present?
-      { success: true, content: content, raw_response: raw.to_json }
+      { success: true, content:, raw_response: raw.to_json }
     else
       { success: false, error: "No content in response", raw_response: raw.to_json }
     end

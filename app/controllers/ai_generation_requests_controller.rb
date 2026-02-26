@@ -1,6 +1,6 @@
 class AiGenerationRequestsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_request_for_commit, only: [:commit]
+  before_action :set_request_for_commit, only: [ :commit ]
 
   def create
     if current_user.ai_requests_remaining <= 0
