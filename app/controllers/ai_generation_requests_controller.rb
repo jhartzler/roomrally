@@ -10,12 +10,19 @@ class AiGenerationRequestsController < ApplicationController
       ) and return
     end
 
-    @ai_request = AiGenerationRequest.create!(
+    @ai_request = AiGenerationRequest.new(
       user: current_user,
       pack_type: params[:pack_type],
       pack_id: params[:pack_id],
       user_theme: params[:user_theme]
     )
+
+    unless @ai_request.save
+      render turbo_stream: turbo_stream.update("ai-panel-status",
+        partial: "ai_generation_requests/error",
+        locals: { request: @ai_request }
+      ) and return
+    end
 
     AiGenerationJob.perform_later(@ai_request.id)
 
@@ -26,6 +33,10 @@ class AiGenerationRequestsController < ApplicationController
   end
 
   def commit
+    unless @ai_request.succeeded?
+      redirect_to root_path, alert: "Generation is not complete." and return
+    end
+
     pack = @ai_request.target_pack
     items = @ai_request.items_for_indices(params[:selected_indices])
 

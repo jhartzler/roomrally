@@ -43,7 +43,7 @@ module AiContent
       }
 
       Rules:
-      - Each item must have exactly 4 options (strings)
+      - Each item must have exactly #{TriviaQuestion::OPTIONS_COUNT} options (strings)
       - correct_answers must be a non-empty array containing values that exactly match one or more of the options
       - Questions should vary in difficulty
       - Wrong answers should be plausible but clearly incorrect
