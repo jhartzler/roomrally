@@ -28,4 +28,20 @@ RSpec.describe "WriteAndVote Prompt Display", type: :system do
 
     expect(page).to have_css('[data-test-id="player-prompt"]', count: 2)
   end
+
+  it "shows both prompt texts in the stepper without requiring scroll" do
+    visit "/dev/testing/set_player_session/#{alice.id}"
+    visit "/rooms/#{room.code}/hand"
+
+    # Both prompt texts should be visible on the page
+    expect(page).to have_content("Prompt 1")
+    expect(page).to have_content("Prompt 2")
+
+    # Stepper state labels should be visible
+    expect(page).to have_content("Active", count: 1)
+    expect(page).to have_content("Up Next", count: 1)
+
+    # Old progress pill should be gone
+    expect(page).not_to have_content("of 2")
+  end
 end
