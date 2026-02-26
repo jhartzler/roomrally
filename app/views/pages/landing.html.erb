@@ -6,38 +6,61 @@
 
 <div class="max-w-6xl mx-auto pb-16">
   <%# Section 1: Hero %>
-  <section class="text-center py-8 mb-8 md:mb-12">
-    <div>
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/full-logo.png" %>" alt="RoomRally Logo" class="h-48 md:h-64 lg:h-72 mb-10 mx-auto drop-shadow-2xl object-contain">
-      <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-        Where 'you had to be there' begins.
-      </h1>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <%= link_to host_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-10 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
-          Host a Game
-        <% end %>
-        <%= link_to play_path, class: "inline-block bg-white/20 backdrop-blur text-white font-black py-4 px-10 rounded-full hover:bg-white/30 active:scale-95 transform transition-all duration-200 text-xl border border-white/30" do %>
-          Join a Game
-        <% end %>
+  <section class="text-center py-6 mb-8 md:mb-10">
+    <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/full-logo.png" %>" alt="RoomRally Logo" class="h-20 md:h-28 mb-5 mx-auto drop-shadow-2xl object-contain">
+    <h1 class="text-2xl md:text-3xl font-black text-white mb-8 leading-tight">
+      Where 'you had to be there' begins.
+    </h1>
+
+    <%# Game Mode Tiles %>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto text-left">
+      <div class="bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl shadow-xl p-6">
+        <div class="text-4xl mb-3">🎤</div>
+        <h3 class="text-xl font-black text-white mb-1">Comedy Clash</h3>
+        <p class="text-white/90 font-semibold text-sm mb-2">Your words, their laughs</p>
+        <p class="text-white/70 text-sm">Write funny answers to prompts. The room votes for the best.</p>
       </div>
+
+      <div class="bg-gradient-to-br from-teal-600 to-emerald-500 rounded-2xl shadow-xl p-6">
+        <div class="text-4xl mb-3">📋</div>
+        <h3 class="text-xl font-black text-white mb-1">A-List</h3>
+        <p class="text-white/90 font-semibold text-sm mb-2">Letters and categories and yelling, oh my</p>
+        <p class="text-white/70 text-sm">Name as many as you can before time runs out.</p>
+      </div>
+
+      <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-xl p-6">
+        <div class="text-4xl mb-3">⚡</div>
+        <h3 class="text-xl font-black text-white mb-1">Think Fast</h3>
+        <p class="text-white/90 font-semibold text-sm mb-2">Trivia with a twist</p>
+        <p class="text-white/70 text-sm">Test your reflexes in a multiple choice trivia blitz.</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= link_to host_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-10 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
+        Host a Game
+      <% end %>
+      <%= link_to play_path, class: "inline-block bg-white/20 backdrop-blur text-white font-black py-4 px-10 rounded-full hover:bg-white/30 active:scale-95 transform transition-all duration-200 text-xl border border-white/30" do %>
+        Join a Game
+      <% end %>
     </div>
   </section>
 
   <%# Section 2: Customize Your Game (primary feature) %>
-  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-12 md:p-16 border border-white/20 mb-16 md:mb-24">
+  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-10 border border-white/20 mb-10 md:mb-16">
     <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Games Built for Your Group</h2>
-    <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
+    <p class="text-blue-100 text-lg leading-relaxed mb-8">
       Pick a game mode, add your own questions or prompts, and save it as a template for your next event — birthday party, Bible study, team meeting. RoomRally remembers your setup so you can launch in seconds.
     </p>
 
     <%# Visual: Customized game screenshot %>
-    <div class="mt-16">
+    <div class="mt-6">
       <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-customize-screenshot.png" %>"
            alt="Trivia game screen showing Mike's Birthday Party with custom questions - If Mike had a super power, what would it be?"
-           class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
+           class="rounded-2xl shadow-2xl mx-auto max-w-[75%] h-auto border-4 border-white/10">
     </div>
 
-    <div class="grid md:grid-cols-3 gap-8 mt-10">
+    <div class="grid md:grid-cols-3 gap-8 mt-6">
       <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
         <div class="text-4xl mb-4">🎮</div>
         <h3 class="text-xl font-bold text-white mb-3">Game Templates</h3>
@@ -63,89 +86,90 @@
 
   </section>
 
-  <%# Section 3: The Backstage Advantage %>
-  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
-    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Plus, you stay in control</h2>
-    <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-3xl">
-      RoomRally gives you a Host Dashboard — you see every player submission before it hits the big screen. Approve the best ones, skip the rest.
-    </p>
-
-    <div class="grid md:grid-cols-3 gap-8 mt-10">
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <div class="text-4xl mb-4">✓</div>
-        <h3 class="text-xl font-bold text-white mb-3">Approve or Reject</h3>
-        <p class="text-blue-200">
-          Filter content instantly. Keep your event appropriate and fun.
-        </p>
+  <%# Section 3: Moderation (compact) %>
+  <section class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-10 md:mb-16">
+    <div class="flex flex-col sm:flex-row gap-6 justify-around">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">✅</span>
+        <div>
+          <p class="text-white font-bold text-sm">Approve or reject submissions</p>
+          <p class="text-blue-200 text-sm">Filter content before it hits the screen</p>
+        </div>
       </div>
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <div class="text-4xl mb-4">🔓</div>
-        <h3 class="text-xl font-bold text-white mb-3">No Accounts Needed</h3>
-        <p class="text-blue-200">
-          Players join via QR code. No emails, no sign-ups.
-        </p>
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">🔓</span>
+        <div>
+          <p class="text-white font-bold text-sm">No player accounts</p>
+          <p class="text-blue-200 text-sm">Players join via QR code, no sign-up</p>
+        </div>
       </div>
-      <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <div class="text-4xl mb-4">🌐</div>
-        <h3 class="text-xl font-bold text-white mb-3">Browser Based</h3>
-        <p class="text-blue-200">
-          Works on any phone, tablet, or laptop. Nothing to install.
-        </p>
+      <div class="flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0">🌐</span>
+        <div>
+          <p class="text-white font-bold text-sm">Any device, nothing to install</p>
+          <p class="text-blue-200 text-sm">Works on any phone, tablet, or laptop</p>
+        </div>
       </div>
-    </div>
-
-    <div class="mt-10">
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/hero-screenshot.png" %>"
-           alt="Laptop showing host moderation queue next to TV displaying game with QR code"
-           class="rounded-2xl shadow-2xl mx-auto max-w-full h-auto border-4 border-white/10">
     </div>
   </section>
 
   <%# Section 4: How It Works %>
-  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-10 md:p-16 border border-white/20 mb-16 md:mb-24">
-    <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12">How It Works</h2>
-    <div class="space-y-10 max-w-3xl mx-auto">
+  <section class="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-12 border border-white/20 mb-10 md:mb-16">
+    <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-10">How It Works</h2>
+    <div class="space-y-8 max-w-3xl mx-auto">
+
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-          1
-        </div>
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">1</div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Launch</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Pick Your Game Mode</h3>
           <p class="text-blue-200 text-lg">
-            Pick a game mode and start a session on your main screen.
+            Choose from Comedy Clash, Think Fast!, and A-List 
+            Comedy Clash has you matching wits with your friends as the judge. A-List has you scrambling to list alliterative words (phones optional!)
+            Think Fast rewards fast reflexes and correct answers in a multiple choice blitz.
           </p>
         </div>
       </div>
 
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-          2
-        </div>
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">2</div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Join</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Make It Yours</h3>
           <p class="text-blue-200 text-lg">
-            Players scan the QR code to enter the lobby.
+            Add your own prompts or questions: inside jokes, group-specific trivia, or content from a lesson.
+            Save it as a template and launch it with a click.
+            RoomRally remembers your setup so you're not starting from scratch every time.
           </p>
         </div>
       </div>
 
       <div class="flex gap-6 items-start">
-        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">
-          3
-        </div>
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">3</div>
         <div>
-          <h3 class="text-2xl font-bold text-white mb-2">Customize</h3>
+          <h3 class="text-2xl font-bold text-white mb-2">Launch &amp; Display</h3>
           <p class="text-blue-200 text-lg">
-            Between sessions, build game templates with your own questions or prompts. Your next launch is one click away.
+          Start your session and open the Stage view on your shared screen, and BackStage on your laptop. Think "presenter view" but for running your game.
+          The audience sees everything they need to keep the game flowing - and you can control it all from your backstage view.
           </p>
         </div>
       </div>
+
+      <div class="flex gap-6 items-start">
+        <div class="flex-shrink-0 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-black text-xl">4</div>
+        <div>
+          <h3 class="text-2xl font-bold text-white mb-2">Everyone Joins &amp; Plays</h3>
+          <p class="text-blue-200 text-lg">
+            A QR code and 4-letter room code appear on the big screen. Players scan or type it from their phones — that's it.
+            No accounts, no downloads, no waiting. When everyone's in, you start the game. Advance through game rounds from your BackStage control, or set an automatic timer to keep the pace high.
+          </p>
+        </div>
+      </div>
+
     </div>
   </section>
 
   <%# Section 5: Login to Customize callout (logged-out only) %>
   <% unless current_user %>
-    <section class="text-center py-10 md:py-12 px-8 bg-white/5 rounded-3xl border border-white/10 mb-16 md:mb-24">
+    <section class="text-center py-10 md:py-12 px-8 bg-white/5 rounded-3xl border border-white/10 mb-10 md:mb-16">
       <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">Ready to make it yours?</h2>
       <p class="text-blue-200 text-lg mb-8">
         Sign in with Google to save game templates and create custom content — free.
