@@ -4,7 +4,7 @@ module Games
 
     def self.requires_capacity_check? = true
 
-    def self.game_started(room:, timer_enabled: false, timer_increment: 60, question_count: nil, show_instructions: true, **_extra)
+    def self.game_started(room:, timer_enabled: false, timer_increment: GameTemplate::SETTING_DEFAULTS["timer_increment"], question_count: nil, show_instructions: true, **_extra)
       Rails.logger.info({ event: "game_started", room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, timer_increment:, show_instructions: })
 
       Analytics.track(

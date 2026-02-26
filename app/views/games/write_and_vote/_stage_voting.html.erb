@@ -18,7 +18,7 @@
   <!-- Responses Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh] w-full max-w-7xl px-[2vh]">
     <% if current_prompt %>
-      <% current_prompt.responses.shuffle.each_with_index do |response, index| %>
+      <% current_prompt.responses.order(:id).each_with_index do |response, index| %>
         <div class="bg-blue-600/20 backdrop-blur-md border-2 border-blue-400/30 rounded-2xl p-[2vh] flex items-center shadow-lg">
           <div class="bg-white text-black font-black text-vh-3xl h-[6vh] w-[6vh] rounded-full flex items-center justify-center mr-[2vh] shrink-0 shadow-md">
             <%= (index + 65).chr %>

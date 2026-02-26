@@ -22,7 +22,7 @@ class GameTemplate < ApplicationRecord
 
   SETTING_DEFAULTS = {
     "timer_enabled" => false,
-    "timer_increment" => 60,
+    "timer_increment" => 90,
     "show_instructions" => true,
     "question_count" => 5,
     "total_rounds" => 3,

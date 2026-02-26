@@ -87,8 +87,7 @@ RSpec.describe Games::WriteAndVote do
 
       described_class.game_started(room:, timer_enabled: true, show_instructions: false)
 
-      # Default timer is 60 (from migration/model default), so start_timer! is called with 60
-      expect(game_spy).to have_received(:start_timer!).with(60, step_number: nil)
+      expect(game_spy).to have_received(:start_timer!).with(90, step_number: nil)
     end
 
     describe "configuration parameters" do
