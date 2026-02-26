@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "AiGenerationRequests", type: :request do
   let(:user) { create(:user) }
-  let(:pack) { create(:prompt_pack, user: user) }
+  let(:pack) { create(:prompt_pack, user:) }
 
   before { sign_in(user) }
 
@@ -33,7 +33,7 @@ RSpec.describe "AiGenerationRequests", type: :request do
 
     context "when user is at the rate limit" do
       before do
-        10.times { create(:ai_generation_request, user: user, counts_against_limit: true, created_at: 1.hour.ago) }
+        10.times { create(:ai_generation_request, user:, counts_against_limit: true, created_at: 1.hour.ago) }
       end
 
       it "does not create a request" do
@@ -62,14 +62,14 @@ RSpec.describe "AiGenerationRequests", type: :request do
     let(:items) { 10.times.map { |i| { "body" => "Prompt #{i}" } } }
     let(:ai_request) do
       create(:ai_generation_request,
-        user: user,
+        user:,
         pack_type: "prompt_pack",
         pack_id: pack.id,
         status: :succeeded,
         parsed_items: items)
     end
 
-    context "append mode" do
+    context "when in append mode" do
       it "appends selected items to the pack" do
         expect {
           patch commit_ai_generation_request_path(ai_request),
@@ -84,7 +84,7 @@ RSpec.describe "AiGenerationRequests", type: :request do
       end
     end
 
-    context "replace mode" do
+    context "when in replace mode" do
       before { create(:prompt, prompt_pack: pack) }
 
       it "replaces all existing items with selected items" do

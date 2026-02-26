@@ -23,8 +23,8 @@ RSpec.describe LlmClient do
         allow(client_double).to receive(:chat).and_return(raw_response)
       end
 
-      it "returns success: true with content and raw_response" do
-        result = LlmClient.generate(system_prompt:, user_prompt:)
+      it "returns success: true with content and raw_response" do # rubocop:disable RSpec/MultipleExpectations
+        result = described_class.generate(system_prompt:, user_prompt:)
         expect(result[:success]).to be true
         expect(result[:content]).to eq('{"items":[]}')
         expect(result[:raw_response]).to include('"id"')
@@ -38,8 +38,8 @@ RSpec.describe LlmClient do
         allow(client_double).to receive(:chat).and_raise(Faraday::TimeoutError)
       end
 
-      it "returns success: false with an error message" do
-        result = LlmClient.generate(system_prompt:, user_prompt:)
+      it "returns success: false with an error message" do # rubocop:disable RSpec/MultipleExpectations
+        result = described_class.generate(system_prompt:, user_prompt:)
         expect(result[:success]).to be false
         expect(result[:error]).to be_present
         expect(result[:raw_response]).to be_nil
@@ -62,7 +62,7 @@ RSpec.describe LlmClient do
       end
 
       it "returns success: false" do
-        result = LlmClient.generate(system_prompt:, user_prompt:)
+        result = described_class.generate(system_prompt:, user_prompt:)
         expect(result[:success]).to be false
       end
     end

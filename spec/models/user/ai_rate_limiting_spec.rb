@@ -5,10 +5,10 @@ RSpec.describe User, "#ai rate limiting", type: :model do
 
   def make_request(counts: true, status: :succeeded, created_at: Time.current)
     create(:ai_generation_request,
-      user: user,
+      user:,
       counts_against_limit: counts,
-      status: status,
-      created_at: created_at)
+      status:,
+      created_at:)
   end
 
   describe "#ai_requests_remaining" do

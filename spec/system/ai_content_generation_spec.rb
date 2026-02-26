@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "AI content generation", :js, type: :system do
   let(:user) { create(:user) }
-  let(:pack) { create(:prompt_pack, user: user, name: "Test Pack") }
+  let(:pack) { create(:prompt_pack, user:, name: "Test Pack") }
 
   let(:fake_items) { 10.times.map { |i| { "body" => "AI prompt number #{i}" } } }
   let(:fake_content) { { "items" => fake_items }.to_json }
@@ -74,7 +74,7 @@ RSpec.describe "AI content generation", :js, type: :system do
   it "disables the generate button when user is at the limit" do
     10.times do
       create(:ai_generation_request,
-        user: user,
+        user:,
         counts_against_limit: true,
         status: :succeeded,
         created_at: 1.hour.ago)

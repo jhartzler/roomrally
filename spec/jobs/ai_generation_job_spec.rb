@@ -2,18 +2,17 @@ require "rails_helper"
 
 RSpec.describe AiGenerationJob, type: :job do
   let(:user) { create(:user) }
-  let(:pack) { create(:prompt_pack, user: user) }
+  let(:pack) { create(:prompt_pack, user:) }
   let(:request) do
     create(:ai_generation_request,
-      user: user,
+      user:,
       pack_type: "prompt_pack",
       pack_id: pack.id,
       user_theme: "90s movies",
       status: :pending)
   end
 
-  let(:valid_items) { 10.times.map { |i| { "body" => "Prompt #{i}" } } }
-  let(:valid_content) { { "items" => valid_items }.to_json }
+  let(:valid_content) { { "items" => 10.times.map { |i| { "body" => "Prompt #{i}" } } }.to_json }
 
   let(:raw_response_json) do
     {
@@ -32,27 +31,27 @@ RSpec.describe AiGenerationJob, type: :job do
 
   describe "on success" do
     it "updates request status to succeeded" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.status).to eq("succeeded")
     end
 
     it "stores parsed_items on the request" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.parsed_items.length).to eq(10)
     end
 
     it "stores the raw_response" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.raw_response).to be_present
     end
 
     it "sets counts_against_limit to true" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.counts_against_limit).to be true
     end
 
     it "broadcasts a review turbo stream" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(Turbo::StreamsChannel).to have_received(:broadcast_update_to).once
     end
   end
@@ -65,23 +64,23 @@ RSpec.describe AiGenerationJob, type: :job do
     end
 
     it "updates request status to failed" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.status).to eq("failed")
     end
 
     it "sets counts_against_limit to false when within grace limit" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.counts_against_limit).to be false
     end
 
-    it "sets counts_against_limit to true when grace limit exhausted" do
+    it "sets counts_against_limit to true when grace limit exhausted" do # rubocop:disable RSpec/ExampleLength
       3.times do
         create(:ai_generation_request,
-          user: user, status: :failed,
+          user:, status: :failed,
           counts_against_limit: false,
           created_at: 1.hour.ago)
       end
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.counts_against_limit).to be true
     end
   end
@@ -94,12 +93,12 @@ RSpec.describe AiGenerationJob, type: :job do
     end
 
     it "updates request status to failed" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.status).to eq("failed")
     end
 
     it "stores the error message" do
-      AiGenerationJob.perform_now(request.id)
+      described_class.perform_now(request.id)
       expect(request.reload.error_message).to eq("Timeout")
     end
   end
