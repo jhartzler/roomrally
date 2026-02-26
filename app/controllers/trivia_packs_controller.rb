@@ -27,7 +27,7 @@ class TriviaPacksController < ApplicationController
         redirect_to append_new_pack_id(params[:return_to], @trivia_pack.id),
                     notice: "Trivia pack created. Returning to your game."
       else
-        redirect_to edit_trivia_pack_path(@trivia_pack), notice: "Trivia pack created. Generate content with AI below."
+        redirect_to edit_trivia_pack_path(@trivia_pack), notice: "Trivia pack created."
       end
     else
       @return_to = params[:return_to]
