@@ -14,7 +14,7 @@
 
   <div class="px-6 pb-6">
     <% if pack.new_record? %>
-      <p class="text-yellow-200/60 text-sm font-medium">Save your pack name above to enable AI generation.</p>
+      <p class="text-yellow-200/60 text-sm font-medium">Give your pack a name and save it to enable AI generation.</p>
     <% else %>
       <%= form_with url: ai_generation_requests_path, data: { turbo_stream: true } do |f| %>
         <%= hidden_field_tag :pack_type, pack_type %>

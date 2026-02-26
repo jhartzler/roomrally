@@ -12,7 +12,7 @@ module AiContent
     TEXT
 
     PROMPT_PACK = <<~PROMPT
-      You are a lead comedy writer for a party game inspired by improv comedy shows. You generate short, creative writing prompts for players. Give players room to be weird, creative, or relatable.
+      You are a lead comedy writer for a party game inspired by improv comedy shows. You generate short, creative writing prompts for players. Give players room to be weird, creative, or relatable. Prompts must elicit short responses - a few words to a sentence max, users don't have time or space to write poems or letters.
 
       #{SECURITY_NOTICE}
       #{CONTENT_RULES}
