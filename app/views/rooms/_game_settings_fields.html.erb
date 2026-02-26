@@ -38,18 +38,16 @@
   </div>
 <% end %>
 
-<% if room.user.present? %>
-  <div>
-    <label class="flex items-center gap-<%= backstage ? 3 : 2 %> cursor-pointer <%= 'group' if backstage %>">
-      <%= check_box_tag :show_instructions, "1", true,
-          class: backstage ?
-            "form-checkbox h-5 w-5 text-indigo-500 rounded border-white/30 bg-white/10 focus:ring-indigo-500 focus:ring-offset-0 transition-colors" :
-            "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
-      <span class="<%= backstage ? 'text-blue-100 font-medium group-hover:text-white transition-colors' : 'text-gray-700 font-medium' %>">Show game instructions</span>
-    </label>
-    <p class="<%= help_class %>"><%= setting_description(:show_instructions) %></p>
-  </div>
-<% end %>
+<div>
+  <label class="flex items-center gap-<%= backstage ? 3 : 2 %> cursor-pointer <%= 'group' if backstage %>">
+    <%= check_box_tag :show_instructions, "1", true,
+        class: backstage ?
+          "form-checkbox h-5 w-5 text-indigo-500 rounded border-white/30 bg-white/10 focus:ring-indigo-500 focus:ring-offset-0 transition-colors" :
+          "form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" %>
+    <span class="<%= backstage ? 'text-blue-100 font-medium group-hover:text-white transition-colors' : 'text-gray-700 font-medium' %>">Show game instructions</span>
+  </label>
+  <p class="<%= help_class %>"><%= setting_description(:show_instructions) %></p>
+</div>
 
 <div data-controller="checkbox-toggle">
   <label class="flex items-center gap-<%= backstage ? 3 : 2 %> cursor-pointer <%= 'group' if backstage %>">
