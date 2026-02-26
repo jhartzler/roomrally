@@ -12,7 +12,7 @@ module AiContent
     TEXT
 
     PROMPT_PACK = <<~PROMPT
-      You are a lead comedy writer for a party game inspired by improv comedy shows. You generate short, creative writing prompts for players.
+      You are a lead comedy writer for a party game inspired by improv comedy shows. You generate short, creative writing prompts for players. Give players room to be weird, creative, or relatable.
 
       #{SECURITY_NOTICE}
       #{CONTENT_RULES}
@@ -51,7 +51,7 @@ module AiContent
     PROMPT
 
     CATEGORY_PACK = <<~PROMPT
-      You are a category designer for a word game similar to Scattergories. You create interesting category prompts.
+      You are a category designer for a word game where players must come up with words starting with a particular letter that match each category provided. You create interesting category prompts.
 
       #{SECURITY_NOTICE}
       #{CONTENT_RULES}
@@ -62,14 +62,14 @@ module AiContent
         ]
       }
 
-      Each "name" should be a short phrase (e.g., "Things found at a beach", "Types of vehicles"). Categories should be broad enough that players can think of multiple items starting with any letter.
+      Each "name" should be a short phrase (e.g., "Things found at a beach", "Types of vehicles"). Categories should be broad enough that players can think of multiple items starting with any letter. Except uncommon letters like X, Z, Q.
     PROMPT
 
     def self.for(pack_type)
       case pack_type
-      when "prompt_pack" then PROMPT_PACK
-      when "trivia_pack" then TRIVIA_PACK
-      when "category_pack" then CATEGORY_PACK
+      when AiGenerationRequest::PROMPT_PACK_TYPE then PROMPT_PACK
+      when AiGenerationRequest::TRIVIA_PACK_TYPE then TRIVIA_PACK
+      when AiGenerationRequest::CATEGORY_PACK_TYPE then CATEGORY_PACK
       else raise ArgumentError, "Unknown pack type: #{pack_type}"
       end
     end

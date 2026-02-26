@@ -30,17 +30,17 @@ class AiGenerationRequestsController < ApplicationController
     items = @ai_request.items_for_indices(params[:selected_indices])
 
     case @ai_request.pack_type
-    when "prompt_pack"
+    when AiGenerationRequest::PROMPT_PACK_TYPE
       pack.prompts.destroy_all if params[:mode] == "replace"
       items.each { |item| pack.prompts.create!(body: item["body"]) }
       redirect_to edit_prompt_pack_path(pack), notice: "#{items.length} prompts added!"
-    when "trivia_pack"
+    when AiGenerationRequest::TRIVIA_PACK_TYPE
       pack.trivia_questions.destroy_all if params[:mode] == "replace"
       items.each do |item|
         pack.trivia_questions.create!(body: item["body"], options: item["options"], correct_answers: item["correct_answers"])
       end
       redirect_to edit_trivia_pack_path(pack), notice: "#{items.length} questions added!"
-    when "category_pack"
+    when AiGenerationRequest::CATEGORY_PACK_TYPE
       pack.categories.destroy_all if params[:mode] == "replace"
       items.each { |item| pack.categories.create!(name: item["name"]) }
       redirect_to edit_category_pack_path(pack), notice: "#{items.length} categories added!"
