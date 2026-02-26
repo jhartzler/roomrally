@@ -22,6 +22,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 # Background processing
 gem "sidekiq"
+gem "ruby-openai"
 # Event bus
 gem "wisper"
 gem "connection_pool", "~> 3.0"
