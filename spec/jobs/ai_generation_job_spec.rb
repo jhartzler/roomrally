@@ -85,6 +85,25 @@ RSpec.describe AiGenerationJob, type: :job do
     end
   end
 
+  describe "idempotency" do
+    it "does not call LlmClient when request is already succeeded" do
+      request.update!(status: :succeeded)
+      described_class.perform_now(request.id)
+      expect(LlmClient).not_to have_received(:generate)
+    end
+
+    it "does not call LlmClient when request is already failed" do
+      request.update!(status: :failed)
+      described_class.perform_now(request.id)
+      expect(LlmClient).not_to have_received(:generate)
+    end
+
+    it "does not raise when request record does not exist" do
+      # Without discard_on this raises ActiveRecord::RecordNotFound
+      expect { described_class.perform_now(999_999) }.not_to raise_error
+    end
+  end
+
   describe "on LLM API failure" do
     before do
       allow(LlmClient).to receive(:generate).and_return(

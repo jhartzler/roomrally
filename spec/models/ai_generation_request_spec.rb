@@ -24,6 +24,16 @@ RSpec.describe AiGenerationRequest, type: :model do
       request = build(:ai_generation_request, user_theme: nil)
       expect(request).not_to be_valid
     end
+
+    it "rejects user_theme over 200 characters" do
+      request = build(:ai_generation_request, user_theme: "a" * 201)
+      expect(request).not_to be_valid
+    end
+
+    it "accepts user_theme at exactly 200 characters" do
+      request = build(:ai_generation_request, user_theme: "a" * 200)
+      expect(request).to be_valid
+    end
   end
 
   describe "#target_pack" do
@@ -36,6 +46,12 @@ RSpec.describe AiGenerationRequest, type: :model do
       other_pack = create(:prompt_pack)
       request = create(:ai_generation_request, user:, pack_type: "prompt_pack", pack_id: other_pack.id)
       expect { request.target_pack }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "raises ArgumentError for an unrecognized pack_type" do
+      request = build(:ai_generation_request)
+      request.pack_type = "unknown_type"
+      expect { request.target_pack }.to raise_error(ArgumentError, /unknown_type/)
     end
   end
 

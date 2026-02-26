@@ -16,7 +16,7 @@ module AiContent
 
       #{SECURITY_NOTICE}
       #{CONTENT_RULES}
-      OUTPUT FORMAT: You must respond with ONLY valid JSON in exactly this format, with exactly 10 items:
+      OUTPUT FORMAT: You must respond with ONLY valid JSON in exactly this format, with exactly #{AiContent::Parser::REQUIRED_COUNT} items:
       {
         "items": [
           { "body": "Short funny writing prompt here." }
@@ -31,7 +31,7 @@ module AiContent
 
       #{SECURITY_NOTICE}
       #{CONTENT_RULES}
-      OUTPUT FORMAT: You must respond with ONLY valid JSON in exactly this format, with exactly 10 items:
+      OUTPUT FORMAT: You must respond with ONLY valid JSON in exactly this format, with exactly #{AiContent::Parser::REQUIRED_COUNT} items:
       {
         "items": [
           {
@@ -55,7 +55,7 @@ module AiContent
 
       #{SECURITY_NOTICE}
       #{CONTENT_RULES}
-      OUTPUT FORMAT: You must respond with ONLY valid JSON in exactly this format, with exactly 10 items:
+      OUTPUT FORMAT: You must respond with ONLY valid JSON in exactly this format, with exactly #{AiContent::Parser::REQUIRED_COUNT} items:
       {
         "items": [
           { "name": "Category name here" }

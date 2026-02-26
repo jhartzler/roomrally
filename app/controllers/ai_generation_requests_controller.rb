@@ -3,25 +3,27 @@ class AiGenerationRequestsController < ApplicationController
   before_action :set_request_for_commit, only: [ :commit ]
 
   def create
-    if current_user.ai_requests_remaining <= 0
-      render turbo_stream: turbo_stream.update("ai-panel-status",
-        partial: "ai_generation_requests/rate_limit",
-        locals: { user: current_user }
-      ) and return
-    end
+    current_user.with_lock do
+      if current_user.ai_requests_remaining <= 0
+        render turbo_stream: turbo_stream.update("ai-panel-status",
+          partial: "ai_generation_requests/rate_limit",
+          locals: { user: current_user }
+        ) and return
+      end
 
-    @ai_request = AiGenerationRequest.new(
-      user: current_user,
-      pack_type: params[:pack_type],
-      pack_id: params[:pack_id],
-      user_theme: params[:user_theme]
-    )
+      @ai_request = AiGenerationRequest.new(
+        user: current_user,
+        pack_type: params[:pack_type],
+        pack_id: params[:pack_id],
+        user_theme: params[:user_theme]
+      )
 
-    unless @ai_request.save
-      render turbo_stream: turbo_stream.update("ai-panel-status",
-        partial: "ai_generation_requests/error",
-        locals: { request: @ai_request }
-      ) and return
+      unless @ai_request.save
+        render turbo_stream: turbo_stream.update("ai-panel-status",
+          partial: "ai_generation_requests/error",
+          locals: { request: @ai_request }
+        ) and return
+      end
     end
 
     AiGenerationJob.perform_later(@ai_request.id)
@@ -55,6 +57,8 @@ class AiGenerationRequestsController < ApplicationController
       pack.categories.destroy_all if params[:mode] == "replace"
       items.each { |item| pack.categories.create!(name: item["name"]) }
       redirect_to edit_category_pack_path(pack), notice: "#{items.length} categories added!"
+    else
+      raise ArgumentError, "Unknown pack_type: #{@ai_request.pack_type}"
     end
   end
 

@@ -17,6 +17,9 @@ class LlmClient
     )
 
     content = raw.dig("choices", 0, "message", "content")
+    usage = raw["usage"]
+    Rails.logger.info("LlmClient usage: #{usage.inspect}") if usage
+
     if content.present?
       { success: true, content:, raw_response: raw.to_json }
     else

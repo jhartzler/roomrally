@@ -23,6 +23,12 @@ RSpec.describe LlmClient do
         allow(client_double).to receive(:chat).and_return(raw_response)
       end
 
+      it "logs token usage" do
+        allow(Rails.logger).to receive(:info)
+        described_class.generate(system_prompt:, user_prompt:)
+        expect(Rails.logger).to have_received(:info).with(/prompt_tokens|completion_tokens/)
+      end
+
       it "returns success: true with content and raw_response" do # rubocop:disable RSpec/MultipleExpectations
         result = described_class.generate(system_prompt:, user_prompt:)
         expect(result[:success]).to be true
