@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe "WriteAndVote Prompt Display", type: :system do
   let(:room) { Room.create!(game_type: "Write And Vote") }
   let!(:alice) { Player.create!(name: "Alice", room:) }
-  let!(:bob) { Player.create!(name: "Bob", room:) }
 
   before do
+    Player.create!(name: "Bob", room:)
     default_pack = FactoryBot.create(:prompt_pack, :default)
     2.times { |i| Prompt.create!(body: "Prompt #{i + 1}", prompt_pack: default_pack) }
 
