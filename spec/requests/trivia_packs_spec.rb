@@ -34,7 +34,7 @@ RSpec.describe "TriviaPacks", type: :request do
         post trivia_packs_path, params: { trivia_pack: valid_attributes }
       }.to change(TriviaPack, :count).by(1)
 
-      expect(response).to redirect_to(trivia_packs_path)
+      expect(response).to redirect_to(%r{/trivia_packs/\d+/edit})
     end
 
     context "with a valid return_to param" do
@@ -46,18 +46,18 @@ RSpec.describe "TriviaPacks", type: :request do
     end
 
     context "with an external return_to param" do
-      it "falls back to packs index (no open redirect)" do
+      it "falls back to pack edit (no open redirect)" do
         post trivia_packs_path,
           params: { trivia_pack: valid_attributes, return_to: "https://evil.com" }
-        expect(response).to redirect_to(trivia_packs_path)
+        expect(response).to redirect_to(%r{/trivia_packs/\d+/edit})
       end
     end
 
     context "with a protocol-relative return_to param" do
-      it "falls back to packs index (no open redirect)" do
+      it "falls back to pack edit (no open redirect)" do
         post trivia_packs_path,
           params: { trivia_pack: valid_attributes, return_to: "//evil.com/path" }
-        expect(response).to redirect_to(trivia_packs_path)
+        expect(response).to redirect_to(%r{/trivia_packs/\d+/edit})
       end
     end
   end

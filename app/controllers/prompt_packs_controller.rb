@@ -27,7 +27,7 @@ class PromptPacksController < ApplicationController
         redirect_to append_new_pack_id(params[:return_to], @prompt_pack.id),
                     notice: "Prompt pack created. Returning to your game."
       else
-        redirect_to prompt_packs_path, notice: "Prompt pack created successfully."
+        redirect_to edit_prompt_pack_path(@prompt_pack), notice: "Prompt pack created. Generate content with AI below."
       end
     else
       @return_to = params[:return_to]

@@ -11,6 +11,7 @@
       <h1 class="text-4xl font-black text-white mb-2 tracking-tighter drop-shadow-md">New Category Pack</h1>
       <p class="text-blue-200 font-medium">Create a new category pack for A-List games</p>
     </header>
+    <%= render "ai_generation_requests/panel", pack: @category_pack, pack_type: "category_pack" %>
     <%= render "form", category_pack: @category_pack, return_to: @return_to %>
   </div>
 </div>

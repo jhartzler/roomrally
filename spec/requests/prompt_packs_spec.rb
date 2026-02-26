@@ -42,7 +42,7 @@ RSpec.describe "PromptPacks", type: :request do
         post prompt_packs_path, params: { prompt_pack: valid_attributes }
       }.to change(PromptPack, :count).by(1).and change(Prompt, :count).by(2)
 
-      expect(response).to redirect_to(prompt_packs_path)
+      expect(response).to redirect_to(%r{/prompt_packs/\d+/edit})
     end
 
     context "with a valid return_to param" do
@@ -54,26 +54,26 @@ RSpec.describe "PromptPacks", type: :request do
     end
 
     context "with an external return_to param" do
-      it "falls back to packs index (no open redirect)" do
+      it "falls back to pack edit (no open redirect)" do
         post prompt_packs_path,
           params: { prompt_pack: valid_attributes, return_to: "https://evil.com" }
-        expect(response).to redirect_to(prompt_packs_path)
+        expect(response).to redirect_to(%r{/prompt_packs/\d+/edit})
       end
     end
 
     context "with a protocol-relative return_to param" do
-      it "falls back to packs index (no open redirect)" do
+      it "falls back to pack edit (no open redirect)" do
         post prompt_packs_path,
           params: { prompt_pack: valid_attributes, return_to: "//evil.com/path" }
-        expect(response).to redirect_to(prompt_packs_path)
+        expect(response).to redirect_to(%r{/prompt_packs/\d+/edit})
       end
     end
 
     context "with a triple-slash return_to param" do
-      it "falls back to packs index (no open redirect)" do
+      it "falls back to pack edit (no open redirect)" do
         post prompt_packs_path,
           params: { prompt_pack: valid_attributes, return_to: "///evil.com" }
-        expect(response).to redirect_to(prompt_packs_path)
+        expect(response).to redirect_to(%r{/prompt_packs/\d+/edit})
       end
     end
   end
