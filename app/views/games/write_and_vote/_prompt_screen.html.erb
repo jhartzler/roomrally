@@ -1,3 +1,6 @@
+<%# app/views/games/write_and_vote/_prompt_screen.html.erb %>
+<%# Main writing phase hand view for Write and Vote %>
+
 <header class="max-w-md mx-auto mb-6 px-2">
   <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Write your best answer...</span>
 </header>
@@ -6,18 +9,38 @@
   <%# Calculate active index: First prompt with blank/pending response or rejected status %>
   <% active_index = active_prompt_index(player, prompts) %>
 
-  <!-- Progress Indicator -->
-  <div class="bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 mb-4 text-center">
-    <p class="text-xs text-blue-200 font-bold uppercase tracking-wider">
-      Round <%= game.round %> • Prompt <%= active_index + 1 %> of <%= prompts.count %>
-    </p>
+  <%# 2-up Prompt Stepper — shows both prompts at a glance %>
+  <div class="flex gap-3" data-test-id="prompt-stepper">
+    <% prompts.each_with_index do |prompt_item, idx| %>
+      <% prompt_response = player.responses.find_by(prompt_instance: prompt_item) %>
+      <% is_active = idx == active_index %>
+      <% is_done = prompt_response&.submitted? %>
+      <div class="flex-1 rounded-2xl p-3 border <%= is_active ? 'bg-white/15 border-blue-400/50' : 'bg-white/5 border-white/10' %>"
+           data-test-id="player-prompt">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[9px] font-black tracking-widest uppercase <%= is_active ? 'text-blue-300' : (is_done ? 'text-green-400' : 'text-blue-200/40') %>">
+            <% if is_done %>Done<% elsif is_active %>Active<% else %>Up Next<% end %>
+          </span>
+          <% if is_done %>
+            <svg class="w-3.5 h-3.5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+          <% else %>
+            <span class="text-[9px] font-black <%= is_active ? 'text-blue-300' : 'text-blue-200/40' %>"><%= idx + 1 %></span>
+          <% end %>
+        </div>
+        <p class="text-white text-xs font-semibold line-clamp-2 leading-snug <%= is_done || !is_active ? 'opacity-50' : '' %>">
+          <%= prompt_item.body %>
+        </p>
+      </div>
+    <% end %>
   </div>
 
   <% if game.timer_enabled? %>
     <div data-controller="dramatic-timer"
          data-dramatic-timer-end-value="<%= game.timer_expires_at_iso8601 %>"
          data-dramatic-timer-target="container"
-         class="bg-blue-950/40 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-blue-400/30 mb-4 shadow-lg transition-all">
+         class="bg-blue-950/40 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-blue-400/30 shadow-lg transition-all">
       <span class="text-blue-400 text-xs font-black tracking-widest uppercase ml-2"
             data-dramatic-timer-target="visual">Time Left</span>
       <div class="rounded-lg px-3 py-1">
@@ -29,35 +52,26 @@
 
   <% prompts.each_with_index do |prompt, index| %>
     <% response = player.responses.find_by(prompt_instance: prompt) %>
-    
+
     <% if index == active_index %>
-        <% if response.pending? || response.rejected? %>
-            <%= render "responses/form", response: response, prompt: prompt %>
-        <% else %>
-            <%# If the active index points to a submitted response (shouldn't happen unless all done), show success %>
-            <div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
-                <%= render "responses/submission_success", response: response %>
-            </div>
-        <% end %>
-    <% else %>
-      <%# Collapsed/Pending Card or Completed Card %>
-      <% if response.submitted? %>
-          <div id="prompt-instance-<%= prompt.id %>" data-test-id="player-prompt">
-             <%= render "responses/submission_success", response: response %>
-          </div>
+      <% if response.pending? || response.rejected? %>
+        <%= render "responses/form", response: response, prompt: prompt %>
       <% else %>
-          <%# Pending but not active %>
-          <div class="bg-blue-800/40 backdrop-blur-sm rounded-3xl p-6 border border-white/10 flex items-center justify-between group" data-test-id="player-prompt">
-            <div>
-              <p class="text-blue-200 text-[10px] font-black mb-1">Prompt #<%= index + 1 %></p>
-              <p class="text-blue-100 font-bold opacity-50 truncate max-w-[200px]"><%= prompt.body %></p>
-            </div>
-            <div class="bg-blue-400/20 text-blue-300 p-2 rounded-full">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-          </div>
+        <%# All prompts done (transitioning to voting) — keep ID as Turbo target %>
+        <div id="prompt-instance-<%= prompt.id %>">
+          <%= render "responses/submission_success", response: response %>
+        </div>
+      <% end %>
+    <% else %>
+      <% if response.submitted? %>
+        <%# Keep ID as Turbo target for moderation rejection broadcast %>
+        <div id="prompt-instance-<%= prompt.id %>">
+          <%= render "responses/submission_success", response: response %>
+        </div>
+      <% else %>
+        <%# Pending but not active — stepper handles the visual; keep ID as Turbo target %>
+        <div id="prompt-instance-<%= prompt.id %>" class="hidden"></div>
       <% end %>
     <% end %>
   <% end %>
 </div>
-

@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe "WriteAndVote Prompt Display", type: :system do
   let(:room) { Room.create!(game_type: "Write And Vote") }
   let!(:alice) { Player.create!(name: "Alice", room:) }
+  let!(:bob) { Player.create!(name: "Bob", room:) }
 
   before do
     default_pack = FactoryBot.create(:prompt_pack, :default)
@@ -25,9 +26,9 @@ RSpec.describe "WriteAndVote Prompt Display", type: :system do
       expect(page).to have_content("Prompt 1")
       expect(page).to have_content("Prompt 2")
 
-      # Stepper state labels should be visible
-      expect(page).to have_content("Active", count: 1)
-      expect(page).to have_content("Up Next", count: 1)
+      # Stepper state labels should be visible (CSS text-transform: uppercase renders them as ACTIVE / UP NEXT)
+      expect(page).to have_content("ACTIVE", count: 1)
+      expect(page).to have_content("UP NEXT", count: 1)
     end
 
     # Old progress pill should be gone
