@@ -1,0 +1,43 @@
+<div class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+  <div class="p-4 border-b border-white/10 flex items-center justify-between">
+    <h4 class="font-black text-white flex items-center gap-2">
+      <span class="text-yellow-300">⚡</span>
+      AI Generated Content
+    </h4>
+    <span class="text-blue-200/60 text-xs font-medium">Select items to add</span>
+  </div>
+
+  <%= form_with url: commit_ai_generation_request_path(request) do |f| %>
+    <%= f.hidden_field :mode, value: "append", data: { mode_field: true } %>
+
+    <div class="divide-y divide-white/5">
+      <% request.parsed_items.each_with_index do |item, index| %>
+        <label class="flex items-start gap-3 p-4 hover:bg-white/5 cursor-pointer transition-colors">
+          <input type="checkbox" name="selected_indices[]" value="<%= index %>"
+            class="mt-0.5 w-4 h-4 rounded accent-yellow-400 shrink-0" checked>
+          <span class="text-white/90 text-sm font-medium">
+            <%= item["body"] || item["name"] %>
+            <% if item["options"] %>
+              <span class="block text-white/40 text-xs mt-1">Options: <%= item["options"].join(" · ") %></span>
+              <span class="block text-green-300 text-xs">✓ <%= item["correct_answers"].join(", ") %></span>
+            <% end %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="p-4 flex gap-3 border-t border-white/10">
+      <%= f.submit "Add Selected",
+          class: "py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-black font-black rounded-lg text-sm cursor-pointer transition-all" %>
+      <button type="submit" name="mode" value="replace"
+        class="py-2 px-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg text-sm transition-all"
+        data-turbo-confirm="Replace all existing items with the selected AI-generated ones?">
+        Replace All
+      </button>
+      <button type="button" onclick="document.getElementById('ai-panel-status').innerHTML = ''"
+        class="py-2 px-4 text-white/40 hover:text-white font-bold text-sm transition-colors ml-auto">
+        Discard
+      </button>
+    </div>
+  <% end %>
+</div>

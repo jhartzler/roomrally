@@ -1,0 +1,54 @@
+<% remaining = current_user.ai_requests_remaining %>
+<% reset_at = current_user.ai_requests_reset_at %>
+
+<details class="mb-8 bg-yellow-500/10 rounded-3xl border border-yellow-400/20 backdrop-blur-md overflow-hidden" data-controller="ai-generation">
+  <summary class="flex items-center justify-between p-6 cursor-pointer hover:bg-yellow-400/10 transition-colors list-none">
+    <span class="font-black text-white flex items-center gap-2 text-lg tracking-wide">
+      <span class="text-yellow-300 text-2xl">⚡</span>
+      Generate with AI
+    </span>
+    <span class="text-yellow-200/60 text-sm font-bold">
+      <%= remaining %> / <%= User::AI_REQUEST_LIMIT %> credits
+    </span>
+  </summary>
+
+  <div class="px-6 pb-6">
+    <%= form_with url: ai_generation_requests_path, data: { turbo_stream: true } do |f| %>
+      <%= hidden_field_tag :pack_type, pack_type %>
+      <%= hidden_field_tag :pack_id, pack.id %>
+
+      <div class="mb-4">
+        <label class="block text-sm font-bold text-yellow-200 mb-2 uppercase tracking-widest">
+          Describe a theme or topic
+        </label>
+        <%= f.text_area :user_theme, rows: 2,
+            placeholder: "e.g. 90s movies, US history, dad jokes, office life...",
+            class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 focus:border-yellow-400 focus:ring focus:ring-yellow-400/20 transition-all font-medium py-3 px-4 text-white placeholder-white/30 resize-none",
+            required: true,
+            maxlength: 200 %>
+      </div>
+
+      <div class="flex items-center justify-between gap-4">
+        <% if remaining > 0 %>
+          <%= f.submit "⚡ Generate 10 items",
+              class: "py-2 px-6 bg-yellow-500 hover:bg-yellow-600 text-black font-black rounded-xl transition-all cursor-pointer shadow-lg shadow-yellow-900/20 transform hover:scale-[1.02] active:scale-95" %>
+        <% else %>
+          <button type="button" disabled
+            title="<%= reset_at ? "Credits reset at #{reset_at.strftime('%H:%M')}" : 'Limit reached' %>"
+            class="py-2 px-6 bg-white/10 text-white/40 font-black rounded-xl cursor-not-allowed">
+            ⚡ Generate 10 items
+          </button>
+        <% end %>
+        <span class="text-yellow-200/50 text-xs font-medium">
+          <% if reset_at %>
+            Resets <%= distance_of_time_in_words(Time.current, reset_at) %>
+          <% else %>
+            <%= remaining %> credit<%= remaining == 1 ? "" : "s" %> remaining
+          <% end %>
+        </span>
+      </div>
+    <% end %>
+
+    <div id="ai-panel-status" class="mt-4"></div>
+  </div>
+</details>

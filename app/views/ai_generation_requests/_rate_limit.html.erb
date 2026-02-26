@@ -1,0 +1,10 @@
+<% reset_at = user.ai_requests_reset_at %>
+<div id="rate-limit" class="p-4 bg-orange-500/10 rounded-xl border border-orange-500/20 flex items-start gap-3">
+  <span class="text-orange-300 shrink-0 mt-0.5">⚡</span>
+  <div>
+    <p class="text-orange-200 font-medium text-sm">You've used all your AI credits for this period.</p>
+    <% if reset_at %>
+      <p class="text-orange-300/70 text-xs mt-1">Available again in <%= distance_of_time_in_words(Time.current, reset_at) %>.</p>
+    <% end %>
+  </div>
+</div>
