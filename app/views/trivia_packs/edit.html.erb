@@ -17,6 +17,7 @@
       <%= button_to "Delete Pack", @trivia_pack, method: :delete, class: "text-red-500 hover:text-red-700 font-bold text-sm bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors", form: { data: { turbo_confirm: "Are you sure?" } } %>
     </header>
 
+    <%= render "ai_generation_requests/panel", pack: @trivia_pack, pack_type: "trivia_pack" %>
     <%= render "form", trivia_pack: @trivia_pack %>
   </div>
 </div>

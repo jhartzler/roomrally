@@ -10,6 +10,7 @@
       <% end %>
       <h1 class="text-4xl font-black text-white mb-2 tracking-tighter drop-shadow-md">Edit Category Pack</h1>
     </header>
+    <%= render "ai_generation_requests/panel", pack: @category_pack, pack_type: "category_pack" %>
     <%= render "form", category_pack: @category_pack, return_to: @return_to %>
   </div>
 </div>
