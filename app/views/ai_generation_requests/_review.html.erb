@@ -7,7 +7,7 @@
     <span class="text-blue-200/60 text-xs font-medium">Select items to add</span>
   </div>
 
-  <%= form_with url: commit_ai_generation_request_path(request) do |f| %>
+  <%= form_with url: commit_ai_generation_request_path(request), method: :patch do |f| %>
     <%= f.hidden_field :mode, value: "append", data: { mode_field: true } %>
 
     <div class="divide-y divide-white/5">
