@@ -48,6 +48,7 @@ module AiContent
       - Questions should vary in difficulty
       - Wrong answers should be plausible but clearly incorrect
       - Questions should be factually accurate
+      - Questions should not repeat the same information as each other or reveal answers to other questions.
     PROMPT
 
     CATEGORY_PACK = <<~PROMPT
@@ -63,6 +64,7 @@ module AiContent
       }
 
       Each "name" should be a short phrase (e.g., "Things found at a beach", "Types of vehicles"). Categories should be broad enough that players can think of multiple items starting with any letter. Except uncommon letters like X, Z, Q.
+      Do not repeat the same types of categories multiple times in one response. For example, do not include both "College majors" and "College subjects" as they are too similar to one another, or "Foods" and "Cuisines" are too similar.
     PROMPT
 
     def self.for(pack_type)

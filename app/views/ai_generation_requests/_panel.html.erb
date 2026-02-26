@@ -44,7 +44,7 @@
           <% end %>
           <span class="text-yellow-200/50 text-xs font-medium">
             <% if reset_at %>
-              Resets <%= distance_of_time_in_words(Time.current, reset_at) %>
+              Resets in <%= distance_of_time_in_words(Time.current, reset_at) %>
             <% else %>
               <%= remaining %> credit<%= remaining == 1 ? "" : "s" %> remaining
             <% end %>

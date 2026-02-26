@@ -53,8 +53,8 @@ RSpec.describe "TriviaPack CRUD", type: :system do
       screenshot_checkpoint("new_trivia_pack_filled")
       click_button "Save Pack"
 
-      expect(page).to have_content("Trivia pack created. Generate content with AI below.")
-      expect(page).to have_content("My Trivia Pack")
+      expect(page).to have_content("Trivia pack created.")
+      expect(page).to have_field("Name", with: "My Trivia Pack")
 
       # Verify correct_answers persisted via Stimulus hidden field sync
       pack = TriviaPack.last

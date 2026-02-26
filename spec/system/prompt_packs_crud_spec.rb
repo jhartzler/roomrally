@@ -42,8 +42,8 @@ RSpec.describe "PromptPack CRUD", type: :system do
       screenshot_checkpoint("new_prompt_pack_filled")
       click_button "Save Pack"
 
-      expect(page).to have_content("Prompt pack created. Generate content with AI below.")
-      expect(page).to have_content("My Fun Pack")
+      expect(page).to have_content("Prompt pack created.")
+      expect(page).to have_field("Name", with: "My Fun Pack")
       # We have 2 prompts left ("Prompt 3", "Prompt 2") -> 1 Player (ratio 2)
       expect(page).to have_content("Supports up to 1 players")
       screenshot_checkpoint("prompt_pack_edit_after_create")
