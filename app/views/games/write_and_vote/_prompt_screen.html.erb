@@ -6,11 +6,13 @@
 </header>
 
 <div class="max-w-md mx-auto space-y-4">
-  <%# Calculate active index: First prompt with blank/pending response or rejected status %>
-  <% active_index = active_prompt_index(player, prompts) %>
+  <%# Pre-load responses to avoid N+1 queries %>
   <% responses_map = player.responses
                            .where(prompt_instance: prompts)
                            .index_by(&:prompt_instance_id) %>
+
+  <%# Calculate active index using pre-loaded map %>
+  <% active_index = prompts.to_a.find_index { |p| r = responses_map[p.id]; r&.pending? || r&.rejected? } || 0 %>
 
   <%# 2-up Prompt Stepper — shows both prompts at a glance %>
   <div class="flex gap-3" data-test-id="prompt-stepper">
