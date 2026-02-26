@@ -65,7 +65,7 @@
   <div class="hidden mt-3 ml-8" data-checkbox-toggle-target="content">
     <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
       <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Seconds per round:</span>
-      <%= number_field_tag :timer_increment, 60, min: 10, max: 300,
+      <%= number_field_tag :timer_increment, GameTemplate::SETTING_DEFAULTS["timer_increment"], min: 10, max: 300,
           class: backstage ?
             "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
             "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
