@@ -37,7 +37,7 @@ RSpec.describe "CategoryPacks", type: :request do
         post category_packs_path, params: { category_pack: valid_attributes }
       }.to change(CategoryPack, :count).by(1).and change(Category, :count).by(2)
 
-      expect(response).to redirect_to(category_packs_path)
+      expect(response).to redirect_to(%r{/category_packs/\d+/edit})
     end
   end
 

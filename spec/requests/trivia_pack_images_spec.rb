@@ -24,8 +24,9 @@ RSpec.describe "TriviaPack image management", type: :request do
         }
       }
 
-      expect(response).to redirect_to(trivia_packs_path)
-      question = TriviaPack.last.trivia_questions.first
+      pack = TriviaPack.last
+      expect(response).to redirect_to(edit_trivia_pack_path(pack))
+      question = pack.trivia_questions.first
       expect(question.image).to be_attached
       expect(question.image.filename.to_s).to eq("test_image.png")
     end

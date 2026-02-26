@@ -26,7 +26,7 @@ class CategoryPacksController < ApplicationController
         redirect_to append_new_pack_id(params[:return_to], @category_pack.id),
                     notice: "Category pack created. Returning to your game."
       else
-        redirect_to category_packs_path, notice: "Category pack created successfully."
+        redirect_to edit_category_pack_path(@category_pack), notice: "Category pack created. Generate content with AI below."
       end
     else
       @return_to = params[:return_to]

@@ -15,6 +15,7 @@ class TriviaQuestion < ApplicationRecord
 
   private
 
+  OPTIONS_COUNT = 4
   ALLOWED_IMAGE_TYPES = %w[image/jpeg image/png image/webp image/gif].freeze
 
   def purge_image_if_marked
@@ -40,8 +41,8 @@ class TriviaQuestion < ApplicationRecord
   end
 
   def options_must_be_array_of_four
-    unless options.is_a?(Array) && options.length == 4
-      errors.add(:options, "must contain exactly 4 choices")
+    unless options.is_a?(Array) && options.length == OPTIONS_COUNT
+      errors.add(:options, "must contain exactly #{OPTIONS_COUNT} choices")
       return
     end
 

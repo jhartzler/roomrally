@@ -12,6 +12,7 @@
       <p class="text-blue-200 font-medium">Create a new prompt pack</p>
     </header>
     
+    <%= render "ai_generation_requests/panel", pack: @prompt_pack, pack_type: "prompt_pack" %>
     <%= render "form", prompt_pack: @prompt_pack %>
   </div>
 </div>

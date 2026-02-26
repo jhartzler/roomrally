@@ -27,3 +27,31 @@
   --text-vh-4xl: clamp(2rem, 4vh, 5rem);          /* Prompts, questions */
   --text-vh-5xl: clamp(2.5rem, 5vh, 6rem);        /* Large prompts */
 }
+
+/* AI generation loading animation */
+@keyframes ai-loader-slide {
+  100% { background-position: calc(100%/3) 0 }
+}
+
+.ai-loader {
+  width: 60px;
+  height: 10px;
+  box-shadow: 0 2px 0 #fcd34d;
+  background: linear-gradient(#fcd34d 0 0) center/2px 100% no-repeat;
+  display: grid;
+  flex-shrink: 0;
+}
+
+.ai-loader:before,
+.ai-loader:after {
+  content: "";
+  grid-area: 1/1;
+  background: repeating-linear-gradient(90deg, #fcd34d 0 10px, #0000 0 100%) 0 0/calc(100%/4) 100%;
+  clip-path: inset(0 50% 0 0);
+  animation: ai-loader-slide 1s infinite linear;
+}
+
+.ai-loader:before {
+  background: radial-gradient(circle 5px at 5px 50%, #fcd34d 92%, #0000) 0 0/calc(100%/4) 100%;
+  clip-path: inset(0 0 0 50%);
+}

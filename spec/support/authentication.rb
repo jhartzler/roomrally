@@ -19,6 +19,10 @@ module AuthenticationHelper
       get "/auth/google_oauth2/callback"
     end
   end
+
+  def sign_out
+    delete logout_path
+  end
 end
 
 RSpec.configure do |config|

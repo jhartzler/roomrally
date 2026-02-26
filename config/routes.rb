@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   resources :prompt_packs
   resources :trivia_packs
   resources :category_packs
+  resources :ai_generation_requests, only: [ :create ] do
+    member do
+      patch :commit
+    end
+  end
   resources :game_templates do
     scope module: :game_templates do
       resource :launch, only: :create
