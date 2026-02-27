@@ -5,5 +5,9 @@ FactoryBot.define do
     password { "password" }
     provider { "google_oauth2" }
     uid { "123456" }
+
+    trait :admin do
+      admin { true }
+    end
   end
 end
