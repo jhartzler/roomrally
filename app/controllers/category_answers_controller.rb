@@ -27,6 +27,7 @@ class CategoryAnswersController < ApplicationController
 
     GameBroadcaster.broadcast_stage(room:)
     GameBroadcaster.broadcast_host_controls(room:)
+    GameBroadcaster.broadcast_hand(room:)
 
     respond_to do |format|
       format.turbo_stream do

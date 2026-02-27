@@ -109,4 +109,232 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     expect(game.reload).to be_filling
     expect(game.current_round).to eq(2)
   end
+
+  it "updates all player phones live when host marks an answer" do
+    host_player = nil
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!", wait: 5)
+      host_player = Player.find_by(name: "Host")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      alice = Player.find_by(name: "Alice")
+    end
+
+    Games::CategoryList.game_started(
+      room:,
+      total_rounds: 1,
+      categories_per_round: 2,
+      timer_enabled: false,
+      show_instructions: false
+    )
+    game = room.reload.current_game
+
+    letter = game.current_letter
+    game.current_round_categories.each do |ci|
+      Games::CategoryList.submit_answers(
+        game:,
+        player: host_player,
+        answers_params: { ci.id.to_s => "#{letter}pple from Host" }
+      )
+      Games::CategoryList.submit_answers(
+        game:,
+        player: alice,
+        answers_params: { ci.id.to_s => "#{letter}pple" }
+      )
+    end
+    expect(game.reload).to be_reviewing
+
+    # Alice watches the reviewing screen
+    Capybara.using_session(:alice) do
+      visit room_hand_path(room)
+      expect(page).to have_content("#{letter}pple", wait: 5)
+    end
+
+    # Host rejects an answer from their phone
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      expect(page).to have_button("Reject", wait: 5)
+      first("button", text: "Reject").click
+    end
+
+    # Alice's phone should update to show REJECTED badge
+    Capybara.using_session(:alice) do
+      expect(page).to have_content("REJECTED", wait: 5)
+    end
+  end
+
+  it "shows all players' answers for the current category during reviewing" do
+    host_player = nil
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!", wait: 5)
+      host_player = Player.find_by(name: "Host")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      alice = Player.find_by(name: "Alice")
+    end
+
+    Games::CategoryList.game_started(
+      room:,
+      total_rounds: 1,
+      categories_per_round: 2,
+      timer_enabled: false,
+      show_instructions: false
+    )
+    game = room.reload.current_game
+
+    letter = game.current_letter
+    game.current_round_categories.each do |ci|
+      Games::CategoryList.submit_answers(game:, player: host_player,
+        answers_params: { ci.id.to_s => "#{letter}nswer from Host" })
+      Games::CategoryList.submit_answers(game:, player: alice,
+        answers_params: { ci.id.to_s => "#{letter}nswer from Alice" })
+    end
+    expect(game.reload).to be_reviewing
+
+    # Alice should see Host's answer AND the category name
+    Capybara.using_session(:alice) do
+      visit room_hand_path(room)
+      expect(page).to have_content("#{letter}nswer from Host", wait: 5)
+      expect(page).to have_content("Host")
+      expect(page).to have_content("Category 1 of 2")
+    end
+  end
+
+  it "host player sees moderation and navigation controls during reviewing" do
+    host_player = nil
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!", wait: 5)
+      host_player = Player.find_by(name: "Host")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      alice = Player.find_by(name: "Alice")
+    end
+
+    Games::CategoryList.game_started(
+      room:,
+      total_rounds: 1,
+      categories_per_round: 2,
+      timer_enabled: false,
+      show_instructions: false
+    )
+    game = room.reload.current_game
+
+    letter = game.current_letter
+    game.current_round_categories.each do |ci|
+      Games::CategoryList.submit_answers(game:, player: host_player,
+        answers_params: { ci.id.to_s => "#{letter}nswer from Host" })
+      Games::CategoryList.submit_answers(game:, player: alice,
+        answers_params: { ci.id.to_s => "#{letter}nswer from Alice" })
+    end
+    expect(game.reload).to be_reviewing
+
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      # Has moderation buttons
+      expect(page).to have_button("Reject", wait: 5)
+      # Has navigation
+      expect(page).to have_button("Next →")
+      # Does NOT have Finish button yet (not at last category)
+      expect(page).not_to have_button("Finish & Score")
+    end
+
+    # Non-host player should NOT see these controls
+    Capybara.using_session(:alice) do
+      visit room_hand_path(room)
+      expect(page).not_to have_button("Reject")
+      expect(page).not_to have_button("Next →")
+    end
+  end
+
+  it "shows round leaderboard on phones during scoring" do
+    host_player = nil
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!", wait: 5)
+      host_player = Player.find_by(name: "Host")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      alice = Player.find_by(name: "Alice")
+    end
+
+    Games::CategoryList.game_started(
+      room:,
+      total_rounds: 1,
+      categories_per_round: 2,
+      timer_enabled: false,
+      show_instructions: false
+    )
+    game = room.reload.current_game
+
+    letter = game.current_letter
+    game.current_round_categories.each do |ci|
+      Games::CategoryList.submit_answers(game:, player: host_player,
+        answers_params: { ci.id.to_s => "#{letter}mazing" })
+      Games::CategoryList.submit_answers(game:, player: alice,
+        answers_params: { ci.id.to_s => "#{letter}pple" })
+    end
+    Games::CategoryList.finish_review(game: game.reload)
+    expect(game.reload).to be_scoring
+
+    # Both players should see each other's names and NOT see "Check the screen"
+    Capybara.using_session(:alice) do
+      visit room_hand_path(room)
+      expect(page).to have_content("Host", wait: 5)
+      expect(page).to have_content("Alice")
+      expect(page).not_to have_content("Check the screen")
+    end
+
+    # Host should see "Finish Game" button (total_rounds: 1 → last round)
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      expect(page).to have_button("Finish Game", wait: 5)
+    end
+  end
 end
