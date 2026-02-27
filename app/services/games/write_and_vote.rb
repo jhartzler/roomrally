@@ -222,7 +222,7 @@ module Games
       end
 
       def self.progress_label(game:)
-        "Round #{game.round} of 2"
+        "Round #{game.round} of #{MAX_ROUNDS}"
       end
 
       def self.dashboard_actions(status)
