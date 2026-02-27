@@ -65,10 +65,12 @@
                 <span class="block text-3xl font-black text-white"><%= @prompt_pack.prompts.count %></span>
                 <span class="text-xs font-bold text-blue-300 uppercase tracking-widest">Prompts</span>
              </div>
-             <div class="bg-white/5 p-4 rounded-2xl shadow-lg border border-white/10 text-center min-w-[100px] backdrop-blur-sm">
-                <span class="block text-3xl font-black text-white"><%= @prompt_pack.supported_players_count || 0 %></span>
-                <span class="text-xs font-bold text-blue-300 uppercase tracking-widest">Players</span>
-             </div>
+             <% if @prompt_pack.has_player_limit? %>
+               <div class="bg-white/5 p-4 rounded-2xl shadow-lg border border-white/10 text-center min-w-[100px] backdrop-blur-sm">
+                  <span class="block text-3xl font-black text-white"><%= @prompt_pack.supported_players_count %></span>
+                  <span class="text-xs font-bold text-blue-300 uppercase tracking-widest">Players</span>
+               </div>
+             <% end %>
           </div>
         </div>
       </div>
