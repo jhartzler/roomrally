@@ -95,4 +95,11 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
       end
     end
   end
+
+  it "shows total round count on the hand during voting phase" do
+    Capybara.using_session(:voter) do
+      visit set_player_session_path(voter)
+      expect(page).to have_content(/Round 1 of 2/i, wait: 5)
+    end
+  end
 end

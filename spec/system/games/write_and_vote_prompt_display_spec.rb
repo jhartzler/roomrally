@@ -31,7 +31,11 @@ RSpec.describe "WriteAndVote Prompt Display", type: :system do
       expect(page).to have_content("UP NEXT", count: 1)
     end
 
-    # Old progress pill should be gone
-    expect(page).not_to have_content("of 2")
+    # Old progress pill should be gone — the stepper replaced the "X of 2" count pill
+    expect(page).not_to have_css('[data-test-id="progress-pill"]')
+  end
+
+  it "shows total round count on the hand during the writing phase" do
+    expect(page).to have_content(/Round 1 of 2/i, wait: 5)
   end
 end

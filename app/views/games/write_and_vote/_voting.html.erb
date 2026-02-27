@@ -6,7 +6,7 @@
   <!-- Progress Indicator -->
   <div class="bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 mb-4 text-center">
     <p class="text-xs text-blue-200 font-bold uppercase tracking-wider">
-      Round <%= current_game.round %> • Prompt <%= current_game.current_prompt_index + 1 %> of <%= current_game.current_round_prompts.count %>
+      Round <%= current_game.round %> of <%= Games::WriteAndVote::MAX_ROUNDS %> • Prompt <%= current_game.current_prompt_index + 1 %> of <%= current_game.current_round_prompts.count %>
     </p>
   </div>
 
