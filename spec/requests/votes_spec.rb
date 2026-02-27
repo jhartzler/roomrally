@@ -51,7 +51,7 @@ RSpec.describe "Votes", type: :request do
     it "casts the vote successfully when room code is passed in params" do
       expect { post votes_path, params: { vote: { response_id: voteable_response.id }, code: current_room.code }, as: :turbo_stream }
         .to change(Vote, :count).by(1)
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:no_content)
     end
   end
 

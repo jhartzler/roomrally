@@ -11,7 +11,7 @@ module SpeedTrivia
       Games::SpeedTrivia.start_question(game: @game)
 
       respond_to do |format|
-        format.turbo_stream { head :ok }
+        format.turbo_stream { head :no_content }
         format.html { redirect_back fallback_location: room_backstage_path(@game.room) }
       end
     end

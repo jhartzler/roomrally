@@ -8,7 +8,7 @@ class ScoreTrackerEntriesController < ApplicationController
     @entry = @room.score_tracker_entries.create!(entry_params)
     broadcast_score_tracker
     respond_to do |format|
-      format.turbo_stream { head :ok }
+      format.turbo_stream { head :no_content }
       format.html { redirect_to room_backstage_path(@room) }
     end
   end
@@ -24,7 +24,7 @@ class ScoreTrackerEntriesController < ApplicationController
 
     broadcast_score_tracker
     respond_to do |format|
-      format.turbo_stream { head :ok }
+      format.turbo_stream { head :no_content }
       format.html { redirect_to room_backstage_path(@room) }
     end
   end
@@ -34,7 +34,7 @@ class ScoreTrackerEntriesController < ApplicationController
     @entry.destroy!
     broadcast_score_tracker
     respond_to do |format|
-      format.turbo_stream { head :ok }
+      format.turbo_stream { head :no_content }
       format.html { redirect_to room_backstage_path(@room) }
     end
   end

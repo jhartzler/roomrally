@@ -11,7 +11,7 @@ module CategoryList
       Games::CategoryList.navigate_review(game: @game, direction: params[:direction])
 
       respond_to do |format|
-        format.turbo_stream { head :ok }
+        format.turbo_stream { head :no_content }
         format.html do
           if current_user && current_user == @game.room.user
             redirect_to room_backstage_path(@game.room)
