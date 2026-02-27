@@ -223,6 +223,7 @@ Focus on what matters to a human reviewer. GitHub already shows file changes, so
 - **Decisions**: Non-obvious choices, tradeoffs, or things done intentionally
 - **Reviewer notes**: What should they pay attention to? Any risks?
 - **Configuration**: Environment variables or setup needed
+- Attribution: "Co-authored with Claude" or similar necessary attribution
 
 **Avoid:**
 - Listing files added/modified (GitHub shows this)
@@ -232,3 +233,23 @@ Focus on what matters to a human reviewer. GitHub already shows file changes, so
 ## Documentation
 
 See `docs/` directory for detailed guides on architecture, game logic, data models, and client architecture.
+
+## Self-Improvement Protocol
+
+**When you receive a correction from the user, ask yourself: is this generalizable?**
+
+A correction is generalizable if it reflects a recurring pattern — a preference, a project convention, an architectural rule, or a common mistake — that would apply to future work, not just the current task.
+
+### If the correction IS generalizable:
+
+1. **Update this file** (`CLAUDE.md`) — this is the primary durable store. It's in git, loaded in every session, and survives worktree creation/deletion.
+2. **Commit it immediately** so future sessions inherit it:
+
+```bash
+git add CLAUDE.md
+git commit -m "docs: add [topic] convention based on user correction"
+```
+
+**Generalizable** = a preference, convention, or recurring pattern that applies beyond the current task (architecture rules, style preferences, workflow habits). **Not generalizable** = task-specific mistakes (wrong variable name, missing test case, misread requirement) — skip those.
+
+**Goal: low miss rate.** If you're corrected on something twice, the first correction should have been captured. A slightly redundant note is better than repeating an error.
