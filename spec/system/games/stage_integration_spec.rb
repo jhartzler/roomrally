@@ -26,11 +26,12 @@ RSpec.describe "Stage View Game Integration", type: :system do
         click_on "Join Game"
         players << "Player #{i}"
       end
-    end
 
-    # Check lobby updates
-    within_window stage_window do
-      players.each { |name| expect(page).to have_content(name) }
+      # Verify each player appears on stage before joining the next,
+      # avoiding a race where the last broadcast hasn't arrived yet.
+      within_window stage_window do
+        expect(page).to have_content("Player #{i}")
+      end
     end
 
     # Host starts the game (Player 0 is host)
