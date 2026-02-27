@@ -1,0 +1,109 @@
+<% content_for :breadcrumb do %>
+  <%= link_to "Users", admin_users_path, class: "text-sm text-indigo-600 hover:underline" %>
+  <span class="text-gray-400 mx-1">/</span>
+  <span class="text-sm font-semibold text-gray-700"><%= @user.name %></span>
+<% end %>
+
+<%
+  window_start = User::AI_WINDOW_HOURS.hours.ago
+  window_requests = @user.ai_generation_requests.select { |r| r.created_at > window_start }
+  ai_used = window_requests.count { |r| r.counts_against_limit }
+  ai_remaining = [User::AI_REQUEST_LIMIT - ai_used, 0].max
+  grace_used = window_requests.count { |r| !r.counts_against_limit && r.status == "failed" }
+  oldest_counting = window_requests.select(&:counts_against_limit).min_by(&:created_at)
+  reset_at = oldest_counting&.created_at&.+(User::AI_WINDOW_HOURS.hours)
+%>
+
+<div class="mb-4">
+  <h1 class="text-xl font-bold"><%= @user.name %></h1>
+  <p class="text-sm text-gray-500"><%= @user.email %></p>
+  <p class="text-xs text-gray-400">Joined <%= @user.created_at.strftime("%B %d, %Y") %></p>
+</div>
+
+<%# AI Usage Card %>
+<div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+  <h2 class="font-bold text-gray-700 mb-3">AI Usage</h2>
+  <div class="grid grid-cols-2 gap-3 mb-4">
+    <div>
+      <p class="text-2xl font-black <%= ai_used > 0 ? 'text-orange-600' : 'text-gray-300' %>">
+        <%= ai_used %> / <%= User::AI_REQUEST_LIMIT %>
+      </p>
+      <p class="text-xs text-gray-500">Used this window</p>
+    </div>
+    <div>
+      <p class="text-2xl font-black text-green-600"><%= ai_remaining %></p>
+      <p class="text-xs text-gray-500">Remaining</p>
+    </div>
+    <% if grace_used > 0 %>
+      <div>
+        <p class="text-lg font-bold text-gray-500"><%= grace_used %></p>
+        <p class="text-xs text-gray-500">Grace failures</p>
+      </div>
+    <% end %>
+    <% if reset_at %>
+      <div>
+        <p class="text-sm font-semibold text-gray-600"><%= reset_at.strftime("%I:%M %p") %></p>
+        <p class="text-xs text-gray-500">Window resets</p>
+      </div>
+    <% end %>
+  </div>
+  <% if ai_used > 0 %>
+    <%= button_to "Reset AI Limit", reset_ai_limit_admin_user_path(@user),
+        method: :post,
+        class: "w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-sm" %>
+  <% else %>
+    <p class="text-center text-sm text-gray-400 py-2">No requests in current window</p>
+  <% end %>
+</div>
+
+<%# Engagement Card %>
+<div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+  <h2 class="font-bold text-gray-700 mb-3">Engagement</h2>
+  <div class="space-y-2 text-sm">
+    <div class="flex justify-between">
+      <span class="text-gray-600">Rooms created</span>
+      <span class="font-semibold"><%= @user.rooms.size %></span>
+    </div>
+    <% last_room = @user.rooms.max_by(&:created_at) %>
+    <% if last_room %>
+      <div class="flex justify-between">
+        <span class="text-gray-600">Last room</span>
+        <span class="font-semibold"><%= last_room.created_at.strftime("%b %d, %Y") %></span>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%# Packs Card %>
+<div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+  <h2 class="font-bold text-gray-700 mb-3">Packs</h2>
+  <div class="space-y-2 text-sm">
+    <div class="flex justify-between">
+      <span class="text-gray-600">Prompt packs</span>
+      <span class="font-semibold">
+        <%= @user.prompt_packs.size %>
+        <span class="text-gray-400 font-normal">
+          (<%= @user.prompt_packs.count { |p| p.status == "live" } %> live)
+        </span>
+      </span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-gray-600">Trivia packs</span>
+      <span class="font-semibold">
+        <%= @user.trivia_packs.size %>
+        <span class="text-gray-400 font-normal">
+          (<%= @user.trivia_packs.count { |p| p.status == "live" } %> live)
+        </span>
+      </span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-gray-600">Category packs</span>
+      <span class="font-semibold">
+        <%= @user.category_packs.size %>
+        <span class="text-gray-400 font-normal">
+          (<%= @user.category_packs.count { |p| p.status == "live" } %> live)
+        </span>
+      </span>
+    </div>
+  </div>
+</div>
