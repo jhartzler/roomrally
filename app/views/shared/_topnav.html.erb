@@ -1,16 +1,20 @@
 <nav data-testid="topnav" class="sticky top-0 z-50 bg-blue-900/80 backdrop-blur-md border-b border-white/10">
-  <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-2 sm:gap-4">
     <%# Logo %>
     <%= link_to root_path, class: "group hover:opacity-80 transition-opacity shrink-0" do %>
-      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/logo-one-line.png" %>" alt="RoomRally Logo" class="h-16 sm:h-20 w-auto object-contain">
+      <img src="<%= "#{Rails.configuration.x.r2_assets_url}/logos/logo-one-line.png" %>" alt="RoomRally Logo" class="h-12 sm:h-16 md:h-20 w-auto object-contain">
     <% end %>
 
     <%# Actions %>
-    <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <%= link_to "Join", play_path,
+          class: "sm:hidden text-white font-bold py-1.5 px-3 rounded-full border border-white/30 hover:bg-white/10 transition-all text-xs" %>
       <%= link_to "Join a Game", play_path,
-          class: "text-white font-bold py-2 px-4 rounded-full border border-white/30 hover:bg-white/10 transition-all text-sm" %>
+          class: "hidden sm:inline-block text-white font-bold py-2 px-4 rounded-full border border-white/30 hover:bg-white/10 transition-all text-sm" %>
+      <%= link_to "Host", host_path,
+          class: "sm:hidden bg-orange-500 text-white font-bold py-1.5 px-3 rounded-full hover:bg-orange-600 transition-all text-xs shadow-lg shadow-orange-900/30" %>
       <%= link_to "Host a Game", host_path,
-          class: "bg-orange-500 text-white font-bold py-2 px-4 rounded-full hover:bg-orange-600 transition-all text-sm shadow-lg shadow-orange-900/30" %>
+          class: "hidden sm:inline-block bg-orange-500 text-white font-bold py-2 px-4 rounded-full hover:bg-orange-600 transition-all text-sm shadow-lg shadow-orange-900/30" %>
 
       <% if current_user %>
         <%= link_to "Dashboard", dashboard_path,
@@ -20,7 +24,7 @@
       <% else %>
         <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false } do |f| %>
           <%= f.submit "Login with Google",
-              class: "text-blue-200 hover:text-white transition-colors text-sm font-medium bg-transparent border-0 cursor-pointer p-0" %>
+              class: "text-blue-200 hover:text-white transition-colors text-sm font-medium bg-transparent border-0 cursor-pointer p-0 whitespace-nowrap" %>
         <% end %>
       <% end %>
     </div>
