@@ -44,20 +44,19 @@
       </div>
     <% else %>
       <%
-         # Check if player has already voted for this specific prompt instance
-         player_voted = Vote.joins(:response)
-                           .where(player: player)
-                           .where(responses: { prompt_instance_id: current_prompt.id })
-                           .exists?
+         player_vote = Vote.joins(:response)
+                          .where(player: player)
+                          .where(responses: { prompt_instance_id: current_prompt.id })
+                          .first
          available_responses = responses.order(:id)
       %>
-      <% available_responses.each do |response| %>
-        <div class="response-card bg-blue-600/20 backdrop-blur-sm p-6 rounded-2xl border border-blue-400/30 shadow-sm transition-all"
-             data-controller="vote-feedback">
-          <% if player_voted %>
-            <!-- Already voted state -->
+      <% if player_vote.present? %>
+        <%# Show only the card the player voted for — others don't render %>
+        <% voted_response = available_responses.find { |r| r.id == player_vote.response_id } %>
+        <% if voted_response %>
+          <div class="response-card bg-blue-600/20 backdrop-blur-sm p-6 rounded-2xl border border-green-400/30 shadow-sm">
             <div class="text-center">
-              <div class="text-xl font-bold text-white mb-4 leading-relaxed">"<%= response.body %>"</div>
+              <div class="text-xl font-bold text-white mb-4 leading-relaxed">"<%= voted_response.body %>"</div>
               <div class="flex items-center justify-center gap-2 text-green-400 font-bold">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
@@ -66,8 +65,13 @@
               </div>
               <p class="text-blue-300/70 text-sm mt-3">Waiting for others...</p>
             </div>
-          <% else %>
-            <!-- Show response text FIRST, button SECOND -->
+          </div>
+        <% end %>
+      <% else %>
+        <%# No vote yet — show all response cards with vote buttons %>
+        <% available_responses.each do |response| %>
+          <div class="response-card bg-blue-600/20 backdrop-blur-sm p-6 rounded-2xl border border-blue-400/30 shadow-sm transition-all"
+               data-controller="vote-feedback">
             <div class="text-xl font-bold text-white mb-4 leading-relaxed text-center">
               "<%= response.body %>"
             </div>
@@ -77,8 +81,8 @@
                 params: { vote: { response_id: response.id }, code: room.code },
                 data: { action: "click->vote-feedback#vote" },
                 class: "w-full bg-orange-500 hover:bg-orange-600 active:scale-[0.95] text-white font-black py-3 rounded-xl shadow-lg transition-all" %>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
   </div>
