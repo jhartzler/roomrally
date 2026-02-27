@@ -91,7 +91,7 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
       expect(page).to have_content("Vote for the best answer!", wait: 5)
       expect(page).to have_css(".response-card", minimum: 2)
       within(all(".response-card").first) do
-        expect(page).to have_css(".letter-badge")
+        expect(page).to have_css(".letter-badge", text: "A")
       end
     end
   end

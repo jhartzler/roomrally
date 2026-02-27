@@ -54,9 +54,17 @@
         <%# Show only the card the player voted for — others don't render %>
         <% voted_response = available_responses.find { |r| r.id == player_vote.response_id } %>
         <% if voted_response %>
+          <% voted_index = available_responses.index(voted_response) %>
           <div class="response-card bg-blue-600/20 backdrop-blur-sm p-6 rounded-2xl border border-green-400/30 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="letter-badge bg-white/20 text-white font-black text-lg h-9 w-9 rounded-full flex items-center justify-center shrink-0">
+                <%= (voted_index + 65).chr %>
+              </div>
+              <div class="text-xl font-bold text-white leading-relaxed">
+                "<%= voted_response.body %>"
+              </div>
+            </div>
             <div class="text-center">
-              <div class="text-xl font-bold text-white mb-4 leading-relaxed">"<%= voted_response.body %>"</div>
               <div class="flex items-center justify-center gap-2 text-green-400 font-bold">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
