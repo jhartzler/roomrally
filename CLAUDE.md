@@ -143,6 +143,29 @@ Game logic calls `GameBroadcaster` methods directly. Convention for stage partia
 
 Games with timed phases include `HasRoundTimer` concern and implement `process_timeout(round_number, step_number)`.
 
+### Turbo Form Submissions in the Hand View
+
+The hand view (`rooms/:code/hand`) is the player's phone screen. State updates arrive via WebSocket broadcasts (`GameBroadcaster.broadcast_hand`). Player actions are submitted via Turbo form/button POST requests that fire-and-forget — the response just acknowledges receipt, and the broadcast delivers the new state.
+
+**Two hard rules:**
+
+1. **Never use `data: { turbo: false }` on forms rendered in broadcasted partials.**
+   Broadcasted partials are rendered without a real session, so `form_with` embeds an invalid CSRF token. With `turbo: false`, the form submits as a plain POST using that bad token → Rails returns 422. Without `turbo: false`, Turbo reads the CSRF token from the page's `<meta name="csrf-token">` tag (set on initial page load, always valid).
+   - Exception: `_hand_instructions.html.erb` intentionally keeps `turbo: false` because it relies on a `format.html` redirect to reload the hand with fresh game state. Do not remove it without rethinking that flow.
+
+2. **Use `head :no_content` (204), not `head :ok` (200), in `format.turbo_stream` blocks.**
+   `head :ok` (200 + empty body) does not reliably communicate to Turbo that no navigation should occur. Turbo can treat it as a full-page response, replace `window.location.href` with the form action URL (e.g. `/category_list_games/3/submissions`), and leave players unable to refresh or reconnect. `head :no_content` (204) is the unambiguous "nothing to do" signal — no page replacement, no URL change.
+
+   ```ruby
+   # ✅ DO
+   format.turbo_stream { head :no_content }
+
+   # ❌ DON'T
+   format.turbo_stream { head :ok }
+   ```
+
+**Architecture note — planned migration:** `#hand_screen` is currently a plain `<div>`. The long-term plan is to convert it to a `<turbo-frame>` for lower latency (frame gets updated HTML directly from the HTTP response rather than waiting for the broadcast). This requires changing every game controller to respond with the rendered hand partial instead of `head :no_content`. Do not make this change incrementally — it needs to be done as a coordinated migration across all game types.
+
 ### Viewport-Relative Units (vh)
 
 Stage views are projected on shared screens (typically 1920x1080) and **must never scroll**. Use viewport-relative units (`vh`) instead of fixed pixel sizes (`px`, `rem`) for all spacing and text in stage views. Favor `vh` over `px` in other views when updating existing code.
