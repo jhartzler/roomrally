@@ -14,30 +14,114 @@
 
 <div class="max-w-md mx-auto">
   <% if game.reviewing? %>
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 mb-4">
-      <p class="text-lg text-white font-bold mb-1">Your Answers</p>
-      <p class="text-sm text-blue-200 mb-4">Round <%= game.current_round %> &mdash; Letter "<%= game.current_letter %>"</p>
+    <% categories = game.current_round_categories.to_a %>
+    <% ci = categories[game.reviewing_category_position] %>
 
-      <div class="space-y-3">
-        <% game.current_round_categories.each do |ci| %>
-          <% answer = ci.category_answers.find_by(player: player) %>
-          <div class="bg-black/30 rounded-xl px-4 py-3 border <%= answer&.rejected? ? 'border-red-500/50' : 'border-white/10' %>">
-            <span class="text-[10px] uppercase font-bold text-blue-300 tracking-wider block mb-1"><%= ci.name %></span>
-            <% if answer&.body.present? %>
-              <span class="text-white font-medium <%= 'line-through opacity-50' if answer.rejected? %>"><%= answer.body %></span>
-              <% if answer.rejected? %>
-                <span class="text-xs bg-red-400/20 text-red-400 px-2 py-1 rounded-full font-bold ml-2">REJECTED</span>
-                <p class="text-xs text-red-400/60 mt-1">The host removed this one — it won't count.</p>
-              <% end %>
-            <% else %>
-              <span class="text-gray-500 italic">No answer</span>
-            <% end %>
-          </div>
-        <% end %>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-[3vw] border border-white/20 mb-4">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-lg text-white font-bold"><%= ci&.name %></p>
+        <span class="text-xs text-blue-300 font-medium">
+          Category <%= game.reviewing_category_position + 1 %> of <%= categories.size %>
+        </span>
       </div>
+      <p class="text-sm text-blue-200 mb-4">
+        Round <%= game.current_round %> &mdash; Letter "<%= game.current_letter %>"
+      </p>
+
+      <% if ci %>
+        <%
+          answers = ci.category_answers.includes(:player).to_a
+          normalized_groups = answers.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
+          duplicate_norms = normalized_groups.select { |_, group| group.size > 1 }.map(&:first).to_set
+        %>
+        <div class="space-y-2">
+          <% answers.each do |answer| %>
+            <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
+            <% is_auto_dup = duplicate_norms.include?(norm) && norm.present? && !answer.rejected? && !answer.duplicate? %>
+            <% is_struck = answer.rejected? || answer.duplicate? || is_auto_dup %>
+            <div class="bg-black/30 rounded-xl px-4 py-3 border <%= is_struck ? 'border-white/5 opacity-50' : 'border-white/10' %>">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-sm font-bold text-blue-300"><%= answer.player.name %></span>
+                <span class="text-white font-medium <%= 'line-through' if is_struck %>">
+                  <%= answer.body.presence || "—" %>
+                </span>
+                <% if answer.rejected? %>
+                  <span class="text-xs bg-red-400/20 text-red-400 px-2 py-0.5 rounded-full font-bold">REJECTED</span>
+                <% elsif answer.duplicate? || is_auto_dup %>
+                  <span class="text-xs bg-orange-400/20 text-orange-400 px-2 py-0.5 rounded-full font-bold">DUPLICATE</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
-    <p class="text-center text-blue-300 animate-pulse text-sm">Host is reviewing. Sit tight — shouldn't be long.</p>
+    <p class="text-center text-blue-300 animate-pulse text-sm">
+      <%= player == room.host ? "You're judging. Reject anything that doesn't count." : "Host is judging answers." %>
+    </p>
+
+    <% if player == room.host && ci %>
+      <%
+        answers_actionable = ci.category_answers.includes(:player)
+          .reject { |a| a.rejected? || a.duplicate? || a.hidden? || a.body.blank? }
+        normalized_mod = answers_actionable.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
+        auto_dup_norms_mod = normalized_mod.select { |_, g| g.size > 1 }.map(&:first).to_set
+      %>
+
+      <% if answers_actionable.any? %>
+        <div class="mt-4 space-y-2">
+          <% answers_actionable.each do |answer| %>
+            <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
+            <% next if auto_dup_norms_mod.include?(norm) && norm.present? %>
+            <div class="flex items-center justify-between bg-black/20 rounded-xl px-3 py-2 border border-white/10">
+              <span class="text-sm text-white">
+                <span class="text-blue-300 font-bold"><%= answer.player.name %></span>
+                <span class="text-blue-100">: <%= answer.body %></span>
+              </span>
+              <div class="flex gap-1">
+                <%= button_to "Reject",
+                    category_answer_path(answer),
+                    method: :patch,
+                    params: { category_answer: { status: "rejected" }, code: room.code },
+                    data: { turbo_submits_with: "…" },
+                    class: "text-xs bg-red-600/40 hover:bg-red-600/60 text-red-200 px-2 py-1 rounded-lg cursor-pointer transition" %>
+                <%= button_to "Dup",
+                    category_answer_path(answer),
+                    method: :patch,
+                    params: { category_answer: { status: "duplicate" }, code: room.code },
+                    data: { turbo_submits_with: "…" },
+                    class: "text-xs bg-orange-600/40 hover:bg-orange-600/60 text-orange-200 px-2 py-1 rounded-lg cursor-pointer transition" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="flex gap-2 mt-4">
+        <%= button_to "← Prev",
+            category_list_game_review_navigation_path(game),
+            method: :patch,
+            params: { direction: "prev", code: room.code },
+            disabled: game.reviewing_category_position == 0,
+            class: "flex-1 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl text-sm cursor-pointer transition" %>
+        <% if game.reviewing_category_position == categories.size - 1 %>
+          <%= button_to "Finish & Score",
+              category_list_game_review_path(game),
+              method: :patch,
+              params: { code: room.code },
+              data: { turbo_submits_with: "Scoring…" },
+              class: "flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl text-sm cursor-pointer transition" %>
+        <% else %>
+          <%= button_to "Next →",
+              category_list_game_review_navigation_path(game),
+              method: :patch,
+              params: { direction: "next", code: room.code },
+              data: { turbo_submits_with: "…" },
+              class: "flex-1 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-4 rounded-xl text-sm cursor-pointer transition" %>
+        <% end %>
+      </div>
+    <% end %>
   <% elsif game.scoring? %>
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
       <div class="text-6xl mb-6">🏆</div>
