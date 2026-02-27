@@ -26,6 +26,11 @@
       <div class="text-7xl font-black text-yellow-400 leading-none"><%= game.current_letter %></div>
     </div>
 
+    <!-- Scoring hint -->
+    <p class="text-center text-xs text-white/50 font-medium mb-4">
+      💡 Starts with <%= game.current_letter %> = 2pts · unique answer = 1pt · same as someone else = 0pts
+    </p>
+
     <% if game.timer_enabled? && game.round_ends_at %>
       <div class="text-center mb-4 text-xl text-yellow-400 font-black font-mono" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
         <span data-timer-target="output"><%= game.time_remaining.ceil %></span>s
