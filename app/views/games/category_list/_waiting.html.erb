@@ -123,14 +123,55 @@
       </div>
     <% end %>
   <% elsif game.scoring? %>
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
-      <div class="text-6xl mb-6">🏆</div>
-      <p class="text-2xl text-white font-bold mb-4">Round Results</p>
-      <p class="text-lg text-blue-200">Scores are in! Your total is below.</p>
+    <%
+      players_with_scores = room.players.map do |p|
+        round_score = game.category_answers
+          .joins(:category_instance)
+          .where(player: p, category_instances: { round: game.current_round })
+          .sum(:points_awarded)
+        { player: p, round_score: round_score }
+      end.sort_by { |h| -h[:round_score] }
+    %>
 
-      <% player_score = game.category_answers.where(player:).sum(:points_awarded) %>
-      <p class="text-4xl text-yellow-400 font-black font-mono mt-4"><%= player_score %></p>
-      <p class="text-blue-200">your total points</p>
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 mb-4">
+      <p class="text-lg text-white font-bold mb-1">🏆 Round <%= game.current_round %> Scores</p>
+      <p class="text-sm text-blue-200 mb-4">Letter "<%= game.current_letter %>"</p>
+
+      <div class="space-y-2">
+        <% players_with_scores.each_with_index do |entry, i| %>
+          <% is_me = entry[:player] == player %>
+          <div class="flex items-center justify-between rounded-xl px-4 py-3
+            <%= is_me ? 'bg-blue-600/30 border border-blue-400/30' : 'bg-black/30 border border-white/10' %>">
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-bold <%= is_me ? 'text-blue-200' : 'text-gray-400' %>">
+                <%= (i + 1).ordinalize %>
+              </span>
+              <span class="font-medium <%= is_me ? 'text-white' : 'text-gray-200' %>">
+                <%= entry[:player].name %><%= " (you)" if is_me %>
+              </span>
+            </div>
+            <span class="text-yellow-400 font-bold text-lg"><%= entry[:round_score] %></span>
+          </div>
+        <% end %>
+      </div>
     </div>
+
+    <% if player == room.host %>
+      <% if game.last_round? %>
+        <%= button_to "Finish Game",
+            category_list_game_rounds_path(game),
+            method: :post,
+            params: { code: room.code },
+            data: { turbo_submits_with: "Finishing…" },
+            class: "w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition" %>
+      <% else %>
+        <%= button_to "Next Round →",
+            category_list_game_rounds_path(game),
+            method: :post,
+            params: { code: room.code },
+            data: { turbo_submits_with: "Starting…" },
+            class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition" %>
+      <% end %>
+    <% end %>
   <% end %>
 </div>

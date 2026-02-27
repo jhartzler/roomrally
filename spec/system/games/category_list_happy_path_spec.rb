@@ -331,10 +331,10 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
       expect(page).not_to have_content("Check the screen")
     end
 
-    # Host should see "Next Round" or "Finish Game" button
+    # Host should see "Finish Game" button (total_rounds: 1 → last round)
     Capybara.using_session(:host) do
       visit room_hand_path(room)
-      expect(page).to have_button(/Finish Game|Next Round/, wait: 5)
+      expect(page).to have_button("Finish Game", wait: 5)
     end
   end
 end
