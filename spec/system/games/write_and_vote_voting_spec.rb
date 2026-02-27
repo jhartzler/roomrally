@@ -79,7 +79,7 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
         # voter IS an author. The server broadcasts the updated hand, switching the
         # screen to "Voting in Progress". Waiting for this confirms the server
         # processed the request before we assert Vote.count.
-        expect(page).to have_content("Voting in Progress", wait: 5)
+        expect(page).to have_content("Your answer is up for a vote!", wait: 5)
       }.to change(Vote, :count).by(1)
     end
   end
