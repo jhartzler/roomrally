@@ -26,6 +26,7 @@
     <%= button_to "Start Game",
         category_list_game_game_start_path(game),
         method: :post,
+        params: { code: room.code },
         data: { turbo_submits_with: "Starting…" },
         class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
@@ -44,12 +45,14 @@
       <%= button_to "Show Scores",
           category_list_game_review_path(game),
           method: :patch,
+          params: { code: room.code },
           data: { turbo_submits_with: "Scoring…" },
           class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% else %>
       <%= button_to "End Round",
           category_list_game_review_path(game),
           method: :patch,
+          params: { code: room.code },
           data: { turbo_submits_with: "Ending…" },
           class: "w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
@@ -125,13 +128,13 @@
       <%= button_to "← Prev",
           category_list_game_review_navigation_path(game),
           method: :patch,
-          params: { direction: "prev" },
+          params: { direction: "prev", code: room.code },
           disabled: position == 0,
           class: "flex-1 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl transition text-sm cursor-pointer" %>
       <%= button_to "Next →",
           category_list_game_review_navigation_path(game),
           method: :patch,
-          params: { direction: "next" },
+          params: { direction: "next", code: room.code },
           disabled: position == max_position,
           class: "flex-1 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl transition text-sm cursor-pointer" %>
     </div>
@@ -140,6 +143,7 @@
       <%= button_to "Finish Review & Show Scores",
           category_list_game_review_path(game),
           method: :patch,
+          params: { code: room.code },
           data: { turbo_submits_with: "Scoring…" },
           class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
@@ -150,6 +154,7 @@
       <%= button_to scores_visible ? "Hide Scores on Stage" : "Show Scores on Stage",
           category_list_game_stage_scores_path(game),
           method: :patch,
+          params: { code: room.code },
           data: { turbo_submits_with: "Updating…" },
           class: "w-full #{scores_visible ? 'bg-white/10 hover:bg-white/20' : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500'} text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10 mb-3" %>
     <% end %>
@@ -158,12 +163,14 @@
       <%= button_to "Finish Game",
           category_list_game_rounds_path(game),
           method: :post,
+          params: { code: room.code },
           data: { turbo_submits_with: "Finishing…" },
           class: "w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% else %>
       <%= button_to "Next Round",
           category_list_game_rounds_path(game),
           method: :post,
+          params: { code: room.code },
           data: { turbo_submits_with: "Loading…" },
           class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
