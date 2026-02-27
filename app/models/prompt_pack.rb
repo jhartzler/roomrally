@@ -18,7 +18,9 @@ class PromptPack < ApplicationRecord
   enum :status, { draft: 0, live: 1 }
 
   def supported_players_count
-    game_class&.supported_players_for(prompts.size)
+    return nil unless game_class&.respond_to?(:supported_players_for)
+
+    game_class.supported_players_for(prompts.size)
   end
 
   def prompts_per_player_ratio
