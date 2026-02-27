@@ -69,9 +69,9 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
       # Since we are already logged in via UI
       visit room_hand_path(room.code)
 
-      within first("[data-test-id='player-prompt']") do
-        find("textarea[name='response[body]']").set("Funny Answer")
-        click_on "Submit"
+      within first('form[action^="/responses"]') do
+        fill_in "response[body]", with: "Funny Answer"
+        click_on "Submit Response"
       end
     end
 
