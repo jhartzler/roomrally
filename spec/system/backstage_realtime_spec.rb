@@ -104,7 +104,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
       expect(page).to have_content("Too inappropriate")
 
       # Resubmit
-      within find("[data-test-id='player-prompt']", text: "Let's try another answer") do
+      within find("[data-controller='character-counter']", text: "Let's try another answer") do
         fill_in "response[body]", with: "Clean Answer"
         click_on "Submit Revision"
       end
