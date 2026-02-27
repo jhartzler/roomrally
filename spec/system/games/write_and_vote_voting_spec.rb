@@ -77,10 +77,22 @@ RSpec.describe "Write and Vote - Voting", :js, type: :system do
 
         # After the voter casts a vote on PI0, the game advances to PI1 where the
         # voter IS an author. The server broadcasts the updated hand, switching the
-        # screen to "Voting in Progress". Waiting for this confirms the server
+        # screen to "Your answer is up for a vote!". Waiting for this confirms the server
         # processed the request before we assert Vote.count.
         expect(page).to have_content("Your answer is up for a vote!", wait: 5)
       }.to change(Vote, :count).by(1)
+    end
+  end
+
+  it "shows letter labels (A, B, C...) on response cards so players can coordinate with the stage" do
+    Capybara.using_session(:voter) do
+      visit set_player_session_path(voter)
+
+      expect(page).to have_content("Vote for the best answer!", wait: 5)
+      expect(page).to have_css(".response-card", minimum: 2)
+      within(all(".response-card").first) do
+        expect(page).to have_css(".letter-badge")
+      end
     end
   end
 end
