@@ -214,6 +214,14 @@ Before writing a helper, check if Rails already provides it in ActiveSupport or 
 - **Session-Based Auth**: Players identified by Rails session for reconnection, no accounts required
 - **System Tests Are Critical**: Multiplayer flows must be tested with multiple Capybara sessions
 
+### `GameHostAuthorization` — room-scoped player lookup
+
+`authorize_host` in `app/controllers/concerns/game_host_authorization.rb` looks up the player directly via `@game.room.players.find_by(session_id:)`, **not** via `current_player`. This is intentional: `set_current_player` in `ApplicationController` requires `params[:code]` to scope its lookup; without it, it returns the first player with that `session_id` across all rooms, causing false authorization failures for players who joined via room code.
+
+**When adding new game controllers** that include `GameHostAuthorization`: no extra work needed — the concern handles scoping itself.
+
+**When adding host-action buttons in views**: still pass `params: { code: room.code }` as defense-in-depth (it keeps `set_current_player` correct for other before_actions that may rely on `current_player`).
+
 ## Pull Request Descriptions
 
 Focus on what matters to a human reviewer. GitHub already shows file changes, so don't list them.
