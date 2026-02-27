@@ -10,7 +10,7 @@
 
 User testing with teens and college-age players revealed four recurring confusion points across the games:
 
-1. In Comedy Clash voting, players who wrote a prompt see a vague "Voting in Progress" state — no explanation of *why* they can't vote.
+1. In Comedy Clash voting, players who wrote a *response* to the current prompt are excluded from voting on it — they watch while everyone else decides. The current state is a vague "Voting in Progress" that doesn't tell them what's actually happening (their answer is being judged!).
 2. The stage shows response letters (A, B, C, D) during voting, but the hand doesn't — players can't coordinate.
 3. Comedy Clash has 2 rounds but nothing communicates this before or during round 1. Players think the game ends after round 1.
 4. A-List scoring rules (alliterative = 2pts, duplicate = 0pts) are mentioned in the stage instructions but not surfaced again when it matters — during the filling phase on the player's hand.
@@ -21,50 +21,9 @@ Additionally: existing in-game copy is dry and functional. For teens in a group-
 
 ## Copy Voice Guide
 
-This guide applies to all in-game text: waiting states, success states, error states, instructions, hints, and prompts.
+See [`docs/copy-voice.md`](../copy-voice.md) for the full guide.
 
-### The Voice
-
-**Warm + cheeky.** We're a game, not a SaaS product. Text should feel like a game show host who's having fun and rooting for the players — not a loading spinner.
-
-**Unexpected but not weird.** The best copy here says something familiar in a slightly surprising way. "That's just the rules" lands differently than "You are not permitted to vote." We're not Jackbox and we're not trying to be — our tone is warmer, less edgy, more accessible.
-
-**Affectionate, never mean.** Self-aware humor is fine. Sarcasm aimed *at* the player is not.
-
-### Do
-- Short, punchy sentences
-- Occasional parenthetical aside (sparingly)
-- Warmth toward the player — they're doing a fun thing
-- Unexpected phrasing that makes you smile, not cringe
-- Active voice, second person ("you", "your")
-
-### Don't
-- Dry declaratives: "Your answer has been submitted."
-- Passive voice: "A vote cannot be cast."
-- Forced slang: "bestie", "slay", "no cap" — unless it genuinely fits
-- Overbearing enthusiasm: 3 exclamation marks, ALL CAPS HYPE
-- Competing with Jackbox energy — we're warmer and less edgy
-- Corporate hedging: "due to game rules", "as per the prompt"
-
-### Examples
-
-| Instead of... | Try... |
-|---|---|
-| "You cannot vote on this prompt." | "You wrote this one — the vote's not yours to make." |
-| "Your answer has been submitted." | "Answer in. Sit back and see what happens." |
-| "Waiting for other players..." | "Waiting on the rest of the room..." |
-| "Voting in Progress" | "Votes are being cast." |
-| "Correct!" | "That's the one." |
-| "Incorrect" | "Not quite — but you'll get the next one." |
-| "Time's up!" | "And... time. Let's see how everyone did." |
-| "Round 1 of 2" | "Round 1 of 2 — we're just getting started." |
-
-### Tone Spectrum (stay in the middle)
-
-```
-Too dry                  ← sweet spot →                  Too edgy
-"Answer recorded."    "Answer in. Nice."    "LETS GOOO bestie 💅"
-```
+**Short version:** Supportive hype-man energy. Affectionate cheekiness, unexpected enthusiasm, self-aware about game mechanics. Short and punchy. Never smug, never dry, never forced slang.
 
 ---
 
@@ -72,13 +31,15 @@ Too dry                  ← sweet spot →                  Too edgy
 
 These fixes are copy changes and small UI additions — no new components, no structural changes.
 
-### Fix 1: Comedy Clash — Author Voting State
+### Fix 1: Comedy Clash — Author Waiting State
 
-**Problem:** When a player wrote the current prompt, they see a vague waiting state with no explanation. They think the game is broken.
+**Problem:** Players who wrote a response to the current prompt are excluded from voting on it — they watch while everyone else decides. The current copy ("Voting in Progress / May the best answer win!") is vague and doesn't tell them what's actually happening. Their answer is out there being judged — that's exciting! The copy should lean into that instead of reading like a generic loading state.
 
-**Solution:** Replace the vague copy with an explicit, warm explanation of why they're benched.
+**Mechanic (from code):** `_voting.html.erb` line 38 — `if responses.exists?(player: player)` — if the current player authored a response to this prompt, the voting UI is replaced with a waiting state. They don't vote at all for this prompt; they just watch.
 
-**Location:** `app/views/games/write_and_vote/_voting.html.erb` — the author-waiting branch (when `player.is_author_of_current_prompt`)
+**Solution:** Replace the vague waiting copy with something that frames this as an exciting moment ("your answer is being voted on!") rather than a vague hold screen.
+
+**Location:** `app/views/games/write_and_vote/_voting.html.erb` — the branch at line 38–44.
 
 **Before:**
 ```
@@ -89,12 +50,10 @@ These fixes are copy changes and small UI additions — no new components, no st
 
 **After:**
 ```
-✍️ "You wrote this one"
-   "Since this is your prompt, the vote isn't yours to make — that's just how it works."
-   "Watching to see whose answer wins..."
+🗳️ "Your answer is up for a vote!"
+   "Sit tight — the room is deciding if you're a comedy genius or just... brave."
+   "Waiting for everyone to vote..."
 ```
-
-**Copy rationale:** "that's just how it works" is lightly self-aware without being smug. Ending on "watching to see whose answer wins" gives the author something to look forward to.
 
 ---
 

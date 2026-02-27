@@ -1,175 +1,75 @@
-# Room Rally Copy Voice Guide
+# RoomRally Copy Voice Guide
 
-The in-game voice for Room Rally. Reference this any time you're writing UI text: waiting states, success states, instructions, hints, button labels, error messages — all of it.
+**The Vibe:** Quirky but not off-putting. Fun but not overbearing. Playful but not snarky.
 
----
-
-## The Voice in One Sentence
-
-A game show host who's warm, cheeky, and genuinely rooting for the players — not a loading spinner, not a terms-of-service agreement.
+**The Persona:** The ultimate, supportive hype-man. You're the host who is genuinely thrilled everyone is here to play. Quick on your feet, slightly cheeky, but always punching up, never down. You want everyone to win, even if the rules say only one person can.
 
 ---
 
-## Core Principles
+## Do
 
-### 1. Warm, not neutral
+- **Affectionate cheekiness:** Gentle ribbing that makes players smile.
+- **Unexpected enthusiasm:** Use exclamation points and celebratory language for mundane actions.
+- **Self-awareness:** Acknowledge the mechanics of the game in a fun way.
+- **Short & punchy:** Keep the game moving.
 
-Players are in a room together, playing a game, probably laughing. The copy should feel like it belongs to that moment — not like instructions on a boarding pass.
+## Don't
 
-| ❌ Neutral | ✅ Warm |
-|---|---|
-| "Your answer has been submitted." | "Answer in. Now we wait." |
-| "Waiting for other players." | "Waiting on the rest of the room..." |
-| "You cannot vote on this prompt." | "You wrote this one — the vote isn't yours to make." |
-
-### 2. Cheeky, not smug
-
-There's a meaningful difference. Cheeky = the game is in on the fun with you. Smug = the game thinks it's funnier than you.
-
-| ❌ Smug | ✅ Cheeky |
-|---|---|
-| "That's just the rules. Sorry about it." | "That's just how it works." |
-| "Wow, bold choice." | (don't comment on their choice at all) |
-| "Maybe next time, friend." | "Not quite — you'll get the next one." |
-
-### 3. Short and confident
-
-Long sentences explain themselves to death. Short sentences trust the player.
-
-| ❌ Long | ✅ Short |
-|---|---|
-| "Please wait while the other players in the room complete their answers before the game can proceed." | "Waiting on the rest of the room..." |
-| "Your score has been calculated based on the number of votes your answer received." | "Points earned. Check the leaderboard." |
-
-### 4. Unexpected but not weird
-
-The best copy here says something familiar in a slightly surprising way. If you read a line and think "huh, that's a nice way to say it" — that's the target. If you think "is this a bit?" — dial it back.
-
-| ❌ Weird | ✅ Unexpected |
-|---|---|
-| "VOTES ARE INCOMING, BRACE YOURSELF" | "Watching to see whose answer wins..." |
-| "You're benched, bestie 💅" | "You wrote this one — the vote isn't yours." |
-| "Calculating the vibes..." | "Tallying up the scores..." |
-
-### 5. Affectionate, never mean
-
-Self-aware humor is fine. Sarcasm aimed at the player is not. Even "wrong answer" moments should feel supportive.
-
-| ❌ Punching down | ✅ Supportive |
-|---|---|
-| "Nobody voted for that one." | "Didn't get the votes this round." |
-| "Zero points. Yikes." | "No points this round — the letter's tricky." |
+- **Smug or mean sarcasm:** Never make a player feel stupid for an action.
+- **Dry declaratives:** No robotic "Action completed successfully" text.
+- **Forced slang:** Avoid trying to sound like a teenager; aim for timelessly playful.
+- **Wall-of-text:** If it takes more than 3 seconds to read, it's too long.
 
 ---
 
-## Common States Reference
+## Examples
 
-### Waiting on others
+**Scenario: A player tries to vote for their own answer.**
 
-- "Waiting on the rest of the room..."
-- "Hang tight while everyone catches up."
-- "Almost everyone's in — just a few more."
-- "Sit back while the others finish up."
+✅ "We love the self-confidence, but you gotta vote for someone else!"
 
-### Answer submitted / action confirmed
+✅ "Nice try, but no voting for yourself. Pick another favorite!"
 
-- "Answer in. Now we wait."
-- "Got it. Waiting on the rest of the room."
-- "Vote cast. See what everyone else picks."
-- "Done. Now it's out of your hands."
+❌ "You cannot vote because you are the author of this prompt." *(Too dry)*
 
-### Can't take an action (and why)
-
-- "You wrote this one — the vote isn't yours to make." (author exclusion in W&V)
-- "You've already voted." (double-vote prevention)
-- "Round's closed — the host is reviewing." (A-List late submission)
-
-### Correct answer (Speed Trivia)
-
-- "That's the one." (calm confidence)
-- "You got it." (simple)
-- "Right on." (slightly playful)
-
-### Wrong answer (Speed Trivia)
-
-- "Not quite." (soft landing)
-- "Not this time — but you'll get the next one."
-- "Close! The answer was [X]."
-
-### Time's up
-
-- "And... time." (game show host energy, understated)
-- "Time's up. Let's see how everyone did."
-- "Pencils down." (classroom-appropriate)
-
-### Round transitions
-
-- "Round 1 of 2 — we're just getting started."
-- "Round 2 of 2. Last chance to catch up."
-- "That's a wrap on round [X]."
-
-### Game over / results
-
-- "That's the game." (clean ending)
-- "Final scores. See where you landed."
-- "All done. Here's how it shook out."
+❌ "Wow, really? You can't vote for yourself, genius." *(Too mean/smug)*
 
 ---
 
-## Scoring Hints
+**Scenario: Waiting for the rest of the room to submit answers.**
 
-Keep scoring hints factual and brief. They should inform, not lecture.
+✅ "Just waiting on a few slowpokes... (we won't name names)."
 
-**A-List:**
-```
-Starts with [letter] = 2pts · unique = 1pt · same as someone else = 0pts
-```
+✅ "Gathering the final answers. The anticipation is killing us."
 
-**Speed Trivia:**
-```
-Faster answers = more points. First in? Could be 1000 pts. Last second? Maybe 100.
-```
+❌ "Waiting for other players." *(Too dry)*
 
-**Comedy Clash:**
-```
-Every vote you earn = points. Write something people actually want to vote for.
-```
+❌ "Tell your friends to hurry up." *(Too aggressive)*
 
 ---
 
-## What to Avoid
+**Scenario: Revealing the winning answer.**
 
-- **Forced teen slang:** "bestie", "slay", "no cap", "bussin", "lowkey" — unless it genuinely fits the context (it usually doesn't)
-- **Overuse of "!" —** one exclamation mark can be right. Three is a cry for help.
-- **ALL CAPS HYPE** — feels aggressive in a group setting, especially on projected screens
-- **Hedging language:** "due to game rules", "as per the current round", "at this time"
-- **Passive voice:** "A vote cannot be cast" vs "You can't vote on this one"
-- **Competing with Jackbox** — they have a specific tone. We're warmer and more accessible. Don't copy their style; it'll feel like an imitation.
+✅ "Crown them! We have a clear winner."
 
----
+✅ "The people have spoken, and they chose... this."
 
-## Tailoring for Context
-
-**Stage (projected screen, everyone sees it):**
-- Shorter is better — people read it from a distance
-- All caps or large text for key messages, but sentence case for everything else
-- Avoid inside jokes or references that require context to land
-
-**Hand (player's phone, individual):**
-- Can be slightly more personal ("you", "your")
-- Slightly more room for a follow-up sentence
-- Don't assume they can see the stage while reading their phone
-
-**Host controls (sidebar, during the game):**
-- Clear and direct — the host is making decisions under social pressure
-- Instructions should be action-oriented: "Click Next Question to advance" not "When you're ready, you can proceed to the next question by clicking the button below"
+❌ "Player 1 wins the round." *(Too dry)*
 
 ---
 
-## Writing Process
+## Game-Specific Notes
 
-1. Write the obvious version first ("Your answer was submitted successfully.")
-2. Cut anything redundant ("successfully" adds nothing)
-3. Ask: does this sound like a person said it?
-4. Ask: is it warmer than neutral without being weird?
-5. Read it out loud. If you'd be embarrassed to say it in a room, rewrite it.
+### Comedy Clash — Author Waiting State
+
+In Comedy Clash, players write *responses* to system-generated prompts. During voting, players who wrote a response for the current prompt are **fully excluded from voting** on it — they watch while everyone else decides. This is different from "you can't vote for yourself"; they simply sit out entirely.
+
+Copy for this state should lean into the anticipation of having your answer judged, not explain a restriction:
+
+✅ "Your answer is up for a vote! Sit tight — the room is deciding if you're a comedy genius or just... brave."
+
+✅ "Your answer is out there! Everyone's voting right now. Fingers crossed."
+
+❌ "Voting in Progress. May the best answer win." *(Vague — doesn't tell the player why they're watching)*
+
+❌ "You can't vote on this one." *(Sounds like a penalty, not an exciting moment)*
