@@ -96,7 +96,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
         # Click the first answer option (which is correct based on our seed data)
         # Use find instead of first — find retries on StaleElementReferenceError
         find('[data-test-id="answer-option-0"]', match: :first).click
-        expect(page).to have_content("Answer submitted!", wait: 5)
+        expect(page).to have_content("Locked in!", wait: 5)
         screenshot_checkpoint("answer_submitted")
       end
     end
@@ -109,10 +109,10 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       Capybara.using_session(session) do
         visit current_path
         # Wait for Turbo transition, refresh if stale DOM causes issues
-        unless page.has_content?("Correct!", wait: 5) || page.has_content?("Wrong!", wait: 5)
+        unless page.has_content?("That's the one!", wait: 5) || page.has_content?("Not quite.", wait: 5)
           visit current_path
         end
-        expect(page).to have_content("Correct!", wait: 5).or have_content("Wrong!", wait: 5)
+        expect(page).to have_content("That's the one!", wait: 5).or have_content("Not quite.", wait: 5)
         # Score panel should appear on the same screen
         expect(page).to have_css("[data-controller='score-tally']", wait: 5)
         expect(page).to have_content(/place/i, wait: 5)

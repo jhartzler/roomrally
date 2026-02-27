@@ -73,7 +73,7 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
         visit current_path
         expect(page).to have_selector('[data-test-id="answer-option-0"]', wait: 5)
         find('[data-test-id="answer-option-0"]', match: :first).click
-        expect(page).to have_content("Answer submitted!", wait: 5)
+        expect(page).to have_content("Locked in!", wait: 5)
       end
     end
 
@@ -92,7 +92,7 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
         visit current_path
         expect(page).to have_selector('[data-test-id="answer-option-1"]', wait: 5)
         find('[data-test-id="answer-option-1"]', match: :first).click
-        expect(page).to have_content("Answer submitted!", wait: 5)
+        expect(page).to have_content("Locked in!", wait: 5)
       end
     end
 
@@ -103,7 +103,7 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
     [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         # Wait for Turbo Stream DOM update (no visit current_path)
-        expect(page).to have_content("Wrong!", wait: 5)
+        expect(page).to have_content("Not quite.", wait: 5)
         expect(page).to have_css("[data-controller='score-tally']", wait: 5)
 
         score_tally_el = find("[data-controller='score-tally']")

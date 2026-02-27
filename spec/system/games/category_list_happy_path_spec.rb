@@ -69,6 +69,10 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
         expect(page).to have_button("Submit Answers", wait: 10)
         screenshot_checkpoint("filling") if session != :host # host already captured above
 
+        # Scoring hint is visible during filling phase
+        expect(page).to have_content("= 2pts")
+        expect(page).to have_content("= 1pt")
+
         # Fill in answer fields (text inputs inside the answer form)
         all("input[name^='answers']").each_with_index do |input, ci_idx|
           input.fill_in with: "#{letter}nswer#{idx}-#{ci_idx}"
