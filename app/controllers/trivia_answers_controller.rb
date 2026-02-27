@@ -18,7 +18,7 @@ class TriviaAnswersController < ApplicationController
 
     if answer.persisted?
       respond_to do |format|
-        format.turbo_stream { head :ok }
+        format.turbo_stream { head :no_content }
         format.html { redirect_to room_hand_path(@game.room) }
       end
     else

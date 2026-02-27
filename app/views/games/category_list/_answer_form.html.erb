@@ -37,7 +37,7 @@
       </div>
     <% end %>
 
-    <%= form_with url: category_list_game_submissions_path(game), method: :post, data: { turbo: false } do |f| %>
+    <%= form_with url: category_list_game_submissions_path(game), method: :post do |f| %>
       <%= hidden_field_tag :code, room.code %>
       <div class="space-y-3 mb-6">
         <% categories.each do |ci| %>

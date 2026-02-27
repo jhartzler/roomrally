@@ -69,7 +69,7 @@ class VotesController < ApplicationController
     )
 
     respond_to do |format|
-      format.turbo_stream { head :ok }
+      format.turbo_stream { head :no_content }
     end
   end
 end

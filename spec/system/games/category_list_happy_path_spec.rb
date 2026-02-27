@@ -282,6 +282,49 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     end
   end
 
+  it "player can submit answers via the broadcasted form without refreshing" do
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Waiting for players to join...")
+      alice = Player.find_by(name: "Alice")
+    end
+
+    # Host starts the game — this broadcasts the answer form via Turbo Stream (no page refresh for Alice)
+    Capybara.using_session(:host) do
+      click_on "Start Game"
+      find("#start-from-instructions-btn", wait: 10).click
+    end
+
+    # Alice should receive the answer form via Turbo Stream broadcast — WITHOUT refreshing
+    # This is the bug: the broadcasted form contained an invalid CSRF token, causing 422
+    Capybara.using_session(:alice) do
+      expect(page).to have_button("Submit Answers", wait: 10)
+      game = room.reload.current_game
+      letter = game.current_letter
+
+      all("input[name^='answers']").each_with_index do |input, idx|
+        input.fill_in with: "#{letter}nswer#{idx}"
+      end
+      click_on "Submit Answers"
+
+      # Should succeed, not 422
+      expect(page).to have_content("Answers submitted!", wait: 5)
+      expect(CategoryAnswer.where(player: alice).count).to be > 0
+    end
+  end
+
   it "shows round leaderboard on phones during scoring" do
     host_player = nil
     alice = nil
