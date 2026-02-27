@@ -234,6 +234,14 @@ Focus on what matters to a human reviewer. GitHub already shows file changes, so
 
 See `docs/` directory for detailed guides on architecture, game logic, data models, and client architecture.
 
+## In-Game Copy
+
+All UI text (waiting states, success states, instructions, hints, button labels) should follow the copy voice guide:
+
+> **[docs/copy-voice.md](docs/copy-voice.md)**
+
+**Short version:** Warm + cheeky. Game show host who's rooting for the players. Not dry, not corporate, not trying to be Jackbox. Short sentences, active voice, affectionate but not overbearing.
+
 ## Self-Improvement Protocol
 
 **When you receive a correction from the user, ask yourself: is this generalizable?**
