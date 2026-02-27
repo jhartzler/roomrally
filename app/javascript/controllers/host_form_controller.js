@@ -8,7 +8,7 @@ export default class extends Controller {
   }
 
   updateStageOnlyVisibility() {
-    const selected = this.element.querySelector("input[name='room[game_type]']:checked")
+    const selected = this.element.querySelector("input[type=radio]:checked")
     const show = selected?.value === "Category List"
     this.stageOnlySectionTarget.hidden = !show
   }
