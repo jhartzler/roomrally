@@ -60,6 +60,16 @@ RSpec.describe Room, type: :model do
         new_room = described_class.create!
         expect(new_room.code).to eq('WXYZ')
       end
+
+      it 'retries if a profane code is generated' do
+        allow(SecureRandom).to receive(:alphanumeric)
+          .with(4)
+          .and_return('assy', 'wxyz')
+        allow(Obscenity).to receive(:profane?).and_return(true, false)
+
+        new_room = described_class.create!
+        expect(new_room.code).to eq('WXYZ')
+      end
       # rubocop:enable RSpec/ExampleLength
     end
   end

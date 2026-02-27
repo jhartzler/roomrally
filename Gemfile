@@ -25,6 +25,7 @@ gem "sidekiq"
 gem "ruby-openai"
 # Event bus
 gem "wisper"
+gem "obscenity"
 gem "connection_pool", "~> 3.0"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
