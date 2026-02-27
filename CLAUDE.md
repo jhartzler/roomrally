@@ -223,6 +223,7 @@ Focus on what matters to a human reviewer. GitHub already shows file changes, so
 - **Decisions**: Non-obvious choices, tradeoffs, or things done intentionally
 - **Reviewer notes**: What should they pay attention to? Any risks?
 - **Configuration**: Environment variables or setup needed
+- Attribution: "Co-authored with Claude" or similar necessary attribution
 
 **Avoid:**
 - Listing files added/modified (GitHub shows this)
