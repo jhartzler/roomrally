@@ -27,6 +27,7 @@
               <span class="text-white font-medium <%= 'line-through opacity-50' if answer.rejected? %>"><%= answer.body %></span>
               <% if answer.rejected? %>
                 <span class="text-xs bg-red-400/20 text-red-400 px-2 py-1 rounded-full font-bold ml-2">REJECTED</span>
+                <p class="text-xs text-red-400/60 mt-1">The host removed this one — it won't count.</p>
               <% end %>
             <% else %>
               <span class="text-gray-500 italic">No answer</span>
@@ -36,12 +37,12 @@
       </div>
     </div>
 
-    <p class="text-center text-blue-300 animate-pulse text-sm">The host is checking answers...</p>
+    <p class="text-center text-blue-300 animate-pulse text-sm">Host is reviewing. Sit tight — shouldn't be long.</p>
   <% elsif game.scoring? %>
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
       <div class="text-6xl mb-6">🏆</div>
       <p class="text-2xl text-white font-bold mb-4">Round Results</p>
-      <p class="text-lg text-blue-200">Check the screen for scores!</p>
+      <p class="text-lg text-blue-200">Scores are in! Your total is below.</p>
 
       <% player_score = game.category_answers.where(player:).sum(:points_awarded) %>
       <p class="text-4xl text-yellow-400 font-black font-mono mt-4"><%= player_score %></p>

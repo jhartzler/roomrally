@@ -41,24 +41,24 @@
 
       <%# Motivational message %>
       <% message = if round_points == 0
-        ["Oof!", "Next time!"].sample
+        ["Oof.", "Next one's yours."].sample
       elsif current_rank <= previous_rank
-        ["Nice one!", "Way to go!"].sample
+        ["Nice one!", "That's how you do it."].sample
       else
-        ["Keep it up!", "You can do it!"].sample
+        ["Still in it!", "Don't count yourself out."].sample
       end %>
 
       <%# Answer result section %>
       <% if player_answer&.correct? %>
         <div class="text-5xl mb-3">🎉</div>
-        <p class="text-2xl text-green-400 font-bold mb-1">Correct!</p>
+        <p class="text-2xl text-green-400 font-bold mb-1">That's the one!</p>
       <% elsif player_answer %>
         <div class="text-5xl mb-3">😅</div>
-        <p class="text-2xl text-red-400 font-bold mb-1">Wrong!</p>
+        <p class="text-2xl text-red-400 font-bold mb-1">Not quite.</p>
         <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
       <% else %>
         <div class="text-5xl mb-3">⏱</div>
-        <p class="text-2xl text-gray-400 font-bold mb-1">Time's Up!</p>
+        <p class="text-2xl text-gray-400 font-bold mb-1">And... time.</p>
         <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
       <% end %>
 
