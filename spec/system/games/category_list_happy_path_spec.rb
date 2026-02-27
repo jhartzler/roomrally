@@ -133,7 +133,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     end
 
     Games::CategoryList.game_started(
-      room: room,
+      room:,
       total_rounds: 1,
       categories_per_round: 2,
       timer_enabled: false,
@@ -144,12 +144,12 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     letter = game.current_letter
     game.current_round_categories.each do |ci|
       Games::CategoryList.submit_answers(
-        game: game,
+        game:,
         player: host_player,
         answers_params: { ci.id.to_s => "#{letter}pple from Host" }
       )
       Games::CategoryList.submit_answers(
-        game: game,
+        game:,
         player: alice,
         answers_params: { ci.id.to_s => "#{letter}pple" }
       )
@@ -198,7 +198,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     end
 
     Games::CategoryList.game_started(
-      room: room,
+      room:,
       total_rounds: 1,
       categories_per_round: 2,
       timer_enabled: false,
@@ -208,9 +208,9 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
 
     letter = game.current_letter
     game.current_round_categories.each do |ci|
-      Games::CategoryList.submit_answers(game: game, player: host_player,
+      Games::CategoryList.submit_answers(game:, player: host_player,
         answers_params: { ci.id.to_s => "#{letter}nswer from Host" })
-      Games::CategoryList.submit_answers(game: game, player: alice,
+      Games::CategoryList.submit_answers(game:, player: alice,
         answers_params: { ci.id.to_s => "#{letter}nswer from Alice" })
     end
     expect(game.reload).to be_reviewing
@@ -247,7 +247,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     end
 
     Games::CategoryList.game_started(
-      room: room,
+      room:,
       total_rounds: 1,
       categories_per_round: 2,
       timer_enabled: false,
@@ -257,9 +257,9 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
 
     letter = game.current_letter
     game.current_round_categories.each do |ci|
-      Games::CategoryList.submit_answers(game: game, player: host_player,
+      Games::CategoryList.submit_answers(game:, player: host_player,
         answers_params: { ci.id.to_s => "#{letter}nswer from Host" })
-      Games::CategoryList.submit_answers(game: game, player: alice,
+      Games::CategoryList.submit_answers(game:, player: alice,
         answers_params: { ci.id.to_s => "#{letter}nswer from Alice" })
     end
     expect(game.reload).to be_reviewing
@@ -305,7 +305,7 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     end
 
     Games::CategoryList.game_started(
-      room: room,
+      room:,
       total_rounds: 1,
       categories_per_round: 2,
       timer_enabled: false,
@@ -315,9 +315,9 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
 
     letter = game.current_letter
     game.current_round_categories.each do |ci|
-      Games::CategoryList.submit_answers(game: game, player: host_player,
+      Games::CategoryList.submit_answers(game:, player: host_player,
         answers_params: { ci.id.to_s => "#{letter}mazing" })
-      Games::CategoryList.submit_answers(game: game, player: alice,
+      Games::CategoryList.submit_answers(game:, player: alice,
         answers_params: { ci.id.to_s => "#{letter}pple" })
     end
     Games::CategoryList.finish_review(game: game.reload)
