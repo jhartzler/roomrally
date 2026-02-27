@@ -9,7 +9,7 @@
         <%= lucide_icon(is_system ? 'sparkles' : 'folder', class: is_system ? "w-6 h-6" : "w-8 h-8", "aria-hidden": true) %>
       </div>
 
-      <% if is_system && pack.supported_players_count %>
+      <% if is_system && pack.has_player_limit? %>
         <%= render "shared/capacity_badge", pack: pack, show_label: false %>
       <% else %>
         <!-- Status Indicator -->
@@ -27,7 +27,7 @@
       <p class="text-sm text-blue-200/70 <%= is_system ? 'mb-4' : 'mb-5' %> font-medium uppercase tracking-widest"><%= pack.game_type %></p>
     </div>
 
-    <% if is_user && pack.supported_players_count %>
+    <% if is_user && pack.has_player_limit? %>
       <div class="flex items-center gap-2">
         <%= render "shared/capacity_badge", pack: pack, show_label: true %>
       </div>
