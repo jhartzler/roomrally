@@ -170,7 +170,10 @@ module Games
       )
 
       pack = game.category_pack || CategoryPack.default
-      available_categories = pack.categories.to_a
+      all_categories = pack.categories.to_a
+      used_category_ids = game.category_instances.pluck(:category_id).to_set
+      available_categories = all_categories.reject { |c| used_category_ids.include?(c.id) }
+      available_categories = all_categories if available_categories.size < game.categories_per_round
       selected = available_categories.sample(game.categories_per_round)
 
       selected.each_with_index do |category, index|
