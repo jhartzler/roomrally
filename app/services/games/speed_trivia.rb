@@ -137,7 +137,7 @@ module Games
         raise "Not enough trivia questions to start game."
       end
 
-      selected_questions = available_questions.sort_by(&:id).first(question_count)
+      selected_questions = available_questions.sort_by { |q| q.position || q.id }.first(question_count)
 
       selected_questions.each_with_index do |question, index|
         instance = TriviaQuestionInstance.create!(
