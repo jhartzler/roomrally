@@ -170,6 +170,32 @@ RSpec.describe Games::SpeedTrivia do
         expect(instance.image).not_to be_attached
       end
     end
+
+    context 'when questions have explicit positions' do
+      it 'assigns instances in position order, not id order' do
+        create(:trivia_question, trivia_pack: pack, body: "Last",   position: 2)
+        create(:trivia_question, trivia_pack: pack, body: "First",  position: 0)
+        create(:trivia_question, trivia_pack: pack, body: "Middle", position: 1)
+
+        described_class.send(:assign_questions, game:, question_count: 3)
+
+        bodies = game.trivia_question_instances.order(:position).map(&:body)
+        expect(bodies).to eq([ "First", "Middle", "Last" ])
+      end
+    end
+
+    context 'when questions have no position set' do
+      it 'assigns instances in id order' do
+        create(:trivia_question, trivia_pack: pack, body: "First",  position: nil)
+        create(:trivia_question, trivia_pack: pack, body: "Second", position: nil)
+        create(:trivia_question, trivia_pack: pack, body: "Third",  position: nil)
+
+        described_class.send(:assign_questions, game:, question_count: 3)
+
+        bodies = game.trivia_question_instances.order(:position).map(&:body)
+        expect(bodies).to eq([ "First", "Second", "Third" ])
+      end
+    end
   end
 
   describe '.close_round' do

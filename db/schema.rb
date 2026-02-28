@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_27_025552) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_213618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -292,6 +292,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_025552) do
     t.jsonb "correct_answers"
     t.datetime "created_at", null: false
     t.jsonb "options"
+    t.integer "position"
     t.bigint "trivia_pack_id", null: false
     t.datetime "updated_at", null: false
     t.index ["trivia_pack_id"], name: "index_trivia_questions_on_trivia_pack_id"

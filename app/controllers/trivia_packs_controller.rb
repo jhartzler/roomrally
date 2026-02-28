@@ -66,6 +66,7 @@ class TriviaPacksController < ApplicationController
       trivia_questions_attributes: [
         :id,
         :body,
+        :position,
         :_destroy,
         :image,
         :remove_image,
