@@ -165,7 +165,8 @@ GEM
     ffi (1.17.2-x86_64-linux-musl)
     globalid (1.3.0)
       activesupport (>= 6.1)
-    hashie (5.0.0)
+    hashie (5.1.0)
+      logger
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
@@ -270,7 +271,7 @@ GEM
       logger
       rack (>= 2.2.3)
       rack-protection
-    omniauth-google-oauth2 (1.2.1)
+    omniauth-google-oauth2 (1.2.2)
       jwt (>= 2.9.2)
       oauth2 (~> 2.0)
       omniauth (~> 2.0)
