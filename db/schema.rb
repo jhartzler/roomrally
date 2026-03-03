@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_213618) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_03_041958) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -259,6 +259,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_213618) do
     t.datetime "submitted_at"
     t.bigint "trivia_question_instance_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["player_id", "trivia_question_instance_id"], name: "index_trivia_answers_on_player_and_question_instance", unique: true
     t.index ["player_id"], name: "index_trivia_answers_on_player_id"
     t.index ["trivia_question_instance_id"], name: "index_trivia_answers_on_trivia_question_instance_id"
   end

@@ -56,7 +56,7 @@ module Games
       current_question = game.current_question
       return if current_question.nil?
 
-      # Prevent duplicate submissions
+      # Fast path: bail early if already answered.
       existing = TriviaAnswer.find_by(player:, trivia_question_instance: current_question)
       return existing if existing.present?
 
@@ -72,7 +72,14 @@ module Games
         round_started_at: game.round_started_at,
         round_closed_at: game.round_closed_at || (game.round_started_at + game.time_limit.seconds)
       )
-      answer.save!
+
+      begin
+        answer.save!
+      rescue ActiveRecord::RecordNotUnique
+        return TriviaAnswer.find_by!(player:, trivia_question_instance: current_question)
+      end
+
+      answer
 
       GameBroadcaster.broadcast_hand(room: game.room)
       GameBroadcaster.broadcast_stage(room: game.room)
