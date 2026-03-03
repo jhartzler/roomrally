@@ -11,7 +11,7 @@ RSpec.describe "TriviaAnswers", type: :request do
       room.update!(current_game: g, trivia_pack:)
       g
     end
-    let!(:question_instance) { create(:trivia_question_instance, speed_trivia_game: game, position: 0) }
+    let!(:question_instance) { create(:trivia_question_instance, speed_trivia_game: game, position: 0) } # rubocop:disable RSpec/LetSetup
 
     before do
       get set_player_session_path(player)
