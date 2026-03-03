@@ -3,10 +3,11 @@
 <% help_class = backstage ? "text-blue-300/60 text-xs mt-1 ml-8" : "text-gray-500 text-xs mt-1 ml-7" %>
 
 <% if room.game_type == "Speed Trivia" %>
+  <% settings = room.game_template&.merged_settings || GameTemplate::SETTING_DEFAULTS %>
   <div>
     <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
       <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Number of questions:</span>
-      <%= number_field_tag :question_count, 5, min: 1, max: TriviaPack.default.trivia_questions.count,
+      <%= number_field_tag :question_count, settings["question_count"], min: 1, max: TriviaPack.default.trivia_questions.count,
           class: backstage ?
             "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
             "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
@@ -16,10 +17,11 @@
 <% end %>
 
 <% if room.game_type == "Category List" %>
+  <% settings = room.game_template&.merged_settings || GameTemplate::SETTING_DEFAULTS %>
   <div>
     <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
       <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Categories per round:</span>
-      <%= number_field_tag :categories_per_round, 6, min: 3, max: 12,
+      <%= number_field_tag :categories_per_round, settings["categories_per_round"], min: 3, max: 12,
           class: backstage ?
             "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
             "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
@@ -29,7 +31,7 @@
   <div>
     <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
       <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Number of rounds:</span>
-      <%= number_field_tag :total_rounds, 3, min: 1, max: 10,
+      <%= number_field_tag :total_rounds, settings["total_rounds"], min: 1, max: 10,
           class: backstage ?
             "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
             "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
