@@ -26,12 +26,9 @@
             <%= form.text_field :name, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white placeholder-white/30" %>
           </div>
 
-          <div>
-            <%= form.label :game_type, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
-            <%= form.select :game_type, Room::GAME_TYPES, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
-          </div>
+          <%= form.hidden_field :game_type, value: "Write And Vote" %>
 
-           <div>
+ <div>
             <%= form.label :status, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
             <%= form.select :status, PromptPack.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
           </div>

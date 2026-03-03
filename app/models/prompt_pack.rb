@@ -26,7 +26,9 @@ class PromptPack < ApplicationRecord
   end
 
   def prompts_per_player_ratio
-    game_class&.const_get(:PROMPTS_PER_PLAYER_RATIO) || 1
+    return 1 unless has_player_limit?
+
+    game_class.const_get(:PROMPTS_PER_PLAYER_RATIO)
   end
 
   private
