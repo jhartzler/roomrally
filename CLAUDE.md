@@ -145,26 +145,27 @@ Games with timed phases include `HasRoundTimer` concern and implement `process_t
 
 ### Turbo Form Submissions in the Hand View
 
-The hand view (`rooms/:code/hand`) is the player's phone screen. State updates arrive via WebSocket broadcasts (`GameBroadcaster.broadcast_hand`). Player actions are submitted via Turbo form/button POST requests that fire-and-forget — the response just acknowledges receipt, and the broadcast delivers the new state.
+The hand view (`rooms/:code/hand`) uses `<turbo-frame id="hand_screen">` as its
+content container. All player actions (submit answers, cast votes, start game, etc.)
+are submitted via Turbo forms or `button_to` inside this frame.
 
-**Two hard rules:**
+**How it works:**
 
-1. **Never use `data: { turbo: false }` on forms rendered in broadcasted partials.**
-   Broadcasted partials are rendered without a real session, so `form_with` embeds an invalid CSRF token. With `turbo: false`, the form submits as a plain POST using that bad token → Rails returns 422. Without `turbo: false`, Turbo reads the CSRF token from the page's `<meta name="csrf-token">` tag (set on initial page load, always valid).
-   - Exception: `_hand_instructions.html.erb` intentionally keeps `turbo: false` because it relies on a `format.html` redirect to reload the hand with fresh game state. Do not remove it without rethinking that flow.
+1. Player submits a form inside `#hand_screen`
+2. Turbo sends the request with the meta CSRF token (always valid — no session context needed)
+3. The controller processes the action and calls `render_hand` (from the `RendersHand` concern)
+4. `render_hand` responds with `turbo_stream.update("hand_screen", ...)` — the hand
+   partial replaces the frame content immediately from the HTTP response
+5. `GameBroadcaster.broadcast_hand` also fires — this updates all *other* players'
+   frames via WebSocket. The submitter already has fresh state from step 4.
 
-2. **Use `head :no_content` (204), not `head :ok` (200), in `format.turbo_stream` blocks.**
-   `head :ok` (200 + empty body) does not reliably communicate to Turbo that no navigation should occur. Turbo can treat it as a full-page response, replace `window.location.href` with the form action URL (e.g. `/category_list_games/3/submissions`), and leave players unable to refresh or reconnect. `head :no_content` (204) is the unambiguous "nothing to do" signal — no page replacement, no URL change.
+**The `RendersHand` concern** (`app/controllers/concerns/renders_hand.rb`) resolves
+room and player from controller state automatically (`@game&.room || @room || current_player&.room`).
+Controllers just call `render_hand` with no arguments.
 
-   ```ruby
-   # ✅ DO
-   format.turbo_stream { head :no_content }
+**All game action controllers must include `RendersHand`** and call `render_hand` instead of `head :no_content`. Using 204 means the turbo-frame won't update from HTTP — the player must wait for the broadcast.
 
-   # ❌ DON'T
-   format.turbo_stream { head :ok }
-   ```
-
-**Architecture note — planned migration:** `#hand_screen` is currently a plain `<div>`. The long-term plan is to convert it to a `<turbo-frame>` for lower latency (frame gets updated HTML directly from the HTTP response rather than waiting for the broadcast). This requires changing every game controller to respond with the rendered hand partial instead of `head :no_content`. Do not make this change incrementally — it needs to be done as a coordinated migration across all game types.
+**Architecture note — hand_screen is a turbo-frame, not a div.** Turbo-frame submissions always use the meta CSRF token and never drift `window.location.href`. The old workarounds (avoiding `data: { turbo: false }` in broadcasted partials, using 204 vs 200) are no longer needed or relevant.
 
 ### Viewport-Relative Units (vh)
 
