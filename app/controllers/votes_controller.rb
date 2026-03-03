@@ -1,4 +1,6 @@
 class VotesController < ApplicationController
+  include RendersHand
+
   def create
     unless current_player
       head :unauthorized
@@ -68,8 +70,6 @@ class VotesController < ApplicationController
       }
     )
 
-    respond_to do |format|
-      format.turbo_stream { head :no_content }
-    end
+    render_hand
   end
 end
