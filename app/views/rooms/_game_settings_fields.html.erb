@@ -4,10 +4,11 @@
 
 <% if room.game_type == "Speed Trivia" %>
   <% settings = room.game_template&.merged_settings || GameTemplate::SETTING_DEFAULTS %>
+  <% max_questions = (room.trivia_pack || TriviaPack.default).trivia_questions.count %>
   <div>
     <label class="flex items-center gap-<%= backstage ? 3 : 2 %>">
       <span class="<%= backstage ? 'text-blue-100' : 'text-gray-700' %> font-medium text-sm">Number of questions:</span>
-      <%= number_field_tag :question_count, settings["question_count"], min: 1, max: TriviaPack.default.trivia_questions.count,
+      <%= number_field_tag :question_count, settings["question_count"], min: 1, max: max_questions,
           class: backstage ?
             "w-24 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 text-center font-mono" :
             "w-20 form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
