@@ -37,7 +37,7 @@ RSpec.describe "Stage View Flow", type: :system do
     using_session "player1" do
       if page.has_button?("Claim Host")
         click_on "Claim Host"
-        expect(page).to have_content("You are now the host!")
+        expect(page).to have_content("You're the host!")
       end
 
       # Find Bob's card and kick him

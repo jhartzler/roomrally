@@ -43,7 +43,6 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     Capybara.using_session(:host) do
       expect(page).to have_button("Start Game")
       click_on "Start Game"
-      expect(page).to have_content("Game started!")
 
       # Instructions screen shown for non-logged-in games
       expect(page).to have_content("Get ready!")

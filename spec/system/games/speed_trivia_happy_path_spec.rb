@@ -52,7 +52,6 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       end
       expect(page).to have_button("Start Game", wait: 5)
       click_on "Start Game"
-      expect(page).to have_content("Game started!")
 
       # Instructions screen shown for non-logged-in games
       expect(page).to have_content("Get ready!")

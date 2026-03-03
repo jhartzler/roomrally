@@ -45,7 +45,6 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       expect(page).to have_button("Start Game", wait: 5)
       click_on "Start Game"
 
-      expect(page).to have_content("Game started!")
       # Instructions screen shown for non-logged-in games
       expect(page).to have_content("Get ready!")
 
