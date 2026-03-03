@@ -51,7 +51,8 @@ class RoomsController < ApplicationController
         end
 
         if @room.game_type == "Speed Trivia" && question_count > 0
-          max_questions = TriviaPack.default.trivia_questions.count
+          pack = @room.trivia_pack || TriviaPack.default
+          max_questions = pack.trivia_questions.count
           if question_count > max_questions
             @room.update(status: "lobby")
             redirect_to room_hand_path(@room.code), alert: "Could not start game: Only #{max_questions} questions available"
