@@ -33,7 +33,7 @@ class TriviaAnswersController < ApplicationController
   end
 
   def set_game
-    @game = current_player.room.current_game
+    @game = current_player.room&.current_game
     return if @game.is_a?(SpeedTriviaGame)
 
     head :not_found
