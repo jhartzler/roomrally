@@ -67,11 +67,6 @@ module Games
         submitted_at: Time.current
       )
       answer.determine_correctness
-      answer.points_awarded = answer.calculate_points(
-        time_limit: game.time_limit,
-        round_started_at: game.round_started_at,
-        round_closed_at: game.round_closed_at || (game.round_started_at + game.time_limit.seconds)
-      )
 
       begin
         answer.save!
@@ -92,6 +87,7 @@ module Games
       game.previous_top_player_ids = game.room.players.active_players
         .order(score: :desc).limit(4).pluck(:id)
       game.close_round!
+      score_current_round(game)
       game.calculate_scores!
       broadcast_all(game)
     end
@@ -159,7 +155,18 @@ module Games
       end
     end
 
-    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all
+    def self.score_current_round(game)
+      return unless game.current_question
+
+      game.current_question.trivia_answers.find_each do |answer|
+        answer.update!(points_awarded: answer.calculate_points(
+          round_started_at: game.round_started_at,
+          round_closed_at: game.round_closed_at
+        ))
+      end
+    end
+
+    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all, :score_current_round
 
     module Playtest
       def self.start(room:)

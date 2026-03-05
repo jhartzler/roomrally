@@ -109,18 +109,12 @@ RSpec.describe Games::SpeedTrivia do
       expect(answer.correct).to be true
     end
 
-    it 'calculates and stores points for correct answer' do
+    it 'does not calculate points at submission time (deferred to close_round)' do
       freeze_time do
         game.update!(round_started_at: Time.current)
         described_class.submit_answer(game:, player:, selected_option: "Paris")
-        expect(TriviaAnswer.last.points_awarded).to eq(1000)
+        expect(TriviaAnswer.last.points_awarded).to eq(0)
       end
-    end
-
-    it 'awards 0 points for incorrect answer' do
-      described_class.submit_answer(game:, player:, selected_option: "London")
-      answer = TriviaAnswer.last
-      expect(answer.points_awarded).to eq(0)
     end
 
     it 'sets submitted_at timestamp' do
@@ -221,13 +215,35 @@ RSpec.describe Games::SpeedTrivia do
       end
     end
 
-    it 'calculates player scores immediately after closing the round' do
-      player = create(:player, room:, score: 0)
-      question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
-      create(:trivia_answer, player:, trivia_question_instance: question, points_awarded: 500)
+    it 'calculates points based on actual round duration and updates player scores' do
+      freeze_time do
+        started = Time.current - 5.seconds
+        game.update!(round_started_at: started)
+        player = create(:player, room:, score: 0)
+        question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+        # Answer submitted instantly (0s elapsed) — should get 1000 points
+        create(:trivia_answer, player:, trivia_question_instance: question,
+               correct: true, submitted_at: started, points_awarded: 0)
 
-      described_class.close_round(game:)
-      expect(player.reload.score).to eq(500)
+        described_class.close_round(game:)
+        expect(TriviaAnswer.last.points_awarded).to eq(1000)
+        expect(player.reload.score).to eq(1000)
+      end
+    end
+
+    it 'awards fewer points to slower answers' do
+      freeze_time do
+        started = Time.current - 10.seconds
+        game.update!(round_started_at: started)
+        player = create(:player, room:, score: 0)
+        question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+        # Answer submitted at halfway (5s of 10s round) — should get 550 points
+        create(:trivia_answer, player:, trivia_question_instance: question,
+               correct: true, submitted_at: started + 5.seconds, points_awarded: 0)
+
+        described_class.close_round(game:)
+        expect(TriviaAnswer.last.points_awarded).to eq(550)
+      end
     end
 
     it 'captures previous_top_player_ids on the game instance before updating scores' do
