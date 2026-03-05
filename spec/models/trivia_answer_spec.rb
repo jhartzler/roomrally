@@ -116,6 +116,17 @@ RSpec.describe TriviaAnswer, type: :model do
         # Long round (30 seconds) — answer at 15s should also get 550
         check_points(15.seconds, 30, 550)
       end
+
+      it 'awards max points when round duration is zero (instant close)' do
+        freeze_time do
+          started = Time.current
+          answer = build_correct_answer(started)
+          points = answer.calculate_points(
+            round_started_at: started, round_closed_at: started
+          )
+          expect(points).to eq(1000)
+        end
+      end
     end
 
     context 'with grace period submissions' do

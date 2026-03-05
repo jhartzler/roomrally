@@ -13,6 +13,8 @@ class TriviaAnswer < ApplicationRecord
     return 0 if submitted_at > deadline
 
     duration = round_closed_at - round_started_at
+    return SpeedTriviaGame::MAXIMUM_POINTS if duration <= 0
+
     elapsed = [ submitted_at - round_started_at, 0 ].max
     # Formula: Max * (1 - (elapsed / duration) * Decay)
     # Scales from 1000 (instant) to 100 (at round close)

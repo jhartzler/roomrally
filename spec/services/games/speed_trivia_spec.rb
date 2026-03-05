@@ -246,6 +246,21 @@ RSpec.describe Games::SpeedTrivia do
       end
     end
 
+    it 'awards 0 points for incorrect answers' do
+      freeze_time do
+        started = Time.current - 5.seconds
+        game.update!(round_started_at: started)
+        player = create(:player, room:, score: 0)
+        question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+        create(:trivia_answer, player:, trivia_question_instance: question,
+               correct: false, submitted_at: started + 1.second, points_awarded: 0)
+
+        described_class.close_round(game:)
+        expect(TriviaAnswer.last.points_awarded).to eq(0)
+        expect(player.reload.score).to eq(0)
+      end
+    end
+
     it 'captures previous_top_player_ids on the game instance before updating scores' do
       player = create(:player, room:, score: 1000)
 
