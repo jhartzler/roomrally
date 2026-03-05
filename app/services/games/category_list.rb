@@ -44,6 +44,8 @@ module Games
     end
 
     def self.submit_answers(game:, player:, answers_params:)
+      all_submitted = false
+
       game.with_lock do
         answers_params.each do |category_instance_id, answer_text|
           ci = game.category_instances.find_by(id: category_instance_id)
@@ -56,13 +58,12 @@ module Games
 
         if game.all_answers_submitted?
           game.begin_review!
-          broadcast_all(game)
-        else
-          GameBroadcaster.broadcast_hand(room: game.room)
-          GameBroadcaster.broadcast_stage(room: game.room)
-          GameBroadcaster.broadcast_host_controls(room: game.room)
+          all_submitted = true
         end
       end
+
+      # Broadcast outside lock to reduce contention
+      broadcast_all(game)
     end
 
     def self.finish_review(game:)
@@ -80,6 +81,22 @@ module Games
         [ game.reviewing_category_position - 1, 0 ].max
       end
       game.update!(reviewing_category_position: new_position)
+      broadcast_all(game)
+    end
+
+    def self.moderate_answer(answer:, status:)
+      case status
+      when "rejected"
+        reject_answer(answer:)
+      when "approved"
+        approve_answer(answer:)
+      when "hidden"
+        hide_answer(answer:)
+      when "duplicate"
+        mark_duplicate(answer:)
+      end
+
+      game = answer.category_instance.category_list_game
       broadcast_all(game)
     end
 
@@ -264,7 +281,7 @@ module Games
     end
 
     private_class_method :setup_round, :fill_missing_answers, :calculate_round_scores,
-                         :calculate_total_scores, :normalize_answer, :alliterative?,
+                         :calculate_total_scores, :alliterative?,
                          :start_timer_if_enabled, :broadcast_all
 
     module Playtest

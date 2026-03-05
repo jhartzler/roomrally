@@ -42,10 +42,7 @@ module Games
     def self.start_from_instructions(game:)
       game.start_game!
       assign_prompts_for_round(game:, round_number: 1)
-      room = game.room
-      GameBroadcaster.broadcast_stage(room:)
-      GameBroadcaster.broadcast_hand(room:)
-      GameBroadcaster.broadcast_host_controls(room:)
+      broadcast_all(game)
     end
 
     def self.process_vote(game:, vote:)
@@ -76,8 +73,7 @@ module Games
       end
 
       # Broadcasts can happen outside lock to reduce contention
-      GameBroadcaster.broadcast_hand(room: game.room)
-      GameBroadcaster.broadcast_stage(room: game.room)
+      broadcast_all(game)
     end
     def self.check_all_responses_submitted(game:)
       game.with_lock do
@@ -142,8 +138,7 @@ module Games
         # Force advance to next prompt or next round
         advance_game_state!(game:)
 
-        GameBroadcaster.broadcast_hand(room: game.room)
-        GameBroadcaster.broadcast_stage(room: game.room)
+        broadcast_all(game)
       end
     end
 
@@ -184,12 +179,18 @@ module Games
 
       start_timer_if_enabled(game, step_number: game.current_prompt_index)
 
-      GameBroadcaster.broadcast_hand(room: game.room)
-      GameBroadcaster.broadcast_stage(room: game.room)
+      broadcast_all(game)
       GameBroadcaster.clear_moderation_queue(room: game.room)
     end
 
-    private_class_method :start_timer_if_enabled, :transition_to_voting
+    def self.broadcast_all(game)
+      room = game.room
+      GameBroadcaster.broadcast_stage(room:)
+      GameBroadcaster.broadcast_hand(room:)
+      GameBroadcaster.broadcast_host_controls(room:)
+    end
+
+    private_class_method :start_timer_if_enabled, :transition_to_voting, :broadcast_all
 
     module Playtest
       def self.start(room:)
