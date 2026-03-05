@@ -89,6 +89,14 @@ When making UI changes, use screenshot checkpoints to verify visual changes are 
   ```
   Then restart `bin/dev`.
 
+- **Parallel rspec deadlocks across worktrees?**
+  All worktrees share `roomrally_test` by default. When multiple Claude sessions run `bin/rspec` simultaneously, PostgreSQL deadlocks on `DatabaseCleaner.clean_with(:truncation)`. Use `TEST_ENV_NUMBER` to isolate:
+  ```bash
+  TEST_ENV_NUMBER=2 bin/rails db:test:prepare   # one-time: creates roomrally_test2
+  TEST_ENV_NUMBER=2 bin/rspec                    # runs against isolated DB
+  ```
+  Each worktree needs a different number. Without the env var, the default `roomrally_test` is used. This is not yet automated — just pick a unique number per worktree.
+
 ## Architecture
 
 ### Request Flow
