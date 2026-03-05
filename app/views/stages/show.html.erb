@@ -1,7 +1,7 @@
 <% content_for(:hide_footer, true) %>
 <%= turbo_stream_from @room %>
 
-<div class="fixed inset-0 overflow-hidden text-white p-[2vh] flex flex-col bg-gradient-to-b from-blue-600 to-indigo-900 z-40">
+<div class="fixed inset-0 overflow-hidden text-white p-[2vh] flex flex-col bg-gradient-to-b from-blue-600 to-indigo-900 z-40" data-controller="reconnect">
   <div class="max-w-7xl mx-auto text-center w-full flex flex-col flex-1 min-h-0">
     <!-- Header: always compact with small corner QR -->
     <div class="mb-[2vh] relative shrink-0">
