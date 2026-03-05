@@ -15,6 +15,10 @@ class CategoryListGame < ApplicationRecord
   has_many :category_instances, dependent: :destroy
   has_many :category_answers, through: :category_instances
 
+  validates :timer_increment, numericality: { greater_than: 0 }, if: :timer_enabled?
+  validates :total_rounds, numericality: { greater_than: 0 }
+  validates :categories_per_round, numericality: { greater_than: 0 }
+
   aasm column: :status, whiny_transitions: false do
     state :instructions, initial: true
     state :filling
