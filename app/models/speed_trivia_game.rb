@@ -5,7 +5,7 @@ class SpeedTriviaGame < ApplicationRecord
   # Scoring Configuration
   MAXIMUM_POINTS = 1000
   MINIMUM_POINTS = 100
-  DECAY_FACTOR = 0.5 # Score drops to 50% at max time
+  DECAY_FACTOR = 0.9 # Score decays from 1000 to 100 over round duration
   GRACE_PERIOD = 0.5.seconds
   SCORE_REVEAL_DELAY = 5 # seconds to show answer before auto-advancing to scores
 
