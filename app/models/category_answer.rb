@@ -7,11 +7,13 @@ class CategoryAnswer < ApplicationRecord
   enum :status, { pending: "pending", approved: "approved", rejected: "rejected", hidden: "hidden" }, default: :pending
 
   # Set by CategoryInstance#answers_with_duplicate_detection
+  attr_writer :auto_duplicate
+
   def auto_duplicate?
-    instance_variable_get(:@auto_duplicate) || false
+    @auto_duplicate || false
   end
 
   def effectively_struck?
-    instance_variable_get(:@effectively_struck) || rejected? || duplicate?
+    rejected? || duplicate? || auto_duplicate?
   end
 end

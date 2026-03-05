@@ -18,8 +18,7 @@ class CategoryInstance < ApplicationRecord
 
     answers.each do |answer|
       norm = Games::CategoryList.normalize_answer(answer.body)
-      answer.instance_variable_set(:@auto_duplicate, duplicate_norms.include?(norm) && !answer.rejected? && !answer.duplicate?)
-      answer.instance_variable_set(:@effectively_struck, answer.rejected? || answer.duplicate? || answer.instance_variable_get(:@auto_duplicate))
+      answer.auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.duplicate?
     end
 
     answers
