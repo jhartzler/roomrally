@@ -2,6 +2,8 @@
 
 module CategoryList
   class SubmissionsController < ApplicationController
+    include RendersHand
+
     before_action :set_game
 
     def create
@@ -17,10 +19,7 @@ module CategoryList
         answers_params: submission_params
       )
 
-      respond_to do |format|
-        format.turbo_stream { head :no_content }
-        format.html { redirect_to room_hand_path(@game.room) }
-      end
+      render_hand
     end
 
     private

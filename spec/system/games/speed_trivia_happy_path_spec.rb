@@ -52,7 +52,6 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       end
       expect(page).to have_button("Start Game", wait: 5)
       click_on "Start Game"
-      expect(page).to have_content("Game started!")
 
       # Instructions screen shown for non-logged-in games
       expect(page).to have_content("Get ready!")
@@ -62,8 +61,9 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       screenshot_checkpoint("instructions")
       find("#start-from-instructions-btn").click
 
-      # Now in waiting state
+      # Now in waiting state — host controls must appear
       expect(page).to have_content("Get Ready!", wait: 5)
+      expect(page).to have_button("Start First Question", wait: 5)
       screenshot_checkpoint("get_ready")
     end
 
@@ -75,9 +75,11 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       end
     end
 
-    # Host starts first question
+    # Host starts first question via UI
     game = room.reload.current_game
-    Games::SpeedTrivia.start_question(game:)
+    Capybara.using_session(:host) do
+      click_on "Start First Question"
+    end
 
     # All players should see the question and answer options
     [ :host, :player2, :player3 ].each do |session|

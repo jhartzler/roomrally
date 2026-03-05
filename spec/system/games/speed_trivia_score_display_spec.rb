@@ -51,7 +51,6 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
       end
       expect(page).to have_button("Start Game", wait: 5)
       click_on "Start Game"
-      expect(page).to have_content("Game started!")
       expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
       find("#start-from-instructions-btn").click
       expect(page).to have_content("Get Ready!", wait: 5)

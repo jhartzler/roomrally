@@ -35,33 +35,29 @@ class RoomsController < ApplicationController
         return
       end
 
-      if @room.start_game!
-        Rails.logger.info "Game started for room #{@room.code} by #{current_player&.name || 'Facilitator'}"
+      timer_enabled = start_game_params[:timer_enabled] == "1"
+      timer_increment = start_game_params[:timer_increment].to_i
+      question_count = start_game_params[:question_count].to_i
+      show_instructions = @room.user.nil? || start_game_params[:show_instructions] == "1"
+      total_rounds = start_game_params[:total_rounds].to_i
+      categories_per_round = start_game_params[:categories_per_round].to_i
 
-        timer_enabled = start_game_params[:timer_enabled] == "1"
-        timer_increment = start_game_params[:timer_increment].to_i
-        question_count = start_game_params[:question_count].to_i
-        # Force show_instructions for non-logged-in games
-        show_instructions = @room.user.nil? || start_game_params[:show_instructions] == "1"
+      if timer_enabled && timer_increment <= 0
+        redirect_to room_hand_path(@room.code), alert: "Could not start game: Timer increment must be greater than 0"
+        return
+      end
 
-        if timer_enabled && timer_increment <= 0
-          @room.update(status: "lobby")
-          redirect_to room_hand_path(@room.code), alert: "Could not start game: Timer increment must be greater than 0"
+      if @room.game_type == "Speed Trivia" && question_count > 0
+        pack = @room.trivia_pack || TriviaPack.default
+        max_questions = pack.trivia_questions.count
+        if question_count > max_questions
+          redirect_to room_hand_path(@room.code), alert: "Could not start game: only #{max_questions} #{'question'.pluralize(max_questions)} available in this pack"
           return
         end
+      end
 
-        if @room.game_type == "Speed Trivia" && question_count > 0
-          pack = @room.trivia_pack || TriviaPack.default
-          max_questions = pack.trivia_questions.count
-          if question_count > max_questions
-            @room.update(status: "lobby")
-            redirect_to room_hand_path(@room.code), alert: "Could not start game: Only #{max_questions} questions available"
-            return
-          end
-        end
-
-        total_rounds = start_game_params[:total_rounds].to_i
-        categories_per_round = start_game_params[:categories_per_round].to_i
+      if @room.start_game!
+        Rails.logger.info "Game started for room #{@room.code} by #{current_player&.name || 'Facilitator'}"
 
         publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:, show_instructions:, total_rounds:, categories_per_round:)
 

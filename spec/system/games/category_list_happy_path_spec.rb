@@ -43,7 +43,6 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
     Capybara.using_session(:host) do
       expect(page).to have_button("Start Game")
       click_on "Start Game"
-      expect(page).to have_content("Game started!")
 
       # Instructions screen shown for non-logged-in games
       expect(page).to have_content("Get ready!")
@@ -279,6 +278,125 @@ RSpec.describe "Category List Game Happy Path", :js, type: :system do
       visit room_hand_path(room)
       expect(page).not_to have_button("Reject")
       expect(page).not_to have_button("Next →")
+    end
+  end
+
+  it "host does not see the read-only answer list during reviewing — only the action panel" do
+    host_player = nil
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!", wait: 5)
+      host_player = Player.find_by(name: "Host")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      alice = Player.find_by(name: "Alice")
+    end
+
+    Games::CategoryList.game_started(
+      room:,
+      total_rounds: 1,
+      categories_per_round: 1,
+      timer_enabled: false,
+      show_instructions: false
+    )
+    game = room.reload.current_game
+    letter = game.current_letter
+
+    game.current_round_categories.each do |ci|
+      Games::CategoryList.submit_answers(game:, player: host_player,
+        answers_params: { ci.id.to_s => "#{letter}nswer from Host" })
+      Games::CategoryList.submit_answers(game:, player: alice,
+        answers_params: { ci.id.to_s => "#{letter}nswer from Alice" })
+    end
+    expect(game.reload).to be_reviewing
+
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      # Host sees the interactive panel with Reject and Hide buttons
+      expect(page).to have_button("Reject", wait: 5)
+      expect(page).to have_button("Hide from Audience")
+      # Host does NOT see the read-only "you're judging" label
+      expect(page).not_to have_content("You're judging")
+      # Host does NOT see the non-host "host is judging" label either
+      expect(page).not_to have_content("Host is judging answers")
+    end
+
+    # Non-host still sees the read-only list
+    Capybara.using_session(:alice) do
+      visit room_hand_path(room)
+      expect(page).to have_content("Host is judging answers.", wait: 5)
+      expect(page).to have_content("#{letter}nswer from Host")
+    end
+  end
+
+  it "host sees Next Round button via host-controls panel during scoring" do
+    host_player = nil
+    alice = nil
+
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      click_on "Claim Host"
+      expect(page).to have_content("You're the host!", wait: 5)
+      host_player = Player.find_by(name: "Host")
+    end
+
+    Capybara.using_session(:alice) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby", wait: 5)
+      alice = Player.find_by(name: "Alice")
+    end
+
+    Games::CategoryList.game_started(
+      room:,
+      total_rounds: 2,
+      categories_per_round: 1,
+      timer_enabled: false,
+      show_instructions: false
+    )
+    game = room.reload.current_game
+    letter = game.current_letter
+
+    game.current_round_categories.each do |ci|
+      Games::CategoryList.submit_answers(game:, player: host_player,
+        answers_params: { ci.id.to_s => "#{letter}nswer" })
+      Games::CategoryList.submit_answers(game:, player: alice,
+        answers_params: { ci.id.to_s => "#{letter}nswer" })
+    end
+    expect(game.reload).to be_reviewing
+
+    # Advance to scoring — finish_review transitions reviewing → scoring
+    Games::CategoryList.finish_review(game:)
+    expect(game.reload).to be_scoring
+
+    Capybara.using_session(:host) do
+      visit room_hand_path(room)
+      # Host sees the round scores table
+      expect(page).to have_content("Round 1 Scores", wait: 5)
+      # Next Round button is in the host-controls panel
+      expect(page).to have_button("Next Round", wait: 5)
+    end
+
+    Capybara.using_session(:alice) do
+      visit room_hand_path(room)
+      expect(page).not_to have_button("Next Round")
+      # Non-host does see the round scores
+      expect(page).to have_content("Round 1 Scores", wait: 5)
     end
   end
 

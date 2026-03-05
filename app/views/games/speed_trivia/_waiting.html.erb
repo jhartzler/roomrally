@@ -86,3 +86,9 @@
     <% end %>
   </div>
 </div>
+
+<% if player == room.host %>
+  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-white/10 pt-6">
+    <%= render "rooms/host_controls", room: room %>
+  </div>
+<% end %>

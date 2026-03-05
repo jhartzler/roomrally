@@ -1,4 +1,5 @@
 class TriviaAnswersController < ApplicationController
+  include RendersHand
   before_action :require_player
   before_action :set_game
 
@@ -17,10 +18,7 @@ class TriviaAnswersController < ApplicationController
     )
 
     if answer.persisted?
-      respond_to do |format|
-        format.turbo_stream { head :no_content }
-        format.html { redirect_to room_hand_path(@game.room) }
-      end
+      render_hand
     else
       head :unprocessable_content
     end
@@ -35,7 +33,7 @@ class TriviaAnswersController < ApplicationController
   end
 
   def set_game
-    @game = current_player.room.current_game
+    @game = current_player.room&.current_game
     return if @game.is_a?(SpeedTriviaGame)
 
     head :not_found
