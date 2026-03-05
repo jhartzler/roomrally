@@ -30,25 +30,18 @@
         </p>
 
         <% if ci %>
-          <%
-            answers = ci.category_answers.includes(:player).to_a
-            normalized_groups = answers.group_by { |a| Games::CategoryList.normalize_answer(a.body) }
-            duplicate_norms = normalized_groups.select { |_, group| group.size > 1 }.map(&:first).to_set
-          %>
+          <% answers = ci.answers_with_duplicate_detection %>
           <div class="space-y-2">
             <% answers.each do |answer| %>
-              <% norm = Games::CategoryList.normalize_answer(answer.body) %>
-              <% is_auto_dup = duplicate_norms.include?(norm) && norm.present? && !answer.rejected? && !answer.duplicate? %>
-              <% is_struck = answer.rejected? || answer.duplicate? || is_auto_dup %>
-              <div class="bg-black/30 rounded-xl px-4 py-3 border <%= is_struck ? 'border-white/5 opacity-50' : 'border-white/10' %>">
+              <div class="bg-black/30 rounded-xl px-4 py-3 border <%= answer.effectively_struck? ? 'border-white/5 opacity-50' : 'border-white/10' %>">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="text-sm font-bold text-blue-300"><%= answer.player.name %></span>
-                  <span class="text-white font-medium <%= 'line-through' if is_struck %>">
+                  <span class="text-white font-medium <%= 'line-through' if answer.effectively_struck? %>">
                     <%= answer.body.presence || "—" %>
                   </span>
                   <% if answer.rejected? %>
                     <span class="text-xs bg-red-400/20 text-red-400 px-2 py-0.5 rounded-full font-bold">REJECTED</span>
-                  <% elsif answer.duplicate? || is_auto_dup %>
+                  <% elsif answer.duplicate? || answer.auto_duplicate? %>
                     <span class="text-xs bg-orange-400/20 text-orange-400 px-2 py-0.5 rounded-full font-bold">DUPLICATE</span>
                   <% end %>
                 </div>
@@ -63,15 +56,7 @@
       </p>
     <% end %>
   <% elsif game.scoring? %>
-    <%
-      players_with_scores = room.players.map do |p|
-        round_score = game.category_answers
-          .joins(:category_instance)
-          .where(player: p, category_instances: { round: game.current_round })
-          .sum(:points_awarded)
-        { player: p, round_score: round_score }
-      end.sort_by { |h| -h[:round_score] }
-    %>
+    <% players_with_scores = game.players_with_round_scores %>
 
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 mb-4">
       <p class="text-lg text-white font-bold mb-1">🏆 Round <%= game.current_round %> Scores</p>

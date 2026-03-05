@@ -70,24 +70,17 @@
     <% if ci %>
       <div class="bg-white/5 rounded-xl p-3 border border-white/10 mb-4">
         <h4 class="text-sm font-bold text-yellow-400 mb-2"><%= ci.name %></h4>
-        <%
-          answers = ci.category_answers.includes(:player).to_a
-          normalized_groups = answers.group_by { |a| Games::CategoryList.normalize_answer( a.body) }
-          duplicate_norms = normalized_groups.select { |norm, group| norm.present? && group.size > 1 }.keys.to_set
-        %>
+        <% answers = ci.answers_with_duplicate_detection %>
         <% answers.each do |answer| %>
-          <% norm = Games::CategoryList.normalize_answer( answer.body) %>
-          <% is_auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.hidden? && !answer.duplicate? %>
-          <% is_struck = answer.rejected? || answer.duplicate? || is_auto_duplicate %>
           <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
             <div class="flex items-center gap-2">
               <span class="text-white text-sm font-medium"><%= answer.player.name %>:</span>
-              <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through opacity-50' if is_struck %>">
+              <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through opacity-50' if answer.effectively_struck? %>">
                 <%= answer.body.present? ? answer.body : "blank" %>
               </span>
               <% if answer.hidden? %>
                 <span class="text-[10px] bg-gray-400/20 text-gray-400 px-1.5 py-0.5 rounded-full font-bold">HIDDEN</span>
-              <% elsif answer.duplicate? || is_auto_duplicate %>
+              <% elsif answer.duplicate? || answer.auto_duplicate? %>
                 <span class="text-[10px] bg-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded-full font-bold">DUPLICATE</span>
               <% elsif answer.rejected? %>
                 <span class="text-[10px] bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">0 PTS</span>
