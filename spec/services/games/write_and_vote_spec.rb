@@ -226,11 +226,11 @@ RSpec.describe Games::WriteAndVote do
 
     it 'does not reuse prompts between rounds' do
       # Round 1
-      described_class.assign_prompts_for_round(game:, round_number: 1)
+      described_class.send(:assign_prompts_for_round, game:, round_number: 1)
       round_1_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: 1).pluck(:prompt_id)
 
       # Round 2
-      described_class.assign_prompts_for_round(game:, round_number: 2)
+      described_class.send(:assign_prompts_for_round, game:, round_number: 2)
       round_2_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: 2).pluck(:prompt_id)
 
       # Intersection should be empty
@@ -241,7 +241,7 @@ RSpec.describe Games::WriteAndVote do
       # Expecting order("RANDOM()") NOT to be called ensures we moved to app-level sampling
       expect_any_instance_of(ActiveRecord::Relation).not_to receive(:order).with("RANDOM()") # rubocop:disable RSpec/AnyInstance
 
-      described_class.assign_prompts_for_round(game:, round_number: 1)
+      described_class.send(:assign_prompts_for_round, game:, round_number: 1)
     end
   end
 

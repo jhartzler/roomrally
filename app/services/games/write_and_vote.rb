@@ -190,7 +190,7 @@ module Games
       GameBroadcaster.broadcast_host_controls(room:)
     end
 
-    private_class_method :start_timer_if_enabled, :transition_to_voting, :broadcast_all
+    private_class_method :advance_game_state!, :assign_prompts_for_round, :start_timer_if_enabled, :transition_to_voting, :broadcast_all
 
     module Playtest
       def self.start(room:)

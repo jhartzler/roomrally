@@ -80,9 +80,11 @@ When a player's WebSocket disconnects during a broadcast, the message is permane
 2. Use room-scoped stream for hand content (requires player-aware partial rendering)
 3. Add `includes()` to the players query to prevent N+1 in partial rendering
 
-### 4c. Add `with_lock` to SpeedTrivia State Transitions
+### 4c. Add `with_lock` to State Transitions Across All Game Types
 
-SpeedTrivia relies on unique constraints for answer deduplication but has no locking around `close_round` or `next_question`. Double-clicking "Close Round" could run `score_current_round` and `calculate_scores!` twice.
+**SpeedTrivia:** Relies on unique constraints for answer deduplication but has no locking around `close_round` or `next_question`. Double-clicking "Close Round" could run `score_current_round` and `calculate_scores!` twice.
+
+**All three game types (`game_started`):** The `return if room.current_game.present?` → `room.update!(current_game: game)` pattern in every `game_started` method is a check-then-modify without `with_lock`. Under concurrent requests (two clicks of "Start Game"), both could pass the guard and create duplicate games. Should wrap in `room.with_lock { ... }`.
 
 ### 4d. ResponsesController Should Use Service Layer
 
