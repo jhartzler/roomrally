@@ -3,17 +3,15 @@
 
 <div class="fixed inset-0 overflow-hidden text-white p-[2vh] flex flex-col bg-gradient-to-b from-blue-600 to-indigo-900 z-40" data-controller="reconnect">
   <div class="max-w-7xl mx-auto text-center w-full flex flex-col flex-1 min-h-0">
-    <!-- Header: always compact with small corner QR -->
+    <!-- Header: room name + join info -->
     <div class="mb-[2vh] relative shrink-0">
       <h1 class="text-vh-5xl font-black text-white tracking-tighter drop-shadow-lg text-center">
         <%= @room.display_name %>
       </h1>
 
-      <div class="absolute top-0 right-0 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-lg px-2 py-1 border border-white/10">
-        <div class="bg-white rounded p-0.5">
-          <%= qr_code_svg(join_room_url(@room.code), size: 24) %>
-        </div>
-        <span class="text-xs font-bold font-mono tracking-wider text-white/70"><%= @room.code %></span>
+      <div class="absolute top-0 right-0 flex items-center gap-[1vh] bg-white/10 backdrop-blur-md rounded-xl px-[1.5vh] py-[0.5vh] border border-white/20">
+        <span class="text-vh-sm font-semibold text-white/60 tracking-wide">roomrally.app/play</span>
+        <span class="text-vh-lg font-black font-mono tracking-widest text-white"><%= @room.code %></span>
       </div>
     </div>
 
