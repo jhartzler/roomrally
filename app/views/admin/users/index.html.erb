@@ -21,7 +21,7 @@
         </div>
         <div class="text-right shrink-0">
           <p class="text-sm font-semibold <%= ai_used > 0 ? 'text-orange-600' : 'text-gray-400' %>">
-            <%= ai_used %> / 10
+            <%= ai_used %> / <%= user.ai_request_limit %>
           </p>
           <p class="text-xs text-gray-400">AI used</p>
           <% if ai_used > 0 %>

@@ -8,7 +8,7 @@
       Generate with AI
     </span>
     <span class="text-yellow-200/60 text-sm font-bold">
-      <%= remaining %> / <%= User::AI_REQUEST_LIMIT %> credits
+      <%= remaining %> / <%= current_user.ai_request_limit %> credits
     </span>
   </summary>
 
