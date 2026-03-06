@@ -101,3 +101,6 @@ gem "sentry-rails"
 gem "rqrcode", "~> 3.2"
 
 gem "posthog-ruby"
+
+# Pro features engine (private — excluded from public repo)
+gem "roomrally_pro", path: "engines/pro"
