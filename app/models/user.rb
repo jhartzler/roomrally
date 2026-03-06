@@ -1,6 +1,10 @@
 class User < ApplicationRecord
   has_secure_password
 
+  def pro?
+    plan == "pro"
+  end
+
   has_many :rooms, dependent: :nullify
   has_many :prompt_packs
   has_many :trivia_packs
