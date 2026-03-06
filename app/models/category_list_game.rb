@@ -15,6 +15,10 @@ class CategoryListGame < ApplicationRecord
   has_many :category_instances, dependent: :destroy
   has_many :category_answers, through: :category_instances
 
+  validates :timer_increment, numericality: { greater_than: 0 }, if: :timer_enabled?
+  validates :total_rounds, numericality: { greater_than: 0 }
+  validates :categories_per_round, numericality: { greater_than: 0 }
+
   aasm column: :status, whiny_transitions: false do
     state :instructions, initial: true
     state :filling
@@ -72,5 +76,26 @@ class CategoryListGame < ApplicationRecord
 
   def last_round?
     current_round >= total_rounds
+  end
+
+  # Returns players with their round scores, sorted descending.
+  # Each entry is { player:, round_score: }.
+  def players_with_round_scores(round_number: current_round)
+    room.players.active_players.map do |p|
+      round_score = category_answers
+        .joins(:category_instance)
+        .where(player: p, category_instances: { round: round_number })
+        .sum(:points_awarded)
+      { player: p, round_score: }
+    end.sort_by { |h| -h[:round_score] }
+  end
+
+  # Returns players with their total game scores, sorted descending.
+  # Each entry is { player:, total_score: }.
+  def players_with_total_scores
+    scores_by_player = category_answers.group(:player_id).sum(:points_awarded)
+    room.players.active_players.map do |p|
+      { player: p, total_score: scores_by_player[p.id] || 0 }
+    end.sort_by { |h| -h[:total_score] }
   end
 end

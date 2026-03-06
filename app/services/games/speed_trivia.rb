@@ -80,31 +80,36 @@ module Games
     end
 
     def self.close_round(game:)
-      game.previous_top_player_ids = game.room.players.active_players
-        .order(score: :desc).limit(4).pluck(:id)
-      game.close_round!
-      score_current_round(game)
-      game.calculate_scores!
+      game.with_lock do
+        return unless game.answering?
+
+        game.previous_top_player_ids = game.room.players.active_players
+          .order(score: :desc).limit(4).pluck(:id)
+        game.close_round!
+        score_current_round(game)
+        game.calculate_scores!
+      end
       broadcast_all(game)
     end
 
     def self.next_question(game:)
-      if game.questions_remaining?
-        # calculate_scores! removed — close_round now owns this
-        game.next_question!
-        start_question(game:)
-      else
-        game.previous_top_player_ids = game.room.players.active_players
-          .order(score: :desc).limit(4).pluck(:id)
-        game.calculate_scores!
-        game.finish_game!
-        Analytics.track(
-          distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
-          event: "game_completed",
-          properties: { game_type: game.room.game_type, room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
-        )
-        game.room.finish!
-        broadcast_all(game)
+      game.with_lock do
+        if game.questions_remaining?
+          game.next_question!
+          start_question(game:)
+        else
+          game.previous_top_player_ids = game.room.players.active_players
+            .order(score: :desc).limit(4).pluck(:id)
+          game.calculate_scores!
+          game.finish_game!
+          Analytics.track(
+            distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
+            event: "game_completed",
+            properties: { game_type: game.room.game_type, room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
+          )
+          game.room.finish!
+          broadcast_all(game)
+        end
       end
     end
 
