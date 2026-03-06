@@ -1,9 +1,9 @@
 class LlmClient
   def self.generate(system_prompt:, user_prompt:)
     client = OpenAI::Client.new(
-      access_token: Rails.application.credentials.dig(:openai, :api_key)
+      access_token: ENV.fetch("OPENAI_API_KEY")
     )
-    model = Rails.application.credentials.dig(:openai, :model) || "gpt-4.1-mini"
+    model = ENV.fetch("OPENAI_MODEL", "gpt-4.1-mini")
 
     raw = client.chat(
       parameters: {

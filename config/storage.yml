@@ -8,9 +8,9 @@ local:
 
 r2:
   service: S3
-  access_key_id: <%= Rails.application.credentials.dig(:r2, :access_key_id) %>
-  secret_access_key: <%= Rails.application.credentials.dig(:r2, :secret_access_key) %>
+  access_key_id: <%= ENV.fetch("R2_ACCESS_KEY_ID", "") %>
+  secret_access_key: <%= ENV.fetch("R2_SECRET_ACCESS_KEY", "") %>
   region: auto
   bucket: <%= "roomrally-uploads-#{Rails.env == 'production' ? 'prod' : 'dev'}" %>
-  endpoint: <%= "https://#{Rails.application.credentials.dig(:r2, :account_id)}.r2.cloudflarestorage.com" %>
+  endpoint: <%= "https://#{ENV.fetch("R2_ACCOUNT_ID", "")}.r2.cloudflarestorage.com" %>
   force_path_style: true

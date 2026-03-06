@@ -10,8 +10,9 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore all environment files.
+# Ignore all environment files (but keep the example).
 /.env*
+!/.env.example
 
 # Ignore user's local gemini setup
 /.gemini

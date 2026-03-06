@@ -5,6 +5,12 @@ RSpec.describe LlmClient do
     let(:system_prompt) { "You are a trivia writer." }
     let(:user_prompt) { "<user_theme>90s movies</user_theme>" }
 
+    before do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("OPENAI_API_KEY").and_return("test-key")
+      allow(ENV).to receive(:fetch).with("OPENAI_MODEL", "gpt-4.1-mini").and_return("gpt-4.1-mini")
+    end
+
     context "when the API call succeeds" do
       let(:raw_response) do
         {
