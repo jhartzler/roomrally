@@ -79,6 +79,8 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
     game = room.reload.current_game
     Capybara.using_session(:host) do
       click_on "Start First Question"
+      # Wait for the state transition to complete before checking other sessions
+      expect(page).to have_content(/question 1/i, wait: 5)
     end
 
     # All players should see the question and answer options
