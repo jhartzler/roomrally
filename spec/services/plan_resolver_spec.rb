@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe PlanResolver do
   describe ".for" do
     it "returns a PlanResolver instance" do
-      expect(described_class.for(nil)).to be_a(PlanResolver)
+      expect(described_class.for(nil)).to be_a(described_class)
     end
 
     it "returns free tier for nil user" do

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe PlanResolver, "with pro engine" do
+RSpec.describe PlanResolver do
   describe ".for" do
     it "returns pro tier for pro user" do
       user = create(:user, plan: "pro")
