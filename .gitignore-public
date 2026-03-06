@@ -54,4 +54,4 @@ node_modules
 app/assets/images/Room Rally Logo Pack/
 
 # --- Open Core: exclude pro features layer ---
-/app/features/pro/
+/engines/pro/
