@@ -3,13 +3,12 @@ namespace :r2 do
   task upload_assets: :environment do
     require "aws-sdk-s3"
 
-    credentials = Rails.application.credentials.r2
     bucket_name = Rails.env.production? ? "roomrally-assets-prod" : "roomrally-assets-dev"
 
     client = Aws::S3::Client.new(
-      access_key_id: credentials.access_key_id,
-      secret_access_key: credentials.secret_access_key,
-      endpoint: "https://#{credentials.account_id}.r2.cloudflarestorage.com",
+      access_key_id: ENV.fetch("R2_ACCESS_KEY_ID"),
+      secret_access_key: ENV.fetch("R2_SECRET_ACCESS_KEY"),
+      endpoint: "https://#{ENV.fetch("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com",
       region: "auto",
       force_path_style: true
     )

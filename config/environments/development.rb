@@ -32,7 +32,7 @@ Rails.application.configure do
   config.active_storage.service = :r2
 
   # Cloudflare R2 asset CDN (static assets like hero image, OG images)
-  config.x.r2_assets_url = Rails.application.credentials.dig(:r2, :dev_assets_url) || ""
+  config.x.r2_assets_url = ENV.fetch("R2_DEV_ASSETS_URL", "")
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

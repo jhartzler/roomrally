@@ -8,7 +8,7 @@
   window_start = User::AI_WINDOW_HOURS.hours.ago
   window_requests = @user.ai_generation_requests.select { |r| r.created_at > window_start }
   ai_used = window_requests.count { |r| r.counts_against_limit }
-  ai_remaining = [User::AI_REQUEST_LIMIT - ai_used, 0].max
+  ai_remaining = [@user.ai_request_limit - ai_used, 0].max
   grace_used = window_requests.count { |r| !r.counts_against_limit && r.status == "failed" }
   oldest_counting = window_requests.select(&:counts_against_limit).min_by(&:created_at)
   reset_at = oldest_counting&.created_at&.+(User::AI_WINDOW_HOURS.hours)
@@ -26,7 +26,7 @@
   <div class="grid grid-cols-2 gap-3 mb-4">
     <div>
       <p class="text-2xl font-black <%= ai_used > 0 ? 'text-orange-600' : 'text-gray-300' %>">
-        <%= ai_used %> / <%= User::AI_REQUEST_LIMIT %>
+        <%= ai_used %> / <%= @user.ai_request_limit %>
       </p>
       <p class="text-xs text-gray-500">Used this window</p>
     </div>

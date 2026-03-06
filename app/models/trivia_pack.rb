@@ -29,9 +29,10 @@ class TriviaPack < ApplicationRecord
   private
 
   def image_count_within_limit
+    limit = PlanResolver.for(user).limits[:pack_image_limit]
     count = trivia_questions.joins(:image_attachment).count
-    if count > 20
-      errors.add(:base, "cannot have more than 20 questions with images")
+    if count > limit
+      errors.add(:base, "cannot have more than #{limit} questions with images")
     end
   end
 

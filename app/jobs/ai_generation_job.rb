@@ -40,7 +40,7 @@ class AiGenerationJob < ApplicationJob
         status: :failed,
         error_message:,
         raw_response:,
-        counts_against_limit: grace_used >= User::AI_GRACE_FAILURE_LIMIT
+        counts_against_limit: grace_used >= request.user.ai_grace_failure_limit
       )
     end
     broadcast_result(request, "ai_generation_requests/error")

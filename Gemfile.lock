@@ -1,3 +1,9 @@
+PATH
+  remote: engines/pro
+  specs:
+    roomrally_pro (0.1.0)
+      rails (>= 8.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -555,6 +561,7 @@ DEPENDENCIES
   rails (~> 8.1.2)
   rails-controller-testing
   redis (>= 4.0)
+  roomrally_pro!
   rqrcode (~> 3.2)
   rspec-rails (~> 8.0.3)
   rubocop-rails-omakase

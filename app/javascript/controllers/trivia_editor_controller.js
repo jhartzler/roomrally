@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning"]
-    static values = { ratio: { type: Number, default: 1 } }
+    static values = { ratio: { type: Number, default: 1 }, imageLimit: { type: Number, default: 20 } }
 
     connect() {
         this.updateCount()
@@ -167,7 +167,7 @@ export default class extends Controller {
 
     updateImageCount() {
         const count = this.currentImageCount
-        const limit = 20
+        const limit = this.imageLimitValue
 
         if (this.hasImageCountDisplayTarget) {
             this.imageCountDisplayTarget.textContent = `${count} / ${limit} used`

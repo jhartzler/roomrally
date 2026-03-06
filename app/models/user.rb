@@ -1,6 +1,10 @@
 class User < ApplicationRecord
   has_secure_password
 
+  def pro?
+    plan == "pro"
+  end
+
   has_many :rooms, dependent: :nullify
   has_many :prompt_packs
   has_many :trivia_packs
@@ -8,16 +12,22 @@ class User < ApplicationRecord
   has_many :game_templates, dependent: :destroy
   has_many :ai_generation_requests, dependent: :destroy
 
-  AI_REQUEST_LIMIT = 10
-  AI_GRACE_FAILURE_LIMIT = 3
   AI_WINDOW_HOURS = 8
+
+  def ai_request_limit
+    PlanResolver.for(self).limits[:ai_requests_per_window]
+  end
+
+  def ai_grace_failure_limit
+    PlanResolver.for(self).limits[:ai_grace_failures]
+  end
 
   def ai_requests_remaining
     used = ai_generation_requests
       .where(counts_against_limit: true)
       .where("created_at > ?", AI_WINDOW_HOURS.hours.ago)
       .count
-    [ AI_REQUEST_LIMIT - used, 0 ].max
+    [ ai_request_limit - used, 0 ].max
   end
 
   def ai_requests_reset_at
