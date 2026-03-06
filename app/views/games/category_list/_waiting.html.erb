@@ -32,12 +32,12 @@
         <% if ci %>
           <%
             answers = ci.category_answers.includes(:player).to_a
-            normalized_groups = answers.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
+            normalized_groups = answers.group_by { |a| Games::CategoryList.normalize_answer(a.body) }
             duplicate_norms = normalized_groups.select { |_, group| group.size > 1 }.map(&:first).to_set
           %>
           <div class="space-y-2">
             <% answers.each do |answer| %>
-              <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
+              <% norm = Games::CategoryList.normalize_answer(answer.body) %>
               <% is_auto_dup = duplicate_norms.include?(norm) && norm.present? && !answer.rejected? && !answer.duplicate? %>
               <% is_struck = answer.rejected? || answer.duplicate? || is_auto_dup %>
               <div class="bg-black/30 rounded-xl px-4 py-3 border <%= is_struck ? 'border-white/5 opacity-50' : 'border-white/10' %>">

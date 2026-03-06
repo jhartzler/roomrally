@@ -20,11 +20,11 @@
         <div class="space-y-[1vh]">
           <%
             answers = ci.category_answers.where.not(status: :hidden).includes(:player).to_a
-            normalized_groups = answers.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
+            normalized_groups = answers.group_by { |a| Games::CategoryList.normalize_answer( a.body) }
             duplicate_norms = normalized_groups.select { |norm, group| norm.present? && group.size > 1 }.keys.to_set
           %>
           <% answers.each do |answer| %>
-            <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
+            <% norm = Games::CategoryList.normalize_answer( answer.body) %>
             <% is_auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.duplicate? %>
             <% is_struck = answer.rejected? || answer.duplicate? || is_auto_duplicate %>
             <div class="flex items-center justify-between bg-black/30 rounded-xl px-[2vh] py-[1vh]

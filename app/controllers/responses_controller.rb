@@ -1,4 +1,6 @@
 class ResponsesController < ApplicationController
+  include RendersHand
+
   def update
     @response = Response.find(params[:id])
     if @response.update(response_params)
@@ -7,7 +9,7 @@ class ResponsesController < ApplicationController
       @response.prompt_instance.update(status: "submitted")
 
       player = @response.player
-      room = player.room
+      @room = player.room
 
       # Check if all responses are in to start voting
       game = @response.prompt_instance.write_and_vote_game
@@ -24,16 +26,7 @@ class ResponsesController < ApplicationController
 
       Games::WriteAndVote.check_all_responses_submitted(game:) if game
 
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.update(
-            "hand_screen",
-            partial: "rooms/hand_screen_content",
-            locals: { room: room.reload, player: }
-          )
-        end
-        format.html { redirect_to room_hand_path(room) }
-      end
+      render_hand
     else
       # Handle errors
       # For now, we'll just log them. A more robust implementation

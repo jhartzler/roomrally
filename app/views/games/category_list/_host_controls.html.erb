@@ -72,11 +72,11 @@
         <h4 class="text-sm font-bold text-yellow-400 mb-2"><%= ci.name %></h4>
         <%
           answers = ci.category_answers.includes(:player).to_a
-          normalized_groups = answers.group_by { |a| Games::CategoryList.send(:normalize_answer, a.body) }
+          normalized_groups = answers.group_by { |a| Games::CategoryList.normalize_answer( a.body) }
           duplicate_norms = normalized_groups.select { |norm, group| norm.present? && group.size > 1 }.keys.to_set
         %>
         <% answers.each do |answer| %>
-          <% norm = Games::CategoryList.send(:normalize_answer, answer.body) %>
+          <% norm = Games::CategoryList.normalize_answer( answer.body) %>
           <% is_auto_duplicate = duplicate_norms.include?(norm) && !answer.rejected? && !answer.hidden? && !answer.duplicate? %>
           <% is_struck = answer.rejected? || answer.duplicate? || is_auto_duplicate %>
           <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">

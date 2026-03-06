@@ -74,11 +74,7 @@ module Games
         return TriviaAnswer.find_by!(player:, trivia_question_instance: current_question)
       end
 
-      answer
-
-      GameBroadcaster.broadcast_hand(room: game.room)
-      GameBroadcaster.broadcast_stage(room: game.room)
-      GameBroadcaster.broadcast_host_controls(room: game.room)
+      broadcast_all(game)
 
       answer
     end

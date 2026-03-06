@@ -89,6 +89,14 @@ When making UI changes, use screenshot checkpoints to verify visual changes are 
   ```
   Then restart `bin/dev`.
 
+- **Parallel rspec deadlocks across worktrees?**
+  All worktrees share `roomrally_test` by default. When multiple Claude sessions run `bin/rspec` simultaneously, PostgreSQL deadlocks on `DatabaseCleaner.clean_with(:truncation)`. Use `TEST_ENV_NUMBER` to isolate:
+  ```bash
+  TEST_ENV_NUMBER=2 bin/rails db:test:prepare   # one-time: creates roomrally_test2
+  TEST_ENV_NUMBER=2 bin/rspec                    # runs against isolated DB
+  ```
+  Each worktree needs a different number. Without the env var, the default `roomrally_test` is used. This is not yet automated — just pick a unique number per worktree.
+
 ## Architecture
 
 ### Request Flow
@@ -116,10 +124,52 @@ This is intentionally simple. No custom Action Cable channels, no event bus betw
 
 ## Adding a New Game Type
 
-1. Create game model in `app/models/` with AASM state machine
-2. Create game logic module in `app/services/games/your_game.rb`
-3. Create view partials in `app/views/games/your_game/` (convention: `stage_[status].html.erb`)
-4. Write system tests simulating multiple players
+### Checklist
+
+- [ ] **Model** (`app/models/[game]_game.rb`): AASM states (must include `instructions` → playing states → `finished`), `include HasRoundTimer`, implement `process_timeout(round_number, step_number)`
+- [ ] **Service** (`app/services/games/[game].rb`): Must implement the game module contract (see below)
+- [ ] **Playtest module** nested inside service: `start`, `advance`, `bot_act`, `auto_play_step`, `progress_label`, `dashboard_actions`
+- [ ] **GameStartsController** with `include GameHostAuthorization`
+- [ ] **Stage partials** for every AASM state: `_stage_[status].html.erb`
+- [ ] **Hand partials**: `_hand.html.erb` (router), `_game_over.html.erb`, plus game-phase partials
+- [ ] **Routes** under `resources :[game]_games`
+- [ ] **Registry**: Add to `config/initializers/game_registry.rb` (both `GameEventRouter` and `DevPlaytest::Registry`)
+- [ ] **Room constants**: Add to `Room::GAME_TYPES` and `Room::GAME_DISPLAY_NAMES`
+- [ ] **System tests** simulating multiple players
+
+### Game Module Contract
+
+Every game service module in `app/services/games/` **must** implement:
+
+```ruby
+module Games
+  module YourGame
+    # Required: Can the game start with fewer than 3 players?
+    def self.requires_capacity_check? = false
+
+    # Required: Called via Wisper when host starts game from lobby.
+    # Accept **_extra to absorb params meant for other game types.
+    def self.game_started(room:, timer_enabled:, timer_increment:, show_instructions:, **_extra)
+
+    # Required: Called when host clicks "Start" on instructions screen.
+    def self.start_from_instructions(game:)
+
+    # Required: Called by GameTimerJob when a timer expires.
+    def self.handle_timeout(game:)
+  end
+end
+```
+
+**Conventions that must be followed:**
+
+| Pattern | Rule |
+|---------|------|
+| Broadcasting | Use a private `broadcast_all(game)` method as the single exit point. Never scatter individual `GameBroadcaster` calls across multiple methods. |
+| Concurrency | Wrap state-modifying operations in `game.with_lock { }`. Broadcast **outside** the lock. |
+| State transitions | All transitions go through service methods, never called directly in controllers. |
+| Player submissions | Route through a service method (e.g., `submit_answer`), not directly in the controller. |
+| Host controllers | Include `GameHostAuthorization` concern — never reimplement auth inline. |
+| Scoring | Keep scoring logic in the service, not split between model and service. |
 
 ## Key Patterns
 

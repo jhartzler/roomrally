@@ -1,43 +1,24 @@
 # frozen_string_literal: true
 
 class CategoryAnswersController < ApplicationController
+  include GameHostAuthorization
+
   before_action :set_answer
+  before_action :set_game
+  before_action :authorize_host
 
   def update
-    room = Room.find_by!(code: params[:code])
-
-    authorized = (current_player && current_player == room.host) ||
-                 (current_user && current_user == room.user)
-
-    unless authorized
-      redirect_to root_path, alert: "Not authorized."
-      return
-    end
-
-    case answer_params[:status]
-    when "rejected"
-      Games::CategoryList.reject_answer(answer: @answer)
-    when "approved"
-      Games::CategoryList.approve_answer(answer: @answer)
-    when "hidden"
-      Games::CategoryList.hide_answer(answer: @answer)
-    when "duplicate"
-      Games::CategoryList.mark_duplicate(answer: @answer)
-    end
-
-    GameBroadcaster.broadcast_stage(room:)
-    GameBroadcaster.broadcast_host_controls(room:)
-    GameBroadcaster.broadcast_hand(room:)
+    Games::CategoryList.moderate_answer(answer: @answer, status: answer_params[:status])
 
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@answer))
       end
       format.html do
-        if current_user && current_user == room.user
-          redirect_to room_backstage_path(room)
+        if current_user && current_user == @game.room.user
+          redirect_to room_backstage_path(@game.room)
         else
-          redirect_to room_hand_path(room)
+          redirect_to room_hand_path(@game.room)
         end
       end
     end
@@ -47,6 +28,10 @@ class CategoryAnswersController < ApplicationController
 
   def set_answer
     @answer = CategoryAnswer.find(params[:id])
+  end
+
+  def set_game
+    @game = @answer.category_instance.category_list_game
   end
 
   def answer_params
