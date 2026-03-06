@@ -1,1 +1,1 @@
-# Pro plan limits — populated in Task 6
+# Pro plan decoration is applied in RoomrallyPro::Engine via config.to_prepare
