@@ -48,7 +48,7 @@ RSpec.describe "Speed Trivia Lobby with 35 Players", :js, type: :system do
     # Take stage view screenshot
     Capybara.using_session(:stage_viewer) do
       visit room_stage_path(room)
-      expect(page).to have_content("Waiting for players to join", wait: 5)
+      expect(page).to have_content("The crowd is gathering", wait: 5)
 
       screenshot_checkpoint("stage_lobby_35_players")
     end

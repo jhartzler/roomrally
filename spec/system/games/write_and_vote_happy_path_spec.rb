@@ -17,7 +17,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       expect(page).to have_content("Game Lobby")
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
-      expect(page).to have_button("Waiting for players (1/3)...", disabled: true)
+      expect(page).to have_button("Almost there! (1/3 players)", disabled: true)
       screenshot_checkpoint("lobby")
     end
 
@@ -25,7 +25,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player 2"
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join...")
+      expect(page).to have_content("The crowd is gathering...")
       screenshot_checkpoint("lobby")
     end
 
@@ -33,7 +33,7 @@ RSpec.describe "Write and Vote Game Happy Path", :js, type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player 3"
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join...")
+      expect(page).to have_content("The crowd is gathering...")
       screenshot_checkpoint("lobby")
     end
 

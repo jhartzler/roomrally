@@ -32,7 +32,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Alice"
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join...")
+      expect(page).to have_content("The crowd is gathering...")
       screenshot_checkpoint("lobby")
     end
 
@@ -40,7 +40,7 @@ RSpec.describe "Speed Trivia Game Happy Path", :js, type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Bob"
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join...")
+      expect(page).to have_content("The crowd is gathering...")
       screenshot_checkpoint("lobby")
     end
 
