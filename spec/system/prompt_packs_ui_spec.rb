@@ -59,10 +59,10 @@ RSpec.describe "Prompt Packs UI", type: :system do
   end
 
   describe "Play page" do
-    it "shows Dashboard link in nav when logged in" do
+    it "shows Studio link in nav when logged in" do
       visit play_path
       within('nav[data-testid="topnav"]') do
-        expect(page).to have_link("Dashboard", href: dashboard_path)
+        expect(page).to have_link("Studio", href: dashboard_path)
       end
       screenshot_checkpoint("play_page_logged_in")
     end

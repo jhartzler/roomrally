@@ -39,10 +39,10 @@ RSpec.describe 'Top navigation', type: :system do
 
     before { sign_in(user) }
 
-    it 'landing page nav shows dashboard link' do
+    it 'landing page nav shows studio link' do
       visit root_path
       within('nav[data-testid="topnav"]') do
-        expect(page).to have_link('Dashboard', href: dashboard_path)
+        expect(page).to have_link('Studio', href: dashboard_path)
       end
     end
   end
