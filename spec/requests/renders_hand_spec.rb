@@ -26,6 +26,7 @@ RSpec.describe "RendersHand concern — HTTP response updates hand", type: :requ
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('action="update"')
+      expect(response.body).to include('method="morph"')
       expect(response.body).to include('target="hand_screen"')
     end
   end
@@ -54,6 +55,7 @@ RSpec.describe "RendersHand concern — HTTP response updates hand", type: :requ
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('action="update"')
+      expect(response.body).to include('method="morph"')
       expect(response.body).to include('target="hand_screen"')
     end
   end
@@ -80,6 +82,7 @@ RSpec.describe "RendersHand concern — HTTP response updates hand", type: :requ
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('action="update"')
+      expect(response.body).to include('method="morph"')
       expect(response.body).to include('target="hand_screen"')
     end
   end

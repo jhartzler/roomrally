@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe GameBroadcaster do
   before do
-    allow(Turbo::StreamsChannel).to receive(:broadcast_update_to)
+    allow(Turbo::StreamsChannel).to receive(:broadcast_action_to)
     allow(Rails.logger).to receive(:info)
   end
 
@@ -17,18 +17,18 @@ RSpec.describe GameBroadcaster do
       second_player
     end
 
-    it 'broadcasts an update to the hand_screen for the first player' do
+    it 'broadcasts a morph to the hand_screen for the first player' do
       described_class.broadcast_hand(room:)
-      expect(Turbo::StreamsChannel).to have_received(:broadcast_update_to).with(
-        first_player, target: "hand_screen", partial: "rooms/hand_screen_content",
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_action_to).with(
+        first_player, action: :update, attributes: { method: :morph }, target: "hand_screen", partial: "rooms/hand_screen_content",
         locals: { room:, player: first_player }
       )
     end
 
-    it 'broadcasts an update to the hand_screen for the second player' do
+    it 'broadcasts a morph to the hand_screen for the second player' do
       described_class.broadcast_hand(room:)
-      expect(Turbo::StreamsChannel).to have_received(:broadcast_update_to).with(
-        second_player, target: "hand_screen", partial: "rooms/hand_screen_content",
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_action_to).with(
+        second_player, action: :update, attributes: { method: :morph }, target: "hand_screen", partial: "rooms/hand_screen_content",
         locals: { room:, player: second_player }
       )
     end
@@ -43,10 +43,10 @@ RSpec.describe GameBroadcaster do
     let(:game) { create(:write_and_vote_game, status: :writing) }
     let(:room) { create(:room, current_game: game, game_type: "Write And Vote") }
 
-    it 'broadcasts an update to the stage_content' do
+    it 'broadcasts a morph to the stage_content' do
       described_class.broadcast_stage(room:)
-      expect(Turbo::StreamsChannel).to have_received(:broadcast_update_to).with(
-        room, target: "stage_content", partial: "games/write_and_vote/stage_writing",
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_action_to).with(
+        room, action: :update, attributes: { method: :morph }, target: "stage_content", partial: "games/write_and_vote/stage_writing",
         locals: { room:, game: }
       )
     end
@@ -65,6 +65,8 @@ RSpec.describe GameBroadcaster do
     before do
        allow(Turbo::StreamsChannel).to receive(:broadcast_append_to)
        allow(Turbo::StreamsChannel).to receive(:broadcast_prepend_to)
+       allow(Turbo::StreamsChannel).to receive(:broadcast_update_to)
+       allow(Turbo::StreamsChannel).to receive(:broadcast_remove_to)
     end
 
     it 'broadcasts append to player-list' do
@@ -98,6 +100,7 @@ RSpec.describe GameBroadcaster do
 
     before do
       allow(Turbo::StreamsChannel).to receive(:broadcast_remove_to)
+      allow(Turbo::StreamsChannel).to receive(:broadcast_update_to)
     end
 
     it 'broadcasts remove to player dom_id' do

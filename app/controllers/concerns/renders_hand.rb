@@ -16,8 +16,10 @@ module RendersHand
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.update(
+        render turbo_stream: turbo_stream.action(
+          :update,
           "hand_screen",
+          method: :morph,
           partial: "rooms/hand_screen_content",
           locals: { room:, player: }
         )
