@@ -296,6 +296,21 @@ Before writing a helper, check if Rails already provides it in ActiveSupport or 
 
 **When adding host-action buttons in views**: still pass `params: { code: room.code }` as defense-in-depth (it keeps `set_current_player` correct for other before_actions that may rely on `current_player`).
 
+### Host-player vs backstage-user architecture
+
+The app supports two hosting experiences through a shared controller layer:
+
+1. **Hand-view host** (casual): A logged-out player who is also the room host. Operates from their phone via `_host_controls` rendered inside `#hand_screen`. Authenticated by session (`current_player == room.host`).
+2. **Backstage host** (professional): A logged-in User operating from the backstage dashboard. Same `_host_controls` partial rendered inside `#backstage-host-controls`. Authenticated by account (`current_user == room.user`).
+
+**What's shared (correctly):** Game service layer, routes, controllers, `GameHostAuthorization`, `_host_controls` partial, broadcasts (`update_all_host_controls` pushes to both targets).
+
+**What diverges (correctly):** Backstage has moderation, player management, waiting room approval, analytics — features casual hosts never see. These are backstage-only views/controllers that don't touch shared game-action controllers.
+
+**Key constraint:** `render_hand` in shared controllers returns `head :ok` when `current_player` is nil (backstage Users aren't Players). The game service's `broadcast_all` already updates both UIs via WebSocket, so the HTTP response is only needed for the hand-view host's immediate feedback.
+
+**Future tension:** If professional hosts need different *game flow* controls (pause mid-round, skip questions, override timers, queue multiple games), add those as new controller actions gated to `current_user` only — don't complicate the shared host-action controllers. The service layer stays shared; divergence belongs in views and backstage-only controllers.
+
 ## Pull Request Descriptions
 
 Focus on what matters to a human reviewer. GitHub already shows file changes, so don't list them.
