@@ -1,0 +1,33 @@
+<% content_for(:title) { "Studio – RoomRally" } %>
+<% content_for(:full_bleed) {} %>
+<% content_for(:hide_footer) {} %>
+
+<div class="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
+  <%# Sidebar (desktop) %>
+  <%= render "shared/studio_sidebar", active_section: @studio_active_section || :overview %>
+
+  <div class="flex-1 overflow-y-auto pb-20 md:pb-0">
+    <%# Mobile nav %>
+    <%= render "shared/studio_mobile_nav", active_section: @studio_active_section || :overview %>
+
+    <%# Breadcrumbs %>
+    <% if @studio_breadcrumbs.present? %>
+      <div class="px-4 md:px-8 pt-4 md:pt-6">
+        <nav class="flex items-center gap-2 text-sm text-blue-300/60">
+          <%= link_to "Studio", dashboard_path, class: "hover:text-white transition-colors" %>
+          <% @studio_breadcrumbs.each do |crumb| %>
+            <span class="text-blue-400/30">/</span>
+            <% if crumb[:path] %>
+              <%= link_to crumb[:label], crumb[:path], class: "hover:text-white transition-colors" %>
+            <% else %>
+              <span class="text-blue-200 font-semibold"><%= crumb[:label] %></span>
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+    <% end %>
+
+    <%# Page content %>
+    <%= yield %>
+  </div>
+</div>
