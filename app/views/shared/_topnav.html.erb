@@ -17,7 +17,7 @@
           class: "hidden sm:inline-block bg-orange-500 text-white font-bold py-2 px-4 rounded-full hover:bg-orange-600 transition-all text-sm shadow-lg shadow-orange-900/30" %>
 
       <% if current_user %>
-        <%= link_to "Dashboard", dashboard_path,
+        <%= link_to "Studio", dashboard_path,
             class: "text-blue-200 hover:text-white transition-colors text-sm font-medium" %>
         <%= button_to "Logout", logout_path, method: :delete,
             class: "text-blue-200/60 hover:text-white transition-colors text-sm bg-transparent border-0 cursor-pointer p-0" %>
