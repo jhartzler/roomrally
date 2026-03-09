@@ -3,8 +3,10 @@ module GameBroadcaster
     room.players.each do |player|
     Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
 
-      Turbo::StreamsChannel.broadcast_update_to(
+      Turbo::StreamsChannel.broadcast_action_to(
         player,
+        action: :update,
+        attributes: { method: :morph },
         target: "hand_screen",
         partial: "rooms/hand_screen_content",
         locals: { room: room.reload, player: }
@@ -25,8 +27,10 @@ module GameBroadcaster
       locals[:previous_top_player_ids] = game.previous_top_player_ids
     end
 
-    Turbo::StreamsChannel.broadcast_update_to(
+    Turbo::StreamsChannel.broadcast_action_to(
       room,
+      action: :update,
+      attributes: { method: :morph },
       target: "stage_content",
       partial: partial_name,
       locals:
@@ -211,16 +215,20 @@ module GameBroadcaster
 
   def self.update_all_host_controls(room)
     # Hand (Host) Controls
-    Turbo::StreamsChannel.broadcast_update_to(
+    Turbo::StreamsChannel.broadcast_action_to(
       room,
+      action: :update,
+      attributes: { method: :morph },
       target: "host-controls",
       partial: "rooms/host_controls",
       locals: { room: room.reload, backstage: false }
     )
 
     # Backstage Host Controls
-    Turbo::StreamsChannel.broadcast_update_to(
+    Turbo::StreamsChannel.broadcast_action_to(
       room,
+      action: :update,
+      attributes: { method: :morph },
       target: "backstage-host-controls",
       partial: "rooms/host_controls",
       locals: { room:, backstage: true }

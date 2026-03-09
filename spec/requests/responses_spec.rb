@@ -21,6 +21,7 @@ RSpec.describe "Responses", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('action="update"')
+      expect(response.body).to include('method="morph"')
       expect(response.body).to include('target="hand_screen"')
     end
 
