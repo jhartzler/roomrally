@@ -1,14 +1,21 @@
 class GameTemplatesController < ApplicationController
+  include StudioLayout
+
   before_action :authenticate_user!
   before_action :set_game_template, only: %i[edit update destroy]
 
   def index
+    @studio_active_section = :games
+    studio_breadcrumb("My Games")
     @game_templates = current_user.game_templates
       .includes(:prompt_pack, :trivia_pack, :category_pack)
       .order(updated_at: :desc)
   end
 
   def new
+    @studio_active_section = :games
+    studio_breadcrumb("My Games", game_templates_path)
+    studio_breadcrumb("New Game")
     @game_template = current_user.game_templates.new(new_template_params)
     load_packs
   end
@@ -30,6 +37,9 @@ class GameTemplatesController < ApplicationController
   end
 
   def edit
+    @studio_active_section = :games
+    studio_breadcrumb("My Games", game_templates_path)
+    studio_breadcrumb(@game_template.name)
     load_packs
   end
 

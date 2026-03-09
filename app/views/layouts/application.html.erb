@@ -66,7 +66,11 @@
     <% end %>
     <%= yield :topnav %>
     <main class="<%= content_for?(:full_bleed) ? '' : 'container mx-auto px-4 py-8' %> flex-grow">
-      <%= yield %>
+      <% if content_for?(:studio_layout) %>
+        <%= content_for(:studio_layout) %>
+      <% else %>
+        <%= yield %>
+      <% end %>
     </main>
     <%= render "shared/footer" unless content_for?(:hide_footer) %>
   </body>
