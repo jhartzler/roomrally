@@ -1,14 +1,7 @@
-<div class="p-6 md:p-12 font-sans">
+<div class="p-4 md:p-8">
   <div class="max-w-4xl mx-auto">
     <!-- Header / Navigation -->
-    <div class="flex items-center justify-between mb-8">
-      <%= link_to trivia_packs_path, class: "group flex items-center gap-2 text-blue-200 hover:text-white transition-colors font-bold" do %>
-        <div class="p-2 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors border border-white/10">
-           <%= lucide_icon('arrow-left', class: "w-5 h-5") %>
-        </div>
-        <span>Back to Library</span>
-      <% end %>
-
+    <div class="flex items-center justify-end mb-8">
       <div class="flex items-center gap-3">
         <% if @trivia_pack.user == current_user %>
           <%= link_to edit_trivia_pack_path(@trivia_pack), class: "inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition-all transform hover:scale-105 active:scale-95" do %>

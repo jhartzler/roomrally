@@ -1,4 +1,4 @@
-<div class="p-6 md:p-12 font-sans">
+<div class="p-4 md:p-8 font-sans">
   <header class="max-w-5xl mx-auto mb-10 flex justify-between items-end">
     <div>
       <h1 class="text-4xl font-black text-white tracking-tighter drop-shadow-md">
@@ -6,13 +6,8 @@
     </h1>
     <p class="text-blue-200 font-medium">Your prompt pack library</p>
   </div>
-  
-  <div class="flex items-center gap-4">
-    <%= link_to dashboard_path, class: "text-blue-200 hover:text-white font-bold text-sm flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/5 transition-colors" do %>
-       <%= lucide_icon('layout-dashboard', class: "w-4 h-4", "aria-hidden": true) %>
-       Dashboard
-    <% end %>
 
+  <div class="flex items-center gap-4">
     <%= link_to new_prompt_pack_path, class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95" do %>
       <%= lucide_icon('plus', class: "w-5 h-5", "aria-hidden": true) %>
       <span>New Pack</span>
@@ -30,7 +25,7 @@
     <% @system_packs.each do |pack| %>
       <%= render "card", pack: pack, variant: :system %>
     <% end %>
-    
+
     <% if @system_packs.empty? %>
         <div class="col-span-full text-center py-8 text-blue-200/50 font-medium italic">
           No system templates available.
@@ -45,7 +40,7 @@
       <%= lucide_icon('folder-open', class: "w-6 h-6 text-blue-200/50", "aria-hidden": true) %>
       My Packs
     </h2>
-    
+
     <% if @prompt_packs.any? %>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <% @prompt_packs.each do |pack| %>

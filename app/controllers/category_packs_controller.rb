@@ -1,18 +1,30 @@
 class CategoryPacksController < ApplicationController
   include PackReturnNavigation
+  include StudioLayout
 
   before_action :authenticate_user!
   before_action :set_owned_category_pack, only: %i[show edit update destroy]
 
   def index
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Category Packs")
     @category_packs = current_user.category_packs.includes(:categories).recent
     @system_packs = CategoryPack.global.includes(:categories).alphabetical
   end
 
   def show
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Category Packs", category_packs_path)
+    studio_breadcrumb(@category_pack.name)
   end
 
   def new
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Category Packs", category_packs_path)
+    studio_breadcrumb("New Pack")
     @category_pack = current_user.category_packs.new(game_type: "Category List")
     @category_pack.categories.build
     @return_to = params[:return_to]
@@ -35,6 +47,10 @@ class CategoryPacksController < ApplicationController
   end
 
   def edit
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Category Packs", category_packs_path)
+    studio_breadcrumb(@category_pack.name)
     @return_to = params[:return_to]
   end
 

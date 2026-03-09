@@ -38,16 +38,16 @@ RSpec.describe "Prompt Packs UI", type: :system do
       expect(page).to have_current_path(edit_prompt_pack_path(user_pack))
     end
 
-    it "has a working dashboard link" do
-      click_link "Dashboard"
+    it "has a working studio link in sidebar" do
+      click_link "Overview"
       expect(page).to have_current_path(dashboard_path)
     end
   end
 
   describe "Show Page" do
-    it "allows navigating back to library" do
+    it "allows navigating back to library via breadcrumb" do
       visit prompt_pack_path(user_pack)
-      click_link "Back to Library"
+      click_link "Prompt Packs"
       expect(page).to have_current_path(prompt_packs_path)
     end
 
