@@ -38,16 +38,16 @@ RSpec.describe "Prompt Packs UI", type: :system do
       expect(page).to have_current_path(edit_prompt_pack_path(user_pack))
     end
 
-    it "has a working dashboard link" do
-      click_link "Dashboard"
+    it "has a working studio link in sidebar" do
+      click_link "Overview"
       expect(page).to have_current_path(dashboard_path)
     end
   end
 
   describe "Show Page" do
-    it "allows navigating back to library" do
+    it "allows navigating back to library via breadcrumb" do
       visit prompt_pack_path(user_pack)
-      click_link "Back to Library"
+      click_link "Prompt Packs"
       expect(page).to have_current_path(prompt_packs_path)
     end
 
@@ -59,10 +59,10 @@ RSpec.describe "Prompt Packs UI", type: :system do
   end
 
   describe "Play page" do
-    it "shows Dashboard link in nav when logged in" do
+    it "shows Studio link in nav when logged in" do
       visit play_path
       within('nav[data-testid="topnav"]') do
-        expect(page).to have_link("Dashboard", href: dashboard_path)
+        expect(page).to have_link("Studio", href: dashboard_path)
       end
       screenshot_checkpoint("play_page_logged_in")
     end

@@ -1,19 +1,31 @@
 class TriviaPacksController < ApplicationController
   include PackReturnNavigation
+  include StudioLayout
 
   before_action :authenticate_user!
   before_action :set_owned_trivia_pack, only: %i[edit update destroy]
 
   def index
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Trivia Packs")
     @trivia_packs = current_user.trivia_packs.includes(:trivia_questions).recent
     @system_packs = TriviaPack.global.includes(:trivia_questions).alphabetical
   end
 
   def show
     @trivia_pack = TriviaPack.accessible_by(current_user).find(params[:id])
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Trivia Packs", trivia_packs_path)
+    studio_breadcrumb(@trivia_pack.name)
   end
 
   def new
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Trivia Packs", trivia_packs_path)
+    studio_breadcrumb("New Pack")
     @trivia_pack = current_user.trivia_packs.new(game_type: "Speed Trivia")
     @trivia_pack.trivia_questions.build
     @return_to = params[:return_to]
@@ -36,6 +48,10 @@ class TriviaPacksController < ApplicationController
   end
 
   def edit
+    @studio_active_section = :packs
+    studio_breadcrumb("Content Packs", customize_path)
+    studio_breadcrumb("Trivia Packs", trivia_packs_path)
+    studio_breadcrumb(@trivia_pack.name)
     @trivia_pack.trivia_questions.build if @trivia_pack.trivia_questions.empty?
   end
 

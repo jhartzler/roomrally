@@ -188,7 +188,7 @@
     </p>
     <% if current_user %>
       <%= link_to dashboard_path, class: "inline-block bg-orange-500 text-white font-black py-4 px-12 rounded-full hover:bg-orange-600 active:scale-95 transform hover:shadow-2xl shadow-orange-900/40 transition-all duration-200 text-xl" do %>
-        Go to Dashboard
+        Go to Studio
       <% end %>
     <% else %>
       <%= form_with url: "/auth/google_oauth2", method: :post, data: { turbo: false }, class: "inline-block" do |f| %>
