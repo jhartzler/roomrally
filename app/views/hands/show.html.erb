@@ -21,7 +21,7 @@
     </div>
 
     <!-- Main Content -->
-    <turbo-frame id="hand_screen" class="w-full">
+    <turbo-frame id="hand_screen" class="w-full" data-controller="tap-feedback">
       <%= render "rooms/hand_screen_content", room: @room, player: @player %>
     </turbo-frame>
   </div>
