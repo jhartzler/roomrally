@@ -44,7 +44,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
       visit join_room_path(room.code)
       find("input[name='player[name]']").set("Bob")
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join")
+      expect(page).to have_content("The crowd is gathering")
     end
 
     create(:player, room:, name: "Charlie")

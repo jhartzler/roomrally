@@ -22,7 +22,7 @@ RSpec.describe "Error Pages", type: :request do
     end
 
     it "renders the page content" do
-      expect(response.body).to include("Something Went Wrong")
+      expect(response.body).to include("that wasn't supposed to happen")
       expect(response.body).to include("Return to Lobby")
     end
   end
@@ -35,7 +35,7 @@ RSpec.describe "Error Pages", type: :request do
     end
 
     it "renders the page content" do
-      expect(response.body).to include("Change Rejected")
+      expect(response.body).to include("didn't go through")
       expect(response.body).to include("Return to Lobby")
     end
   end

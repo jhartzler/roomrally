@@ -37,7 +37,7 @@ RSpec.describe 'Player Join Flow', type: :system do
 
     # 7. Assert redirection to lobby
     expect(page).to have_current_path(room_hand_path(room))
-    expect(page).to have_content("Waiting for players to join...")
+    expect(page).to have_content("The crowd is gathering...")
     expect(page).to have_content("Reynard Muldoon")
     screenshot_checkpoint("lobby_as_host")
   end

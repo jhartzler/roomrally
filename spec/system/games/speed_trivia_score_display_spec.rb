@@ -34,14 +34,14 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
       visit join_room_path(room)
       fill_in "player[name]", with: "Alice"
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join...")
+      expect(page).to have_content("The crowd is gathering...")
     end
 
     Capybara.using_session(:player3) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Bob"
       click_on "Join Game"
-      expect(page).to have_content("Waiting for players to join...")
+      expect(page).to have_content("The crowd is gathering...")
     end
 
     # Host starts the game

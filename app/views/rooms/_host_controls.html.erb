@@ -13,8 +13,8 @@
         <% end %>
       <% else %>
         <div class="bg-yellow-500/10 border border-yellow-400/30 rounded-xl p-4 text-center">
-          <p class="text-yellow-200 font-medium">Waiting for players (<%= room.players.active_players.count %>/3)...</p>
-          <p class="text-yellow-300/70 text-sm mt-1">Need at least 3 players to start.</p>
+          <p class="text-yellow-200 font-medium">Almost there! (<%= room.players.active_players.count %>/3 players)</p>
+          <p class="text-yellow-300/70 text-sm mt-1">Grab a couple more people and we're good to go.</p>
         </div>
       <% end %>
     <% elsif room.current_game.present? %>
@@ -63,7 +63,7 @@
         <% end %>
       <% else %>
         <button class="w-full bg-gray-300 text-gray-500 font-bold py-4 px-6 rounded-xl cursor-not-allowed text-lg" disabled>
-          Waiting for players (<%= room.players.active_players.count %>/3)...
+          Almost there! (<%= room.players.active_players.count %>/3 players)
         </button>
       <% end %>
     <% end %>
