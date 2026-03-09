@@ -33,7 +33,7 @@
           <%= render "players/backstage_player", player: player %>
         <% end %>
         <% if @room.players.active_players.empty? %>
-          <li id="no-players-placeholder" class="text-blue-300/50 text-center py-4 italic font-medium">The stage is set — waiting for the first player!</li>
+          <li id="no-players-placeholder" class="text-blue-300/50 text-center py-4 italic font-medium">No players yet.</li>
         <% end %>
       </ul>
     </div>

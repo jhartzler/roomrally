@@ -32,7 +32,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     screenshot_checkpoint("backstage_with_players")
 
     # And empty message should disappear
-    expect(page).not_to have_content("waiting for the first player")
+    expect(page).not_to have_content("No players yet")
   end
 
   it 'shows submitted responses in the moderation queue' do
