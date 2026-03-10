@@ -162,6 +162,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["user_id"], name: "index_hunt_packs_on_user_id"
   end
 
+  create_table "hunt_prompt_instances", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "hunt_prompt_id", null: false
+    t.integer "position", default: 0, null: false
+    t.bigint "scavenger_hunt_game_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "winner_submission_id"
+    t.index ["hunt_prompt_id"], name: "index_hunt_prompt_instances_on_hunt_prompt_id"
+    t.index ["scavenger_hunt_game_id"], name: "index_hunt_prompt_instances_on_scavenger_hunt_game_id"
+  end
+
   create_table "hunt_prompts", force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
@@ -170,6 +181,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.datetime "updated_at", null: false
     t.integer "weight", default: 5, null: false
     t.index ["hunt_pack_id"], name: "index_hunt_prompts_on_hunt_pack_id"
+  end
+
+  create_table "hunt_submissions", force: :cascade do |t|
+    t.boolean "completed", default: false, null: false
+    t.datetime "created_at", null: false
+    t.boolean "favorite", default: false, null: false
+    t.text "host_notes"
+    t.bigint "hunt_prompt_instance_id", null: false
+    t.boolean "late", default: false, null: false
+    t.bigint "player_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hunt_prompt_instance_id", "player_id"], name: "idx_hunt_submissions_prompt_player", unique: true
+    t.index ["hunt_prompt_instance_id"], name: "index_hunt_submissions_on_hunt_prompt_instance_id"
+    t.index ["player_id"], name: "index_hunt_submissions_on_player_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -395,7 +420,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
   add_foreign_key "game_templates", "users"
   add_foreign_key "hunt_packs", "users"
+  add_foreign_key "hunt_prompt_instances", "hunt_prompts"
+  add_foreign_key "hunt_prompt_instances", "scavenger_hunt_games"
   add_foreign_key "hunt_prompts", "hunt_packs"
+  add_foreign_key "hunt_submissions", "hunt_prompt_instances"
+  add_foreign_key "hunt_submissions", "players"
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
