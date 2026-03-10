@@ -1,11 +1,11 @@
 <div id="stage_finished" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
-  <div class="bg-white/10 backdrop-blur-xl border-2 border-yellow-400/30 rounded-3xl p-[4vh] text-center max-w-5xl w-full relative overflow-hidden shadow-2xl">
+  <div class="bg-theme-surface backdrop-blur-xl border-2 border-theme-accent-subtle rounded-3xl p-[4vh] text-center max-w-5xl w-full relative overflow-hidden shadow-2xl">
     <div class="absolute inset-0 bg-[url('confetti.svg')] opacity-20"></div>
 
-    <h2 class="text-vh-5xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-yellow-300 via-yellow-100 to-yellow-500 mb-[1vh] drop-shadow-xl">
+    <h2 class="text-vh-5xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-theme-accent via-theme-accent/40 to-theme-accent mb-[1vh] drop-shadow-xl">
       Game Over!
     </h2>
-    <p class="text-vh-xl text-blue-200 mb-[3vh]">Final Standings</p>
+    <p class="text-vh-xl text-theme-secondary mb-[3vh]">Final Standings</p>
 
     <%= render "games/speed_trivia/score_podium",
           game: game,
@@ -13,7 +13,7 @@
           previous_top_player_ids: local_assigns[:previous_top_player_ids] || [] %>
 
     <div class="mt-[4vh]">
-      <p class="text-vh-xl text-gray-400">Host can start a new game anytime.</p>
+      <p class="text-vh-xl text-theme-text-muted">Host can start a new game anytime.</p>
     </div>
   </div>
 </div>

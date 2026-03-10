@@ -11,10 +11,10 @@
         <%= (index + 65).chr %>
       </div>
       <p class="text-vh-sm text-white font-bold line-clamp-2 flex-grow"><%= option %></p>
-      <div class="text-vh-2xl font-black <%= is_correct ? 'text-green-400' : 'text-blue-300' %> font-mono">
+      <div class="text-vh-2xl font-black <%= is_correct ? 'text-green-400' : 'text-theme-secondary' %> font-mono">
         <%= votes %>
       </div>
-      <div class="text-vh-xs text-gray-400"><%= votes == 1 ? "vote" : "votes" %></div>
+      <div class="text-vh-xs text-theme-text-muted"><%= votes == 1 ? "vote" : "votes" %></div>
     </div>
   <% end %>
 </div>

@@ -5,14 +5,14 @@
 
   <!-- Question counter -->
   <div class="shrink-0">
-    <span class="text-vh-base text-blue-200 font-bold uppercase tracking-widest">
+    <span class="text-vh-base text-theme-secondary font-bold uppercase tracking-widest">
       Question <%= game.current_question_index + 1 %> Results
     </span>
   </div>
 
   <!-- Correct answer banner -->
-  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-[1.5vh] text-center max-w-6xl w-full shrink-0">
-    <p class="text-vh-lg text-blue-200 mb-[1vh]"><%= current_question&.body %></p>
+  <div class="bg-theme-surface backdrop-blur-xl border border-theme-surface-border rounded-2xl p-[1.5vh] text-center max-w-6xl w-full shrink-0">
+    <p class="text-vh-lg text-theme-secondary mb-[1vh]"><%= current_question&.body %></p>
     <div class="flex flex-wrap items-center justify-center gap-[1vh]">
       <% current_question&.correct_answers&.each do |answer| %>
         <div class="flex items-center gap-1">
