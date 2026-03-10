@@ -67,6 +67,10 @@ export default class extends Controller {
     collapseCards() {
         const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
 
+        // Remember where the dragged element is on screen before collapse
+        const draggedRect = this.draggedElement?.getBoundingClientRect()
+        const draggedViewportY = draggedRect?.top ?? 0
+
         // Phase 1: Capture current heights and lock them
         wrappers.forEach(wrapper => {
             if (wrapper.style.display === "none") return
@@ -110,6 +114,17 @@ export default class extends Controller {
             // Reduce spacing between collapsed cards
             this.questionListTarget.classList.remove("space-y-6")
             this.questionListTarget.classList.add("space-y-1")
+
+            // Scroll so the dragged element stays at roughly the same viewport position
+            if (this.draggedElement) {
+                requestAnimationFrame(() => {
+                    const newRect = this.draggedElement.getBoundingClientRect()
+                    const drift = newRect.top - draggedViewportY
+                    if (Math.abs(drift) > 10) {
+                        window.scrollBy({ top: drift, behavior: "smooth" })
+                    }
+                })
+            }
         })
     }
 
@@ -220,6 +235,39 @@ export default class extends Controller {
         target.classList.remove("border-t-2", "border-b-2", "!border-t-orange-500", "!border-b-orange-500")
 
         this.updatePositions()
+    }
+
+    // --- Move Up / Down ---
+
+    moveUp(event) {
+        event.preventDefault()
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper) return
+
+        // Find previous visible sibling
+        let prev = wrapper.previousElementSibling
+        while (prev && prev.style.display === "none") prev = prev.previousElementSibling
+        if (!prev) return
+
+        wrapper.parentNode.insertBefore(wrapper, prev)
+        this.updatePositions()
+        wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" })
+    }
+
+    moveDown(event) {
+        event.preventDefault()
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper) return
+
+        // Find next visible sibling
+        let next = wrapper.nextElementSibling
+        while (next && next.style.display === "none") next = next.nextElementSibling
+        if (!next) return
+
+        // Insert after next
+        next.parentNode.insertBefore(wrapper, next.nextSibling)
+        this.updatePositions()
+        wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" })
     }
 
     // --- Position Management ---
