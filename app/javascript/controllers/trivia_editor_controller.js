@@ -18,14 +18,30 @@ export default class extends Controller {
         if (!wrapper) return
 
         this.draggedElement = wrapper
-        wrapper.classList.add("opacity-40")
+
+        // Create a compact drag image instead of the full card
+        const textarea = wrapper.querySelector("textarea[name*='[body]']")
+        const questionText = textarea?.value?.trim() || "Untitled question"
+        const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
+        const badgeText = badge?.textContent || "?"
+
+        const ghost = document.createElement("div")
+        ghost.className = "flex items-center gap-2 py-2 px-3 bg-white/10 backdrop-blur-md rounded-xl border border-orange-500/50 text-sm text-white/90 shadow-lg"
+        ghost.style.cssText = "position: fixed; top: -1000px; left: -1000px; width: 300px; z-index: -1;"
+        ghost.innerHTML = `
+            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full shrink-0">${badgeText}</span>
+            <span class="truncate">${this.escapeHtml(questionText)}</span>
+        `
+        document.body.appendChild(ghost)
+        event.dataTransfer.setDragImage(ghost, 150, 18)
+        // Clean up ghost element after browser captures it
+        setTimeout(() => ghost.remove(), 0)
 
         // Required for Firefox
         event.dataTransfer.effectAllowed = "move"
         event.dataTransfer.setData("text/plain", "")
 
-        // Collapse all cards to compact summaries after a brief delay
-        // (delay lets the browser capture the drag image from the full card first)
+        // Collapse all cards to compact summaries
         setTimeout(() => this.collapseCards(), 0)
     }
 
@@ -44,38 +60,58 @@ export default class extends Controller {
 
     collapseCards() {
         const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
+
+        // Phase 1: Capture current heights and lock them
         wrappers.forEach(wrapper => {
             if (wrapper.style.display === "none") return
-
-            // Get question text from the textarea
-            const textarea = wrapper.querySelector("textarea[name*='[body]']")
-            const questionText = textarea?.value?.trim() || "Untitled question"
-            const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
-            const badgeText = badge?.textContent || "?"
-
-            // Hide all child elements
-            Array.from(wrapper.children).forEach(child => {
-                child.dataset.dragHidden = child.style.display || ""
-                child.style.display = "none"
-            })
-
-            // Insert compact summary
-            const summary = document.createElement("div")
-            summary.className = "drag-summary flex items-center gap-2 py-1"
-            summary.innerHTML = `
-                <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full shrink-0">${badgeText}</span>
-                <span class="text-sm text-white/70 truncate">${this.escapeHtml(questionText)}</span>
-            `
-            wrapper.appendChild(summary)
+            wrapper.dataset.expandedHeight = wrapper.offsetHeight
+            wrapper.style.height = wrapper.offsetHeight + "px"
+            wrapper.style.overflow = "hidden"
+            wrapper.style.transition = "height 200ms ease-out"
         })
 
-        // Reduce spacing between collapsed cards
-        this.questionListTarget.classList.remove("space-y-6")
-        this.questionListTarget.classList.add("space-y-1")
+        // Phase 2: Insert summaries, hide content, animate to collapsed height
+        requestAnimationFrame(() => {
+            wrappers.forEach(wrapper => {
+                if (wrapper.style.display === "none") return
+
+                const textarea = wrapper.querySelector("textarea[name*='[body]']")
+                const questionText = textarea?.value?.trim() || "Untitled question"
+                const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
+                const badgeText = badge?.textContent || "?"
+
+                // Hide all child elements
+                Array.from(wrapper.children).forEach(child => {
+                    child.dataset.dragHidden = child.style.display || ""
+                    child.style.display = "none"
+                })
+
+                // Insert compact summary
+                const summary = document.createElement("div")
+                summary.className = "drag-summary flex items-center gap-2 py-1"
+                summary.innerHTML = `
+                    <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full shrink-0">${badgeText}</span>
+                    <span class="text-sm text-white/70 truncate">${this.escapeHtml(questionText)}</span>
+                `
+                wrapper.appendChild(summary)
+
+                // Animate to collapsed height
+                wrapper.style.height = summary.offsetHeight + "px"
+            })
+
+            // Reduce spacing between collapsed cards
+            this.questionListTarget.classList.remove("space-y-6")
+            this.questionListTarget.classList.add("space-y-1")
+        })
     }
 
     expandCards() {
         const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
+
+        // Restore normal spacing
+        this.questionListTarget.classList.remove("space-y-1")
+        this.questionListTarget.classList.add("space-y-6")
+
         wrappers.forEach(wrapper => {
             // Remove compact summary
             const summary = wrapper.querySelector(".drag-summary")
@@ -88,11 +124,22 @@ export default class extends Controller {
                     delete child.dataset.dragHidden
                 }
             })
-        })
 
-        // Restore normal spacing
-        this.questionListTarget.classList.remove("space-y-1")
-        this.questionListTarget.classList.add("space-y-6")
+            // Animate back to expanded height
+            if (wrapper.dataset.expandedHeight) {
+                wrapper.style.height = wrapper.dataset.expandedHeight + "px"
+                delete wrapper.dataset.expandedHeight
+            }
+
+            // Clean up inline styles after transition
+            const cleanup = () => {
+                wrapper.style.height = ""
+                wrapper.style.overflow = ""
+                wrapper.style.transition = ""
+                wrapper.removeEventListener("transitionend", cleanup)
+            }
+            wrapper.addEventListener("transitionend", cleanup)
+        })
     }
 
     escapeHtml(text) {
