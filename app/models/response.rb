@@ -4,4 +4,6 @@ class Response < ApplicationRecord
   has_many :votes, dependent: :destroy
 
   enum :status, { pending: "pending", submitted: "submitted", rejected: "rejected", published: "published" }, default: "pending"
+
+  validates :body, presence: true, if: :submitted?
 end
