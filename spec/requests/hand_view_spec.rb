@@ -23,6 +23,9 @@ RSpec.describe "Hand View - Speed Trivia score animation", type: :request do
       round_points = 750
       old_score = 500
       player.update!(score: old_score + round_points)
+      # Prior question accounts for old_score via trivia_answers source of truth
+      prior_question = create(:trivia_question_instance, speed_trivia_game: game, position: 99)
+      create(:trivia_answer, trivia_question_instance: prior_question, player:, points_awarded: old_score, correct: true)
       question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
       create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: round_points, correct: true)
     end
@@ -45,6 +48,9 @@ RSpec.describe "Hand View - Speed Trivia score animation", type: :request do
 
     before do
       player.update!(score:)
+      # Prior question accounts for existing score via trivia_answers source of truth
+      prior_question = create(:trivia_question_instance, speed_trivia_game: game, position: 99)
+      create(:trivia_answer, trivia_question_instance: prior_question, player:, points_awarded: score, correct: true)
       question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
       create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 0, correct: false)
     end
