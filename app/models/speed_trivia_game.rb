@@ -75,6 +75,33 @@ class SpeedTriviaGame < ApplicationRecord
     trivia_answers.where(player:).sum(:points_awarded)
   end
 
+  # Precomputed score data for the reviewing hand view.
+  # Returns everything the view needs to render the score reveal
+  # without doing any score logic itself.
+  def score_reveal_for(player:)
+    question = current_question
+    answer = question&.trivia_answers&.find_by(player:)
+    round_points = answer&.points_awarded.to_i
+    total = total_points_for(player)
+
+    players = room.players.active_players.to_a
+    points_by_player = question&.trivia_answers&.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded.to_i } || {}
+    ranked_now  = players.sort_by { |p| -p.score }
+    ranked_prev = players.sort_by { |p| -(p.score - points_by_player.fetch(p.id, 0)) }
+    rank     = ranked_now.index  { |p| p.id == player.id }.to_i + 1
+    prev_rank = ranked_prev.index { |p| p.id == player.id }.to_i + 1
+
+    {
+      answer:,
+      correct_answers: question&.correct_answers || [],
+      round_points:,
+      score_from: total - round_points,
+      score_to: total,
+      rank:,
+      rank_improved: rank <= prev_rank
+    }
+  end
+
   # For HasRoundTimer compatibility - use question index as "round"
   def round
     current_question_index
