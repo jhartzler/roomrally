@@ -297,12 +297,10 @@ export default class extends Controller {
             if (upBtn) {
                 upBtn.disabled = i === 0
                 upBtn.classList.toggle("opacity-10", i === 0)
-                upBtn.classList.toggle("cursor-not-allowed", i === 0)
             }
             if (downBtn) {
                 downBtn.disabled = i === visibleWrappers.length - 1
                 downBtn.classList.toggle("opacity-10", i === visibleWrappers.length - 1)
-                downBtn.classList.toggle("cursor-not-allowed", i === visibleWrappers.length - 1)
             }
         })
     }
