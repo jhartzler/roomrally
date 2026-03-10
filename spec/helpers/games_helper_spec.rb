@@ -2,22 +2,22 @@ require "rails_helper"
 
 RSpec.describe GamesHelper do
   describe "#game_theme_name" do
-    it "returns comedy-club for WriteAndVoteGame" do
-      game = build(:write_and_vote_game)
-      expect(helper.game_theme_name(game)).to eq("comedy-club")
+    it "returns comedy-club for Write And Vote rooms" do
+      room = build(:room, game_type: Room::WRITE_AND_VOTE)
+      expect(helper.game_theme_name(room)).to eq("comedy-club")
     end
 
-    it "returns track-meet for SpeedTriviaGame" do
-      game = build(:speed_trivia_game)
-      expect(helper.game_theme_name(game)).to eq("track-meet")
+    it "returns track-meet for Speed Trivia rooms" do
+      room = build(:room, game_type: Room::SPEED_TRIVIA)
+      expect(helper.game_theme_name(room)).to eq("track-meet")
     end
 
-    it "returns awards-gala for CategoryListGame" do
-      game = build(:category_list_game)
-      expect(helper.game_theme_name(game)).to eq("awards-gala")
+    it "returns awards-gala for Category List rooms" do
+      room = build(:room, game_type: Room::CATEGORY_LIST)
+      expect(helper.game_theme_name(room)).to eq("awards-gala")
     end
 
-    it "returns nil when game is nil" do
+    it "returns nil when room is nil" do
       expect(helper.game_theme_name(nil)).to be_nil
     end
   end

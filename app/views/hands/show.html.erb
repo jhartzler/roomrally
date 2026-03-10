@@ -2,8 +2,7 @@
 <%= turbo_stream_from @room %>
 <%= turbo_stream_from @player %>
 
-<% current_game = @room.current_game %>
-<div class="min-h-screen p-4 bg-gradient-to-b from-theme-bg-from to-theme-bg-to" data-controller="reconnect" data-game-theme="<%= game_theme_name(current_game) if current_game %>">
+<div class="min-h-screen p-4 bg-gradient-to-b from-theme-bg-from to-theme-bg-to" data-controller="reconnect" data-game-theme="<%= game_theme_name(@room) %>">
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="text-center mb-8 mt-8">

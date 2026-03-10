@@ -1,13 +1,13 @@
 module GamesHelper
   GAME_THEMES = {
-    "WriteAndVoteGame" => "comedy-club",
-    "SpeedTriviaGame" => "track-meet",
-    "CategoryListGame" => "awards-gala"
+    Room::WRITE_AND_VOTE => "comedy-club",
+    Room::SPEED_TRIVIA => "track-meet",
+    Room::CATEGORY_LIST => "awards-gala"
   }.freeze
 
-  def game_theme_name(game)
-    return nil unless game
+  def game_theme_name(room)
+    return nil unless room&.game_type
 
-    GAME_THEMES[game.class.name]
+    GAME_THEMES[room.game_type]
   end
 end
