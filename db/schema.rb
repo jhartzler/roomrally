@@ -151,6 +151,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["user_id"], name: "index_game_templates_on_user_id"
   end
 
+  create_table "hunt_packs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "game_type", default: "Scavenger Hunt"
+    t.boolean "is_default", default: false, null: false
+    t.string "name"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_hunt_packs_on_user_id"
+  end
+
+  create_table "hunt_prompts", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "hunt_pack_id", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "weight", default: 5, null: false
+    t.index ["hunt_pack_id"], name: "index_hunt_prompts_on_hunt_pack_id"
+  end
+
   create_table "players", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -360,6 +381,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
   add_foreign_key "game_templates", "users"
+  add_foreign_key "hunt_packs", "users"
+  add_foreign_key "hunt_prompts", "hunt_packs"
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
