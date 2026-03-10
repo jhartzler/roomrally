@@ -129,7 +129,7 @@ class PlayersController < ApplicationController
   end
 
   def player_params
-    params.require(:player).permit(:name)
+    params.require(:player).permit(:name, :team_name)
   end
 
   # destroy/approve/reject routes have no room code in params, so
