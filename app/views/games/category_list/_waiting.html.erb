@@ -2,12 +2,12 @@
 
 <header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
   <div class="flex flex-col">
-    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">
+    <span class="text-theme-text text-xs font-bold tracking-widest uppercase">
       <%= game.reviewing? ? "Reviewing" : "Scores" %>
     </span>
   </div>
-  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
-    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+  <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-theme-secondary font-bold uppercase tracking-wider">Code</p>
     <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
   </div>
 </header>
@@ -18,14 +18,14 @@
     <% ci = categories[game.reviewing_category_position] %>
 
     <% unless player == room.host %>
-      <div class="bg-white/10 backdrop-blur-md rounded-3xl p-[3vw] border border-white/20 mb-4">
+      <div class="bg-theme-surface backdrop-blur-md rounded-3xl p-[3vw] border border-theme-surface-border mb-4">
         <div class="flex items-center justify-between mb-1">
           <p class="text-lg text-white font-bold"><%= ci&.name %></p>
-          <span class="text-xs text-blue-300 font-medium">
+          <span class="text-xs text-theme-secondary font-medium">
             Category <%= game.reviewing_category_position + 1 %> of <%= categories.size %>
           </span>
         </div>
-        <p class="text-sm text-blue-200 mb-4">
+        <p class="text-sm text-theme-secondary mb-4">
           Round <%= game.current_round %> &mdash; Letter "<%= game.current_letter %>"
         </p>
 
@@ -33,16 +33,16 @@
           <% answers = ci.answers_with_duplicate_detection %>
           <div class="space-y-2">
             <% answers.each do |answer| %>
-              <div class="bg-black/30 rounded-xl px-4 py-3 border <%= answer.effectively_struck? ? 'border-white/5 opacity-50' : 'border-white/10' %>">
+              <div class="bg-black/30 rounded-xl px-4 py-3 border <%= answer.effectively_struck? ? 'border-white/5 opacity-50' : 'border-theme-surface-border' %>">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-sm font-bold text-blue-300"><%= answer.player.name %></span>
+                  <span class="text-sm font-bold text-theme-secondary"><%= answer.player.name %></span>
                   <span class="text-white font-medium <%= 'line-through' if answer.effectively_struck? %>">
                     <%= answer.body.presence || "—" %>
                   </span>
                   <% if answer.rejected? %>
                     <span class="text-xs bg-red-400/20 text-red-400 px-2 py-0.5 rounded-full font-bold">REJECTED</span>
                   <% elsif answer.duplicate? || answer.auto_duplicate? %>
-                    <span class="text-xs bg-orange-400/20 text-orange-400 px-2 py-0.5 rounded-full font-bold">DUPLICATE</span>
+                    <span class="text-xs bg-theme-secondary/20 text-theme-secondary px-2 py-0.5 rounded-full font-bold">DUPLICATE</span>
                   <% end %>
                 </div>
               </div>
@@ -51,31 +51,31 @@
         <% end %>
       </div>
 
-      <p class="text-center text-blue-300 animate-pulse text-sm">
+      <p class="text-center text-theme-secondary animate-pulse text-sm">
         Host is judging answers.
       </p>
     <% end %>
   <% elsif game.scoring? %>
     <% players_with_scores = game.players_with_round_scores %>
 
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 mb-4">
+    <div class="bg-theme-surface backdrop-blur-md rounded-3xl p-6 border border-theme-surface-border mb-4">
       <p class="text-lg text-white font-bold mb-1">🏆 Round <%= game.current_round %> Scores</p>
-      <p class="text-sm text-blue-200 mb-4">Letter "<%= game.current_letter %>"</p>
+      <p class="text-sm text-theme-secondary mb-4">Letter "<%= game.current_letter %>"</p>
 
       <div class="space-y-2">
         <% players_with_scores.each_with_index do |entry, i| %>
           <% is_me = entry[:player] == player %>
           <div class="flex items-center justify-between rounded-xl px-4 py-3
-            <%= is_me ? 'bg-blue-600/30 border border-blue-400/30' : 'bg-black/30 border border-white/10' %>">
+            <%= is_me ? 'bg-theme-surface border border-theme-surface-border' : 'bg-black/30 border border-theme-surface-border' %>">
             <div class="flex items-center gap-3">
-              <span class="text-sm font-bold <%= is_me ? 'text-blue-200' : 'text-gray-400' %>">
+              <span class="text-sm font-bold <%= is_me ? 'text-theme-secondary' : 'text-theme-text-muted' %>">
                 <%= (i + 1).ordinalize %>
               </span>
               <span class="font-medium <%= is_me ? 'text-white' : 'text-gray-200' %>">
                 <%= entry[:player].name %><%= " (you)" if is_me %>
               </span>
             </div>
-            <span class="text-yellow-400 font-bold text-lg"><%= entry[:round_score] %></span>
+            <span class="text-theme-accent font-bold text-lg"><%= entry[:round_score] %></span>
           </div>
         <% end %>
       </div>
@@ -84,7 +84,7 @@
 </div>
 
 <% if player == room.host %>
-  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-white/10 pt-6">
+  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-theme-surface-border pt-6">
     <%= render "rooms/host_controls", room: room %>
   </div>
 <% end %>

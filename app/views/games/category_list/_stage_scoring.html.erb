@@ -1,6 +1,6 @@
 <div id="stage_scoring" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
   <div class="mb-[2vh]">
-    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
+    <span class="text-vh-2xl text-theme-secondary font-bold uppercase tracking-widest">
       Round <%= game.current_round %> Results &mdash; Letter "<%= game.current_letter %>"
     </span>
   </div>
@@ -12,14 +12,14 @@
         <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">Standings</h3>
         <div class="space-y-[1vh]">
           <% room.score_tracker_entries.order(score: :desc).each_with_index do |entry, index| %>
-            <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
-              <div class="text-vh-3xl w-[6vh] font-bold text-gray-400">#<%= index + 1 %></div>
+            <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-theme-surface-border <%= index == 0 ? 'border-theme-accent-subtle shadow-[0_0_20px_var(--color-theme-accent-subtle)]' : '' %>">
+              <div class="text-vh-3xl w-[6vh] font-bold text-theme-text-muted">#<%= index + 1 %></div>
               <div class="text-vh-xl font-bold text-white flex-grow text-left mx-[2vh]"><%= entry.name %></div>
-              <div class="text-vh-3xl font-black text-yellow-400 font-mono"><%= entry.score %></div>
+              <div class="text-vh-3xl font-black text-theme-accent font-mono"><%= entry.score %></div>
             </div>
           <% end %>
           <% if room.score_tracker_entries.empty? %>
-            <p class="text-blue-300/50 text-center italic">No scores tracked yet.</p>
+            <p class="text-theme-secondary/50 text-center italic">No scores tracked yet.</p>
           <% end %>
         </div>
       </div>
@@ -27,22 +27,22 @@
       <!-- Stage-only: Show categories + scoring message -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1vh] w-full max-w-6xl px-[2vh] mb-[2vh]">
         <% game.current_round_categories.each do |ci| %>
-          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-[2vh] text-center">
+          <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-2xl p-[2vh] text-center">
             <p class="text-vh-xl text-white font-bold"><%= ci.name %></p>
           </div>
         <% end %>
       </div>
 
       <div class="text-center">
-        <p class="text-vh-2xl text-yellow-400 font-black">Scoring Time!</p>
+        <p class="text-vh-2xl text-theme-accent font-black">Scoring Time!</p>
       </div>
     <% end %>
   <% else %>
     <!-- Phone mode: Show category results -->
     <div class="w-full max-w-6xl px-[2vh] space-y-[2vh] mb-[3vh] max-h-[50vh] overflow-y-auto">
       <% game.current_round_categories.each do |ci| %>
-        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[2vh]">
-          <h3 class="text-vh-lg font-bold text-yellow-400 mb-[1vh]"><%= ci.name %></h3>
+        <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-2xl p-[2vh]">
+          <h3 class="text-vh-lg font-bold text-theme-accent mb-[1vh]"><%= ci.name %></h3>
           <div class="space-y-[1vh]">
             <% ci.category_answers.includes(:player).each do |answer| %>
               <div class="flex items-center justify-between bg-black/30 rounded-xl px-[2vh] py-[1vh]
@@ -51,18 +51,18 @@
                     elsif answer.duplicate?
                       'border border-gray-500/50 opacity-60'
                     elsif answer.alliterative?
-                      'border border-yellow-400/50'
+                      'border border-theme-accent-subtle'
                     else
-                      'border border-white/10'
+                      'border border-theme-surface-border'
                     end %>">
                 <div class="flex items-center gap-[1vh]">
                   <span class="text-vh-base text-white font-medium"><%= answer.player.name %></span>
-                  <span class="text-vh-base <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
+                  <span class="text-vh-base <%= answer.body.present? ? 'text-theme-secondary' : 'text-gray-500 italic' %>
                     <%= 'line-through' if answer.duplicate? || answer.rejected? %>">
                     <%= answer.body.present? ? answer.body : "No answer" %>
                   </span>
                   <% if answer.alliterative? %>
-                    <span class="text-vh-xs bg-yellow-400/20 text-yellow-300 px-2 py-1 rounded-full font-bold">2x ALLITERATIVE</span>
+                    <span class="text-vh-xs bg-theme-accent/20 text-theme-accent px-2 py-1 rounded-full font-bold">2x ALLITERATIVE</span>
                   <% end %>
                   <% if answer.duplicate? %>
                     <span class="text-vh-xs bg-gray-400/20 text-gray-400 px-2 py-1 rounded-full font-bold">DUPLICATE</span>
@@ -88,10 +88,10 @@
         <% game.players_with_total_scores.each_with_index do |entry, index| %>
           <% player = entry[:player] %>
           <% player_score = entry[:total_score] %>
-          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
-            <div class="text-vh-3xl w-[6vh] font-bold text-gray-400">#<%= index + 1 %></div>
+          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-theme-surface-border <%= index == 0 ? 'border-theme-accent-subtle shadow-[0_0_20px_var(--color-theme-accent-subtle)]' : '' %>">
+            <div class="text-vh-3xl w-[6vh] font-bold text-theme-text-muted">#<%= index + 1 %></div>
             <div class="text-vh-xl font-bold text-white flex-grow text-left mx-[2vh]"><%= player.name %></div>
-            <div class="text-vh-3xl font-black text-yellow-400 font-mono"><%= player_score %></div>
+            <div class="text-vh-3xl font-black text-theme-accent font-mono"><%= player_score %></div>
           </div>
         <% end %>
       </div>
