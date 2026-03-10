@@ -96,9 +96,9 @@
       <% settings = game_template.merged_settings %>
 
       <label class="flex items-center gap-3 cursor-pointer">
-        <%= f.check_box "settings[show_instructions]",
-          { checked: settings["show_instructions"], class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500" },
-          "true", "false" %>
+        <%= hidden_field_tag "game_template[settings][show_instructions]", "false" %>
+        <%= check_box_tag "game_template[settings][show_instructions]", "true", settings["show_instructions"],
+          class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500" %>
         <div>
           <span class="text-white font-bold text-sm">Show Instructions</span>
           <p class="text-xs text-blue-300/70"><%= setting_description(:show_instructions) %></p>
@@ -107,11 +107,10 @@
 
       <div data-controller="checkbox-toggle">
         <label class="flex items-center gap-3 cursor-pointer">
-          <%= f.check_box "settings[timer_enabled]",
-            { checked: settings["timer_enabled"],
+          <%= hidden_field_tag "game_template[settings][timer_enabled]", "false" %>
+          <%= check_box_tag "game_template[settings][timer_enabled]", "true", settings["timer_enabled"],
               class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500",
-              data: { checkbox_toggle_target: "checkbox", action: "change->checkbox-toggle#toggle" } },
-            "true", "false" %>
+              data: { checkbox_toggle_target: "checkbox", action: "change->checkbox-toggle#toggle" } %>
           <div>
             <span class="text-white font-bold text-sm">Timer</span>
             <p class="text-xs text-blue-300/70"><%= setting_description(:timer_enabled) %></p>
@@ -120,17 +119,16 @@
 
         <div class="ml-8 mt-3 <%= 'hidden' unless settings['timer_enabled'] %>" data-checkbox-toggle-target="content">
           <label class="block text-xs font-bold text-blue-300 mb-1">Timer Duration (seconds)</label>
-          <%= f.number_field "settings[timer_increment]",
-            value: settings["timer_increment"],
+          <%= number_field_tag "game_template[settings][timer_increment]", settings["timer_increment"],
             min: 10, max: 300, step: 5,
             class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
         </div>
       </div>
 
       <label class="flex items-center gap-3 cursor-pointer">
-        <%= f.check_box "settings[stage_only]",
-          { checked: settings["stage_only"], class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500" },
-          "true", "false" %>
+        <%= hidden_field_tag "game_template[settings][stage_only]", "false" %>
+        <%= check_box_tag "game_template[settings][stage_only]", "true", settings["stage_only"],
+          class: "w-5 h-5 rounded bg-white/10 border-white/20 text-blue-500 focus:ring-blue-500" %>
         <div>
           <span class="text-white font-bold text-sm">Stage-Only Mode</span>
           <p class="text-xs text-blue-300/70">In-person mode without player phones. All interaction happens on the big screen.</p>
@@ -140,8 +138,7 @@
       <%# Speed Trivia specific %>
       <div data-game-template-form-target="settingsGroup" data-game-type="Speed Trivia" class="<%= 'hidden' unless game_template.game_type == Room::SPEED_TRIVIA %>">
         <label class="block text-xs font-bold text-blue-300 mb-1"><%= setting_description(:question_count) %></label>
-        <%= f.number_field "settings[question_count]",
-          value: settings["question_count"],
+        <%= number_field_tag "game_template[settings][question_count]", settings["question_count"],
           min: 1, max: 50,
           class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
       </div>
@@ -151,15 +148,13 @@
         <div class="space-y-3">
           <div>
             <label class="block text-xs font-bold text-blue-300 mb-1">Total Rounds</label>
-            <%= f.number_field "settings[total_rounds]",
-              value: settings["total_rounds"],
+            <%= number_field_tag "game_template[settings][total_rounds]", settings["total_rounds"],
               min: 1, max: 10,
               class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
           </div>
           <div>
             <label class="block text-xs font-bold text-blue-300 mb-1">Categories Per Round</label>
-            <%= f.number_field "settings[categories_per_round]",
-              value: settings["categories_per_round"],
+            <%= number_field_tag "game_template[settings][categories_per_round]", settings["categories_per_round"],
               min: 1, max: 12,
               class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
           </div>
