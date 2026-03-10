@@ -19,6 +19,74 @@ RSpec.describe "Speed Trivia Score Display", :js, type: :system do
     end
   end
 
+  it "never shows negative score_from in score panel after Q1 correct answer" do
+    # Regression: score_from = player.score - round_points could go negative
+    # if the player object had a stale score (0) while round_points reflected actual points.
+    Capybara.using_session(:host) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Host"
+      click_on "Join Game"
+      expect(page).to have_content("Game Lobby")
+      click_on "Claim Host"
+    end
+
+    Capybara.using_session(:player2) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Alice"
+      click_on "Join Game"
+    end
+
+    Capybara.using_session(:player3) do
+      visit join_room_path(room)
+      fill_in "player[name]", with: "Bob"
+      click_on "Join Game"
+    end
+
+    Capybara.using_session(:host) do
+      unless page.has_button?("Start Game", wait: 3)
+        visit current_path
+      end
+      expect(page).to have_button("Start Game", wait: 5)
+      click_on "Start Game"
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+      find("#start-from-instructions-btn").click
+      expect(page).to have_content("Get Ready!", wait: 5)
+    end
+
+    game = room.reload.current_game
+    Games::SpeedTrivia.start_question(game:)
+
+    # All players answer correctly
+    [ :host, :player2, :player3 ].each do |session|
+      Capybara.using_session(session) do
+        visit current_path
+        expect(page).to have_selector('[data-test-id="answer-option-0"]', wait: 5)
+        find('[data-test-id="answer-option-0"]', match: :first).click
+        expect(page).to have_content("Locked in!", wait: 5)
+      end
+    end
+
+    Games::SpeedTrivia.close_round(game: game.reload)
+
+    # Verify score_from is never negative on Q1 review
+    [ :host, :player2, :player3 ].each do |session|
+      Capybara.using_session(session) do
+        expect(page).to have_css("[data-controller='score-tally']", wait: 5)
+
+        score_tally_el = find("[data-controller='score-tally']")
+        from_value = score_tally_el["data-score-tally-from-value"].to_i
+        to_value   = score_tally_el["data-score-tally-to-value"].to_i
+
+        expect(from_value).to eq(0),
+          "Q1 score_from should be 0 (no prior points), got #{from_value}"
+        expect(to_value).to be > 0,
+          "Q1 score_to should be positive after correct answer, got #{to_value}"
+        expect(from_value).to be >= 0,
+          "score_from must never be negative, got #{from_value}"
+      end
+    end
+  end
+
   it "shows cumulative Q1 score (non-zero) in score panel at Q2 step 1 after a wrong answer" do
     # Join all 3 players (room requires 3 to start)
     Capybara.using_session(:host) do

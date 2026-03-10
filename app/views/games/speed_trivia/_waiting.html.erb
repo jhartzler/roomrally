@@ -27,9 +27,10 @@
       <% round_points = player_answer&.points_awarded.to_i %>
 
       <%# Score animation: count from pre-round total to new total.
-          player.score is already the post-round total since calculate_scores! runs in close_round. %>
-      <% score_from = player.score - round_points %>
-      <% score_to   = player.score %>
+          Use total_points_for (source of truth) rather than player.score,
+          which can be stale if the player object wasn't reloaded after calculate_scores!. %>
+      <% score_to   = game.total_points_for(player) %>
+      <% score_from = score_to - round_points %>
 
       <%# Rank computation: compare actual post-round rank vs pre-round rank. %>
       <% all_players = room.players.active_players.to_a %>

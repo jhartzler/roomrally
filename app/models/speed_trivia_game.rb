@@ -66,9 +66,13 @@ class SpeedTriviaGame < ApplicationRecord
 
   def calculate_scores!
     room.players.active_players.each do |player|
-      score = trivia_answers.where(player:).sum(:points_awarded)
+      score = total_points_for(player)
       player.update!(score:)
     end
+  end
+
+  def total_points_for(player)
+    trivia_answers.where(player:).sum(:points_awarded)
   end
 
   # For HasRoundTimer compatibility - use question index as "round"
