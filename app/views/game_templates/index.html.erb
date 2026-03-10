@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center">
       <div>
         <h1 class="text-4xl font-black text-white drop-shadow-lg mb-2">My Games</h1>
-        <p class="text-blue-200 font-bold tracking-widest text-sm">Saved game configurations</p>
+        <p class="text-blue-200 font-bold tracking-widest text-sm">Ready-to-launch game setups</p>
       </div>
       <%= link_to new_game_template_path, class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-black py-3 px-6 rounded-xl shadow-lg shadow-orange-500/30 transition-all" do %>
         <%= lucide_icon('plus', class: "w-5 h-5") %>
@@ -24,13 +24,35 @@
         <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/10">
           <%= lucide_icon('gamepad-2', class: "w-8 h-8 text-blue-300") %>
         </div>
-        <h3 class="text-xl font-bold text-white mb-2">No saved games yet</h3>
-        <p class="text-blue-200/70 text-sm mb-6">Create a game to save your favorite settings and launch with one click.</p>
-        <%= link_to new_game_template_path, class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-black py-3 px-6 rounded-xl shadow-lg shadow-orange-500/30 transition-all" do %>
-          <%= lucide_icon('plus', class: "w-5 h-5") %>
-          Create Your First Game
-        <% end %>
+        <h3 class="text-xl font-bold text-white mb-2">No games yet</h3>
+        <p class="text-blue-200/70 text-sm mb-6 max-w-sm mx-auto">Pick a game type, tweak the settings, and you're good to go. Every game comes with default content — or attach a custom content pack to make it yours.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <%= link_to new_game_template_path, class: "inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-black py-3 px-6 rounded-xl shadow-lg shadow-orange-500/30 transition-all" do %>
+            <%= lucide_icon('plus', class: "w-5 h-5") %>
+            Create Your First Game
+          <% end %>
+          <%= link_to customize_path, class: "inline-flex items-center gap-2 text-blue-300 hover:text-white font-bold text-sm transition-colors" do %>
+            <%= lucide_icon('palette', class: "w-4 h-4") %>
+            Browse content packs
+          <% end %>
+        </div>
       </div>
     <% end %>
+
+    <!-- Info Box -->
+    <div class="mt-12 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-400/30">
+          <%= lucide_icon('info', class: "w-5 h-5 text-blue-300") %>
+        </div>
+        <div>
+          <h3 class="font-bold text-white mb-2">How it works</h3>
+          <p class="text-blue-200/80 text-sm leading-relaxed">
+            Each game here is a ready-to-go setup — your game type, settings, and content pack, all saved together.
+            Hit Launch to create a room with a 4-letter code. Project the Stage on a big screen, and players join on their phones.
+          </p>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
