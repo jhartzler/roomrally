@@ -255,6 +255,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
+  create_table "scavenger_hunt_games", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "currently_showing_submission_id"
+    t.bigint "hunt_pack_id"
+    t.integer "round", default: 1, null: false
+    t.datetime "round_ends_at"
+    t.string "status"
+    t.integer "timer_duration", default: 1800
+    t.boolean "timer_enabled", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["hunt_pack_id"], name: "index_scavenger_hunt_games_on_hunt_pack_id"
+  end
+
   create_table "score_tracker_entries", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -396,6 +409,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "trivia_packs"
   add_foreign_key "rooms", "users"
+  add_foreign_key "scavenger_hunt_games", "hunt_packs"
   add_foreign_key "score_tracker_entries", "rooms"
   add_foreign_key "speed_trivia_games", "trivia_packs"
   add_foreign_key "trivia_answers", "players"
