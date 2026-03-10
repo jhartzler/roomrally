@@ -14,6 +14,12 @@ export default class extends Controller {
     // --- Drag and Drop ---
 
     dragStart(event) {
+        // Ignore drags that originate from move/remove buttons
+        if (event.target.closest("button")) {
+            event.preventDefault()
+            return
+        }
+
         const wrapper = event.target.closest(".question-field-wrapper")
         if (!wrapper) return
 
