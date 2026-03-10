@@ -41,6 +41,9 @@ export default class extends Controller {
         event.dataTransfer.effectAllowed = "move"
         event.dataTransfer.setData("text/plain", "")
 
+        // Pin page height so background gradient doesn't shift during collapse
+        document.body.style.minHeight = document.body.scrollHeight + "px"
+
         // Collapse all cards to compact summaries
         setTimeout(() => this.collapseCards(), 0)
     }
@@ -55,6 +58,9 @@ export default class extends Controller {
         })
         this.expandCards()
 
+        // Release pinned page height after expand animation
+        setTimeout(() => { document.body.style.minHeight = "" }, 400)
+
         this.draggedElement = null
     }
 
@@ -67,7 +73,7 @@ export default class extends Controller {
             wrapper.dataset.expandedHeight = wrapper.offsetHeight
             wrapper.style.height = wrapper.offsetHeight + "px"
             wrapper.style.overflow = "hidden"
-            wrapper.style.transition = "height 200ms ease-out"
+            wrapper.style.transition = "height 350ms ease-in-out"
         })
 
         // Phase 2: Insert summaries, hide content, animate to collapsed height
