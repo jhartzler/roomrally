@@ -1,10 +1,14 @@
-# Room Rally
+# RoomRally
+
+Hosted at [roomrally.app](https://roomrally.app)
 
 A real-time multiplayer party game engine for in-person play. A host projects the Stage on a shared screen while players join on their phones via 4-letter room codes. Built for classrooms, youth groups, living rooms, and parties.
 
+I built RoomRally because I love social party games but found it hard to find many that were customizable, appropriate for mixed groups, low cost, moderatable, and still fun. After many years of running events with group games for college students and teens, and the churn of trying to find engaging activities week after week, I took some personal dev time to build something that works for my use case. Now, I'm sharing it with the world so that others can use it as well!
+
 ## Game Types
 
-All game engines are fully open source:
+More to come!
 
 - **Comedy Clash** (Write & Vote) — Players write funny responses to prompts, then vote on favorites
 - **Think Fast** (Speed Trivia) — Timed trivia rounds where speed matters
@@ -19,7 +23,7 @@ All game engines are fully open source:
 - **Database:** PostgreSQL
 - **File Storage:** Active Storage (configurable — local disk, S3, Cloudflare R2, etc.)
 - **Deployment:** Kamal
-- **Testing:** RSpec, Capybara with Playwright
+- **Testing:** RSpec, Capybara
 
 ## Self-Hosting
 
@@ -76,9 +80,10 @@ bin/rspec spec/system  # End-to-end multiplayer tests
 Room Rally uses an open core model:
 
 - **Open (this repo):** All game engines, core platform, self-hosting support
-- **Hosted version:** Adds pro features like larger group support, higher AI generation limits, and additional game types
+- **Hosted version:** (Eventually) adds pro features like larger group support, higher AI generation limits, and anything else I come up with.
 
-The hosted version relaxes capability limits (audience size, AI requests, pack images) and adds features gated behind a subscription. Self-hosters get the full open core with sensible free-tier defaults.
+Right now, there are no pro features, and all features on the hosted version at [roomrally.app](https://roomrally.app) is completely free to use. 
+But if I ever get around to adding pro, subscription-gated features, self-hosters still get the full open core with sensible free-tier defaults. If you do choose to self-host, feel free to modify or remove pro limits (AI generation, image storage, player count, etc) by forking this repo and modifying those limits in the source code. The hosted version is paid out of my pocket so I have limits to protect me from cost overruns.
 
 ## Architecture
 
