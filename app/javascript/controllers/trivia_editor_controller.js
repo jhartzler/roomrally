@@ -275,6 +275,7 @@ export default class extends Controller {
     updatePositions() {
         const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
         let visibleIndex = 0
+        const visibleWrappers = []
 
         wrappers.forEach(wrapper => {
             const isDestroyed = wrapper.style.display === "none"
@@ -283,8 +284,25 @@ export default class extends Controller {
 
             if (!isDestroyed) {
                 visibleIndex++
+                visibleWrappers.push(wrapper)
                 if (positionField) positionField.value = visibleIndex
                 if (badge) badge.textContent = visibleIndex
+            }
+        })
+
+        // Disable up/down buttons at boundaries
+        visibleWrappers.forEach((wrapper, i) => {
+            const upBtn = wrapper.querySelector("[data-action='trivia-editor#moveUp']")
+            const downBtn = wrapper.querySelector("[data-action='trivia-editor#moveDown']")
+            if (upBtn) {
+                upBtn.disabled = i === 0
+                upBtn.classList.toggle("opacity-10", i === 0)
+                upBtn.classList.toggle("cursor-not-allowed", i === 0)
+            }
+            if (downBtn) {
+                downBtn.disabled = i === visibleWrappers.length - 1
+                downBtn.classList.toggle("opacity-10", i === visibleWrappers.length - 1)
+                downBtn.classList.toggle("cursor-not-allowed", i === visibleWrappers.length - 1)
             }
         })
     }
