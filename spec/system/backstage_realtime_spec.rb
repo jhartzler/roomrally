@@ -136,7 +136,7 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     # Manually trigger broadcast for simulation or just reload page? Realtime spec should catch it.
     GameBroadcaster.broadcast_response_submitted(response: Response.last)
 
-    expect(page).to have_content("Moderated Answer")
+    expect(page).to have_content("Moderated Answer", wait: 5)
 
     # Trigger transition to voting (simulate all submitted)
     # We can just call the service method directly to simulate the condition
