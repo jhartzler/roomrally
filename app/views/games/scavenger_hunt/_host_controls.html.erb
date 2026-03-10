@@ -1,1 +1,68 @@
-<div>Host controls placeholder</div>
+<%# app/views/games/scavenger_hunt/_host_controls.html.erb %>
+<% game = room.current_game %>
+
+<% if game.instructions? %>
+  <p class="text-white/60 text-sm mb-3">Waiting for players to join...</p>
+
+<% elsif game.hunting? %>
+  <% submitted = HuntSubmission.joins(:hunt_prompt_instance).where(hunt_prompt_instances: { scavenger_hunt_game_id: game.id }).count %>
+  <% total = game.hunt_prompt_instances.count * room.players.active_players.count %>
+  <p class="text-white/60 text-sm mb-3">Submissions: <%= submitted %>/<%= total %></p>
+
+  <% if game.timer_enabled? && game.round_ends_at %>
+    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="mb-3">
+      <p class="text-white font-mono text-lg" data-timer-target="output"><%= (game.time_remaining / 60).floor %>:<%= "%02d" % (game.time_remaining % 60).floor %></p>
+    </div>
+  <% end %>
+
+  <%= button_to "End Hunting",
+      scavenger_hunt_game_submission_lock_path(game),
+      method: :post,
+      params: { code: room.code },
+      class: "w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-xl mb-2" %>
+  <%= button_to "Start Presentation",
+      scavenger_hunt_game_reveal_path(game),
+      method: :post,
+      params: { code: room.code },
+      data: { turbo_confirm: "Start presentation? This will cut off submissions." },
+      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl" %>
+
+<% elsif game.times_up? %>
+  <p class="text-white/60 text-sm mb-3">Time's up! Late entries still rolling in.</p>
+  <%= button_to "Start Presentation",
+      scavenger_hunt_game_reveal_path(game),
+      method: :post,
+      params: { code: room.code },
+      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl" %>
+
+<% elsif game.revealing? %>
+  <%= render "games/scavenger_hunt/card_picker", game:, room: %>
+  <%= button_to "Start Awards",
+      scavenger_hunt_game_awards_path(game),
+      method: :post,
+      params: { code: room.code },
+      class: "w-full bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-bold py-3 px-4 rounded-xl mt-3" %>
+
+<% elsif game.awarding? %>
+  <p class="text-white/60 text-sm mb-3">Pick the best submission for each prompt:</p>
+  <% game.hunt_prompt_instances.includes(:hunt_submissions, :winner_submission, hunt_submissions: :player).each do |instance| %>
+    <div class="bg-white/5 rounded-xl p-3 mb-2 border border-white/10">
+      <p class="text-white font-bold text-sm mb-2"><%= instance.body %></p>
+      <% instance.hunt_submissions.completed.each do |sub| %>
+        <%= button_to (sub.player.team_name.presence || sub.player.name),
+            scavenger_hunt_game_award_path(game, instance),
+            method: :patch,
+            params: { winner_submission_id: sub.id, code: room.code },
+            class: "inline-block px-3 py-1 rounded-lg text-sm font-bold mr-1 mb-1 #{instance.winner_submission == sub ? 'bg-yellow-500 text-black' : 'bg-white/20 text-white'}" %>
+      <% end %>
+    </div>
+  <% end %>
+  <%= button_to "Finish Game",
+      scavenger_hunt_game_finish_path(game),
+      method: :post,
+      params: { code: room.code },
+      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl mt-3" %>
+
+<% elsif game.finished? %>
+  <p class="text-white/60 text-sm">Game complete!</p>
+<% end %>

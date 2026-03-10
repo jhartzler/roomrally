@@ -1,1 +1,20 @@
-<div id="stage_finished">Stage: finished</div>
+<%# app/views/games/scavenger_hunt/_stage_finished.html.erb %>
+<div id="stage_finished" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
+  <div class="text-center mb-[3vh]">
+    <p class="text-[6vh] mb-[1vh]">🎉</p>
+    <h1 class="text-vh-4xl font-black text-white">Final Scores</h1>
+  </div>
+
+  <div class="w-full max-w-[60vw]">
+    <% players_ranked = game.room.players.active_players.order(score: :desc) %>
+    <% players_ranked.each_with_index do |player, index| %>
+      <div class="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-xl p-[2vh] mb-[1vh] border border-white/20 <%= 'ring-2 ring-yellow-400' if index == 0 %>">
+        <div class="flex items-center gap-[2vh]">
+          <span class="text-vh-2xl font-black text-white/60"><%= (index + 1).ordinalize %></span>
+          <span class="text-vh-xl font-bold text-white"><%= player.team_name.presence || player.name %></span>
+        </div>
+        <span class="text-vh-2xl font-black text-yellow-300"><%= player.score %> pts</span>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<%# app/views/games/scavenger_hunt/_card_picker.html.erb %>
+<div data-controller="games--card-picker" class="space-y-3">
+  <% game.hunt_prompt_instances.includes(:hunt_submissions, hunt_submissions: [:player, { media_attachment: :blob }]).each do |instance| %>
+    <% completed_subs = instance.hunt_submissions.completed %>
+    <% next if completed_subs.empty? %>
+
+    <div class="bg-white/5 rounded-xl p-2 border border-white/10">
+      <p class="text-white/60 text-xs font-bold tracking-widest px-1 mb-1"><%= instance.body %></p>
+      <div class="flex gap-2 overflow-x-auto pb-1" data-games--card-picker-target="carousel">
+        <% completed_subs.each do |sub| %>
+          <% shown = game.currently_showing_submission_id == sub.id %>
+          <%= button_to scavenger_hunt_game_reveal_path(game),
+                method: :post,
+                params: { submission_id: sub.id, code: room.code },
+                class: "shrink-0 w-20 rounded-lg overflow-hidden border-2 transition-all #{shown ? 'border-yellow-400 opacity-50' : 'border-transparent'}",
+                data: { turbo_frame: "hand_screen" } do %>
+            <% if sub.media.attached? %>
+              <%= image_tag url_for(sub.media), class: "w-20 h-16 object-cover", alt: "" %>
+            <% end %>
+            <p class="text-white text-[10px] text-center py-0.5 truncate px-1"><%= sub.player.team_name.presence || sub.player.name %></p>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
