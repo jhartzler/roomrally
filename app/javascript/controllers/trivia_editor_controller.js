@@ -95,8 +95,10 @@ export default class extends Controller {
                 `
                 wrapper.appendChild(summary)
 
-                // Animate to collapsed height
-                wrapper.style.height = summary.offsetHeight + "px"
+                // Animate to collapsed height (summary + wrapper's vertical padding)
+                const wrapperStyle = getComputedStyle(wrapper)
+                const verticalPadding = parseFloat(wrapperStyle.paddingTop) + parseFloat(wrapperStyle.paddingBottom)
+                wrapper.style.height = (summary.offsetHeight + verticalPadding) + "px"
             })
 
             // Reduce spacing between collapsed cards
