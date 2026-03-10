@@ -2,10 +2,10 @@
 <%# Shared instructions screen shown on player's hand while waiting for host to start %>
 <%# Required locals: emoji, start_game_path, room, player %>
 
-<div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center mb-6">
+<div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl p-6 text-center mb-6">
   <p class="text-4xl mb-3"><%= emoji %></p>
   <p class="text-xl font-bold text-white">Get ready!</p>
-  <p class="text-blue-200 mt-2">The game is about to begin...</p>
+  <p class="text-theme-secondary mt-2">The game is about to begin...</p>
 </div>
 <% if player == room.host %>
   <div id="host-controls" class="border-t-2 border-white/20 pt-6">
