@@ -1,6 +1,6 @@
 <div id="stage_voting" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
   <!-- Prompt Display -->
-  <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[3vh]">
+  <div class="relative bg-theme-surface backdrop-blur-xl border border-theme-surface-border rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[3vh]">
 
     <div class="absolute top-[2vh] right-[3vh]"
          data-controller="dramatic-timer"
@@ -9,7 +9,7 @@
              data-dramatic-timer-target="output visual"><%= game.time_remaining.ceil %>s</span>
     </div>
     <% current_prompt = game.current_round_prompts.order(:id)[game.current_prompt_index] %>
-    <p class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest mb-[2vh]">Prompt</p>
+    <p class="text-vh-2xl text-theme-secondary font-bold uppercase tracking-widest mb-[2vh]">Prompt</p>
     <h2 class="text-vh-4xl font-black text-white leading-tight">
       <%= current_prompt&.body || "Loading prompt..." %>
     </h2>
@@ -19,7 +19,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh] w-full max-w-7xl px-[2vh]">
     <% if current_prompt %>
       <% current_prompt.responses.order(:id).each_with_index do |response, index| %>
-        <div class="bg-blue-600/20 backdrop-blur-md border-2 border-blue-400/30 rounded-2xl p-[2vh] flex items-center shadow-lg">
+        <div class="bg-theme-surface backdrop-blur-md border-2 border-theme-surface-border rounded-2xl p-[2vh] flex items-center shadow-lg">
           <div class="bg-white text-black font-black text-vh-3xl h-[6vh] w-[6vh] rounded-full flex items-center justify-center mr-[2vh] shrink-0 shadow-md">
             <%= (index + 65).chr %>
           </div>
@@ -32,6 +32,6 @@
   </div>
 
   <div class="mt-[3vh]">
-    <p class="text-vh-2xl text-blue-200 animate-pulse font-semibold">Cast your votes now!</p>
+    <p class="text-vh-2xl text-theme-secondary animate-pulse font-semibold">Cast your votes now!</p>
   </div>
 </div>

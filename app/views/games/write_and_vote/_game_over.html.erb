@@ -3,7 +3,7 @@
     Game Over!
   </h1>
   
-  <div class="text-2xl text-blue-200 font-medium">
+  <div class="text-2xl text-theme-secondary font-medium">
     Thanks for playing!
   </div>
 
@@ -13,12 +13,12 @@
     <% runner_up = sorted_players.second %>
 
     <% if winner %>
-      <div class="mb-8 p-8 bg-gradient-to-br from-yellow-500/20 to-orange-600/20 rounded-2xl border border-yellow-500/30 backdrop-blur-md shadow-2xl transform hover:scale-105 transition duration-300">
+      <div class="mb-8 p-8 bg-gradient-to-br from-theme-accent/20 to-theme-secondary/20 rounded-2xl border border-theme-accent-subtle backdrop-blur-md shadow-2xl transform hover:scale-105 transition duration-300">
         <div class="text-center">
           <div class="text-6xl mb-4">👑</div>
           <h2 class="text-4xl font-black text-white mb-2 drop-shadow-md"><%= winner.name %></h2>
-          <div class="text-3xl font-bold text-white"><%= winner.score %> <span class="text-lg text-yellow-100 font-medium uppercase tracking-wider">Points</span></div>
-          <div class="mt-4 text-yellow-100 font-medium tracking-wide">Grand Champion</div>
+          <div class="text-3xl font-bold text-white"><%= winner.score %> <span class="text-lg text-theme-accent font-medium uppercase tracking-wider">Points</span></div>
+          <div class="mt-4 text-theme-accent font-medium tracking-wide">Grand Champion</div>
         </div>
       </div>
     <% end %>
@@ -29,12 +29,12 @@
           <div class="text-3xl">🥈</div>
           <div class="text-xl font-bold text-slate-200"><%= runner_up.name %></div>
         </div>
-        <div class="text-2xl font-bold text-blue-300"><%= runner_up.score %> <span class="text-sm text-slate-400 font-medium uppercase">Points</span></div>
+        <div class="text-2xl font-bold text-theme-secondary"><%= runner_up.score %> <span class="text-sm text-theme-text-muted font-medium uppercase">Points</span></div>
       </div>
     <% end %>
   </div>
 
   <%= render "shared/feedback_cta" %>
 
-  <%= link_to "Back to Home", root_path, class: "mt-4 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-lg" %>
+  <%= link_to "Back to Home", root_path, class: "mt-4 px-8 py-4 bg-theme-accent hover:bg-theme-accent/80 text-white font-black rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 text-lg" %>
 </div>
