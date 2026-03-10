@@ -23,23 +23,96 @@ export default class extends Controller {
         // Required for Firefox
         event.dataTransfer.effectAllowed = "move"
         event.dataTransfer.setData("text/plain", "")
+
+        // Collapse all cards to compact summaries after a brief delay
+        // (delay lets the browser capture the drag image from the full card first)
+        setTimeout(() => this.collapseCards(), 0)
     }
 
     dragEnd(event) {
         const wrapper = event.target.closest(".question-field-wrapper")
         if (wrapper) wrapper.classList.remove("opacity-40")
 
-        // Clean up all drop indicators
+        // Clean up all drop indicators and expand cards back
         this.questionListTarget.querySelectorAll(".question-field-wrapper").forEach(el => {
             el.classList.remove("border-t-2", "border-b-2", "!border-t-orange-500", "!border-b-orange-500")
         })
+        this.expandCards()
 
         this.draggedElement = null
+    }
+
+    collapseCards() {
+        const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
+        wrappers.forEach(wrapper => {
+            if (wrapper.style.display === "none") return
+
+            // Get question text from the textarea
+            const textarea = wrapper.querySelector("textarea[name*='[body]']")
+            const questionText = textarea?.value?.trim() || "Untitled question"
+            const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
+            const badgeText = badge?.textContent || "?"
+
+            // Hide all child elements
+            Array.from(wrapper.children).forEach(child => {
+                child.dataset.dragHidden = child.style.display || ""
+                child.style.display = "none"
+            })
+
+            // Insert compact summary
+            const summary = document.createElement("div")
+            summary.className = "drag-summary flex items-center gap-2 py-1"
+            summary.innerHTML = `
+                <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full shrink-0">${badgeText}</span>
+                <span class="text-sm text-white/70 truncate">${this.escapeHtml(questionText)}</span>
+            `
+            wrapper.appendChild(summary)
+        })
+
+        // Reduce spacing between collapsed cards
+        this.questionListTarget.classList.remove("space-y-6")
+        this.questionListTarget.classList.add("space-y-1")
+    }
+
+    expandCards() {
+        const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
+        wrappers.forEach(wrapper => {
+            // Remove compact summary
+            const summary = wrapper.querySelector(".drag-summary")
+            if (summary) summary.remove()
+
+            // Restore all child elements
+            Array.from(wrapper.children).forEach(child => {
+                if ("dragHidden" in child.dataset) {
+                    child.style.display = child.dataset.dragHidden
+                    delete child.dataset.dragHidden
+                }
+            })
+        })
+
+        // Restore normal spacing
+        this.questionListTarget.classList.remove("space-y-1")
+        this.questionListTarget.classList.add("space-y-6")
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement("div")
+        div.textContent = text
+        return div.innerHTML
     }
 
     dragOver(event) {
         event.preventDefault()
         event.dataTransfer.dropEffect = "move"
+
+        // Auto-scroll when near viewport edges
+        const scrollZone = 80
+        const scrollSpeed = 8
+        if (event.clientY < scrollZone) {
+            window.scrollBy(0, -scrollSpeed)
+        } else if (event.clientY > window.innerHeight - scrollZone) {
+            window.scrollBy(0, scrollSpeed)
+        }
     }
 
     dragEnter(event) {
