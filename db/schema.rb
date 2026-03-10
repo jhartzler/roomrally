@@ -204,6 +204,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.integer "score", default: 0, null: false
     t.string "session_id", null: false
     t.string "status", default: "active", null: false
+    t.string "team_name"
     t.datetime "updated_at", null: false
     t.index ["room_id"], name: "index_players_on_room_id"
     t.index ["session_id", "room_id"], name: "index_players_on_session_id_and_room_id", unique: true
@@ -263,6 +264,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "game_template_id"
     t.string "game_type", default: "Write And Vote"
     t.bigint "host_id"
+    t.bigint "hunt_pack_id"
     t.datetime "last_host_claim_at"
     t.bigint "prompt_pack_id"
     t.boolean "stage_only", default: false, null: false
@@ -275,6 +277,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
     t.index ["game_template_id"], name: "index_rooms_on_game_template_id"
     t.index ["host_id"], name: "index_rooms_on_host_id"
+    t.index ["hunt_pack_id"], name: "index_rooms_on_hunt_pack_id"
     t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
     t.index ["trivia_pack_id"], name: "index_rooms_on_trivia_pack_id"
     t.index ["user_id"], name: "index_rooms_on_user_id"
@@ -434,6 +437,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "category_packs"
   add_foreign_key "rooms", "game_templates", on_delete: :nullify
+  add_foreign_key "rooms", "hunt_packs"
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "trivia_packs"
