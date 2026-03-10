@@ -37,12 +37,13 @@ class RoomsController < ApplicationController
 
       timer_enabled = start_game_params[:timer_enabled] == "1"
       timer_increment = start_game_params[:timer_increment].to_i
+      timer_duration = start_game_params[:timer_duration].to_i
       question_count = start_game_params[:question_count].to_i
       show_instructions = @room.user.nil? || start_game_params[:show_instructions] == "1"
       total_rounds = start_game_params[:total_rounds].to_i
       categories_per_round = start_game_params[:categories_per_round].to_i
 
-      if timer_enabled && timer_increment <= 0
+      if timer_enabled && timer_increment <= 0 && @room.game_type != "Scavenger Hunt"
         redirect_to room_hand_path(@room.code), alert: "Could not start game: Timer increment must be greater than 0"
         return
       end
@@ -59,7 +60,7 @@ class RoomsController < ApplicationController
       if @room.start_game!
         Rails.logger.info "Game started for room #{@room.code} by #{current_player&.name || 'Facilitator'}"
 
-        publish(:game_started, room: @room, timer_enabled:, timer_increment:, question_count:, show_instructions:, total_rounds:, categories_per_round:)
+        publish(:game_started, room: @room, timer_enabled:, timer_increment:, timer_duration:, question_count:, show_instructions:, total_rounds:, categories_per_round:)
 
         if current_user && current_user == @room.user
           redirect_to room_backstage_path(@room.code), notice: "Game started!"
