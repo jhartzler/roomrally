@@ -47,8 +47,8 @@
     </div>
 
     <!-- Right Column: Questions -->
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 h-fit">
-      <div class="flex justify-between items-center mb-4">
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 h-fit relative">
+      <div class="flex justify-between items-center mb-4 sticky top-0 z-10 bg-white/10 backdrop-blur-md -mx-8 -mt-8 px-8 pt-8 pb-4 rounded-t-3xl border-b border-white/10">
         <h3 class="text-xl font-black text-white tracking-wide">Questions</h3>
          <button type="button" data-action="trivia-editor#addQuestion" class="text-sm text-white font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-white/10">
             <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
@@ -69,7 +69,15 @@
 
       <div data-trivia-editor-target="questionList" class="space-y-6">
         <%= form.fields_for :trivia_questions do |q| %>
-          <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="<%= q.object.new_record? %>">
+          <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="<%= q.object.new_record? %>" draggable="true" data-action="dragstart->trivia-editor#dragStart dragend->trivia-editor#dragEnd dragover->trivia-editor#dragOver dragenter->trivia-editor#dragEnter dragleave->trivia-editor#dragLeave drop->trivia-editor#drop">
+            <%= q.hidden_field :position, data: { trivia_editor_target: "positionField" } %>
+            <!-- Question Header with drag handle and position -->
+            <div class="flex items-center gap-2 mb-3">
+              <div class="drag-handle cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60 transition-colors" aria-label="Drag to reorder">
+                <%= lucide_icon('grip-vertical', class: "w-4 h-4", "aria-hidden": true) %>
+              </div>
+              <span class="position-badge inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full" data-trivia-editor-target="positionBadge"><%= (q.object.position || q.index + 1) %></span>
+            </div>
             <!-- Question Body -->
             <div class="mb-4">
               <%= q.text_area :body, rows: 2, class: "block w-full rounded-lg bg-white/10 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 resize-none transition-all px-3 py-2", data: { trivia_editor_target: "questionField", action: "input->trivia-editor#updateCount" }, placeholder: "Enter trivia question..." %>
@@ -169,7 +177,15 @@
 
   <!-- Hidden Template for New Questions -->
   <template data-trivia-editor-target="questionTemplate">
-    <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="true">
+    <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="true" draggable="true" data-action="dragstart->trivia-editor#dragStart dragend->trivia-editor#dragEnd dragover->trivia-editor#dragOver dragenter->trivia-editor#dragEnter dragleave->trivia-editor#dragLeave drop->trivia-editor#drop">
+      <input type="hidden" name="trivia_pack[trivia_questions_attributes][NEW_RECORD][position]" data-trivia-editor-target="positionField" />
+      <!-- Question Header with drag handle and position -->
+      <div class="flex items-center gap-2 mb-3">
+        <div class="drag-handle cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60 transition-colors" aria-label="Drag to reorder">
+          <%= lucide_icon('grip-vertical', class: "w-4 h-4", "aria-hidden": true) %>
+        </div>
+        <span class="position-badge inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full" data-trivia-editor-target="positionBadge"></span>
+      </div>
       <!-- Question Body -->
       <div class="mb-4">
         <textarea name="trivia_pack[trivia_questions_attributes][NEW_RECORD][body]" rows="2" class="block w-full rounded-lg bg-white/10 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 resize-none transition-all px-3 py-2" data-trivia-editor-target="questionField" data-action="input->trivia-editor#updateCount" placeholder="Enter trivia question..."></textarea>

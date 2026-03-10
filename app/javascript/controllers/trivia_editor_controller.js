@@ -1,13 +1,119 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning"]
+    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning", "positionField", "positionBadge"]
     static values = { ratio: { type: Number, default: 1 }, imageLimit: { type: Number, default: 20 } }
 
     connect() {
+        this.draggedElement = null
+        this.updatePositions()
         this.updateCount()
         this.updateImageCount()
     }
+
+    // --- Drag and Drop ---
+
+    dragStart(event) {
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper) return
+
+        this.draggedElement = wrapper
+        wrapper.classList.add("opacity-40")
+
+        // Required for Firefox
+        event.dataTransfer.effectAllowed = "move"
+        event.dataTransfer.setData("text/plain", "")
+    }
+
+    dragEnd(event) {
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (wrapper) wrapper.classList.remove("opacity-40")
+
+        // Clean up all drop indicators
+        this.questionListTarget.querySelectorAll(".question-field-wrapper").forEach(el => {
+            el.classList.remove("border-t-2", "border-b-2", "!border-t-orange-500", "!border-b-orange-500")
+        })
+
+        this.draggedElement = null
+    }
+
+    dragOver(event) {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = "move"
+    }
+
+    dragEnter(event) {
+        event.preventDefault()
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper || wrapper === this.draggedElement) return
+
+        // Clear all indicators first
+        this.questionListTarget.querySelectorAll(".question-field-wrapper").forEach(el => {
+            el.classList.remove("border-t-2", "border-b-2", "!border-t-orange-500", "!border-b-orange-500")
+        })
+
+        // Show indicator based on mouse position relative to element center
+        const rect = wrapper.getBoundingClientRect()
+        const midY = rect.top + rect.height / 2
+        if (event.clientY < midY) {
+            wrapper.classList.add("border-t-2", "!border-t-orange-500")
+        } else {
+            wrapper.classList.add("border-b-2", "!border-b-orange-500")
+        }
+    }
+
+    dragLeave(event) {
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper) return
+
+        // Only remove if actually leaving the wrapper (not entering a child)
+        const related = event.relatedTarget
+        if (related && wrapper.contains(related)) return
+
+        wrapper.classList.remove("border-t-2", "border-b-2", "!border-t-orange-500", "!border-b-orange-500")
+    }
+
+    drop(event) {
+        event.preventDefault()
+        const target = event.target.closest(".question-field-wrapper")
+        if (!target || !this.draggedElement || target === this.draggedElement) return
+
+        // Determine drop position based on mouse position
+        const rect = target.getBoundingClientRect()
+        const midY = rect.top + rect.height / 2
+
+        if (event.clientY < midY) {
+            target.parentNode.insertBefore(this.draggedElement, target)
+        } else {
+            target.parentNode.insertBefore(this.draggedElement, target.nextSibling)
+        }
+
+        // Clean up indicators
+        target.classList.remove("border-t-2", "border-b-2", "!border-t-orange-500", "!border-b-orange-500")
+
+        this.updatePositions()
+    }
+
+    // --- Position Management ---
+
+    updatePositions() {
+        const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
+        let visibleIndex = 0
+
+        wrappers.forEach(wrapper => {
+            const isDestroyed = wrapper.style.display === "none"
+            const positionField = wrapper.querySelector("[data-trivia-editor-target='positionField']")
+            const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
+
+            if (!isDestroyed) {
+                visibleIndex++
+                if (positionField) positionField.value = visibleIndex
+                if (badge) badge.textContent = visibleIndex
+            }
+        })
+    }
+
+    // --- Add / Remove Questions ---
 
     addQuestion(event) {
         if (event) event.preventDefault()
@@ -21,9 +127,10 @@ export default class extends Controller {
             timestamp
         )
 
-        this.questionListTarget.insertAdjacentHTML('afterbegin', content)
+        // Add to bottom instead of top
+        this.questionListTarget.insertAdjacentHTML('beforeend', content)
 
-        const wrapper = this.questionListTarget.firstElementChild
+        const wrapper = this.questionListTarget.lastElementChild
 
         // Set question body
         const bodyField = wrapper.querySelector("textarea[name*='[body]']")
@@ -53,7 +160,11 @@ export default class extends Controller {
             this.syncCorrectAnswersFields(wrapper)
         }
 
+        this.updatePositions()
         this.updateCount()
+
+        // Scroll new question into view
+        wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" })
     }
 
     removeQuestion(event) {
@@ -68,9 +179,12 @@ export default class extends Controller {
             wrapper.querySelector("input[name*='_destroy']").value = "1"
         }
 
+        this.updatePositions()
         this.updateCount()
         this.updateImageCount()
     }
+
+    // --- Correct Answers ---
 
     updateCorrectAnswers(event) {
         const questionWrapper = event.target.closest(".question-field-wrapper")
@@ -109,6 +223,8 @@ export default class extends Controller {
         const questionWrapper = event.target.closest(".question-field-wrapper")
         this.syncCorrectAnswersFields(questionWrapper)
     }
+
+    // --- Image Management ---
 
     previewImage(event) {
         const file = event.target.files[0]
@@ -179,6 +295,8 @@ export default class extends Controller {
             this.imageCountWarningTarget.classList.toggle("hidden", count < limit)
         }
     }
+
+    // --- Counts ---
 
     updateCount() {
         const visibleQuestions = this.questionFieldTargets.filter(field => {
