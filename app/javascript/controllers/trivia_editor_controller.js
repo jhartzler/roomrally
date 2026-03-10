@@ -241,6 +241,9 @@ export default class extends Controller {
 
     moveUp(event) {
         event.preventDefault()
+        const btn = event.target.closest("button")
+        if (btn?.disabled) return
+
         const wrapper = event.target.closest(".question-field-wrapper")
         if (!wrapper) return
 
@@ -256,6 +259,9 @@ export default class extends Controller {
 
     moveDown(event) {
         event.preventDefault()
+        const btn = event.target.closest("button")
+        if (btn?.disabled) return
+
         const wrapper = event.target.closest(".question-field-wrapper")
         if (!wrapper) return
 
