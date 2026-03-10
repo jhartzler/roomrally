@@ -39,6 +39,13 @@
     </div>
   </div>
 
+  <% if @room.current_game.is_a?(ScavengerHuntGame) && @room.current_game.accepts_submissions? %>
+    <div class="mt-8 bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
+      <h2 class="text-xl font-bold mb-4 text-white tracking-wide border-b border-white/10 pb-2">Submission Curation</h2>
+      <%= render "games/scavenger_hunt/curation_panel", game: @room.current_game, room: @room %>
+    </div>
+  <% end %>
+
   <!-- Waiting Room Section (always rendered so Turbo Stream appends have a target) -->
   <% pending_players = @room.players.pending_approval %>
   <div class="mt-8 bg-orange-500/10 backdrop-blur-md rounded-3xl p-6 border-2 border-orange-400/50 shadow-xl">
