@@ -1,0 +1,23 @@
+<%# app/views/hunt_packs/show.html.erb %>
+<div class="p-4 md:p-8">
+  <div class="max-w-5xl mx-auto">
+    <header class="mb-10 flex justify-between items-start">
+      <div>
+        <h1 class="text-4xl font-black text-white mb-2 tracking-tighter drop-shadow-md"><%= @hunt_pack.name %></h1>
+        <p class="text-blue-200 font-medium"><%= pluralize(@hunt_pack.hunt_prompts.count, "prompt") %></p>
+      </div>
+      <%= link_to "Edit", edit_hunt_pack_path(@hunt_pack), class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-xl transition-all" %>
+    </header>
+
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20">
+      <div class="space-y-3">
+        <% @hunt_pack.hunt_prompts.ordered.each do |prompt| %>
+          <div class="flex items-center justify-between bg-white/5 rounded-xl px-4 py-3 border border-white/10">
+            <span class="text-white font-medium"><%= prompt.body %></span>
+            <span class="text-blue-200/60 text-sm font-bold shrink-0 ml-4"><%= prompt.weight %> pts</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

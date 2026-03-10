@@ -60,3 +60,32 @@ standard_categories = YAML.load_file(Rails.root.join("config/standard_categories
 standard_categories.each do |category_name|
   Category.find_or_create_by!(name: category_name, category_pack:)
 end
+
+# Scavenger Hunt: "Classic Scavenger Hunt" pack
+hunt_pack = HuntPack.find_or_create_by!(
+  name: "Classic Scavenger Hunt",
+  game_type: "Scavenger Hunt",
+  user_id: nil,
+  is_default: true,
+  status: :live
+)
+
+hunt_prompts = [
+  { body: "Take a team photo reenacting a famous painting", weight: 5 },
+  { body: "Everyone in an elevator — make it dramatic", weight: 5 },
+  { body: "Find a local landmark and pose like tourists", weight: 5 },
+  { body: "Take a photo with a stranger (ask nicely!)", weight: 10 },
+  { body: "Recreate a movie poster with your team", weight: 10 },
+  { body: "Find something that starts with every letter of your team name", weight: 5 },
+  { body: "Capture your best 'album cover' photo", weight: 5 },
+  { body: "Team doing their best impression of a statue", weight: 5 },
+  { body: "The most creative use of a common object", weight: 5 },
+  { body: "Take a photo that tells a story in one frame", weight: 10 }
+]
+
+hunt_prompts.each_with_index do |prompt, index|
+  hunt_pack.hunt_prompts.find_or_create_by!(body: prompt[:body]) do |p|
+    p.weight = prompt[:weight]
+    p.position = index
+  end
+end

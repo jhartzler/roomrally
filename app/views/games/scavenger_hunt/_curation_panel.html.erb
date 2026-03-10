@@ -1,0 +1,53 @@
+<%# app/views/games/scavenger_hunt/_curation_panel.html.erb %>
+<%# locals: (game:, room:) %>
+<div class="grid grid-cols-4 gap-4 mt-4">
+  <%# Left: prompt list sidebar %>
+  <div class="col-span-1 space-y-2">
+    <h3 class="text-white font-bold text-sm tracking-widest mb-2">PROMPTS</h3>
+    <% game.hunt_prompt_instances.includes(:hunt_submissions).each do |instance| %>
+      <a href="#prompt-<%= instance.id %>"
+         class="block bg-white/10 rounded-lg p-2 border border-white/10 hover:border-white/30 transition-all">
+        <p class="text-white text-sm font-bold truncate"><%= instance.body %></p>
+        <p class="text-white/40 text-xs"><%= instance.hunt_submissions.count %> submissions</p>
+      </a>
+    <% end %>
+  </div>
+
+  <%# Right: submission grid %>
+  <div class="col-span-3 space-y-6">
+    <% game.hunt_prompt_instances.includes(hunt_submissions: [:player, { media_attachment: :blob }]).each do |instance| %>
+      <div id="prompt-<%= instance.id %>">
+        <h3 class="text-white font-bold mb-2"><%= instance.body %> <span class="text-white/40 text-sm">(<%= instance.weight %> pts)</span></h3>
+        <div class="grid grid-cols-3 gap-3">
+          <% instance.hunt_submissions.each do |sub| %>
+            <div class="bg-white/10 rounded-xl p-2 border border-white/10 <%= 'border-amber-500/50' if sub.late? %>">
+              <% if sub.media.attached? %>
+                <%= image_tag sub.media, class: "w-full h-32 object-cover rounded-lg mb-2", alt: "" %>
+              <% end %>
+              <p class="text-white font-bold text-sm"><%= sub.player.team_name.presence || sub.player.name %></p>
+              <p class="text-white/40 text-xs"><%= time_ago_in_words(sub.created_at) %> ago</p>
+              <% if sub.late? %>
+                <span class="text-amber-400 text-xs font-bold">LATE</span>
+              <% end %>
+
+              <div class="flex gap-1 mt-2">
+                <%= button_to scavenger_hunt_game_completion_path(game, sub),
+                      method: :patch,
+                      params: { action_type: "complete", value: (!sub.completed?).to_s, code: room.code },
+                      class: "px-2 py-1 rounded text-xs font-bold #{sub.completed? ? 'bg-green-600 text-white' : 'bg-white/20 text-white/60'}" do %>
+                  &#10003;
+                <% end %>
+                <%= button_to scavenger_hunt_game_completion_path(game, sub),
+                      method: :patch,
+                      params: { action_type: "favorite", value: (!sub.favorite?).to_s, code: room.code },
+                      class: "px-2 py-1 rounded text-xs font-bold #{sub.favorite? ? 'bg-yellow-600 text-white' : 'bg-white/20 text-white/60'}" do %>
+                  &#9733;
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
