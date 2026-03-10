@@ -2,25 +2,25 @@
 
 <header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
   <div class="flex flex-col">
-    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">
+    <span class="text-theme-text-muted text-xs font-bold tracking-widest uppercase">
       <%= game.waiting? ? "Get Ready" : "Results" %>
     </span>
   </div>
-  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
-    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+  <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-theme-secondary font-bold uppercase tracking-wider">Code</p>
     <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
   </div>
 </header>
 
 <div class="max-w-md mx-auto">
-  <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
+  <div class="bg-theme-surface backdrop-blur-md rounded-3xl p-8 border border-theme-surface-border text-center">
     <% if game.waiting? %>
       <div class="text-6xl mb-6 animate-bounce">🧠</div>
       <p class="text-2xl text-white font-bold mb-4">Get Ready!</p>
-      <p class="text-lg text-blue-200">
+      <p class="text-lg text-theme-secondary">
         <%= game.trivia_question_instances.count %> questions
       </p>
-      <p class="text-blue-300 mt-4">Faster answers = more points!</p>
+      <p class="text-theme-secondary mt-4">Faster answers = more points!</p>
     <% elsif game.reviewing? %>
       <% current_question = game.current_question %>
       <% player_answer = current_question&.trivia_answers&.find_by(player:) %>
@@ -58,11 +58,11 @@
         <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
       <% else %>
         <div class="text-5xl mb-3">⏱</div>
-        <p class="text-2xl text-gray-400 font-bold mb-1">And... time.</p>
+        <p class="text-2xl text-theme-text-muted font-bold mb-1">And... time.</p>
         <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
       <% end %>
 
-      <hr class="border-white/20 my-4">
+      <hr class="border-theme-surface-border my-4">
 
       <%# Score panel section %>
       <div class="text-xl font-black text-white mb-4"><%= message %></div>
@@ -70,7 +70,7 @@
       <div data-controller="score-tally"
            data-score-tally-from-value="<%= score_from %>"
            data-score-tally-to-value="<%= score_to %>">
-        <p class="text-blue-200 text-sm font-bold uppercase tracking-widest mb-1">
+        <p class="text-theme-secondary text-sm font-bold uppercase tracking-widest mb-1">
           <%= current_rank.ordinalize %> Place
         </p>
         <p class="text-5xl font-black text-white font-mono mb-2"
@@ -80,7 +80,7 @@
         <% if round_points > 0 %>
           <p class="text-green-400 font-bold text-lg">+<%= round_points %> this round</p>
         <% else %>
-          <p class="text-gray-400 font-bold text-lg">+0 this round</p>
+          <p class="text-theme-text-muted font-bold text-lg">+0 this round</p>
         <% end %>
       </div>
     <% end %>
@@ -88,7 +88,7 @@
 </div>
 
 <% if player == room.host %>
-  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-white/10 pt-6">
+  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-theme-surface-border pt-6">
     <%= render "rooms/host_controls", room: room %>
   </div>
 <% end %>

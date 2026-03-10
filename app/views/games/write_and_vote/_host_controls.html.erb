@@ -5,7 +5,7 @@
 
 <div class="space-y-4">
   <% if game.instructions? %>
-    <p class="text-blue-200 text-sm mb-4">Players are viewing the instructions.</p>
+    <p class="text-theme-secondary text-sm mb-4">Players are viewing the instructions.</p>
     <%= button_to "Start Game",
         write_and_vote_game_game_start_path(game),
         method: :post,
@@ -14,14 +14,14 @@
 
   <% else %>
     <div class="flex items-center justify-between mb-4">
-      <span class="text-blue-200 font-medium">
+      <span class="text-theme-secondary font-medium">
         Round <%= game.round %>
       </span>
       <span class="px-3 py-1 rounded-full text-sm font-bold
         <%= case game.status
             when 'writing' then 'bg-yellow-500/20 text-yellow-300'
             when 'voting' then 'bg-green-500/20 text-green-300'
-            when 'finished' then 'bg-blue-500/20 text-blue-300'
+            when 'finished' then 'bg-theme-surface text-theme-secondary'
             else 'bg-gray-500/20 text-gray-300'
             end %>">
         <%= game.status.titleize %>
@@ -32,12 +32,12 @@
       <div class="bg-green-500/20 rounded-xl p-4 text-center">
         <p class="text-green-300 font-bold text-lg">Game Complete!</p>
         <p class="text-green-200 text-sm mt-2">Final scores are displayed on screen.</p>
-        <%= link_to "Start a new game?", host_path, class: "inline-block mt-3 text-blue-300 hover:text-blue-100 underline text-sm font-medium transition" %>
+        <%= link_to "Start a new game?", host_path, class: "inline-block mt-3 text-theme-secondary hover:text-theme-text underline text-sm font-medium transition" %>
       </div>
     <% else %>
-      <div class="bg-indigo-600/20 backdrop-blur-md border border-indigo-500/30 rounded-xl p-4 text-center shadow-lg">
-        <p class="text-blue-100 font-bold text-lg tracking-wide drop-shadow-sm flex items-center justify-center gap-2">
-          <span class="animate-pulse w-2 h-2 bg-indigo-400 rounded-full"></span>
+      <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl p-4 text-center shadow-lg">
+        <p class="text-theme-text font-bold text-lg tracking-wide drop-shadow-sm flex items-center justify-center gap-2">
+          <span class="animate-pulse w-2 h-2 bg-theme-accent rounded-full"></span>
           Game in Progress
         </p>
       </div>

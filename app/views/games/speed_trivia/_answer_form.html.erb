@@ -6,10 +6,10 @@
 
 <header class="max-w-md mx-auto flex justify-between items-center mb-4 px-2">
   <div class="flex flex-col">
-    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Question <%= game.current_question_index + 1 %></span>
+    <span class="text-theme-text-muted text-xs font-bold tracking-widest uppercase">Question <%= game.current_question_index + 1 %></span>
   </div>
-  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
-    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+  <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-theme-secondary font-bold uppercase tracking-wider">Code</p>
     <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
   </div>
 </header>
@@ -24,12 +24,12 @@
         <div class="<%= 'col-span-2 max-w-[50%] mx-auto' if options.size == 3 && index == 2 %>">
           <div class="rounded-2xl flex flex-col items-center justify-center h-full min-h-[20vh] shadow-lg px-3
             <%= if is_selected
-                  'bg-blue-600 border-4 border-blue-300 text-white ring-4 ring-blue-400/50'
+                  'bg-theme-accent border-4 border-theme-accent text-white ring-4 ring-theme-accent-subtle'
                 else
                   'bg-gray-800/40 border-2 border-gray-700 text-gray-600'
                 end %>">
             <span class="text-6xl font-black leading-none"><%= letter %></span>
-            <span class="text-xs font-semibold mt-1 text-center leading-tight <%= is_selected ? 'text-blue-100' : 'text-gray-500' %>"><%= options[index] %></span>
+            <span class="text-xs font-semibold mt-1 text-center leading-tight <%= is_selected ? 'text-white' : 'text-gray-500' %>"><%= options[index] %></span>
           </div>
         </div>
       <% end %>
@@ -45,7 +45,7 @@
           <%= button_to trivia_answers_path,
               method: :post,
               params: { trivia_answer: { selected_option: option }, code: room.code },
-              class: "w-full h-full min-h-[20vh] rounded-2xl flex flex-col items-center justify-center gap-1 px-3 text-white shadow-lg transition-all active:scale-95 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-md border-2 border-gray-600 hover:border-blue-400",
+              class: "w-full h-full min-h-[20vh] rounded-2xl flex flex-col items-center justify-center gap-1 px-3 text-white shadow-lg transition-all active:scale-95 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-md border-2 border-gray-600 hover:border-theme-accent",
               data: {
                 turbo_frame: "hand_screen",
                 test_id: "answer-option-#{index}",
@@ -60,14 +60,14 @@
     </div>
 
   <% else %>
-    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 text-center flex-1 flex items-center justify-center">
+    <div class="bg-theme-surface backdrop-blur-md rounded-3xl p-8 text-center flex-1 flex items-center justify-center">
       <p class="text-xl text-white">Loading question...</p>
     </div>
   <% end %>
 </div>
 
 <% if player == room.host %>
-  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-white/10 pt-6">
+  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-theme-surface-border pt-6">
     <%= render "rooms/host_controls", room: room %>
   </div>
 <% end %>

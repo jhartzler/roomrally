@@ -2,7 +2,7 @@
 <%# Main writing phase hand view for Write and Vote %>
 
 <header class="max-w-md mx-auto mb-6 px-2">
-  <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Round <%= game.round %> of <%= Games::WriteAndVote::MAX_ROUNDS %> — Write your best answer...</span>
+  <span class="text-theme-text-muted text-xs font-bold tracking-widest uppercase">Round <%= game.round %> of <%= Games::WriteAndVote::MAX_ROUNDS %> — Write your best answer...</span>
 </header>
 
 <div class="max-w-md mx-auto space-y-4">
@@ -20,10 +20,10 @@
       <% prompt_response = responses_map[prompt_item.id] %>
       <% is_active = idx == active_index %>
       <% is_done = prompt_response&.submitted? || prompt_response&.published? %>
-      <div class="flex-1 rounded-2xl p-3 border <%= is_active ? 'bg-white/15 border-blue-400/50' : 'bg-white/5 border-white/10' %>"
+      <div class="flex-1 rounded-2xl p-3 border <%= is_active ? 'bg-theme-surface border-theme-accent-subtle' : 'bg-theme-surface border-theme-surface-border' %>"
            data-test-id="player-prompt">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[9px] font-black tracking-widest uppercase <%= is_active ? 'text-blue-300' : (is_done ? 'text-green-400' : 'text-blue-200/40') %>">
+          <span class="text-[9px] font-black tracking-widest uppercase <%= is_active ? 'text-theme-secondary' : (is_done ? 'text-green-400' : 'text-theme-text-muted') %>">
             <% if is_done %>Done<% elsif is_active %>Active<% else %>Up Next<% end %>
           </span>
           <% if is_done %>
@@ -31,7 +31,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
             </svg>
           <% else %>
-            <span class="text-[9px] font-black <%= is_active ? 'text-blue-300' : 'text-blue-200/40' %>"><%= idx + 1 %></span>
+            <span class="text-[9px] font-black <%= is_active ? 'text-theme-secondary' : 'text-theme-text-muted' %>"><%= idx + 1 %></span>
           <% end %>
         </div>
         <p class="text-white text-xs font-semibold line-clamp-2 leading-snug <%= is_done || !is_active ? 'opacity-50' : 'opacity-100' %>">
@@ -45,8 +45,8 @@
     <div data-controller="dramatic-timer"
          data-dramatic-timer-end-value="<%= game.timer_expires_at_iso8601 %>"
          data-dramatic-timer-target="container"
-         class="bg-blue-950/40 backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-blue-400/30 shadow-lg transition-all">
-      <span class="text-blue-400 text-xs font-black tracking-widest uppercase ml-2"
+         class="bg-theme-surface backdrop-blur-md rounded-xl p-3 flex items-center justify-between border border-theme-surface-border shadow-lg transition-all">
+      <span class="text-theme-secondary text-xs font-black tracking-widest uppercase ml-2"
             data-dramatic-timer-target="visual">Time Left</span>
       <div class="rounded-lg px-3 py-1">
         <span class="text-2xl font-black text-white font-mono leading-none drop-shadow-md"

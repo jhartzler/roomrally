@@ -6,13 +6,13 @@
 <div class="space-y-4">
   <% unless game.instructions? %>
     <div class="flex items-center justify-between mb-4">
-      <span class="text-blue-200 font-medium">
+      <span class="text-theme-secondary font-medium">
         Round <%= game.current_round %> of <%= game.total_rounds %> &mdash; Letter "<%= game.current_letter %>"
       </span>
       <span class="px-3 py-1 rounded-full text-sm font-bold
         <%= case game.status
             when 'filling' then 'bg-green-500/20 text-green-300'
-            when 'reviewing' then 'bg-blue-500/20 text-blue-300'
+            when 'reviewing' then 'bg-theme-surface text-theme-secondary'
             when 'scoring' then 'bg-yellow-500/20 text-yellow-300'
             else 'bg-gray-500/20 text-gray-300'
             end %>">
@@ -22,7 +22,7 @@
   <% end %>
 
   <% if game.instructions? %>
-    <p class="text-blue-200 text-sm mb-4">Players are viewing the instructions.</p>
+    <p class="text-theme-secondary text-sm mb-4">Players are viewing the instructions.</p>
     <%= button_to "Start Game",
         category_list_game_game_start_path(game),
         method: :post,
@@ -32,7 +32,7 @@
 
   <% elsif game.filling? %>
     <% submitted_players = room.players.select { |p| game.current_round_categories.all? { |ci| ci.category_answers.exists?(player: p) } }.count %>
-    <p class="text-blue-200 text-sm mb-4">
+    <p class="text-theme-secondary text-sm mb-4">
       Submissions: <%= submitted_players %>/<%= room.players.count %> players
       <% if game.timer_enabled? && game.round_ends_at %>
         <span class="ml-2" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
@@ -47,7 +47,7 @@
           method: :patch,
           params: { code: room.code },
           data: { turbo_submits_with: "Scoring…" },
-          class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+          class: "w-full bg-gradient-to-r from-theme-accent to-theme-accent/80 hover:from-theme-accent/90 hover:to-theme-accent/70 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% else %>
       <%= button_to "End Round",
           category_list_game_review_path(game),
@@ -63,25 +63,25 @@
     <% ci = categories[position] %>
     <% max_position = categories.size - 1 %>
 
-    <p class="text-blue-300 text-xs font-medium mb-3 text-center">
+    <p class="text-theme-secondary text-xs font-medium mb-3 text-center">
       Category <%= position + 1 %> of <%= categories.size %>
     </p>
 
     <% if ci %>
-      <div class="bg-white/5 rounded-xl p-3 border border-white/10 mb-4">
-        <h4 class="text-sm font-bold text-yellow-400 mb-2"><%= ci.name %></h4>
+      <div class="bg-theme-surface rounded-xl p-3 border border-theme-surface-border mb-4">
+        <h4 class="text-sm font-bold text-theme-accent mb-2"><%= ci.name %></h4>
         <% answers = ci.answers_with_duplicate_detection %>
         <% answers.each do |answer| %>
           <div class="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
             <div class="flex items-center gap-2">
               <span class="text-white text-sm font-medium"><%= answer.player.name %>:</span>
-              <span class="text-blue-200 text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through opacity-50' if answer.effectively_struck? %>">
+              <span class="text-theme-secondary text-sm <%= answer.body.present? ? '' : 'italic text-gray-500' %> <%= 'line-through opacity-50' if answer.effectively_struck? %>">
                 <%= answer.body.present? ? answer.body : "blank" %>
               </span>
               <% if answer.hidden? %>
                 <span class="text-[10px] bg-gray-400/20 text-gray-400 px-1.5 py-0.5 rounded-full font-bold">HIDDEN</span>
               <% elsif answer.duplicate? || answer.auto_duplicate? %>
-                <span class="text-[10px] bg-orange-400/20 text-orange-400 px-1.5 py-0.5 rounded-full font-bold">DUPLICATE</span>
+                <span class="text-[10px] bg-theme-secondary/20 text-theme-secondary px-1.5 py-0.5 rounded-full font-bold">DUPLICATE</span>
               <% elsif answer.rejected? %>
                 <span class="text-[10px] bg-red-400/20 text-red-400 px-1.5 py-0.5 rounded-full font-bold">0 PTS</span>
               <% end %>
@@ -110,7 +110,7 @@
             <% elsif answer.rejected? || answer.duplicate? %>
               <span class="text-xs text-gray-500">0 pts</span>
             <% elsif answer.hidden? %>
-              <span class="text-xs text-gray-400">Hidden</span>
+              <span class="text-xs text-theme-text-muted">Hidden</span>
             <% end %>
           </div>
         <% end %>
@@ -138,7 +138,7 @@
           method: :patch,
           params: { code: room.code },
           data: { turbo_submits_with: "Scoring…" },
-          class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+          class: "w-full bg-gradient-to-r from-theme-accent to-theme-accent/80 hover:from-theme-accent/90 hover:to-theme-accent/70 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
 
   <% elsif game.scoring? %>
@@ -149,7 +149,7 @@
           method: :patch,
           params: { code: room.code },
           data: { turbo_submits_with: "Updating…" },
-          class: "w-full #{scores_visible ? 'bg-white/10 hover:bg-white/20' : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500'} text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10 mb-3" %>
+          class: "w-full #{scores_visible ? 'bg-white/10 hover:bg-white/20' : 'bg-gradient-to-r from-theme-accent to-theme-accent/80 hover:from-theme-accent/90 hover:to-theme-accent/70'} text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10 mb-3" %>
     <% end %>
 
     <% if game.last_round? %>
@@ -165,14 +165,14 @@
           method: :post,
           params: { code: room.code },
           data: { turbo_submits_with: "Loading…" },
-          class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+          class: "w-full bg-gradient-to-r from-theme-accent to-theme-accent/80 hover:from-theme-accent/90 hover:to-theme-accent/70 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
 
   <% elsif game.finished? %>
     <div class="bg-green-500/20 rounded-xl p-4 text-center">
       <p class="text-green-300 font-bold text-lg">Game Complete!</p>
       <p class="text-green-200 text-sm mt-2">Final scores are displayed on screen.</p>
-      <%= link_to "Start a new game?", host_path, class: "inline-block mt-3 text-blue-300 hover:text-blue-100 underline text-sm font-medium transition" %>
+      <%= link_to "Start a new game?", host_path, class: "inline-block mt-3 text-theme-secondary hover:text-theme-text underline text-sm font-medium transition" %>
     </div>
   <% end %>
 </div>

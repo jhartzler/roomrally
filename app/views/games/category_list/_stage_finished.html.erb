@@ -1,34 +1,34 @@
 <div id="stage_finished" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
-  <div class="bg-white/10 backdrop-blur-xl border-2 border-yellow-400/30 rounded-3xl p-[4vh] text-center max-w-5xl w-full relative overflow-hidden shadow-2xl">
+  <div class="bg-theme-surface backdrop-blur-xl border-2 border-theme-accent-subtle rounded-3xl p-[4vh] text-center max-w-5xl w-full relative overflow-hidden shadow-2xl">
     <div class="absolute inset-0 bg-[url('confetti.svg')] opacity-20"></div>
 
-    <h2 class="text-vh-5xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-yellow-300 via-yellow-100 to-yellow-500 mb-[1vh] drop-shadow-xl">
+    <h2 class="text-vh-5xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-theme-accent via-theme-accent/40 to-theme-accent mb-[1vh] drop-shadow-xl">
       Game Over!
     </h2>
-    <p class="text-vh-xl text-blue-200 mb-[3vh]">Final Standings</p>
+    <p class="text-vh-xl text-theme-secondary mb-[3vh]">Final Standings</p>
 
     <div class="space-y-[2vh]">
       <% if room.stage_only? && room.score_tracker_entries.any? %>
         <% room.score_tracker_entries.order(score: :desc).each_with_index do |entry, index| %>
-          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-2 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)]' : '' %>">
-            <div class="text-vh-3xl w-[8vh] font-bold text-gray-400">#<%= index + 1 %></div>
+          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-theme-surface-border <%= index == 0 ? 'border-2 border-theme-accent-subtle shadow-[0_0_30px_var(--color-theme-accent-subtle)]' : '' %>">
+            <div class="text-vh-3xl w-[8vh] font-bold text-theme-text-muted">#<%= index + 1 %></div>
             <div class="text-vh-3xl font-bold text-white flex-grow text-left mx-[2vh]"><%= entry.name %></div>
-            <div class="text-vh-4xl font-black text-yellow-400 font-mono"><%= entry.score %></div>
+            <div class="text-vh-4xl font-black text-theme-accent font-mono"><%= entry.score %></div>
           </div>
         <% end %>
       <% else %>
         <% game.room.players.order(score: :desc).each_with_index do |player, index| %>
-          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-2 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)]' : '' %>">
-            <div class="text-vh-3xl w-[8vh] font-bold text-gray-400">#<%= index + 1 %></div>
+          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-theme-surface-border <%= index == 0 ? 'border-2 border-theme-accent-subtle shadow-[0_0_30px_var(--color-theme-accent-subtle)]' : '' %>">
+            <div class="text-vh-3xl w-[8vh] font-bold text-theme-text-muted">#<%= index + 1 %></div>
             <div class="text-vh-3xl font-bold text-white flex-grow text-left mx-[2vh]"><%= player.name %></div>
-            <div class="text-vh-4xl font-black text-yellow-400 font-mono"><%= player.score %></div>
+            <div class="text-vh-4xl font-black text-theme-accent font-mono"><%= player.score %></div>
           </div>
         <% end %>
       <% end %>
     </div>
 
     <div class="mt-[4vh]">
-      <p class="text-vh-xl text-gray-400">Host can start a new game anytime.</p>
+      <p class="text-vh-xl text-theme-text-muted">Host can start a new game anytime.</p>
     </div>
   </div>
 </div>

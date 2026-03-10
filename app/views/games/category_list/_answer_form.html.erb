@@ -4,10 +4,10 @@
 
 <header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
   <div class="flex flex-col">
-    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Round <%= game.current_round %></span>
+    <span class="text-theme-text text-xs font-bold tracking-widest uppercase">Round <%= game.current_round %></span>
   </div>
-  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
-    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+  <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-theme-secondary font-bold uppercase tracking-wider">Code</p>
     <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
   </div>
 </header>
@@ -17,22 +17,22 @@
     <div class="bg-green-900/40 backdrop-blur-md rounded-3xl p-8 border border-green-500/30 text-center">
       <div class="text-6xl mb-4">✓</div>
       <p class="text-2xl text-white font-bold mb-2">Answers submitted!</p>
-      <p class="text-lg text-blue-200">Waiting for other players...</p>
+      <p class="text-lg text-theme-secondary">Waiting for other players...</p>
     </div>
   <% else %>
     <!-- Letter display -->
-    <div class="bg-white/10 backdrop-blur-md border-2 border-yellow-400/30 rounded-2xl p-4 mb-6 text-center">
-      <p class="text-sm text-blue-200 font-bold uppercase tracking-widest">Letter</p>
-      <div class="text-7xl font-black text-yellow-400 leading-none"><%= game.current_letter %></div>
+    <div class="bg-theme-surface backdrop-blur-md border-2 border-theme-accent-subtle rounded-2xl p-4 mb-6 text-center">
+      <p class="text-sm text-theme-secondary font-bold uppercase tracking-widest">Letter</p>
+      <div class="text-7xl font-black text-theme-accent leading-none"><%= game.current_letter %></div>
     </div>
 
     <!-- Scoring hint -->
-    <p class="text-center text-xs text-white/50 font-medium mb-4">
+    <p class="text-center text-xs text-theme-text-muted font-medium mb-4">
       💡 Starts with <%= game.current_letter %> = 2pts · unique answer = 1pt · same as someone else = 0pts
     </p>
 
     <% if game.timer_enabled? && game.round_ends_at %>
-      <div class="text-center mb-4 text-xl text-yellow-400 font-black font-mono" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
+      <div class="text-center mb-4 text-xl text-theme-accent font-black font-mono" data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
         <span data-timer-target="output"><%= game.time_remaining.ceil %></span>s
       </div>
     <% end %>
@@ -41,12 +41,12 @@
       <%= hidden_field_tag :code, room.code %>
       <div class="space-y-3 mb-6">
         <% categories.each do |ci| %>
-          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-3">
-            <label class="block text-sm text-blue-200 font-bold mb-1"><%= ci.name %></label>
+          <div class="bg-theme-surface backdrop-blur-md border border-theme-surface-border rounded-xl p-3">
+            <label class="block text-sm text-theme-secondary font-bold mb-1"><%= ci.name %></label>
             <%= f.text_field "answers[#{ci.id}]",
                 placeholder: "#{game.current_letter}...",
                 autocomplete: "off",
-                class: "w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 text-lg" %>
+                class: "w-full px-3 py-2 bg-theme-surface border border-theme-surface-border rounded-lg text-white placeholder-theme-text-muted focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent text-lg" %>
           </div>
         <% end %>
       </div>
@@ -58,7 +58,7 @@
 </div>
 
 <% if player == room.host %>
-  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-white/10 pt-6">
+  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-theme-surface-border pt-6">
     <%= render "rooms/host_controls", room: room %>
   </div>
 <% end %>

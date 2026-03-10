@@ -26,6 +26,63 @@
   --text-vh-3xl: clamp(1.875rem, 3.75vh, 4rem);   /* Headings */
   --text-vh-4xl: clamp(2rem, 4vh, 5rem);          /* Prompts, questions */
   --text-vh-5xl: clamp(2.5rem, 5vh, 6rem);        /* Large prompts */
+
+  /* Game theme color tokens — set by [data-game-theme] selectors below */
+  --color-theme-bg-from: oklch(0.45 0.15 260);      /* default: blue-600 */
+  --color-theme-bg-to: oklch(0.28 0.12 280);         /* default: indigo-900 */
+  --color-theme-accent: oklch(0.80 0.18 85);          /* default: yellow-400 */
+  --color-theme-accent-subtle: oklch(0.80 0.18 85 / 0.3);
+  --color-theme-secondary: oklch(0.80 0.10 250);      /* default: blue-200 */
+  --color-theme-surface: oklch(1 0 0 / 0.1);          /* default: white/10 */
+  --color-theme-surface-border: oklch(1 0 0 / 0.2);   /* default: white/20 */
+  --color-theme-text: oklch(1 0 0);                    /* default: white */
+  --color-theme-text-muted: oklch(1 0 0 / 0.6);       /* default: white/60 */
+  --color-theme-timer-start: oklch(0.80 0.18 85);     /* default: yellow */
+  --color-theme-timer-end: oklch(0.55 0.22 25);       /* default: red */
+}
+
+/* === Game Themes === */
+
+[data-game-theme="comedy-club"] {
+  --color-theme-bg-from: oklch(0.25 0.10 300);        /* deep purple */
+  --color-theme-bg-to: oklch(0.15 0.08 290);          /* near-black purple */
+  --color-theme-accent: oklch(0.65 0.28 350);         /* hot pink #ff3e8a */
+  --color-theme-accent-subtle: oklch(0.65 0.28 350 / 0.3);
+  --color-theme-secondary: oklch(0.82 0.15 85);       /* warm gold #ffc832 */
+  --color-theme-surface: oklch(1 0 0 / 0.1);
+  --color-theme-surface-border: oklch(0.65 0.28 350 / 0.25);
+  --color-theme-text: oklch(1 0 0);
+  --color-theme-text-muted: oklch(1 0 0 / 0.6);
+  --color-theme-timer-start: oklch(0.65 0.28 350);
+  --color-theme-timer-end: oklch(0.55 0.22 25);
+}
+
+[data-game-theme="track-meet"] {
+  --color-theme-bg-from: oklch(0.22 0.08 55);         /* burnt umber */
+  --color-theme-bg-to: oklch(0.12 0.05 40);           /* dark brown-black */
+  --color-theme-accent: oklch(0.62 0.20 45);          /* burnt orange #e8590c */
+  --color-theme-accent-subtle: oklch(0.62 0.20 45 / 0.3);
+  --color-theme-secondary: oklch(0.92 0.02 90);       /* cream white */
+  --color-theme-surface: oklch(1 0 0 / 0.06);
+  --color-theme-surface-border: oklch(0.62 0.20 45 / 0.2);
+  --color-theme-text: oklch(1 0 0);
+  --color-theme-text-muted: oklch(1 0 0 / 0.6);
+  --color-theme-timer-start: oklch(0.62 0.20 45);
+  --color-theme-timer-end: oklch(0.50 0.22 25);
+}
+
+[data-game-theme="awards-gala"] {
+  --color-theme-bg-from: oklch(0.18 0.08 280);        /* deep indigo */
+  --color-theme-bg-to: oklch(0.15 0.10 310);          /* dark purple */
+  --color-theme-accent: oklch(0.82 0.17 85);          /* rich gold #ffd700 */
+  --color-theme-accent-subtle: oklch(0.82 0.17 85 / 0.3);
+  --color-theme-secondary: oklch(0.42 0.15 350);      /* burgundy #8b2252 */
+  --color-theme-surface: oklch(1 0 0 / 0.06);
+  --color-theme-surface-border: oklch(0.82 0.17 85 / 0.2);
+  --color-theme-text: oklch(1 0 0);
+  --color-theme-text-muted: oklch(0.82 0.17 85 / 0.6);
+  --color-theme-timer-start: oklch(0.82 0.17 85);
+  --color-theme-timer-end: oklch(0.55 0.22 25);
 }
 
 /* AI generation loading animation */

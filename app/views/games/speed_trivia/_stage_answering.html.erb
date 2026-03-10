@@ -3,7 +3,7 @@
 
   <!-- Question Counter -->
   <div class="mb-[2vh]">
-    <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
+    <span class="text-vh-2xl text-theme-secondary font-bold uppercase tracking-widest">
       Question <%= game.current_question_index + 1 %> of <%= game.trivia_question_instances.count %>
     </span>
   </div>
@@ -17,14 +17,14 @@
     </div>
 
     <!-- Question Display (compact with image) -->
-    <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[2vh] shadow-2xl text-center max-w-6xl w-full mb-[2vh]">
+    <div class="relative bg-theme-surface backdrop-blur-xl border border-theme-surface-border rounded-3xl p-[2vh] shadow-2xl text-center max-w-6xl w-full mb-[2vh]">
       <h2 class="text-vh-3xl font-black text-white leading-tight">
         <%= current_question.body %>
       </h2>
     </div>
   <% else %>
     <!-- Question Display (full size without image) -->
-    <div class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[3vh]">
+    <div class="relative bg-theme-surface backdrop-blur-xl border border-theme-surface-border rounded-3xl p-[3vh] shadow-2xl text-center max-w-6xl w-full mb-[3vh]">
       <h2 class="text-vh-4xl font-black text-white leading-tight">
         <%= current_question&.body || "Loading question..." %>
       </h2>
@@ -35,7 +35,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh] w-full max-w-6xl px-[2vh]">
     <% if current_question %>
       <% current_question.options&.each_with_index do |option, index| %>
-        <div class="bg-gray-800/80 backdrop-blur-md border-2 border-gray-600 rounded-2xl p-[2vh] flex items-center shadow-lg">
+        <div class="bg-theme-surface backdrop-blur-md border-2 border-theme-surface-border rounded-2xl p-[2vh] flex items-center shadow-lg">
           <div class="bg-white text-black font-black text-vh-3xl h-[6vh] w-[6vh] rounded-full flex items-center justify-center mr-[2vh] shrink-0 shadow-md">
             <%= (index + 65).chr %>
           </div>
@@ -48,6 +48,6 @@
   </div>
 
   <div class="mt-[3vh]">
-    <p class="text-vh-2xl text-blue-200 animate-pulse font-semibold">Answer on your device!</p>
+    <p class="text-vh-2xl text-theme-secondary animate-pulse font-semibold">Answer on your device!</p>
   </div>
 </div>
