@@ -8,11 +8,34 @@ This game is designed for **in-person events** (youth groups, retreats, team bui
 
 ## Context & Motivation
 
-The creator has run this game many times manually. The pain points this solves:
-- Collecting submissions (previously via texting, Instagram, shared drives)
-- Curating and organizing media under time pressure
-- Building a presentation while people wait
-- Scoring and tracking completion across teams
+The creator has run this game dozens of times in person — youth groups, retreats, team-building events. The magic moments are things like: two men dancing to "We Don't Talk About Bruno" next to a statue, a rap battle that went too far but was hilarious, a dance battle reenactment. These are the inside jokes people talk about for *years*. The game itself is proven. The pain is entirely logistical:
+
+- **Collecting submissions** — previously via texting photos to a staff member, posting to Instagram with a hashtag, or uploading to a shared Google Drive. Massive friction, especially with one phone per team.
+- **Curating under time pressure** — the host scrambles madly at the end to organize 40+ photos into a presentable order while everyone waits.
+- **Building a presentation** — manually assembling a slideshow or curating a Google Drive folder, often while "the ice cream is melting."
+- **Scoring and tracking** — keeping track of which teams completed which prompts, done on paper or in the host's head.
+
+This software automates all of that. The game format doesn't change — the friction disappears.
+
+## Design Principles
+
+These principles should guide every implementation decision:
+
+**1. The presentation is the product, not the points.** The moment everyone watches the absurd videos and photos together is why this game exists. Scoring provides structure and a winner, but "the points are just gravy." Every design choice should optimize for the quality of that shared viewing experience.
+
+**2. The host is a performer, not an admin.** During the presentation, the host is a talk show host — making quips, reading the room, building energy. The UI must stay out of their way. One tap to show the next thing. No modals, no confirmations, no complex navigation while they're performing.
+
+**3. The host must be able to pivot instantly.** "We need to wrap up in 5 minutes." "This video is a dud, skip it." "Actually, show the dance battle one first — trust me." The card picker UI was chosen specifically because it lets the host pick what's next in the moment, rather than being locked into a predefined slideshow order. We explicitly rejected a ProPresenter-style sequential slideshow with reorder controls — it's powerful but overwhelming, and this host is standing in front of a crowd, not sitting at an editing bay.
+
+**4. Curation happens during the hunt, not after.** The original design had a separate "curating" phase after the timer. We collapsed it because nobody wants to wait 10 minutes for the host to get organized. The host curates as submissions roll in during the 30-60 minute hunt, so they're mostly ready when the timer ends. The `submissions_locked` state exists as a buffer — not a mandatory work phase.
+
+**5. Late submissions reduce host friction.** Instead of a hard cutoff that forces the host to "reopen the room" for stragglers, late submissions are accepted but flagged. The host sees them and decides whether to include them. No extra steps needed.
+
+**6. Design for video even though v1 is photos only.** Videos are where the real magic happens — the moments people remember for years. Photos are v1 because they're simpler (compression, upload size, playback). But every architectural decision (model names, attachment fields, UI layouts) should make video a straightforward addition, not a rewrite. The field is called `media`, not `photo`.
+
+**7. Awards happen at the end, not during the presentation.** The host may have already picked their favorites during curation, but the audience hasn't seen everything yet. Announcing a winner before showing all submissions feels unfair ("you picked Team Rockets but you haven't even seen my masterpiece yet"). Show all the work first, then the ceremony.
+
+**8. The photographer's phone experience must be dead simple.** They're herding 7 people into an elevator while holding a phone. Tap a prompt, take a photo (or pick one from a burst they already shot with the native camera), upload, done. The file picker uses `accept="image/*"` which on mobile gives them the choice of camera or photo library — supporting the workflow of taking a burst of photos with the native camera app and then picking the best one to upload.
 
 ## Data Model
 
@@ -131,7 +154,7 @@ end
 
 ### 3. Hunting (30–60 minutes)
 
-**Stage:** Countdown timer + submission count ("12 of 45 prompts completed across 6 teams"). No photos shown — preserves the presentation.
+**Stage:** Countdown timer + submission count ("12 of 45 prompts completed across 6 teams"). No photos shown — the stage deliberately does not show a live feed of submissions. Showing them would spoil the presentation, which is the entire point of the game.
 
 **Photographer hand:**
 - Full prompt list with status icons (empty / submitted / late)
@@ -157,13 +180,15 @@ end
 
 - Triggered by timer expiration or host manual lock
 - Stage: countdown replaced with waiting message
-- Photographers can still submit — submissions auto-flagged `late: true`
-- Host continues curating
-- Transitions to `revealing` when host is ready
+- Photographers can still submit — submissions auto-flagged `late: true` (this avoids the host needing to "reopen the room" for stragglers — late submissions just show up with a badge and the host decides whether to include them)
+- Host continues curating (they've been curating since hunting started, this isn't a new phase)
+- Transitions to `revealing` when host is ready — could be immediately if they curated during hunting, or after a break ("go get nachos while I finish organizing")
 
 ### 5. Revealing (the main event)
 
 **No further submissions accepted once revealing begins.**
+
+**Why a card picker and not a slideshow?** A predefined slideshow with reorder controls (like ProPresenter) is powerful but overwhelming for a host who is standing in front of a crowd performing. The card picker gives the host total control with minimal cognitive load: see thumbnails, tap to show, done. They can go prompt-by-prompt, team-by-team, or jump around — whatever the moment calls for. The pre-curation (marking favorites, adding notes during hunting) means the host already knows what they want to show; the card picker just makes it one tap to get there.
 
 **Host controls — Card Picker:**
 - Grid of thumbnail cards, one per submission the host marked as completed
