@@ -283,6 +283,63 @@ RSpec.describe SpeedTriviaGame, type: :model do
     # rubocop:enable RSpec/ExampleLength
   end
 
+  describe '#score_reveal_for' do
+    let(:game) { create(:speed_trivia_game, status: "reviewing") }
+    let(:room) { create(:room, current_game: game) }
+    let!(:alice) { create(:player, room:, score: 0) }
+    let!(:bob) { create(:player, room:, score: 0) }
+    let!(:q1) { create(:trivia_question_instance, speed_trivia_game: game, position: 0, correct_answers: [ "Right" ]) }
+
+    # rubocop:disable RSpec/MultipleExpectations, RSpec/ExampleLength
+    it 'returns score_from of 0 and positive score_to on first correct answer' do
+      create(:trivia_answer, player: alice, trivia_question_instance: q1, points_awarded: 800, correct: true, selected_option: "Right")
+      create(:trivia_answer, player: bob, trivia_question_instance: q1, points_awarded: 0, correct: false, selected_option: "Wrong")
+      game.calculate_scores!
+
+      reveal = game.score_reveal_for(player: alice)
+
+      expect(reveal[:score_from]).to eq(0)
+      expect(reveal[:score_to]).to eq(800)
+      expect(reveal[:round_points]).to eq(800)
+      expect(reveal[:rank]).to eq(1)
+      expect(reveal[:answer]).to be_correct
+    end
+
+    it 'never produces negative score_from even with stale player.score' do
+      create(:trivia_answer, player: alice, trivia_question_instance: q1, points_awarded: 500, correct: true, selected_option: "Right")
+      # Intentionally skip calculate_scores! to simulate stale player.score
+
+      reveal = game.score_reveal_for(player: alice)
+
+      expect(reveal[:score_from]).to eq(0)
+      expect(reveal[:score_to]).to eq(500)
+    end
+
+    it 'carries cumulative score across questions' do
+      q2 = create(:trivia_question_instance, speed_trivia_game: game, position: 1, correct_answers: [ "Also Right" ])
+      create(:trivia_answer, player: alice, trivia_question_instance: q1, points_awarded: 800, correct: true, selected_option: "Right")
+      create(:trivia_answer, player: alice, trivia_question_instance: q2, points_awarded: 600, correct: true, selected_option: "Also Right")
+      game.update!(current_question_index: 1)
+      game.calculate_scores!
+
+      reveal = game.score_reveal_for(player: alice)
+
+      expect(reveal[:score_from]).to eq(800)
+      expect(reveal[:score_to]).to eq(1400)
+      expect(reveal[:round_points]).to eq(600)
+    end
+
+    it 'returns nil answer and 0 points when player did not answer' do
+      reveal = game.score_reveal_for(player: alice)
+
+      expect(reveal[:answer]).to be_nil
+      expect(reveal[:round_points]).to eq(0)
+      expect(reveal[:score_from]).to eq(0)
+      expect(reveal[:score_to]).to eq(0)
+    end
+    # rubocop:enable RSpec/MultipleExpectations, RSpec/ExampleLength
+  end
+
   describe ".supports_response_moderation?" do
     it "returns false" do
       expect(described_class.supports_response_moderation?).to be false

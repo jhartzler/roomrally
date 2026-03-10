@@ -22,63 +22,45 @@
       </p>
       <p class="text-blue-300 mt-4">Faster answers = more points!</p>
     <% elsif game.reviewing? %>
-      <% current_question = game.current_question %>
-      <% player_answer = current_question&.trivia_answers&.find_by(player:) %>
-      <% round_points = player_answer&.points_awarded.to_i %>
-
-      <%# Score animation: count from pre-round total to new total.
-          player.score is already the post-round total since calculate_scores! runs in close_round. %>
-      <% score_from = player.score - round_points %>
-      <% score_to   = player.score %>
-
-      <%# Rank computation: compare actual post-round rank vs pre-round rank. %>
-      <% all_players = room.players.active_players.to_a %>
-      <% round_points_by_id = current_question&.trivia_answers&.each_with_object({}) { |a, h| h[a.player_id] = a.points_awarded.to_i } || {} %>
-      <% sorted_now  = all_players.sort_by { |p| -p.score } %>
-      <% sorted_prev = all_players.sort_by { |p| -(p.score - round_points_by_id.fetch(p.id, 0)) } %>
-      <% current_rank  = sorted_now.index  { |p| p.id == player.id }.to_i + 1 %>
-      <% previous_rank = sorted_prev.index { |p| p.id == player.id }.to_i + 1 %>
-
-      <%# Motivational message %>
-      <% message = if round_points == 0
-        ["Oof.", "Next one's yours."].sample
-      elsif current_rank <= previous_rank
-        ["Nice one!", "That's how you do it."].sample
-      else
-        ["Still in it!", "Don't count yourself out."].sample
-      end %>
+      <% reveal = game.score_reveal_for(player:) %>
 
       <%# Answer result section %>
-      <% if player_answer&.correct? %>
+      <% if reveal[:answer]&.correct? %>
         <div class="text-5xl mb-3">🎉</div>
         <p class="text-2xl text-green-400 font-bold mb-1">That's the one!</p>
-      <% elsif player_answer %>
+      <% elsif reveal[:answer] %>
         <div class="text-5xl mb-3">😅</div>
         <p class="text-2xl text-red-400 font-bold mb-1">Not quite.</p>
-        <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question.correct_answers.join(", ") %></span></p>
+        <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= reveal[:correct_answers].join(", ") %></span></p>
       <% else %>
         <div class="text-5xl mb-3">⏱</div>
         <p class="text-2xl text-gray-400 font-bold mb-1">And... time.</p>
-        <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= current_question&.correct_answers&.join(", ") %></span></p>
+        <p class="text-sm text-white mb-1">The answer was: <span class="font-bold text-green-400"><%= reveal[:correct_answers].join(", ") %></span></p>
       <% end %>
 
       <hr class="border-white/20 my-4">
 
       <%# Score panel section %>
-      <div class="text-xl font-black text-white mb-4"><%= message %></div>
+      <% if reveal[:round_points] == 0 %>
+        <div class="text-xl font-black text-white mb-4"><%= ["Oof.", "Next one's yours."].sample %></div>
+      <% elsif reveal[:rank_improved] %>
+        <div class="text-xl font-black text-white mb-4"><%= ["Nice one!", "That's how you do it."].sample %></div>
+      <% else %>
+        <div class="text-xl font-black text-white mb-4"><%= ["Still in it!", "Don't count yourself out."].sample %></div>
+      <% end %>
 
       <div data-controller="score-tally"
-           data-score-tally-from-value="<%= score_from %>"
-           data-score-tally-to-value="<%= score_to %>">
+           data-score-tally-from-value="<%= reveal[:score_from] %>"
+           data-score-tally-to-value="<%= reveal[:score_to] %>">
         <p class="text-blue-200 text-sm font-bold uppercase tracking-widest mb-1">
-          <%= current_rank.ordinalize %> Place
+          <%= reveal[:rank].ordinalize %> Place
         </p>
         <p class="text-5xl font-black text-white font-mono mb-2"
            data-score-tally-target="display">
-          <%= score_from.to_s %>
+          <%= reveal[:score_from] %>
         </p>
-        <% if round_points > 0 %>
-          <p class="text-green-400 font-bold text-lg">+<%= round_points %> this round</p>
+        <% if reveal[:round_points] > 0 %>
+          <p class="text-green-400 font-bold text-lg">+<%= reveal[:round_points] %> this round</p>
         <% else %>
           <p class="text-gray-400 font-bold text-lg">+0 this round</p>
         <% end %>
