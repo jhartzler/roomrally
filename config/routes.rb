@@ -93,6 +93,20 @@ Rails.application.routes.draw do
       resource :stage_scores, only: :update
     end
   end
+  resources :scavenger_hunt_games, only: [] do
+    scope module: :scavenger_hunt do
+      resource :game_start, only: :create
+      resources :submissions, only: :create
+      resource :submission_lock, only: :create
+      resource :reveal, only: :create
+      resources :awards, only: %i[create update]
+      resource :finish, only: :create
+      resources :completions, only: :update
+    end
+  end
+
+  resources :hunt_packs
+
   resources :category_answers, only: :update
 
   get "/auth/:provider/callback", to: "sessions#omniauth"
