@@ -17,10 +17,11 @@
 
 <!-- Template Gallery Section -->
 <section class="max-w-5xl mx-auto mb-12">
-  <h2 class="text-xl font-black text-white mb-6 flex items-center gap-2 tracking-wide">
+  <h2 class="text-xl font-black text-white mb-1 flex items-center gap-2 tracking-wide">
     <%= lucide_icon('layout-template', class: "w-6 h-6 text-blue-200/50", "aria-hidden": true) %>
     Template Gallery
   </h2>
+  <p class="text-blue-200/50 text-sm mb-6 ml-8">Ready-made packs to get you started</p>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <% @system_packs.each do |pack| %>
       <%= render "card", pack: pack, variant: :system %>
@@ -35,11 +36,12 @@
   </section>
 
   <!-- My Packs Section -->
-  <section class="max-w-5xl mx-auto">
-    <h2 class="text-xl font-black text-white mb-6 flex items-center gap-2 tracking-wide">
+  <section class="max-w-5xl mx-auto mb-12">
+    <h2 class="text-xl font-black text-white mb-1 flex items-center gap-2 tracking-wide">
       <%= lucide_icon('folder-open', class: "w-6 h-6 text-blue-200/50", "aria-hidden": true) %>
       My Packs
     </h2>
+    <p class="text-blue-200/50 text-sm mb-6 ml-8">Packs you've created</p>
 
     <% if @trivia_packs.any? %>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -60,5 +62,24 @@
         <% end %>
       </div>
     <% end %>
+  </section>
+
+  <!-- Info Box -->
+  <section class="max-w-5xl mx-auto">
+    <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center border border-blue-400/30">
+          <%= lucide_icon('lightbulb', class: "w-5 h-5 text-blue-300") %>
+        </div>
+        <div>
+          <h3 class="font-bold text-white mb-2">Tips for great trivia</h3>
+          <p class="text-blue-200/80 text-sm leading-relaxed">
+            Each pack is a set of multiple-choice questions. During the game, questions show up on the Stage (the big screen) and
+            players race to answer on their phones. Keep questions punchy — players are on the clock. Every game comes with default
+            questions, so custom packs are totally optional.
+          </p>
+        </div>
+      </div>
+    </div>
   </section>
 </div>
