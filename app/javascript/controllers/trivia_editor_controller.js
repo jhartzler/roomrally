@@ -5,6 +5,7 @@ export default class extends Controller {
     static values = { ratio: { type: Number, default: 1 }, imageLimit: { type: Number, default: 20 } }
 
     connect() {
+        console.log("[trivia-editor] connected")
         this.draggedElement = null
         this.updatePositions()
         this.updateCount()
@@ -246,11 +247,10 @@ export default class extends Controller {
     // --- Move Up / Down ---
 
     moveUp(event) {
-        event.preventDefault()
         const btn = event.target.closest("button")
-        if (btn?.disabled) return
-
         const wrapper = event.target.closest(".question-field-wrapper")
+        console.log("[moveUp]", { target: event.target.tagName, btn: !!btn, disabled: btn?.disabled, wrapper: !!wrapper })
+        if (btn?.disabled) return
         if (!wrapper) return
 
         // Find previous visible sibling
@@ -264,11 +264,10 @@ export default class extends Controller {
     }
 
     moveDown(event) {
-        event.preventDefault()
         const btn = event.target.closest("button")
-        if (btn?.disabled) return
-
         const wrapper = event.target.closest(".question-field-wrapper")
+        console.log("[moveDown]", { target: event.target.tagName, btn: !!btn, disabled: btn?.disabled, wrapper: !!wrapper })
+        if (btn?.disabled) return
         if (!wrapper) return
 
         // Find next visible sibling
