@@ -5,7 +5,6 @@ export default class extends Controller {
     static values = { ratio: { type: Number, default: 1 }, imageLimit: { type: Number, default: 20 } }
 
     connect() {
-        console.log("[trivia-editor] connected")
         this.draggedElement = null
         this.updatePositions()
         this.updateCount()
@@ -247,45 +246,40 @@ export default class extends Controller {
     // --- Move Up / Down ---
 
     moveUp(event) {
-        const btn = event.target.closest("button")
+        if (event.target.closest("button")?.disabled) return
+
         const wrapper = event.target.closest(".question-field-wrapper")
-        console.log("[moveUp]", { target: event.target.tagName, btn: !!btn, disabled: btn?.disabled, wrapper: !!wrapper })
-        if (btn?.disabled) return
         if (!wrapper) return
 
-        // Find previous visible sibling
-        let prev = wrapper.previousElementSibling
-        while (prev && prev.style.display === "none") prev = prev.previousElementSibling
-        if (!prev) return
+        const visibleWrappers = this.visibleQuestionWrappers()
+        const index = visibleWrappers.indexOf(wrapper)
+        if (index <= 0) return
 
-        wrapper.parentNode.insertBefore(wrapper, prev)
+        const prev = visibleWrappers[index - 1]
+        prev.parentNode.insertBefore(wrapper, prev)
         this.updatePositions()
         wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" })
     }
 
     moveDown(event) {
-        const btn = event.target.closest("button")
+        if (event.target.closest("button")?.disabled) return
+
         const wrapper = event.target.closest(".question-field-wrapper")
-        if (btn?.disabled) return
         if (!wrapper) return
 
-        // Find next visible sibling
-        let next = wrapper.nextElementSibling
-        while (next && next.style.display === "none") next = next.nextElementSibling
+        const visibleWrappers = this.visibleQuestionWrappers()
+        const index = visibleWrappers.indexOf(wrapper)
+        if (index < 0 || index >= visibleWrappers.length - 1) return
 
-        const wrappers = Array.from(this.questionListTarget.querySelectorAll(".question-field-wrapper"))
-        const wrapperIndex = wrappers.indexOf(wrapper)
-        const bodyText = wrapper.querySelector("textarea")?.value?.substring(0, 30)
-        const nextText = next?.querySelector("textarea")?.value?.substring(0, 30)
-        console.log("[moveDown]", { wrapperIndex, bodyText, next: !!next, nextText, totalWrappers: wrappers.length })
-
-        if (!next) { console.log("[moveDown] no next, aborting"); return }
-
-        // Insert after next
+        const next = visibleWrappers[index + 1]
         next.parentNode.insertBefore(wrapper, next.nextSibling)
-        console.log("[moveDown] DOM moved, new index:", Array.from(this.questionListTarget.querySelectorAll(".question-field-wrapper")).indexOf(wrapper))
         this.updatePositions()
         wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" })
+    }
+
+    visibleQuestionWrappers() {
+        return Array.from(this.questionListTarget.querySelectorAll(".question-field-wrapper"))
+            .filter(w => w.style.display !== "none")
     }
 
     // --- Position Management ---
