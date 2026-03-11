@@ -18,7 +18,7 @@ module Games
 
       game = ScavengerHuntGame.create!(
         timer_duration: duration_seconds,
-        timer_enabled: timer_enabled == "1" || timer_enabled == true,
+        timer_enabled: true,
         hunt_pack: pack
       )
 

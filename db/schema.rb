@@ -139,6 +139,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "category_pack_id"
     t.datetime "created_at", null: false
     t.string "game_type", null: false
+    t.bigint "hunt_pack_id"
     t.string "name", null: false
     t.bigint "prompt_pack_id"
     t.jsonb "settings", default: {}
@@ -146,6 +147,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["category_pack_id"], name: "index_game_templates_on_category_pack_id"
+    t.index ["hunt_pack_id"], name: "index_game_templates_on_hunt_pack_id"
     t.index ["prompt_pack_id"], name: "index_game_templates_on_prompt_pack_id"
     t.index ["trivia_pack_id"], name: "index_game_templates_on_trivia_pack_id"
     t.index ["user_id"], name: "index_game_templates_on_user_id"
@@ -419,6 +421,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "category_list_games", "category_packs"
   add_foreign_key "category_packs", "users"
   add_foreign_key "game_templates", "category_packs", on_delete: :nullify
+  add_foreign_key "game_templates", "hunt_packs"
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
   add_foreign_key "game_templates", "users"

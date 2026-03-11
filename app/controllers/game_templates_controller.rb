@@ -8,7 +8,7 @@ class GameTemplatesController < ApplicationController
     @studio_active_section = :games
     studio_breadcrumb("My Games")
     @game_templates = current_user.game_templates
-      .includes(:prompt_pack, :trivia_pack, :category_pack)
+      .includes(:prompt_pack, :trivia_pack, :category_pack, :hunt_pack)
       .order(updated_at: :desc)
   end
 
@@ -94,14 +94,14 @@ class GameTemplatesController < ApplicationController
 
   def new_template_params
     params.fetch(:game_template, {}).permit(
-      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id,
+      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id, :hunt_pack_id,
       settings: GameTemplate::SETTING_DEFAULTS.keys
     )
   end
 
   def game_template_params
     params.require(:game_template).permit(
-      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id,
+      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id, :hunt_pack_id,
       settings: GameTemplate::SETTING_DEFAULTS.keys
     )
   end
@@ -111,5 +111,6 @@ class GameTemplatesController < ApplicationController
     @trivia_packs = TriviaPack.accessible_by(current_user).alphabetical
     @category_packs = CategoryPack.accessible_by(current_user).alphabetical
     @poll_packs = PollPack.accessible_by(current_user).alphabetical
+    @hunt_packs = HuntPack.accessible_by(current_user).alphabetical
   end
 end
