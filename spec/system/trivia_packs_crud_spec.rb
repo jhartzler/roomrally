@@ -85,19 +85,19 @@ RSpec.describe "TriviaPack CRUD", type: :system do
 
       fill_in "Name", with: "Updated Trivia Pack"
 
-      # Add a new question
+      # Add a new question (appended at bottom)
       click_button "Add Question"
-      all("textarea[name*='[body]']").first.set("New Question?")
+      all("textarea[name*='[body]']").last.set("New Question?")
 
       # Fill options for new question
-      first_wrapper = all(".question-field-wrapper").first
-      first_wrapper.all("input[name*='[options]']")[0].set("Option 1")
-      first_wrapper.all("input[name*='[options]']")[1].set("Option 2")
-      first_wrapper.all("input[name*='[options]']")[2].set("Option 3")
-      first_wrapper.all("input[name*='[options]']")[3].set("Option 4")
+      last_wrapper = all(".question-field-wrapper").last
+      last_wrapper.all("input[name*='[options]']")[0].set("Option 1")
+      last_wrapper.all("input[name*='[options]']")[1].set("Option 2")
+      last_wrapper.all("input[name*='[options]']")[2].set("Option 3")
+      last_wrapper.all("input[name*='[options]']")[3].set("Option 4")
 
       # Select correct answer using JS click
-      checkbox = first_wrapper.all("input[name*='[correct_answer_indices]']")[0]
+      checkbox = last_wrapper.all("input[name*='[correct_answer_indices]']")[0]
       page.execute_script("arguments[0].click();", checkbox)
 
       click_button "Save Pack"

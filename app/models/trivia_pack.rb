@@ -1,6 +1,6 @@
 class TriviaPack < ApplicationRecord
   belongs_to :user, optional: true
-  has_many :trivia_questions, dependent: :destroy
+  has_many :trivia_questions, -> { order(position: :asc, id: :asc) }, dependent: :destroy
 
   include SharedScopes
 
