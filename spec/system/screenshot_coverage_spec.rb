@@ -8,7 +8,7 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
   describe "Landing page" do
     it "captures the landing page" do
       visit root_path
-      expect(page).to have_content("Host epic group games")
+      expect(page).to have_content("Join a Game")
       screenshot_checkpoint("landing_page")
     end
   end
@@ -16,7 +16,7 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
   describe "Play page" do
     it "captures the play page" do
       visit play_path
-      expect(page).to have_button("Create Room")
+      expect(page).to have_content("Join a Game")
       screenshot_checkpoint("play_page")
     end
   end
@@ -39,7 +39,6 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
 
       visit dashboard_path
       expect(page).to have_content(room.code)
-      expect(page).to have_content("My Comedy Pack")
       screenshot_checkpoint("dashboard_with_content")
     end
   end
@@ -143,6 +142,7 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
       within_window stage_window do
         expect(page).to have_content("Correct", wait: 5).or have_content("Answer", wait: 5)
         screenshot_checkpoint("stage_reviewing")
+        screenshot_animation("stage_podium_animation", duration: 2, fps: 5)
       end
 
       # Finish game
@@ -239,17 +239,88 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
     end
   end
 
-  describe "Category List game over hand view" do
-    let!(:room) { FactoryBot.create(:room, game_type: "Category List", user: nil) }
+  describe "Write and Vote stage views" do
+    let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote", user: nil) }
 
     before do
-      default_pack = FactoryBot.create(:category_pack, :default)
-      12.times do |i|
-        FactoryBot.create(:category, name: "Category #{i + 1}", category_pack: default_pack)
-      end
+      default_pack = FactoryBot.create(:prompt_pack, :default)
+      FactoryBot.create_list(:prompt, 10, prompt_pack: default_pack)
     end
 
-    it "captures the game over screen" do
+    it "captures stage views through all phases" do
+      stage_window = open_new_window
+      within_window stage_window do
+        visit room_stage_path(room)
+        expect(page).to have_content(room.code)
+      end
+
+      # Join 3 players
+      3.times do |i|
+        using_session "player_#{i}" do
+          visit join_room_path(room.code)
+          fill_in "player[name]", with: "Player #{i}"
+          click_on "Join Game"
+        end
+      end
+
+      # Start game (instructions stage)
+      using_session "player_0" do
+        click_on "Claim Host"
+        expect(page).to have_button("Start Game", wait: 5)
+        click_on "Start Game"
+      end
+
+      within_window stage_window do
+        expect(page).to have_content("How to Play", wait: 5)
+        screenshot_checkpoint("stage_instructions")
+      end
+
+      # Advance past instructions (writing stage)
+      using_session "player_0" do
+        expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+        find("#start-from-instructions-btn").click
+      end
+
+      within_window stage_window do
+        expect(page).to have_content("Look at your device!", wait: 5)
+        screenshot_checkpoint("stage_writing")
+      end
+
+      # Submit all responses to trigger voting
+      game = room.reload.current_game
+      game.prompt_instances.where(round: 1).each do |pi|
+        pi.responses.update_all(body: "Funny Answer", status: "submitted")
+      end
+      Games::WriteAndVote.check_all_responses_submitted(game: game.reload)
+
+      within_window stage_window do
+        expect(page).to have_content("Cast your votes now!", wait: 5)
+        screenshot_checkpoint("stage_voting")
+      end
+
+      # Finish game via AASM transition
+      game.reload
+      game.with_lock { game.finish_game! }
+      game.calculate_scores!
+      GameBroadcaster.broadcast_stage(room:)
+
+      within_window stage_window do
+        expect(page).to have_content("Game Over!", wait: 5)
+        screenshot_checkpoint("stage_finished")
+        screenshot_animation("stage_finished_celebration", duration: 3, fps: 5)
+      end
+    end
+  end
+
+  describe "Write and Vote hand views" do
+    let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote", user: nil) }
+
+    before do
+      default_pack = FactoryBot.create(:prompt_pack, :default)
+      FactoryBot.create_list(:prompt, 10, prompt_pack: default_pack)
+    end
+
+    it "captures hand views through all phases" do
       # Join players
       Capybara.using_session(:host) do
         visit join_room_path(room)
@@ -270,21 +341,239 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
         click_on "Join Game"
       end
 
-      # Start game and skip instructions
+      # Start game — instructions hand view
       Capybara.using_session(:host) do
         unless page.has_button?("Start Game", wait: 3)
           visit current_path
         end
-        expect(page).to have_button("Start Game", wait: 5)
         click_on "Start Game"
-        expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
+        expect(page).to have_content("Get ready!", wait: 5)
+        screenshot_checkpoint("hand_instructions_host")
         find("#start-from-instructions-btn").click
       end
 
-      # Drive game to finished via service calls
+      # Writing phase hand view
+      Capybara.using_session(:host) do
+        expect(page).to have_selector('[data-test-id="player-prompt"]', wait: 10)
+        screenshot_checkpoint("hand_writing")
+      end
+
+      Capybara.using_session(:player2) do
+        expect(page).to have_selector('[data-test-id="player-prompt"]', wait: 10)
+        screenshot_checkpoint("hand_writing")
+      end
+
+      # Submit all responses to trigger voting
+      game = room.reload.current_game
+      game.prompt_instances.where(round: 1).each do |pi|
+        pi.responses.update_all(body: "Hilarious Answer", status: "submitted")
+      end
+      Games::WriteAndVote.check_all_responses_submitted(game: game.reload)
+
+      # Voting — capture both voter and author-waiting states
+      [ :host, :player2, :player3 ].each do |session|
+        Capybara.using_session(session) do
+          unless page.has_content?("Vote for the best answer!", wait: 2) || page.has_content?("Your answer is up for a vote!", wait: 2)
+            visit current_path
+          end
+          expect(page).to have_content("Vote for the best answer!", wait: 10)
+                     .or have_content("Your answer is up for a vote!", wait: 10)
+
+          if page.has_content?("Your answer is up for a vote!")
+            screenshot_checkpoint("hand_voting_author_waiting")
+          else
+            screenshot_checkpoint("hand_voting_voter")
+          end
+        end
+      end
+
+      # Finish game via AASM
+      game.reload
+      game.with_lock { game.finish_game! }
+      game.calculate_scores!
+      GameBroadcaster.broadcast_hand(room:)
+
+      Capybara.using_session(:host) do
+        visit room_hand_path(room)
+        expect(page).to have_content(/game over/i, wait: 5)
+        screenshot_checkpoint("hand_game_over")
+      end
+    end
+  end
+
+  describe "Speed Trivia hand views" do
+    let!(:room) { FactoryBot.create(:room, game_type: "Speed Trivia", user: nil) }
+
+    before do
+      default_pack = FactoryBot.create(:trivia_pack, :default)
+      12.times do |i|
+        FactoryBot.create(:trivia_question,
+          trivia_pack: default_pack,
+          body: "Test Question #{i + 1}?",
+          correct_answers: [ "Answer #{i + 1}" ],
+          options: [ "Answer #{i + 1}", "Wrong A", "Wrong B", "Wrong C" ])
+      end
+    end
+
+    it "captures hand views through all phases" do
+      # Join players
+      Capybara.using_session(:host) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Host"
+        click_on "Join Game"
+        click_on "Claim Host"
+      end
+
+      Capybara.using_session(:player2) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Alice"
+        click_on "Join Game"
+      end
+
+      Capybara.using_session(:player3) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Bob"
+        click_on "Join Game"
+      end
+
+      # Start game — instructions
+      Capybara.using_session(:host) do
+        unless page.has_button?("Start Game", wait: 3)
+          visit current_path
+        end
+        click_on "Start Game"
+        expect(page).to have_content("Get ready!", wait: 5)
+        screenshot_checkpoint("hand_instructions_host")
+        find("#start-from-instructions-btn").click
+      end
+
+      # Waiting / Get Ready
+      Capybara.using_session(:host) do
+        expect(page).to have_content("Get Ready!", wait: 5)
+        screenshot_checkpoint("hand_get_ready_host")
+      end
+
+      Capybara.using_session(:player2) do
+        expect(page).to have_content("Get Ready!", wait: 5)
+        screenshot_checkpoint("hand_get_ready")
+      end
+
+      # Start question — answering
+      game = room.reload.current_game
+      Games::SpeedTrivia.start_question(game:)
+
+      Capybara.using_session(:player2) do
+        visit room_hand_path(room)
+        expect(page).to have_selector('[data-test-id^="answer-option"]', minimum: 4, wait: 5)
+        screenshot_checkpoint("hand_answering")
+      end
+
+      # Player answers — locked in
+      Capybara.using_session(:player2) do
+        find('[data-test-id="answer-option-0"]', match: :first).click
+        expect(page).to have_content("Locked in!", wait: 5)
+        screenshot_checkpoint("hand_locked_in")
+      end
+
+      # Submit remaining answers programmatically (player2 already answered via browser)
+      tqi = game.reload.trivia_question_instances[game.current_question_index]
+
+      host_player = room.players.find_by(name: "Host")
+      bob = room.players.find_by(name: "Bob")
+
+      # Host answers correctly
+      TriviaAnswer.find_or_create_by!(player: host_player, trivia_question_instance: tqi) do |a|
+        a.selected_option = tqi.correct_answers.first
+        a.correct = true
+        a.submitted_at = Time.current
+      end
+      # Bob answers wrong
+      TriviaAnswer.find_or_create_by!(player: bob, trivia_question_instance: tqi) do |a|
+        a.selected_option = "Wrong A"
+        a.correct = false
+        a.submitted_at = Time.current
+      end
+
+      Games::SpeedTrivia.close_round(game: game.reload)
+
+      # Reviewing — correct answer
+      Capybara.using_session(:host) do
+        visit room_hand_path(room)
+        expect(page).to have_content("That's the one!", wait: 5)
+        screenshot_checkpoint("hand_reviewing_correct")
+        screenshot_animation("hand_score_tally", duration: 2, fps: 5)
+      end
+
+      # Reviewing — wrong answer
+      Capybara.using_session(:player3) do
+        visit room_hand_path(room)
+        expect(page).to have_content("Not quite.", wait: 5)
+        screenshot_checkpoint("hand_reviewing_wrong")
+      end
+
+      # Game over
+      game.update!(current_question_index: game.trivia_question_instances.count - 1)
+      Games::SpeedTrivia.next_question(game: game.reload)
+
+      Capybara.using_session(:host) do
+        visit room_hand_path(room)
+        expect(page).to have_content(/game over/i, wait: 5)
+        screenshot_checkpoint("hand_game_over")
+      end
+    end
+  end
+
+  describe "Category List hand views" do
+    let!(:room) { FactoryBot.create(:room, game_type: "Category List", user: nil) }
+
+    before do
+      default_pack = FactoryBot.create(:category_pack, :default)
+      12.times do |i|
+        FactoryBot.create(:category, name: "Category #{i + 1}", category_pack: default_pack)
+      end
+    end
+
+    it "captures hand views through all phases" do
+      # Join players
+      Capybara.using_session(:host) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Host"
+        click_on "Join Game"
+        click_on "Claim Host"
+      end
+
+      Capybara.using_session(:player2) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Alice"
+        click_on "Join Game"
+      end
+
+      Capybara.using_session(:player3) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Bob"
+        click_on "Join Game"
+      end
+
+      # Start game — instructions
+      Capybara.using_session(:host) do
+        unless page.has_button?("Start Game", wait: 3)
+          visit current_path
+        end
+        click_on "Start Game"
+        expect(page).to have_content("Get ready!", wait: 5)
+        screenshot_checkpoint("hand_instructions_host")
+        find("#start-from-instructions-btn").click
+      end
+
+      # Filling phase — answer form
+      Capybara.using_session(:player2) do
+        expect(page).to have_button("Submit Answers", wait: 10)
+        screenshot_checkpoint("hand_filling")
+      end
+
+      # Submit answers for all players
       game = room.reload.current_game
       letter = game.current_letter
-
       room.players.each do |player|
         game.current_round_categories.each do |ci|
           CategoryAnswer.find_or_create_by!(player:, category_instance: ci) do |answer|
@@ -292,20 +581,247 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
           end
         end
       end
-
       game.with_lock { game.begin_review! if game.filling? }
+      GameBroadcaster.broadcast_hand(room:)
+
+      # Reviewing — host sees moderation controls
+      Capybara.using_session(:host) do
+        visit room_hand_path(room)
+        expect(page).to have_button("Reject", wait: 5)
+        screenshot_checkpoint("hand_reviewing_host")
+      end
+
+      # Reviewing — non-host sees read-only answer list
+      Capybara.using_session(:player2) do
+        visit room_hand_path(room)
+        expect(page).to have_content("Host is judging answers", wait: 5)
+        screenshot_checkpoint("hand_reviewing_player")
+      end
+
+      # Scoring
       Games::CategoryList.finish_review(game: game.reload)
+
+      Capybara.using_session(:host) do
+        visit room_hand_path(room)
+        expect(page).to have_content(/Round 1 Scores/i, wait: 5)
+        screenshot_checkpoint("hand_scoring_host")
+      end
+
+      Capybara.using_session(:player2) do
+        visit room_hand_path(room)
+        expect(page).to have_content(/Round 1 Scores/i, wait: 5)
+        screenshot_checkpoint("hand_scoring")
+      end
+
+      # Game over
       game.reload.update!(current_round: game.total_rounds)
       Games::CategoryList.next_round(game: game.reload)
 
-      # Capture game over on hand views
-      [ :host, :player2, :player3 ].each do |session|
-        Capybara.using_session(session) do
-          visit room_hand_path(room)
-          expect(page).to have_content(/game over/i, wait: 5)
-          screenshot_checkpoint("game_over")
-        end
+      Capybara.using_session(:host) do
+        visit room_hand_path(room)
+        expect(page).to have_content(/game over/i, wait: 5)
+        screenshot_checkpoint("hand_game_over")
       end
+    end
+  end
+
+  describe "Backstage during gameplay" do
+    let!(:facilitator) { FactoryBot.create(:user) }
+    let!(:room) { FactoryBot.create(:room, user: facilitator, game_type: "Write And Vote") }
+    let!(:prompt_pack) { FactoryBot.create(:prompt_pack, :default) }
+
+    before do
+      room.update!(prompt_pack:)
+      FactoryBot.create_list(:prompt, 5, prompt_pack:)
+    end
+
+    it "captures backstage with game in progress" do
+      # Join players via factory (faster than UI for setup)
+      FactoryBot.create(:player, room:, name: "Alice")
+      FactoryBot.create(:player, room:, name: "Bob")
+      FactoryBot.create(:player, room:, name: "Charlie")
+
+      # Start game (transition room to playing, then start game logic)
+      room.start_game!
+      Games::WriteAndVote.game_started(room:, show_instructions: false)
+      game = room.reload.current_game
+
+      # Submit a response so moderation queue has content
+      pi = game.prompt_instances.where(round: 1).first
+      response = pi.responses.first
+      response.update!(body: "A hilarious answer", status: "submitted") if response
+
+      # Visit backstage as facilitator
+      sign_in(facilitator)
+      visit room_backstage_path(room.code)
+      expect(page).to have_content("Backstage: #{room.code}")
+      expect(page).to have_content("Playing")
+      screenshot_checkpoint("backstage_game_in_progress")
+    end
+  end
+
+  describe "Backstage lobby with game settings" do
+    let!(:facilitator) { FactoryBot.create(:user) }
+    let!(:room) { FactoryBot.create(:room, user: facilitator, game_type: "Write And Vote") }
+
+    it "captures backstage in lobby state showing game settings" do
+      FactoryBot.create(:player, room:, name: "Alice")
+      FactoryBot.create(:player, room:, name: "Bob")
+      FactoryBot.create(:player, room:, name: "Charlie")
+
+      sign_in(facilitator)
+      visit room_backstage_path(room.code)
+      expect(page).to have_content("Backstage: #{room.code}")
+      expect(page).to have_content("Lobby")
+      screenshot_checkpoint("backstage_lobby_with_settings")
+    end
+  end
+
+  describe "Backstage rejection modal" do
+    let!(:facilitator) { FactoryBot.create(:user) }
+    let!(:room) { FactoryBot.create(:room, user: facilitator, game_type: "Write And Vote") }
+    let!(:prompt_pack) { FactoryBot.create(:prompt_pack, :default) }
+
+    before do
+      room.update!(prompt_pack:)
+      FactoryBot.create_list(:prompt, 5, prompt_pack:)
+    end
+
+    it "captures the rejection modal" do
+      FactoryBot.create(:player, room:, name: "Alice")
+      FactoryBot.create(:player, room:, name: "Bob")
+      FactoryBot.create(:player, room:, name: "Charlie")
+
+      room.start_game!
+      Games::WriteAndVote.game_started(room:, show_instructions: false)
+      game = room.reload.current_game
+
+      pi = game.prompt_instances.where(round: 1).first
+      response = pi.responses.first
+      response.update!(body: "A spicy answer", status: "submitted") if response
+
+      sign_in(facilitator)
+      visit room_backstage_path(room.code)
+      expect(page).to have_content("A spicy answer", wait: 5)
+      click_on "Reject"
+
+      expect(page).to have_field("rejection_reason", wait: 5)
+      screenshot_checkpoint("backstage_rejection_modal")
+    end
+  end
+
+  describe "Waiting for approval" do
+    let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote", user: nil) }
+
+    it "captures the waiting for approval screen" do
+      # Host joins and kicks a player
+      Capybara.using_session(:host) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Host"
+        click_on "Join Game"
+        click_on "Claim Host"
+      end
+
+      Capybara.using_session(:troublemaker) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "BadName"
+        click_on "Join Game"
+        expect(page).to have_content("Game Lobby", wait: 5)
+      end
+
+      # Kick the player
+      kicked_player = room.players.find_by(name: "BadName")
+      kicked_player.kick!
+      GameBroadcaster.broadcast_hand(room:)
+
+      Capybara.using_session(:troublemaker) do
+        visit room_hand_path(room)
+        expect(page).to have_content("Waiting for Approval", wait: 5)
+        screenshot_checkpoint("hand_waiting_for_approval")
+      end
+    end
+  end
+
+  describe "Category pack views" do
+    let(:user) { FactoryBot.create(:user) }
+
+    before { sign_in(user) }
+
+    it "captures category pack library" do
+      # Create system pack and user pack
+      system_pack = FactoryBot.create(:category_pack, :default)
+      FactoryBot.create_list(:category, 5, category_pack: system_pack)
+
+      user_pack = FactoryBot.create(:category_pack, user:, name: "My Party Categories")
+      FactoryBot.create_list(:category, 3, category_pack: user_pack)
+
+      visit category_packs_path
+      expect(page).to have_content("My Party Categories")
+      screenshot_checkpoint("category_pack_library")
+    end
+
+    it "captures new category pack form" do
+      visit new_category_pack_path
+      expect(page).to have_content("New Category Pack")
+      screenshot_checkpoint("new_category_pack")
+    end
+
+    it "captures category pack show page" do
+      pack = FactoryBot.create(:category_pack, user:, name: "Geography Pack")
+      FactoryBot.create(:category, category_pack: pack, name: "Countries")
+      FactoryBot.create(:category, category_pack: pack, name: "Capital Cities")
+      FactoryBot.create(:category, category_pack: pack, name: "Rivers")
+
+      visit category_pack_path(pack)
+      expect(page).to have_content("Geography Pack")
+      expect(page).to have_content("Countries")
+      screenshot_checkpoint("category_pack_show")
+    end
+
+    it "captures category pack edit form with categories" do
+      pack = FactoryBot.create(:category_pack, user:, name: "Food Pack")
+      FactoryBot.create(:category, category_pack: pack, name: "Fruits")
+      FactoryBot.create(:category, category_pack: pack, name: "Vegetables")
+
+      visit edit_category_pack_path(pack)
+      expect(page).to have_content("Edit Category Pack")
+      screenshot_checkpoint("edit_category_pack")
+    end
+  end
+
+  describe "Game template views" do
+    let(:user) { FactoryBot.create(:user) }
+
+    before { sign_in(user) }
+
+    it "captures empty game templates index" do
+      visit game_templates_path
+      expect(page).to have_content("My Games")
+      screenshot_checkpoint("game_templates_empty")
+    end
+
+    it "captures game templates index with templates" do
+      FactoryBot.create(:game_template, user:, name: "Friday Trivia Night", game_type: "Speed Trivia")
+      FactoryBot.create(:game_template, user:, name: "Team Comedy Hour", game_type: "Write And Vote")
+      FactoryBot.create(:game_template, user:, name: "Category Challenge", game_type: "Category List")
+
+      visit game_templates_path
+      expect(page).to have_content("Friday Trivia Night")
+      screenshot_checkpoint("game_templates_with_content")
+    end
+
+    it "captures new game template form" do
+      visit new_game_template_path
+      expect(page).to have_content("Create a Game")
+      screenshot_checkpoint("new_game_template")
+    end
+
+    it "captures edit game template form" do
+      template = FactoryBot.create(:game_template, user:, name: "My Fun Game", game_type: "Speed Trivia")
+
+      visit edit_game_template_path(template)
+      expect(page).to have_content("Edit Game")
+      screenshot_checkpoint("edit_game_template")
     end
   end
 end

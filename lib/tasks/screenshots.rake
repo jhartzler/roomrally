@@ -24,7 +24,7 @@ namespace :screenshots do
     new_files = {}
 
     if BASELINE_DIR.exist?
-      Dir.glob(BASELINE_DIR.join("**", "*.png")).each do |path|
+      Dir.glob(BASELINE_DIR.join("**", "*.{png,gif}")).each do |path|
         relative = Pathname.new(path).relative_path_from(BASELINE_DIR).to_s
         spec_name = File.dirname(relative)
         all_specs << spec_name
@@ -32,7 +32,7 @@ namespace :screenshots do
       end
     end
 
-    Dir.glob(NEW_DIR.join("**", "*.png")).each do |path|
+    Dir.glob(NEW_DIR.join("**", "*.{png,gif}")).each do |path|
       relative = Pathname.new(path).relative_path_from(NEW_DIR).to_s
       spec_name = File.dirname(relative)
       all_specs << spec_name
@@ -61,7 +61,7 @@ namespace :screenshots do
     FileUtils.mkdir_p(BASELINE_DIR)
 
     count = 0
-    Dir.glob(NEW_DIR.join("**", "*.png")).each do |new_path|
+    Dir.glob(NEW_DIR.join("**", "*.{png,gif}")).each do |new_path|
       relative = Pathname.new(new_path).relative_path_from(NEW_DIR).to_s
       baseline_path = BASELINE_DIR.join(relative)
       FileUtils.mkdir_p(File.dirname(baseline_path))
@@ -117,6 +117,7 @@ def build_report_html(all_keys, baseline_files, new_files)
         .badge.changed { background: #e2b714; color: #1a1a2e; }
         .badge.new { background: #2ecc71; color: #1a1a2e; }
         .badge.removed { background: #e74c3c; color: #fff; }
+        .badge.gif { background: #9b59b6; color: #fff; }
         .comparison { display: grid; grid-template-columns: 1fr 1fr; }
         .side { padding: 16px; }
         .side:first-child { border-right: 1px solid #333; }
@@ -147,10 +148,13 @@ def render_checkpoint(row)
                "<div class=\"placeholder\">Removed</div>"
   end
 
+  gif_badge = row[:key].end_with?(".gif") ? '<span class="badge gif">GIF</span>' : ""
+
   <<~HTML
     <div class="checkpoint">
       <div class="checkpoint-header">
         <span class="badge #{row[:status]}">#{row[:status]}</span>
+        #{gif_badge}
         <h2>#{CGI.escapeHTML(row[:key])}</h2>
       </div>
       <div class="comparison">
@@ -168,6 +172,11 @@ def render_checkpoint(row)
 end
 
 def image_data_uri(path)
-  data = Base64.strict_encode64(File.binread(path))
-  "data:image/png;base64,#{data}"
+  if path.end_with?(".gif")
+    # GIFs can be large — use file:// URL to avoid bloating the HTML report
+    "file://#{File.expand_path(path)}"
+  else
+    data = Base64.strict_encode64(File.binread(path))
+    "data:image/png;base64,#{data}"
+  end
 end
