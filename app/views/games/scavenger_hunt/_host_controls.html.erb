@@ -7,39 +7,40 @@
       scavenger_hunt_game_game_start_path(game),
       method: :post,
       params: { code: room.code },
-      data: { turbo_submits_with: "Starting…" },
+      data: { turbo_submits_with: "Starting..." },
       class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
-<% elsif game.hunting? %>
+<% elsif game.hunting? || game.times_up? %>
   <% submitted = HuntSubmission.joins(:hunt_prompt_instance).where(hunt_prompt_instances: { scavenger_hunt_game_id: game.id }).count %>
-  <% total = game.hunt_prompt_instances.count * room.players.active_players.count %>
-  <p class="text-white/60 text-sm mb-3">Submissions: <%= submitted %>/<%= total %></p>
+  <p class="text-white/60 text-sm mb-3"><%= submitted %> <%= 'submission'.pluralize(submitted) %></p>
 
-  <% if game.timer_enabled? && game.round_ends_at %>
+  <% if game.hunting? && game.timer_enabled? && game.round_ends_at %>
     <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="mb-3">
       <p class="text-white font-mono text-lg" data-timer-target="output"><%= (game.time_remaining / 60).floor %>:<%= "%02d" % (game.time_remaining % 60).floor %></p>
     </div>
   <% end %>
 
-  <%= button_to "End Hunting",
-      scavenger_hunt_game_submission_lock_path(game),
-      method: :post,
-      params: { code: room.code },
-      class: "w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-xl mb-2" %>
-  <%= button_to "Start Presentation",
-      scavenger_hunt_game_reveal_path(game),
-      method: :post,
-      params: { code: room.code },
-      data: { turbo_confirm: "Start presentation? This will cut off submissions." },
-      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl" %>
+  <% if game.times_up? %>
+    <p class="text-amber-300 text-sm font-bold mb-3">Time's up! Late entries still rolling in.</p>
+  <% end %>
 
-<% elsif game.times_up? %>
-  <p class="text-white/60 text-sm mb-3">Time's up! Late entries still rolling in.</p>
-  <%= button_to "Start Presentation",
-      scavenger_hunt_game_reveal_path(game),
-      method: :post,
-      params: { code: room.code },
-      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl" %>
+  <div class="flex gap-2 mb-4">
+    <% if game.hunting? %>
+      <%= button_to "End Hunting",
+          scavenger_hunt_game_submission_lock_path(game),
+          method: :post,
+          params: { code: room.code },
+          class: "flex-1 bg-amber-600 text-white font-bold py-3 px-4 rounded-xl" %>
+    <% end %>
+    <%= button_to "Start Presentation",
+        scavenger_hunt_game_reveal_path(game),
+        method: :post,
+        params: { code: room.code },
+        data: game.hunting? ? { turbo_confirm: "Start presentation? This will cut off submissions." } : {},
+        class: "flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl" %>
+  </div>
+
+  <%= render "games/scavenger_hunt/curation_panel", game:, room: %>
 
 <% elsif game.revealing? %>
   <%= render "games/scavenger_hunt/card_picker", game:, room: %>

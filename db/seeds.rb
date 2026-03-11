@@ -71,16 +71,16 @@ hunt_pack = HuntPack.find_or_create_by!(
 )
 
 hunt_prompts = [
-  { body: "Take a team photo reenacting a famous painting", weight: 5 },
-  { body: "Everyone in an elevator — make it dramatic", weight: 5 },
-  { body: "Find a local landmark and pose like tourists", weight: 5 },
-  { body: "Take a photo with a stranger (ask nicely!)", weight: 10 },
-  { body: "Recreate a movie poster with your team", weight: 10 },
-  { body: "Find something that starts with every letter of your team name", weight: 5 },
+  { body: "Recreate a famous painting with your team", weight: 5 },
+  { body: "Entire team doing their best impression of a statue", weight: 5 },
   { body: "Capture your best 'album cover' photo", weight: 5 },
-  { body: "Team doing their best impression of a statue", weight: 5 },
   { body: "The most creative use of a common object", weight: 5 },
-  { body: "Take a photo that tells a story in one frame", weight: 10 }
+  { body: "Find something that starts with every letter of your team name", weight: 10 },
+  { body: "Team photo where everyone is making the same face", weight: 5 },
+  { body: "Recreate a movie scene with your team", weight: 10 },
+  { body: "Take a photo that tells a story in one frame", weight: 10 },
+  { body: "Everyone in one photo doing a different activity", weight: 5 },
+  { body: "Strike the most dramatic group pose you can", weight: 5 }
 ]
 
 hunt_prompts.each_with_index do |prompt, index|
