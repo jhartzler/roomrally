@@ -169,7 +169,7 @@ For sessions that predate the `game_events` table, the timeline simply omits sta
 | `template_edited` | `GameTemplatesController#update` | `"user_#{user.id}"` | `game_type`, `template_id` |
 | `template_deleted` | `GameTemplatesController#destroy` | `"user_#{user.id}"` | `game_type`, `template_id` |
 | `join_page_viewed` | `PlayersController#new` (GET `/rooms/:code/join`) | `"session_#{session.id}"` | `room_code` |
-| `instructions_skipped` | Game `start_from_instructions` methods | `room.user_id ? "user_#{room.user_id}" : "room_#{room.code}"` | `game_type`, `room_code` |
+| `instructions_skipped` | Game `game_started` methods (when `show_instructions: false`) | `room.user_id ? "user_#{room.user_id}" : "room_#{room.code}"` | `game_type`, `room_code` |
 
 **Dropped from initial scope:**
 - `game_abandoned` — no clean single-fire instrumentation point. The admin dashboard's `SessionHealth` flags already surface this. Can revisit if a periodic cleanup job is added later.
