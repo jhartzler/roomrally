@@ -659,4 +659,169 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
       screenshot_checkpoint("backstage_game_in_progress")
     end
   end
+
+  describe "Backstage lobby with game settings" do
+    let!(:facilitator) { FactoryBot.create(:user) }
+    let!(:room) { FactoryBot.create(:room, user: facilitator, game_type: "Write And Vote") }
+
+    it "captures backstage in lobby state showing game settings" do
+      FactoryBot.create(:player, room:, name: "Alice")
+      FactoryBot.create(:player, room:, name: "Bob")
+      FactoryBot.create(:player, room:, name: "Charlie")
+
+      sign_in(facilitator)
+      visit room_backstage_path(room.code)
+      expect(page).to have_content("Backstage: #{room.code}")
+      expect(page).to have_content("Lobby")
+      screenshot_checkpoint("backstage_lobby_with_settings")
+    end
+  end
+
+  describe "Backstage rejection modal" do
+    let!(:facilitator) { FactoryBot.create(:user) }
+    let!(:room) { FactoryBot.create(:room, user: facilitator, game_type: "Write And Vote") }
+    let!(:prompt_pack) { FactoryBot.create(:prompt_pack, :default) }
+
+    before do
+      room.update!(prompt_pack:)
+      FactoryBot.create_list(:prompt, 5, prompt_pack:)
+    end
+
+    it "captures the rejection modal" do
+      FactoryBot.create(:player, room:, name: "Alice")
+      FactoryBot.create(:player, room:, name: "Bob")
+      FactoryBot.create(:player, room:, name: "Charlie")
+
+      room.start_game!
+      Games::WriteAndVote.game_started(room:, show_instructions: false)
+      game = room.reload.current_game
+
+      pi = game.prompt_instances.where(round: 1).first
+      response = pi.responses.first
+      response.update!(body: "A spicy answer", status: "submitted") if response
+
+      sign_in(facilitator)
+      visit room_backstage_path(room.code)
+      expect(page).to have_content("A spicy answer", wait: 5)
+      click_on "Reject"
+
+      expect(page).to have_field("rejection_reason", wait: 5)
+      screenshot_checkpoint("backstage_rejection_modal")
+    end
+  end
+
+  describe "Waiting for approval" do
+    let!(:room) { FactoryBot.create(:room, game_type: "Write And Vote", user: nil) }
+
+    it "captures the waiting for approval screen" do
+      # Host joins and kicks a player
+      Capybara.using_session(:host) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Host"
+        click_on "Join Game"
+        click_on "Claim Host"
+      end
+
+      Capybara.using_session(:troublemaker) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "BadName"
+        click_on "Join Game"
+        expect(page).to have_content("Game Lobby", wait: 5)
+      end
+
+      # Kick the player
+      kicked_player = room.players.find_by(name: "BadName")
+      kicked_player.kick!
+      GameBroadcaster.broadcast_hand(room:)
+
+      Capybara.using_session(:troublemaker) do
+        visit room_hand_path(room)
+        expect(page).to have_content("Waiting for Approval", wait: 5)
+        screenshot_checkpoint("hand_waiting_for_approval")
+      end
+    end
+  end
+
+  describe "Category pack views" do
+    let(:user) { FactoryBot.create(:user) }
+
+    before { sign_in(user) }
+
+    it "captures category pack library" do
+      # Create system pack and user pack
+      system_pack = FactoryBot.create(:category_pack, :default)
+      FactoryBot.create_list(:category, 5, category_pack: system_pack)
+
+      user_pack = FactoryBot.create(:category_pack, user:, name: "My Party Categories")
+      FactoryBot.create_list(:category, 3, category_pack: user_pack)
+
+      visit category_packs_path
+      expect(page).to have_content("My Party Categories")
+      screenshot_checkpoint("category_pack_library")
+    end
+
+    it "captures new category pack form" do
+      visit new_category_pack_path
+      expect(page).to have_content("New Category Pack")
+      screenshot_checkpoint("new_category_pack")
+    end
+
+    it "captures category pack show page" do
+      pack = FactoryBot.create(:category_pack, user:, name: "Geography Pack")
+      FactoryBot.create(:category, category_pack: pack, name: "Countries")
+      FactoryBot.create(:category, category_pack: pack, name: "Capital Cities")
+      FactoryBot.create(:category, category_pack: pack, name: "Rivers")
+
+      visit category_pack_path(pack)
+      expect(page).to have_content("Geography Pack")
+      expect(page).to have_content("Countries")
+      screenshot_checkpoint("category_pack_show")
+    end
+
+    it "captures category pack edit form with categories" do
+      pack = FactoryBot.create(:category_pack, user:, name: "Food Pack")
+      FactoryBot.create(:category, category_pack: pack, name: "Fruits")
+      FactoryBot.create(:category, category_pack: pack, name: "Vegetables")
+
+      visit edit_category_pack_path(pack)
+      expect(page).to have_content("Edit Category Pack")
+      screenshot_checkpoint("edit_category_pack")
+    end
+  end
+
+  describe "Game template views" do
+    let(:user) { FactoryBot.create(:user) }
+
+    before { sign_in(user) }
+
+    it "captures empty game templates index" do
+      visit game_templates_path
+      expect(page).to have_content("My Games")
+      screenshot_checkpoint("game_templates_empty")
+    end
+
+    it "captures game templates index with templates" do
+      FactoryBot.create(:game_template, user:, name: "Friday Trivia Night", game_type: "Speed Trivia")
+      FactoryBot.create(:game_template, user:, name: "Team Comedy Hour", game_type: "Write And Vote")
+      FactoryBot.create(:game_template, user:, name: "Category Challenge", game_type: "Category List")
+
+      visit game_templates_path
+      expect(page).to have_content("Friday Trivia Night")
+      screenshot_checkpoint("game_templates_with_content")
+    end
+
+    it "captures new game template form" do
+      visit new_game_template_path
+      expect(page).to have_content("Create a Game")
+      screenshot_checkpoint("new_game_template")
+    end
+
+    it "captures edit game template form" do
+      template = FactoryBot.create(:game_template, user:, name: "My Fun Game", game_type: "Speed Trivia")
+
+      visit edit_game_template_path(template)
+      expect(page).to have_content("Edit Game")
+      screenshot_checkpoint("edit_game_template")
+    end
+  end
 end
