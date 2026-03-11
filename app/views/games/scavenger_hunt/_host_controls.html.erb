@@ -2,7 +2,13 @@
 <% game = room.current_game %>
 
 <% if game.instructions? %>
-  <p class="text-white/60 text-sm mb-3">Waiting for players to join...</p>
+  <p class="text-white/60 text-sm mb-3">Players are viewing the instructions.</p>
+  <%= button_to "Start Hunt",
+      scavenger_hunt_game_game_start_path(game),
+      method: :post,
+      params: { code: room.code },
+      data: { turbo_submits_with: "Starting…" },
+      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
 
 <% elsif game.hunting? %>
   <% submitted = HuntSubmission.joins(:hunt_prompt_instance).where(hunt_prompt_instances: { scavenger_hunt_game_id: game.id }).count %>

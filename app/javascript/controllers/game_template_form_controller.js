@@ -12,7 +12,8 @@ export default class extends Controller {
     const packTypeMap = {
       "Write And Vote": "prompt_pack",
       "Speed Trivia": "trivia_pack",
-      "Category List": "category_pack"
+      "Category List": "category_pack",
+      "Scavenger Hunt": "hunt_pack"
     }
 
     this.packSelectTargets.forEach(el => {
