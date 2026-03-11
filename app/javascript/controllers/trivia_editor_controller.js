@@ -127,15 +127,13 @@ export default class extends Controller {
             this.questionListTarget.classList.remove("space-y-6")
             this.questionListTarget.classList.add("space-y-1")
 
-            // Scroll so the dragged element stays at roughly the same viewport position
+            // Instantly scroll so the dragged element stays at its original viewport position
             if (this.draggedElement) {
-                requestAnimationFrame(() => {
-                    const newRect = this.draggedElement.getBoundingClientRect()
-                    const drift = newRect.top - draggedViewportY
-                    if (Math.abs(drift) > 10) {
-                        window.scrollBy({ top: drift, behavior: "smooth" })
-                    }
-                })
+                const newRect = this.draggedElement.getBoundingClientRect()
+                const drift = newRect.top - draggedViewportY
+                if (Math.abs(drift) > 10) {
+                    window.scrollBy(0, drift)
+                }
             }
         })
     }
