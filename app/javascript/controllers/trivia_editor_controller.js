@@ -6,16 +6,22 @@ export default class extends Controller {
 
     connect() {
         this.draggedElement = null
+        this.dragFromHandle = false
         this.updatePositions()
         this.updateCount()
         this.updateImageCount()
+
+        // Track mousedown on drag handles to distinguish handle drags from content drags
+        this.element.addEventListener("mousedown", (e) => {
+            this.dragFromHandle = !!e.target.closest(".drag-handle")
+        })
     }
 
     // --- Drag and Drop ---
 
     dragStart(event) {
         // Only allow drags initiated from the grip handle
-        if (!event.target.closest(".drag-handle")) {
+        if (!this.dragFromHandle) {
             event.preventDefault()
             return
         }
