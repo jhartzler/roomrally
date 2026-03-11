@@ -266,17 +266,24 @@ export default class extends Controller {
     moveDown(event) {
         const btn = event.target.closest("button")
         const wrapper = event.target.closest(".question-field-wrapper")
-        console.log("[moveDown]", { target: event.target.tagName, btn: !!btn, disabled: btn?.disabled, wrapper: !!wrapper })
         if (btn?.disabled) return
         if (!wrapper) return
 
         // Find next visible sibling
         let next = wrapper.nextElementSibling
         while (next && next.style.display === "none") next = next.nextElementSibling
-        if (!next) return
+
+        const wrappers = Array.from(this.questionListTarget.querySelectorAll(".question-field-wrapper"))
+        const wrapperIndex = wrappers.indexOf(wrapper)
+        const bodyText = wrapper.querySelector("textarea")?.value?.substring(0, 30)
+        const nextText = next?.querySelector("textarea")?.value?.substring(0, 30)
+        console.log("[moveDown]", { wrapperIndex, bodyText, next: !!next, nextText, totalWrappers: wrappers.length })
+
+        if (!next) { console.log("[moveDown] no next, aborting"); return }
 
         // Insert after next
         next.parentNode.insertBefore(wrapper, next.nextSibling)
+        console.log("[moveDown] DOM moved, new index:", Array.from(this.questionListTarget.querySelectorAll(".question-field-wrapper")).indexOf(wrapper))
         this.updatePositions()
         wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" })
     }
