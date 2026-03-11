@@ -93,9 +93,13 @@ class GameEvent < ApplicationRecord
 
   def self.log(eventable, event_name, **metadata)
     create!(eventable:, event_name:, metadata:)
+  rescue => e
+    Rails.logger.warn("[GameEvent] Failed to log #{event_name}: #{e.message}")
   end
 end
 ```
+
+GameEvent writes are fire-and-forget — a failed insert must never halt game flow or prevent broadcasts. Same philosophy as `Analytics.track`.
 
 ### Placement Pattern
 
@@ -128,7 +132,7 @@ end
 
 Each event is a struct with `timestamp`, `event_type`, `description`, and optional `metadata`.
 
-For sessions that predate the `game_events` table, state transitions are inferred from surrounding data (first answer timestamp implies answering started, etc.). Future sessions get precise data from `game_events`.
+For sessions that predate the `game_events` table, the timeline simply omits state transition events — it still shows player joins, answer submissions, and votes from the domain tables. No inference logic for historical sessions; not worth the complexity given the small number of past sessions.
 
 ---
 
@@ -158,16 +162,18 @@ For sessions that predate the `game_events` table, state transitions are inferre
 
 ## Part 5: New PostHog Events
 
-### New Events (6)
+### New Events (4)
 
 | Event | Location | distinct_id | Properties |
 |---|---|---|---|
 | `template_edited` | `GameTemplatesController#update` | `"user_#{user.id}"` | `game_type`, `template_id` |
 | `template_deleted` | `GameTemplatesController#destroy` | `"user_#{user.id}"` | `game_type`, `template_id` |
-| `join_page_viewed` | `RoomsController#show` or join page | `"session_#{session.id}"` | `room_code` |
-| `instructions_skipped` | Game `start_from_instructions` methods | `"user_#{user_id}"` or `"room_#{code}"` | `game_type`, `room_code` |
-| `game_abandoned` | Detect in `SessionHealth` or room cleanup | `"user_#{user_id}"` or `"room_#{code}"` | `game_type`, `room_code`, `last_state`, `player_count` |
-| `login_page_viewed` | `SessionsController#new` or login page | `"session_#{session.id}"` | (none) |
+| `join_page_viewed` | `PlayersController#new` (GET `/rooms/:code/join`) | `"session_#{session.id}"` | `room_code` |
+| `instructions_skipped` | Game `start_from_instructions` methods | `room.user_id ? "user_#{room.user_id}" : "room_#{room.code}"` | `game_type`, `room_code` |
+
+**Dropped from initial scope:**
+- `game_abandoned` — no clean single-fire instrumentation point. The admin dashboard's `SessionHealth` flags already surface this. Can revisit if a periodic cleanup job is added later.
+- `login_page_viewed` — no dedicated login page exists (Google OAuth only). The login button lives on various pages, making this impractical to track server-side.
 
 ---
 
@@ -186,6 +192,8 @@ Current state:
 A casual host appears as two different people in PostHog.
 
 Fix: Standardize game events to use `"user_#{user_id}"` when the room has an owner, `"room_#{code}"` as fallback. Ensure `room_code` is always in properties regardless of distinct_id choice. This matches the current pattern but needs to be applied consistently — audit all call sites during implementation.
+
+**Note on player-scoped events:** `player_joined`, `vote_attempt`, `vote_failed`, and `vote_cast` intentionally use `"player_#{session_id}"` because these represent anonymous player actions, not host actions. The divergence between player events and game lifecycle events is correct — they represent different actors. The inconsistency to fix is within game lifecycle events only (some game services already use the conditional pattern correctly, just need to verify all do).
 
 ---
 
