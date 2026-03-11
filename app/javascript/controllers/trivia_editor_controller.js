@@ -14,8 +14,8 @@ export default class extends Controller {
     // --- Drag and Drop ---
 
     dragStart(event) {
-        // Ignore drags that originate from move/remove buttons
-        if (event.target.closest("button")) {
+        // Only allow drags initiated from the grip handle
+        if (!event.target.closest(".drag-handle")) {
             event.preventDefault()
             return
         }
@@ -154,20 +154,22 @@ export default class extends Controller {
                 }
             })
 
-            // Animate back to expanded height
-            if (wrapper.dataset.expandedHeight) {
-                wrapper.style.height = wrapper.dataset.expandedHeight + "px"
-                delete wrapper.dataset.expandedHeight
-            }
-
-            // Clean up inline styles after transition
             const cleanup = () => {
                 wrapper.style.height = ""
                 wrapper.style.overflow = ""
                 wrapper.style.transition = ""
-                wrapper.removeEventListener("transitionend", cleanup)
             }
-            wrapper.addEventListener("transitionend", cleanup)
+
+            // Animate back to expanded height if we have one
+            if (wrapper.dataset.expandedHeight) {
+                wrapper.style.height = wrapper.dataset.expandedHeight + "px"
+                delete wrapper.dataset.expandedHeight
+                wrapper.addEventListener("transitionend", cleanup, { once: true })
+                // Fallback if transitionend doesn't fire (e.g., no actual change)
+                setTimeout(cleanup, 400)
+            } else {
+                cleanup()
+            }
         })
     }
 
@@ -227,14 +229,23 @@ export default class extends Controller {
         const target = event.target.closest(".question-field-wrapper")
         if (!target || !this.draggedElement || target === this.draggedElement) return
 
-        // Determine drop position based on mouse position
+        // Use the visible wrappers array to find the correct insertion point
+        const visibleWrappers = this.visibleQuestionWrappers()
+        const targetIndex = visibleWrappers.indexOf(target)
+
         const rect = target.getBoundingClientRect()
         const midY = rect.top + rect.height / 2
 
         if (event.clientY < midY) {
             target.parentNode.insertBefore(this.draggedElement, target)
         } else {
-            target.parentNode.insertBefore(this.draggedElement, target.nextSibling)
+            // Insert after target: find the next wrapper and insert before it, or append
+            const afterTarget = visibleWrappers[targetIndex + 1]
+            if (afterTarget) {
+                afterTarget.parentNode.insertBefore(this.draggedElement, afterTarget)
+            } else {
+                this.questionListTarget.appendChild(this.draggedElement)
+            }
         }
 
         // Clean up indicators
@@ -285,25 +296,14 @@ export default class extends Controller {
     // --- Position Management ---
 
     updatePositions() {
-        const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
-        let visibleIndex = 0
-        const visibleWrappers = []
+        const visibleWrappers = this.visibleQuestionWrappers()
 
-        wrappers.forEach(wrapper => {
-            const isDestroyed = wrapper.style.display === "none"
+        visibleWrappers.forEach((wrapper, i) => {
             const positionField = wrapper.querySelector("[data-trivia-editor-target='positionField']")
             const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
+            if (positionField) positionField.value = i + 1
+            if (badge) badge.textContent = i + 1
 
-            if (!isDestroyed) {
-                visibleIndex++
-                visibleWrappers.push(wrapper)
-                if (positionField) positionField.value = visibleIndex
-                if (badge) badge.textContent = visibleIndex
-            }
-        })
-
-        // Disable up/down buttons at boundaries
-        visibleWrappers.forEach((wrapper, i) => {
             const upBtn = wrapper.querySelector("[data-action='trivia-editor#moveUp']")
             const downBtn = wrapper.querySelector("[data-action='trivia-editor#moveDown']")
             if (upBtn) {
