@@ -39,9 +39,9 @@ The system involves three main actors:
 
 Turbo Streams with `Turbo::StreamsChannel` provides everything needed. Custom channels would add complexity without benefit for this use case.
 
-### Why No Event Bus / Pub-Sub for Game Logic?
+### Why Minimal Event Bus?
 
-Direct method calls are easier to trace, debug, and test. An event-driven architecture (Wisper listeners, etc.) was considered but deemed unnecessary for a small number of game types maintained by one team. This could be revisited if the platform grows to support many game types or third-party games.
+The app uses Wisper lightly — `RoomsController` publishes a `game_started` event that `GameEventRouter` routes to the correct game service module. Beyond that, game logic uses direct method calls, which are easier to trace, debug, and test. A heavier event-driven architecture was considered but deemed unnecessary for a small number of game types maintained by one team.
 
 ### Why Game Logic in Service Modules?
 

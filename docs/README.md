@@ -23,9 +23,9 @@ A Rails-based, real-time party game platform inspired by Jackbox Games.
 
 - [Architecture](architecture.md) - System design and request flow
 - [Game Logic Guide](game_logic_guide.md) - How to add new game types
-- [Data Models](data_models.md) - Model relationships and design
 - [Client Guide](client_guide.md) - Frontend architecture
 - [Real-time Communication](real_time_communication.md) - Turbo Streams broadcasting
 - [Background Services](background_services.md) - Timers and Sidekiq
-- [Development Guide](development_guide.md) - TDD workflow and practices
 - [Style Guide](STYLE_GUIDE.md) - UI design system
+- [Copy Voice](copy-voice.md) - In-game text tone and style
+- [Screenshot Checkpoints](screenshot_checkpoints.md) - Visual regression testing

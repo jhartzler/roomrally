@@ -25,7 +25,6 @@ rake screenshots:clean
 3. Run `rake screenshots:report` — opens an HTML diff report in your browser
 4. Review side-by-side comparisons (baseline vs new)
 5. If the changes look correct, run `rake screenshots:approve` to update baselines
-6. Commit the updated baselines in `spec/screenshots/`
 
 ## How It Works
 
