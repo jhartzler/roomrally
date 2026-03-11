@@ -77,31 +77,32 @@ export default class extends Controller {
     }
 
     collapseCards() {
-        const wrappers = this.questionListTarget.querySelectorAll(".question-field-wrapper")
+        const wrappers = Array.from(this.questionListTarget.querySelectorAll(".question-field-wrapper"))
+            .filter(w => w.style.display !== "none")
 
-        // Remember where the dragged element is on screen before collapse
-        const draggedRect = this.draggedElement?.getBoundingClientRect()
-        const draggedViewportY = draggedRect?.top ?? 0
+        // Phase 1: Capture heights, build summaries, calculate collapsed sizes
+        const cardData = wrappers.map(wrapper => {
+            const expandedHeight = wrapper.offsetHeight
+            const textarea = wrapper.querySelector("textarea[name*='[body]']")
+            const questionText = textarea?.value?.trim() || "Untitled question"
+            const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
+            const badgeText = badge?.textContent || "?"
+            return { wrapper, expandedHeight, questionText, badgeText }
+        })
 
-        // Phase 1: Capture current heights and lock them
-        wrappers.forEach(wrapper => {
-            if (wrapper.style.display === "none") return
-            wrapper.dataset.expandedHeight = wrapper.offsetHeight
-            wrapper.style.height = wrapper.offsetHeight + "px"
+        // Lock current heights and set up transitions
+        cardData.forEach(({ wrapper, expandedHeight }) => {
+            wrapper.dataset.expandedHeight = expandedHeight
+            wrapper.style.height = expandedHeight + "px"
             wrapper.style.overflow = "hidden"
             wrapper.style.transition = "height 350ms ease-in-out"
         })
 
         // Phase 2: Insert summaries, hide content, animate to collapsed height
         requestAnimationFrame(() => {
-            wrappers.forEach(wrapper => {
-                if (wrapper.style.display === "none") return
+            let collapsedHeights = []
 
-                const textarea = wrapper.querySelector("textarea[name*='[body]']")
-                const questionText = textarea?.value?.trim() || "Untitled question"
-                const badge = wrapper.querySelector("[data-trivia-editor-target='positionBadge']")
-                const badgeText = badge?.textContent || "?"
-
+            cardData.forEach(({ wrapper, questionText, badgeText }) => {
                 // Hide all child elements
                 Array.from(wrapper.children).forEach(child => {
                     child.dataset.dragHidden = child.style.display || ""
@@ -117,22 +118,29 @@ export default class extends Controller {
                 `
                 wrapper.appendChild(summary)
 
-                // Animate to collapsed height (summary + wrapper's vertical padding)
                 const wrapperStyle = getComputedStyle(wrapper)
                 const verticalPadding = parseFloat(wrapperStyle.paddingTop) + parseFloat(wrapperStyle.paddingBottom)
-                wrapper.style.height = (summary.offsetHeight + verticalPadding) + "px"
+                const collapsedHeight = summary.offsetHeight + verticalPadding
+                collapsedHeights.push(collapsedHeight)
+
+                wrapper.style.height = collapsedHeight + "px"
             })
 
             // Reduce spacing between collapsed cards
             this.questionListTarget.classList.remove("space-y-6")
             this.questionListTarget.classList.add("space-y-1")
 
-            // Instantly scroll so the dragged element stays at its original viewport position
+            // Calculate how far the dragged element will drift and scroll to compensate
             if (this.draggedElement) {
-                const newRect = this.draggedElement.getBoundingClientRect()
-                const drift = newRect.top - draggedViewportY
-                if (Math.abs(drift) > 10) {
-                    window.scrollBy(0, drift)
+                const dragIndex = wrappers.indexOf(this.draggedElement)
+                if (dragIndex > 0) {
+                    // Sum up height reduction of all cards above the dragged one
+                    // Each card: (expandedHeight - collapsedHeight) + spacing change (24px - 4px = 20px)
+                    let totalDrift = 0
+                    for (let i = 0; i < dragIndex; i++) {
+                        totalDrift += cardData[i].expandedHeight - collapsedHeights[i] + 20
+                    }
+                    window.scrollBy(0, -totalDrift)
                 }
             }
         })
