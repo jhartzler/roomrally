@@ -52,4 +52,5 @@ node_modules
 /worktrees/
 /.claude/
 /BACKLOG.md
+.superpowers/
 app/assets/images/Room Rally Logo Pack/
