@@ -16,10 +16,9 @@
     <% end %>
 
     <% submitted = HuntSubmission.joins(:hunt_prompt_instance).where(hunt_prompt_instances: { scavenger_hunt_game_id: game.id }).count %>
-    <% total = game.hunt_prompt_instances.count * game.room.players.active_players.count %>
     <div class="bg-white/10 backdrop-blur-md rounded-2xl p-[3vh] border border-white/20">
       <p class="text-vh-xs text-white/50 font-bold tracking-widest mb-[1vh]">SUBMISSIONS</p>
-      <p class="text-vh-3xl font-bold text-white"><%= submitted %> of <%= total %></p>
+      <p class="text-vh-3xl font-bold text-white"><%= submitted %> <%= 'submission'.pluralize(submitted) %></p>
     </div>
   </div>
 </div>
