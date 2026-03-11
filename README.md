@@ -37,7 +37,7 @@ More to come!
 ### Setup
 
 ```bash
-git clone https://github.com/jackhartzler/roomrally.git
+git clone https://github.com/jhartzler/roomrally.git
 cd roomrally
 cp .env.example .env  # Fill in your values
 bin/setup
@@ -90,9 +90,9 @@ But if I ever get around to adding pro, subscription-gated features, self-hoster
 See the `docs/` directory for detailed guides:
 
 - [Architecture](docs/architecture.md) — Request flow, core patterns, concurrency
-- [Data Models](docs/data_models.md) — Schema and relationships
+- [Game Logic Guide](docs/game_logic_guide.md) — How to add new game types
 - [Client Guide](docs/client_guide.md) — Stage and Hand client architecture
-- [Development Guide](docs/development_guide.md) — Contributing, testing, conventions
+- [Copy Voice](docs/copy-voice.md) — In-game text tone and style
 
 ## License
 
