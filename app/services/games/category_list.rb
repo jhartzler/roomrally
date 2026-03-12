@@ -32,7 +32,14 @@ module Games
 
       setup_round(game:)
 
-      game.start_game! unless show_instructions
+      unless show_instructions
+        game.start_game!
+        Analytics.track(
+          distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+          event: "instructions_skipped",
+          properties: { game_type: room.game_type, room_code: room.code }
+        )
+      end
 
       GameBroadcaster.broadcast_game_start(room:)
       GameBroadcaster.broadcast_stage(room:)

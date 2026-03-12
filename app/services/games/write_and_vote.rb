@@ -34,6 +34,11 @@ module Games
         GameBroadcaster.broadcast_hand(room:)
       else
         game.start_game!
+        Analytics.track(
+          distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+          event: "instructions_skipped",
+          properties: { game_type: room.game_type, room_code: room.code }
+        )
         assign_prompts_for_round(game:, round_number: 1)
         GameBroadcaster.broadcast_game_start(room:)
         GameBroadcaster.broadcast_stage(room:)

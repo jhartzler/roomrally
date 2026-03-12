@@ -45,6 +45,11 @@ class GameTemplatesController < ApplicationController
 
   def update
     if @game_template.update(game_template_params)
+      Analytics.track(
+        distinct_id: "user_#{current_user.id}",
+        event: "template_edited",
+        properties: { game_type: @game_template.game_type, template_id: @game_template.id }
+      )
       redirect_to game_templates_path, notice: "Game updated successfully."
     else
       load_packs
@@ -53,6 +58,11 @@ class GameTemplatesController < ApplicationController
   end
 
   def destroy
+    Analytics.track(
+      distinct_id: "user_#{current_user.id}",
+      event: "template_deleted",
+      properties: { game_type: @game_template.game_type, template_id: @game_template.id }
+    )
     @game_template.destroy
     redirect_to game_templates_path, notice: "Game deleted."
   end
