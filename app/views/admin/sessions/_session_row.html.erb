@@ -1,0 +1,64 @@
+<%
+  flags = health_flags[room.id] || []
+  dot_color = if room.current_game.nil? && room.players.any?
+    "bg-gray-400"
+  elsif flags.any? { |f| f.severity == :error }
+    "bg-red-500"
+  elsif flags.any? { |f| f.severity == :warning }
+    "bg-amber-500"
+  else
+    "bg-green-500"
+  end
+
+  game = room.current_game
+  game_type_name = Room::GAME_DISPLAY_NAMES[room.game_type] || room.game_type
+  duration = if game
+    seconds = ((game.updated_at - game.created_at)).to_i
+    if game.status.to_s != "finished" && seconds > 1800
+      "#{seconds / 60}m+"
+    else
+      "#{seconds / 60}m #{seconds % 60}s"
+    end
+  end
+%>
+
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden" data-controller="session-row" data-session-row-code-value="<%= room.code %>">
+  <div class="px-4 py-3 flex justify-between items-center cursor-pointer" data-action="click->session-row#toggle">
+    <div class="flex items-center gap-3">
+      <div class="w-2.5 h-2.5 rounded-full shrink-0 <%= dot_color %>"></div>
+      <div>
+        <div class="font-semibold text-sm text-gray-900">
+          <%= link_to room.code, admin_session_path(room.code), class: "hover:underline", data: { action: "click->session-row#navigate" } %>
+          <span class="font-normal text-gray-500 text-xs ml-2"><%= game_type_name %></span>
+        </div>
+        <div class="text-xs text-gray-400 mt-0.5">
+          <%= room.created_at.strftime("%-b %-d, %-I:%M %p") %>
+          &middot; <%= pluralize(room.players.size, "player") %>
+          <% if duration %>&middot; <%= duration %><% end %>
+          &middot;
+          <% if game&.status.to_s == "finished" %>
+            Finished
+          <% elsif game %>
+            <span class="text-red-600 font-semibold"><%= game.status.humanize %></span>
+          <% else %>
+            Lobby
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <% flags.each do |flag| %>
+        <span class="<%= flag.severity == :error ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800' %> text-xs px-2 py-0.5 rounded font-medium">
+          <%= flag.description %>
+        </span>
+      <% end %>
+      <span class="text-gray-400 text-lg" data-session-row-target="arrow">&#9656;</span>
+    </div>
+  </div>
+
+  <div class="border-t border-gray-100 px-4 py-3 bg-gray-50 hidden" data-session-row-target="timeline">
+    <% timeline = SessionRecap.for(room) %>
+    <%= render "admin/sessions/timeline", events: timeline %>
+  </div>
+</div>

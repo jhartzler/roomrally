@@ -1,0 +1,11 @@
+<div class="text-xs text-gray-600 flex flex-col gap-1 font-mono">
+  <% events.each do |event| %>
+    <div>
+      <span class="text-gray-400"><%= event.timestamp.strftime("%-I:%M:%S %p") %></span>
+      <%= event.description %>
+    </div>
+  <% end %>
+  <% if events.empty? %>
+    <div class="text-gray-400 italic">No activity recorded</div>
+  <% end %>
+</div>

@@ -1,0 +1,22 @@
+<h1 class="text-2xl font-bold text-gray-900 mb-6">Sessions</h1>
+
+<div data-controller="hidden-sessions" data-hidden-sessions-key-value="roomrally-hidden-sessions">
+  <div class="mb-4 flex items-center gap-3">
+    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+      <input type="checkbox" data-hidden-sessions-target="toggle" data-action="hidden-sessions#toggle" class="rounded">
+      Show hidden
+    </label>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <% @rooms.each do |room| %>
+      <div data-hidden-sessions-target="row" data-room-code="<%= room.code %>">
+        <%= render "admin/sessions/session_row", room: room, health_flags: @health_flags %>
+      </div>
+    <% end %>
+
+    <% if @rooms.empty? %>
+      <p class="text-gray-500 text-center py-12">No sessions yet</p>
+    <% end %>
+  </div>
+</div>
