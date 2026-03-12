@@ -32,10 +32,25 @@ export default class extends Controller {
 
     this.rowTargets.forEach(row => {
       const code = row.dataset.roomCode
-      if (hidden.includes(code) && !showHidden) {
+      const isHidden = hidden.includes(code)
+
+      if (isHidden && !showHidden) {
         row.classList.add("hidden")
       } else {
         row.classList.remove("hidden")
+      }
+
+      const btn = row.querySelector("[data-action*='hideOne']")
+      if (btn) {
+        if (isHidden) {
+          btn.textContent = "Hidden"
+          btn.disabled = true
+          btn.classList.add("text-gray-400")
+        } else {
+          btn.innerHTML = "\u00d7"
+          btn.disabled = false
+          btn.classList.remove("text-gray-400")
+        }
       }
     })
   }
