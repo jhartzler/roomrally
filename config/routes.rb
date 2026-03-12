@@ -111,6 +111,7 @@ Rails.application.routes.draw do
         post :reset_ai_limit
       end
     end
+    resources :sessions, only: %i[index show], param: :code
   end
 
   match "*unmatched", to: "errors#not_found", via: :all, constraints: ->(req) { !req.path.start_with?("/rails/") }
