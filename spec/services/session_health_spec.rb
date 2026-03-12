@@ -6,9 +6,9 @@ RSpec.describe SessionHealth do
       room = create(:room, status: :finished, game_type: "Speed Trivia")
       game = create(:speed_trivia_game, status: :finished)
       room.update!(current_game: game)
-      player = create(:player, room: room)
+      player = create(:player, room:)
       question = create(:trivia_question_instance, speed_trivia_game: game)
-      create(:trivia_answer, trivia_question_instance: question, player: player, submitted_at: Time.current)
+      create(:trivia_answer, trivia_question_instance: question, player:, submitted_at: Time.current)
 
       flags = described_class.check(room)
       expect(flags).to be_empty
@@ -26,7 +26,7 @@ RSpec.describe SessionHealth do
 
     it "flags room that never started a game" do
       room = create(:room, status: :lobby)
-      create(:player, room: room)
+      create(:player, room:)
 
       flags = described_class.check(room)
       expect(flags.any? { |f| f.description.include?("never started") }).to be true
@@ -36,7 +36,7 @@ RSpec.describe SessionHealth do
       room = create(:room, status: :finished, game_type: "Speed Trivia")
       game = create(:speed_trivia_game, status: :finished)
       room.update!(current_game: game)
-      create(:player, room: room, name: "Ghost")
+      create(:player, room:, name: "Ghost")
       create(:trivia_question_instance, speed_trivia_game: game)
 
       flags = described_class.check(room)

@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "GameEvent tracking in game services" do
   describe "SpeedTrivia" do
     let(:room) { create(:room, game_type: "Speed Trivia") }
-    let!(:players) { create_list(:player, 3, room: room) }
+    let!(:players) { create_list(:player, 3, room:) }
 
     before do
       pack = create(:trivia_pack, :default)
@@ -72,7 +72,7 @@ RSpec.describe "GameEvent tracking in game services" do
 
   describe "WriteAndVote" do
     let(:room) { create(:room, game_type: "Write And Vote") }
-    let!(:players) { create_list(:player, 3, room: room) }
+    let!(:players) { create_list(:player, 3, room:) }
 
     before do
       pack = create(:prompt_pack, :default)
@@ -104,7 +104,7 @@ RSpec.describe "GameEvent tracking in game services" do
 
   describe "CategoryList" do
     let(:room) { create(:room, game_type: "Category List") }
-    let!(:players) { create_list(:player, 3, room: room) }
+    let!(:players) { create_list(:player, 3, room:) }
 
     before do
       pack = create(:category_pack, :default)

@@ -4,8 +4,8 @@ RSpec.describe SessionRecap do
   describe ".for" do
     it "returns events ordered by timestamp" do
       room = create(:room)
-      create(:player, room: room, name: "Alice", created_at: 1.minute.from_now)
-      create(:player, room: room, name: "Bob", created_at: 2.minutes.from_now)
+      create(:player, room:, name: "Alice", created_at: 1.minute.from_now)
+      create(:player, room:, name: "Bob", created_at: 2.minutes.from_now)
 
       events = described_class.for(room)
 
@@ -32,8 +32,8 @@ RSpec.describe SessionRecap do
       game = create(:speed_trivia_game)
       room.update!(current_game: game)
       question = create(:trivia_question_instance, speed_trivia_game: game)
-      player = create(:player, room: room)
-      create(:trivia_answer, trivia_question_instance: question, player: player, submitted_at: Time.current)
+      player = create(:player, room:)
+      create(:trivia_answer, trivia_question_instance: question, player:, submitted_at: Time.current)
 
       events = described_class.for(room)
       types = events.map(&:event_type)
@@ -46,10 +46,10 @@ RSpec.describe SessionRecap do
       game = create(:write_and_vote_game)
       room.update!(current_game: game)
       prompt = create(:prompt_instance, write_and_vote_game: game)
-      player = create(:player, room: room)
-      response = create(:response, prompt_instance: prompt, player: player)
-      voter = create(:player, room: room, name: "Voter")
-      create(:vote, response: response, player: voter)
+      player = create(:player, room:)
+      response = create(:response, prompt_instance: prompt, player:)
+      voter = create(:player, room:, name: "Voter")
+      create(:vote, response:, player: voter)
 
       events = described_class.for(room)
       types = events.map(&:event_type)

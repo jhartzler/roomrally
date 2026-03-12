@@ -77,7 +77,7 @@ class SessionHealth
     when WriteAndVoteGame
       player.responses.where(prompt_instance: @game.prompt_instances).count
     when CategoryListGame
-      CategoryAnswer.where(player: player, category_instance: @game.category_instances).count
+      CategoryAnswer.where(player:, category_instance: @game.category_instances).count
     else
       0
     end
