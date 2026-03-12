@@ -28,9 +28,18 @@ module Games
       )
       room.update!(current_game: game)
 
+      GameEvent.log(game, "game_created", game_type: room.game_type, player_count: room.players.active_players.count, timer_enabled:)
+
       setup_round(game:)
 
-      game.start_game! unless show_instructions
+      unless show_instructions
+        game.start_game!
+        Analytics.track(
+          distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+          event: "instructions_skipped",
+          properties: { game_type: room.game_type, room_code: room.code }
+        )
+      end
 
       GameBroadcaster.broadcast_game_start(room:)
       GameBroadcaster.broadcast_stage(room:)
@@ -38,7 +47,9 @@ module Games
     end
 
     def self.start_from_instructions(game:)
+      previous_status = game.status
       game.start_game!
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
       start_timer_if_enabled(game)
       broadcast_all(game)
     end
@@ -57,7 +68,9 @@ module Games
         end
 
         if game.all_answers_submitted?
+          previous_status = game.status
           game.begin_review!
+          GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
           all_submitted = true
         end
       end
@@ -69,7 +82,9 @@ module Games
     def self.finish_review(game:)
       game.update!(reviewing_category_position: 0)
       calculate_round_scores(game:)
+      previous_status = game.status
       game.begin_scoring!
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
       broadcast_all(game)
     end
 
@@ -112,6 +127,7 @@ module Games
       if game.last_round?
         calculate_total_scores(game:)
         game.finish_game!
+        GameEvent.log(game, "game_finished", duration_seconds: (Time.current - game.created_at).to_i, player_count: game.room.players.active_players.count)
         Analytics.track(
           distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
           event: "game_completed",
@@ -120,9 +136,11 @@ module Games
         game.room.finish!
         broadcast_all(game)
       else
+        previous_status = game.status
         game.update!(current_round: game.current_round + 1)
         setup_round(game:)
         game.begin_next_round!
+        GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
         start_timer_if_enabled(game)
         broadcast_all(game)
       end

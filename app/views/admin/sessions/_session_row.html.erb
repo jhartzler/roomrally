@@ -1,0 +1,65 @@
+<%
+  flags = health_flags[room.id] || []
+  dot_color = if room.current_game.nil? && room.players.any?
+    "bg-gray-400"
+  elsif flags.any? { |f| f.severity == :error }
+    "bg-red-500"
+  elsif flags.any? { |f| f.severity == :warning }
+    "bg-amber-500"
+  else
+    "bg-green-500"
+  end
+
+  game = room.current_game
+  game_type_name = Room::GAME_DISPLAY_NAMES[room.game_type] || room.game_type
+  duration = if game
+    seconds = ((game.updated_at - game.created_at)).to_i
+    if game.status.to_s != "finished" && seconds > 1800
+      "#{seconds / 60}m+"
+    else
+      "#{seconds / 60}m #{seconds % 60}s"
+    end
+  end
+%>
+
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden flex items-stretch hover:border-gray-300 hover:shadow-sm transition-all">
+  <%= link_to admin_session_path(room.code), class: "flex-1 px-4 py-3 flex justify-between items-center" do %>
+    <div class="flex items-center gap-3">
+      <div class="w-2.5 h-2.5 rounded-full shrink-0 <%= dot_color %>"></div>
+      <div>
+        <div class="font-semibold text-sm text-gray-900">
+          <%= room.code %>
+          <span class="font-normal text-gray-500 text-xs ml-2"><%= game_type_name %></span>
+        </div>
+        <div class="text-xs text-gray-400 mt-0.5">
+          <%= room.created_at.strftime("%-b %-d, %-I:%M %p") %>
+          &middot; <%= pluralize(room.players.size, "player") %>
+          <% if duration %>&middot; <%= duration %><% end %>
+          &middot;
+          <% if game&.status.to_s == "finished" %>
+            Finished
+          <% elsif game %>
+            <span class="text-red-600 font-semibold"><%= game.status.humanize %></span>
+          <% else %>
+            Lobby
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <% flags.each do |flag| %>
+        <span class="<%= flag.severity == :error ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800' %> text-xs px-2 py-0.5 rounded font-medium">
+          <%= flag.description %>
+        </span>
+      <% end %>
+      <span class="text-gray-400 text-lg">&#9656;</span>
+    </div>
+  <% end %>
+
+  <button data-action="click->hidden-sessions#hideOne" data-room-code="<%= room.code %>"
+    class="px-3 border-l border-gray-200 text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors text-xs"
+    title="Hide this session">
+    &times;
+  </button>
+</div>

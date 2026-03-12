@@ -1,0 +1,53 @@
+<%
+  game = @room.current_game
+  game_type_name = Room::GAME_DISPLAY_NAMES[@room.game_type] || @room.game_type
+%>
+
+<div class="mb-4">
+  <%= link_to "← Sessions", admin_sessions_path, class: "text-sm text-blue-600 hover:underline" %>
+</div>
+
+<div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+  <div class="flex items-center gap-3 mb-4">
+    <h1 class="text-2xl font-bold text-gray-900"><%= @room.code %></h1>
+    <span class="text-gray-500"><%= game_type_name %></span>
+    <% if game&.status.to_s == "finished" %>
+      <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded font-medium">Finished</span>
+    <% elsif game %>
+      <span class="bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded font-medium"><%= game.status.humanize %></span>
+    <% else %>
+      <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded font-medium">Lobby</span>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
+    <div><span class="font-medium text-gray-900">Created:</span> <%= @room.created_at.strftime("%-b %-d, %-I:%M %p") %></div>
+    <div><span class="font-medium text-gray-900">Players:</span> <%= @room.players.size %></div>
+    <% if @room.user %><div><span class="font-medium text-gray-900">Host:</span> <%= @room.user.email %></div><% end %>
+    <% if game %>
+      <div><span class="font-medium text-gray-900">Duration:</span> <%= ((game.updated_at - game.created_at) / 60).round(1) %> min</div>
+    <% end %>
+  </div>
+
+  <% if @health_flags.any? %>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <% @health_flags.each do |flag| %>
+        <span class="<%= flag.severity == :error ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800' %> text-xs px-2 py-0.5 rounded font-medium">
+          <%= flag.description %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="bg-white border border-gray-200 rounded-lg p-6">
+  <h2 class="text-lg font-semibold text-gray-900 mb-4">Timeline</h2>
+  <%= render "admin/sessions/timeline", events: @timeline %>
+</div>
+
+<div class="mt-4 text-right" data-controller="hidden-sessions" data-hidden-sessions-key-value="roomrally-hidden-sessions">
+  <button data-action="click->hidden-sessions#hideOne" data-room-code="<%= @room.code %>"
+    class="text-xs text-gray-400 hover:text-gray-600">
+    Hide this session
+  </button>
+</div>

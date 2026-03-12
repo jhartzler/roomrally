@@ -7,6 +7,11 @@ class PlayersController < ApplicationController
 
   def new
     Rails.logger.info "Player joining room #{@room.code}"
+    Analytics.track(
+      distinct_id: "session_#{session.id}",
+      event: "join_page_viewed",
+      properties: { room_code: @room.code }
+    )
     @player = Player.new
   end
 

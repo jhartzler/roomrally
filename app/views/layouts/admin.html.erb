@@ -21,10 +21,14 @@
       </div>
     <% end %>
     <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-4">
         <%= link_to admin_root_path, class: "text-lg font-bold text-indigo-700" do %>
           RoomRally Admin
         <% end %>
+        <nav class="flex items-center gap-3 ml-4">
+          <%= link_to "Users", admin_users_path, class: "text-sm font-medium #{request.path.start_with?('/admin/users') || request.path == '/admin' ? 'text-indigo-700' : 'text-gray-500 hover:text-gray-700'}" %>
+          <%= link_to "Sessions", admin_sessions_path, class: "text-sm font-medium #{request.path.start_with?('/admin/sessions') ? 'text-indigo-700' : 'text-gray-500 hover:text-gray-700'}" %>
+        </nav>
         <% if content_for?(:breadcrumb) %>
           <span class="text-gray-400">/</span>
           <%= yield :breadcrumb %>

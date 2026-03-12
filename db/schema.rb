@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_06_033711) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,6 +123,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_06_033711) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_category_packs_on_user_id"
+  end
+
+  create_table "game_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "event_name", null: false
+    t.bigint "eventable_id", null: false
+    t.string "eventable_type", null: false
+    t.jsonb "metadata", default: {}
+    t.index [ "eventable_type", "eventable_id", "created_at" ], name: "index_game_events_on_eventable_and_created_at"
+    t.index [ "eventable_type", "eventable_id" ], name: "index_game_events_on_eventable"
   end
 
   create_table "game_templates", force: :cascade do |t|
