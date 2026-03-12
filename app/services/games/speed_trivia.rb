@@ -33,6 +33,8 @@ module Games
 
       assign_questions(game:, question_count:)
 
+      GameEvent.log(game, "game_created", game_type: room.game_type, player_count: room.players.active_players.count, timer_enabled:)
+
       # Skip instructions if disabled
       game.start_game! unless show_instructions
 
@@ -42,12 +44,16 @@ module Games
     end
 
     def self.start_from_instructions(game:)
+      previous_status = game.status
       game.start_game!
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
       broadcast_all(game)
     end
 
     def self.start_question(game:)
+      previous_status = game.status
       game.start_question!
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
       start_timer_if_enabled(game)
       broadcast_all(game)
     end
@@ -80,6 +86,7 @@ module Games
     end
 
     def self.close_round(game:)
+      previous_status = game.status
       game.with_lock do
         return unless game.answering?
 
@@ -89,6 +96,7 @@ module Games
         score_current_round(game)
         game.calculate_scores!
       end
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
       broadcast_all(game)
     end
 
@@ -102,6 +110,7 @@ module Games
             .order(score: :desc).limit(4).pluck(:id)
           game.calculate_scores!
           game.finish_game!
+          GameEvent.log(game, "game_finished", duration_seconds: (Time.current - game.created_at).to_i, player_count: game.room.players.active_players.count)
           Analytics.track(
             distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
             event: "game_completed",

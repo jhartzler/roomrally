@@ -25,6 +25,8 @@ module Games
       )
       room.update!(current_game: game)
 
+      GameEvent.log(game, "game_created", game_type: room.game_type, player_count: room.players.active_players.count, timer_enabled:)
+
       # Skip instructions if disabled - assign prompts immediately
       if show_instructions
         GameBroadcaster.broadcast_game_start(room:)
@@ -40,7 +42,9 @@ module Games
     end
 
     def self.start_from_instructions(game:)
+      previous_status = game.status
       game.start_game!
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
       assign_prompts_for_round(game:, round_number: 1)
       broadcast_all(game)
     end
@@ -154,6 +158,7 @@ module Games
           assign_prompts_for_round(game:, round_number: game.round)
         else
           game.finish_game!
+          GameEvent.log(game, "game_finished", duration_seconds: (Time.current - game.created_at).to_i, player_count: game.room.players.active_players.count)
           Analytics.track(
             distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
             event: "game_completed",
@@ -175,7 +180,9 @@ module Games
       current_prompt_ids = PromptInstance.where(write_and_vote_game: game, round: game.round).select(:id)
       Response.where(prompt_instance_id: current_prompt_ids, status: "submitted").update_all(status: "published")
 
+      previous_status = game.status
       game.start_voting!
+      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
 
       start_timer_if_enabled(game, step_number: game.current_prompt_index)
 
