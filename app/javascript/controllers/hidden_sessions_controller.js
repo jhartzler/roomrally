@@ -18,10 +18,15 @@ export default class extends Controller {
     if (!hidden.includes(code)) {
       hidden.push(code)
       localStorage.setItem(this.keyValue, JSON.stringify(hidden))
-      event.currentTarget.textContent = "Hidden"
-      event.currentTarget.disabled = true
       this.applyFilter()
     }
+  }
+
+  unhideOne(event) {
+    const code = event.currentTarget.dataset.roomCode
+    const hidden = this.hiddenCodes().filter(c => c !== code)
+    localStorage.setItem(this.keyValue, JSON.stringify(hidden))
+    this.applyFilter()
   }
 
   applyFilter() {
@@ -40,16 +45,26 @@ export default class extends Controller {
         row.classList.remove("hidden")
       }
 
-      const btn = row.querySelector("[data-action*='hideOne']")
+      const btn = row.querySelector("[data-action*='hidden-sessions#']")
       if (btn) {
-        if (isHidden) {
+        if (isHidden && showHidden) {
+          btn.textContent = "Unhide"
+          btn.dataset.action = "click->hidden-sessions#unhideOne"
+          btn.disabled = false
+          btn.classList.add("text-gray-400")
+          btn.classList.remove("text-gray-300")
+        } else if (isHidden) {
           btn.textContent = "Hidden"
+          btn.dataset.action = "click->hidden-sessions#hideOne"
           btn.disabled = true
           btn.classList.add("text-gray-400")
+          btn.classList.remove("text-gray-300")
         } else {
           btn.innerHTML = "\u00d7"
+          btn.dataset.action = "click->hidden-sessions#hideOne"
           btn.disabled = false
           btn.classList.remove("text-gray-400")
+          btn.classList.add("text-gray-300")
         }
       }
     })
