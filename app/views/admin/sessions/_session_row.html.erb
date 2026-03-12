@@ -22,8 +22,8 @@
   end
 %>
 
-<%= link_to admin_session_path(room.code), class: "block bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all" do %>
-  <div class="px-4 py-3 flex justify-between items-center">
+<div class="bg-white border border-gray-200 rounded-lg overflow-hidden flex items-stretch hover:border-gray-300 hover:shadow-sm transition-all">
+  <%= link_to admin_session_path(room.code), class: "flex-1 px-4 py-3 flex justify-between items-center" do %>
     <div class="flex items-center gap-3">
       <div class="w-2.5 h-2.5 rounded-full shrink-0 <%= dot_color %>"></div>
       <div>
@@ -55,5 +55,11 @@
       <% end %>
       <span class="text-gray-400 text-lg">&#9656;</span>
     </div>
-  </div>
-<% end %>
+  <% end %>
+
+  <button data-action="click->hidden-sessions#hideOne" data-room-code="<%= room.code %>"
+    class="px-3 border-l border-gray-200 text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors text-xs"
+    title="Hide this session">
+    &times;
+  </button>
+</div>
