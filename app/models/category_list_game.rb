@@ -14,6 +14,7 @@ class CategoryListGame < ApplicationRecord
   belongs_to :category_pack, optional: true
   has_many :category_instances, dependent: :destroy
   has_many :category_answers, through: :category_instances
+  has_many :game_events, as: :eventable, dependent: :destroy
 
   validates :timer_increment, numericality: { greater_than: 0 }, if: :timer_enabled?
   validates :total_rounds, numericality: { greater_than: 0 }

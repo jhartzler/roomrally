@@ -15,6 +15,7 @@ class SpeedTriviaGame < ApplicationRecord
   belongs_to :trivia_pack, optional: true
   has_many :trivia_question_instances, dependent: :destroy
   has_many :trivia_answers, through: :trivia_question_instances
+  has_many :game_events, as: :eventable, dependent: :destroy
 
   def self.supports_response_moderation?
     false
