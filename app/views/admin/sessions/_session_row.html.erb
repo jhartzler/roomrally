@@ -58,7 +58,13 @@
   </div>
 
   <div class="border-t border-gray-100 px-4 py-3 bg-gray-50 hidden" data-session-row-target="timeline">
-    <% timeline = SessionRecap.for(room) %>
-    <%= render "admin/sessions/timeline", events: timeline %>
+    <div class="text-xs text-gray-500">
+      <% if room.current_game %>
+        <span class="font-medium">Players:</span> <%= room.players.map(&:name).join(", ") %>
+      <% end %>
+      <div class="mt-1">
+        <%= link_to "View full timeline →", admin_session_path(room.code), class: "text-blue-600 hover:underline" %>
+      </div>
+    </div>
   </div>
 </div>

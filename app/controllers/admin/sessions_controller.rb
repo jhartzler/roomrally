@@ -1,6 +1,8 @@
 module Admin
   class SessionsController < BaseController
     def index
+      # NOTE: SessionHealth.check triggers per-player queries for finished games.
+      # Acceptable at current scale; add pagination or limit if room count grows.
       @rooms = Room.includes(:players, :current_game, :user)
         .order(created_at: :desc)
       @health_flags = @rooms.each_with_object({}) do |room, hash|
