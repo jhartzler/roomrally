@@ -250,7 +250,22 @@ module GameBroadcaster
 
   def self.broadcast_host_controls(room:)
     update_all_host_controls(room)
+    update_scavenger_hunt_curation(room) if room.current_game.is_a?(ScavengerHuntGame)
   end
 
-  private_class_method :update_all_player_lists, :update_all_host_controls, :update_backstage_meta
+  def self.update_scavenger_hunt_curation(room)
+    game = room.current_game
+    return unless game
+
+    Turbo::StreamsChannel.broadcast_action_to(
+      room,
+      action: :update,
+      attributes: { method: :morph },
+      target: "scavenger-hunt-curation",
+      partial: "games/scavenger_hunt/curation_panel",
+      locals: { game:, room: }
+    )
+  end
+
+  private_class_method :update_all_player_lists, :update_all_host_controls, :update_backstage_meta, :update_scavenger_hunt_curation
 end

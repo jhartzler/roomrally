@@ -156,8 +156,8 @@ module Games
       game.hunt_prompt_instances.includes(:hunt_submissions, :winner_submission, :hunt_prompt).find_each do |instance|
         weight = instance.weight
 
-        # Completion points
-        instance.hunt_submissions.completed.each do |sub|
+        # Completion points for all submissions with media
+        instance.hunt_submissions.joins(:media_attachment).each do |sub|
           sub.player.increment!(:score, weight)
         end
 
@@ -240,7 +240,7 @@ module Games
           Games::ScavengerHunt.start_awards(game:)
         when "awarding"
           game.hunt_prompt_instances.each do |instance|
-            winner = instance.hunt_submissions.completed.first
+            winner = instance.hunt_submissions.joins(:media_attachment).first
             instance.update!(winner_submission: winner) if winner
           end
           Games::ScavengerHunt.finish_game(game:)

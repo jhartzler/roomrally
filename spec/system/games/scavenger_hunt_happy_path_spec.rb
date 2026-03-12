@@ -74,9 +74,6 @@ RSpec.describe "Scavenger Hunt Game Happy Path", :js, type: :system do
       media: { io: File.open(fixture), filename: "alice_photo.jpg", content_type: "image/jpeg" }
     )
 
-    # Mark submissions as completed
-    instance1.hunt_submissions.update_all(completed: true)
-
     # Host locks submissions and starts reveal
     Games::ScavengerHunt.lock_submissions_manually(game:)
     expect(game.reload).to be_times_up
