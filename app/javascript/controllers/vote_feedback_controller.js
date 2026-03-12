@@ -44,7 +44,8 @@ export default class extends Controller {
         // (Disabling synchronously in a click handler blocks form submission —
         //  the browser checks disabled state after handlers run.)
         setTimeout(() => {
-            document.querySelectorAll('button[data-action*="vote-feedback#vote"]').forEach(btn => {
+            const frame = this.element.closest('#hand_screen') || document
+            frame.querySelectorAll('button[data-action*="vote-feedback#vote"]').forEach(btn => {
                 btn.disabled = true
                 btn.classList.add('opacity-75', 'cursor-not-allowed')
             })
