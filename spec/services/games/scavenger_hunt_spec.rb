@@ -75,12 +75,15 @@ RSpec.describe Games::ScavengerHunt do
   end
 
   describe ".finish_game" do
-    it "calculates scores based on completions and winners" do
+    it "calculates scores based on submissions with media and winners" do
       game = start_and_begin_hunt
       instance = game.hunt_prompt_instances.first
+      fixture = Rails.root.join("spec/fixtures/files/test_photo.jpg")
 
-      sub_host = create(:hunt_submission, hunt_prompt_instance: instance, player: host, completed: true)
-      create(:hunt_submission, hunt_prompt_instance: instance, player: player2, completed: true)
+      sub_host = create(:hunt_submission, hunt_prompt_instance: instance, player: host)
+      sub_host.media.attach(io: File.open(fixture), filename: "host.jpg", content_type: "image/jpeg")
+      sub_p2 = create(:hunt_submission, hunt_prompt_instance: instance, player: player2)
+      sub_p2.media.attach(io: File.open(fixture), filename: "p2.jpg", content_type: "image/jpeg")
 
       instance.update!(winner_submission: sub_host)
 
