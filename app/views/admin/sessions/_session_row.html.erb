@@ -22,13 +22,13 @@
   end
 %>
 
-<div class="bg-white border border-gray-200 rounded-lg overflow-hidden" data-controller="session-row" data-session-row-code-value="<%= room.code %>">
-  <div class="px-4 py-3 flex justify-between items-center cursor-pointer" data-action="click->session-row#toggle">
+<%= link_to admin_session_path(room.code), class: "block bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all" do %>
+  <div class="px-4 py-3 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <div class="w-2.5 h-2.5 rounded-full shrink-0 <%= dot_color %>"></div>
       <div>
         <div class="font-semibold text-sm text-gray-900">
-          <%= link_to room.code, admin_session_path(room.code), class: "hover:underline", data: { action: "click->session-row#navigate" } %>
+          <%= room.code %>
           <span class="font-normal text-gray-500 text-xs ml-2"><%= game_type_name %></span>
         </div>
         <div class="text-xs text-gray-400 mt-0.5">
@@ -53,18 +53,7 @@
           <%= flag.description %>
         </span>
       <% end %>
-      <span class="text-gray-400 text-lg" data-session-row-target="arrow">&#9656;</span>
+      <span class="text-gray-400 text-lg">&#9656;</span>
     </div>
   </div>
-
-  <div class="border-t border-gray-100 px-4 py-3 bg-gray-50 hidden" data-session-row-target="timeline">
-    <div class="text-xs text-gray-500">
-      <% if room.current_game %>
-        <span class="font-medium">Players:</span> <%= room.players.map(&:name).join(", ") %>
-      <% end %>
-      <div class="mt-1">
-        <%= link_to "View full timeline →", admin_session_path(room.code), class: "text-blue-600 hover:underline" %>
-      </div>
-    </div>
-  </div>
-</div>
+<% end %>
