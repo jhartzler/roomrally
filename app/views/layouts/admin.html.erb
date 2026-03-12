@@ -9,7 +9,7 @@
     <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="min-h-screen bg-gray-100 font-sans text-gray-900">
+  <body class="min-h-screen bg-gray-100 font-sans text-gray-900" data-controller="hacker-theme">
     <% if flash.any? %>
       <div id="flash" class="fixed top-4 right-4 z-50 space-y-2 max-w-sm">
         <% flash.each do |key, value| %>
@@ -34,7 +34,7 @@
           <%= yield :breadcrumb %>
         <% end %>
       </div>
-      <span class="text-xs font-semibold bg-red-100 text-red-700 px-2 py-1 rounded-full">ADMIN</span>
+      <span class="text-xs font-semibold bg-red-100 text-red-700 px-2 py-1 rounded-full" data-hacker-theme-target="indicator">ADMIN</span>
     </header>
     <main class="max-w-2xl mx-auto px-4 py-6">
       <%= yield %>
