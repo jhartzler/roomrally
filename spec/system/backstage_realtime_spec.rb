@@ -128,6 +128,9 @@ RSpec.describe 'Facilitator Backstage Real-time Updates', type: :system do
     sign_in(facilitator)
     visit room_backstage_path(room.code)
 
+    # Wait for page and WebSocket connection before broadcasting
+    expect(page).to have_content("Moderation Queue")
+
     # Bob submits
     bob = room.players.find_by(name: "Bob")
     prompt_instance = game.prompt_instances.where(round: 1).first
