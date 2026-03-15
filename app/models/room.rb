@@ -19,6 +19,7 @@ class Room < ApplicationRecord
   SCAVENGER_HUNT = "Scavenger Hunt".freeze
 
   GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST, SCAVENGER_HUNT ].freeze
+  GUEST_GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST ].freeze
 
   # Default display names for each game type (used for whitelabeling)
   GAME_DISPLAY_NAMES = {

@@ -16,7 +16,7 @@
 
   <% if game.hunting? && game.timer_enabled? && game.round_ends_at %>
     <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="mb-3">
-      <p class="text-white font-mono text-lg" data-timer-target="output"><%= (game.time_remaining / 60).floor %>:<%= "%02d" % (game.time_remaining % 60).floor %></p>
+      <p class="text-white font-mono text-lg" data-timer-target="output"><% mins = (game.time_remaining / 60).floor; secs = (game.time_remaining % 60).floor %><%= mins > 0 ? "#{mins}m #{secs}s remaining" : "#{secs}s remaining" %></p>
     </div>
   <% end %>
 

@@ -3,18 +3,19 @@
 <div class="space-y-4" data-controller="games--image-viewer">
   <% game.hunt_prompt_instances.includes(hunt_submissions: [:player, { media_attachment: :blob }]).each do |instance| %>
     <% next if instance.hunt_submissions.empty? %>
-    <div>
+    <div id="curation-prompt-<%= instance.id %>">
       <h3 class="text-white font-bold text-sm mb-2"><%= instance.body %> <span class="text-white/40 text-xs">(<%= instance.weight %> pts)</span></h3>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
         <% instance.hunt_submissions.each do |sub| %>
-          <div class="bg-white/10 rounded-xl p-2 border border-white/10 <%= 'border-amber-500/50' if sub.late? %>">
+          <div id="curation-submission-<%= sub.id %>" class="bg-white/10 rounded-xl p-2 border border-white/10 <%= 'border-amber-500/50' if sub.late? %>">
             <% if sub.media.attached? %>
+              <% media_url = url_for(sub.media) %>
               <button type="button"
                       class="w-full cursor-pointer"
                       data-action="click->games--image-viewer#open"
-                      data-games--image-viewer-src-param="<%= url_for(sub.media) %>"
+                      data-games--image-viewer-src-param="<%= media_url %>"
                       data-games--image-viewer-caption-param="<%= sub.player.team_name.presence || sub.player.name %> — <%= instance.body %>">
-                <%= image_tag sub.media, class: "w-full h-24 object-cover rounded-lg", alt: "" %>
+                <%= image_tag media_url, class: "w-full h-24 object-cover rounded-lg", alt: "" %>
               </button>
             <% end %>
             <div class="flex items-center justify-between mt-1">

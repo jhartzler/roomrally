@@ -1,5 +1,5 @@
 <%# app/views/games/scavenger_hunt/_stage_hunting.html.erb %>
-<div id="stage_hunting" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
+<div id="stage_hunting" class="flex flex-col items-center justify-center flex-1">
   <div class="text-center">
     <p class="text-[8vh] mb-[2vh]">🏃</p>
     <h1 class="text-vh-4xl font-black text-white mb-[3vh]">The Hunt Is On!</h1>
@@ -10,7 +10,8 @@
            data-timer-end-value="<%= game.timer_expires_at_iso8601 %>">
         <p class="text-vh-xs text-white/50 font-bold tracking-widest mb-[1vh]">TIME REMAINING</p>
         <p class="text-vh-5xl font-black text-white font-mono" data-timer-target="output">
-          <%= (game.time_remaining / 60).floor %>:<%= "%02d" % (game.time_remaining % 60).floor %>
+          <% mins = (game.time_remaining / 60).floor; secs = (game.time_remaining % 60).floor %>
+          <%= mins > 0 ? "#{mins}m #{secs}s remaining" : "#{secs}s remaining" %>
         </p>
       </div>
     <% end %>
