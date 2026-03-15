@@ -1,22 +1,24 @@
 <%# app/views/games/scavenger_hunt/_stage_awarding.html.erb %>
-<div id="stage_awarding" class="flex flex-col items-center justify-center flex-1">
-  <div class="text-center mb-[3vh]">
-    <p class="text-[6vh] mb-[1vh]">🏆</p>
-    <h1 class="text-vh-4xl font-black text-white">Awards Time!</h1>
+<div id="stage_awarding" class="flex flex-col items-center flex-1 min-h-0">
+  <div class="text-center shrink-0 mb-[1.5vh]">
+    <p class="text-[4vh] mb-[0.5vh]">🏆</p>
+    <h1 class="text-vh-3xl font-black text-white">Awards Time!</h1>
   </div>
 
-  <div class="grid grid-cols-2 gap-[2vh] w-full max-w-[80vw]">
-    <% game.hunt_prompt_instances.includes(:winner_submission, winner_submission: :player).each do |instance| %>
-      <div class="bg-white/10 backdrop-blur-md rounded-xl p-[2vh] border border-white/20">
-        <p class="text-vh-sm text-white/60 mb-[0.5vh]"><%= instance.body %></p>
-        <% if instance.winner_submission %>
-          <p class="text-vh-lg font-bold text-yellow-300">
-            <%= instance.winner_submission.player.team_name.presence || instance.winner_submission.player.name %>
-          </p>
-        <% else %>
-          <p class="text-vh-base text-white/40">Awaiting...</p>
-        <% end %>
-      </div>
-    <% end %>
+  <div class="w-full max-w-[85vw] min-h-0 overflow-y-auto">
+    <div class="grid grid-cols-2 gap-[1.5vh]">
+      <% game.hunt_prompt_instances.includes(:winner_submission, winner_submission: :player).each do |instance| %>
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-[1.5vh] border border-white/20">
+          <p class="text-vh-xs text-white/60 mb-[0.5vh] line-clamp-1"><%= instance.body %></p>
+          <% if instance.winner_submission %>
+            <p class="text-vh-base font-bold text-yellow-300">
+              <%= instance.winner_submission.player.team_name.presence || instance.winner_submission.player.name %>
+            </p>
+          <% else %>
+            <p class="text-vh-sm text-white/40">Awaiting...</p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
