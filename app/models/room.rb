@@ -26,7 +26,7 @@ class Room < ApplicationRecord
     WRITE_AND_VOTE => "Comedy Clash",
     SPEED_TRIVIA => "Think Fast",
     CATEGORY_LIST => "A-List",
-    SCAVENGER_HUNT => "Photo Scavenger Hunt"
+    SCAVENGER_HUNT => "Photo Scavenger Hunt (Beta)"
   }.freeze
 
   # Convenience method for getting default display name
