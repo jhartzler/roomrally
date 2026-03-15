@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Adds animate-fade-in to stage elements only on phase transitions (child ID changes),
+// not on every Turbo morph broadcast.
 export default class extends Controller {
   connect() {
     this.currentPhaseId = this.#childId()

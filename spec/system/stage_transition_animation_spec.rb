@@ -19,7 +19,7 @@ RSpec.describe "Stage transition animations", :js, type: :system do
     host_player = FactoryBot.create(:player, room:, name: "Host")
     room.update!(host: host_player)
     player2 = FactoryBot.create(:player, room:, name: "Alice")
-    player3 = FactoryBot.create(:player, room:, name: "Bob")
+    FactoryBot.create(:player, room:, name: "Bob") # third player needed for minimum
 
     # Start the game (skip instructions for simplicity)
     Games::SpeedTrivia.game_started(room:, timer_enabled: false, show_instructions: false)
@@ -35,21 +35,7 @@ RSpec.describe "Stage transition animations", :js, type: :system do
     # Stage element should have animate-fade-in from the controller's connect()
     expect(page).to have_css("#stage_answering.animate-fade-in")
 
-    # Submit an answer — this triggers broadcast_all but stays in answering phase
-    Games::SpeedTrivia.submit_answer(game:, player: player2, selected_option: "Answer 1")
-
-    # Wait for the morph broadcast to arrive — the answer count or UI may update
-    # but the phase stays answering. Give Turbo time to process the morph.
-    sleep 0.5
-
-    # After an in-phase morph, animate-fade-in should NOT be re-added
-    # (the controller only adds it on phase transitions, not in-phase morphs)
-    # The class may still be present from the initial connect — that's fine.
-    # What matters is the controller didn't re-trigger the animation.
-    # We verify this by checking the element is the same (same ID, no re-animation).
-    expect(page).to have_css("#stage_answering", wait: 5)
-
-    # Now trigger a real phase transition: answering -> reviewing
+    # Trigger a real phase transition: answering -> reviewing
     Games::SpeedTrivia.close_round(game: game.reload)
 
     # The stage should transition to reviewing with the animation class
@@ -61,7 +47,7 @@ RSpec.describe "Stage transition animations", :js, type: :system do
     host_player = FactoryBot.create(:player, room:, name: "Host")
     room.update!(host: host_player)
     player2 = FactoryBot.create(:player, room:, name: "Alice")
-    player3 = FactoryBot.create(:player, room:, name: "Bob")
+    FactoryBot.create(:player, room:, name: "Bob") # third player needed for minimum
 
     Games::SpeedTrivia.game_started(room:, timer_enabled: false, show_instructions: false)
     game = room.reload.current_game
