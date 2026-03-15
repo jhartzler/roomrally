@@ -132,17 +132,17 @@ module Games
 
     def self.mark_completed(game:, submission:, completed:)
       submission.update!(completed:)
-      broadcast_all(game)
+      broadcast_curation(game)
     end
 
     def self.mark_favorite(game:, submission:, favorite:)
       submission.update!(favorite:)
-      broadcast_all(game)
+      broadcast_curation(game)
     end
 
     def self.update_host_notes(game:, submission:, notes:)
       submission.update!(host_notes: notes)
-      broadcast_all(game)
+      broadcast_curation(game)
     end
 
     # --- Private ---
@@ -175,7 +175,12 @@ module Games
       GameBroadcaster.broadcast_host_controls(room:)
     end
 
-    private_class_method :start_timer_if_enabled, :calculate_scores, :broadcast_all
+    def self.broadcast_curation(game)
+      room = game.room
+      GameBroadcaster.broadcast_host_controls(room:)
+    end
+
+    private_class_method :start_timer_if_enabled, :calculate_scores, :broadcast_all, :broadcast_curation
 
     # --- Playtest ---
 

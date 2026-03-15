@@ -1,5 +1,5 @@
 <%# app/views/games/scavenger_hunt/_stage_revealing.html.erb %>
-<div id="stage_revealing" class="flex flex-col items-center justify-center flex-1 animate-fade-in">
+<div id="stage_revealing" class="flex flex-col items-center justify-center flex-1">
   <% submission = game.currently_showing_submission_id ? HuntSubmission.find_by(id: game.currently_showing_submission_id) : nil %>
 
   <% if submission&.media&.attached? %>

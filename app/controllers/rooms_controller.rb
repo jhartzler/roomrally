@@ -16,6 +16,11 @@ class RoomsController < ApplicationController
       return
     end
 
+    if !current_user && !Room::GUEST_GAME_TYPES.include?(params[:game_type])
+      redirect_to host_path, alert: "That game mode requires a logged-in host."
+      return
+    end
+
     room = Room.create!(room_params)
     Analytics.track(
       distinct_id: current_user ? "user_#{current_user.id}" : Analytics.room_distinct_id(room),
