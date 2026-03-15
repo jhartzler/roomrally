@@ -16,7 +16,7 @@
     </div>
 
     <!-- Main Content Area -->
-    <div id="stage_content" class="relative flex-1 min-h-0 flex flex-col items-center">
+    <div id="stage_content" class="relative flex-1 min-h-0 flex flex-col items-center" data-controller="stage-transition">
       <% if @room.current_game.present? %>
         <% game = @room.current_game %>
         <% game_type_folder = @room.game_type.parameterize.underscore %>
