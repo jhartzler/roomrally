@@ -97,9 +97,11 @@ module Games
     end
 
     def self.show_submission_on_stage(game:, submission:)
-      return unless game.revealing?
+      game.with_lock do
+        return unless game.revealing?
+        game.update!(currently_showing_submission_id: submission.id)
+      end
 
-      game.update!(currently_showing_submission_id: submission.id)
       broadcast_all(game)
     end
 
@@ -113,9 +115,11 @@ module Games
     end
 
     def self.pick_winner(game:, prompt_instance:, submission:)
-      return unless game.awarding?
+      game.with_lock do
+        return unless game.awarding?
+        prompt_instance.update!(winner_submission: submission)
+      end
 
-      prompt_instance.update!(winner_submission: submission)
       broadcast_all(game)
     end
 
