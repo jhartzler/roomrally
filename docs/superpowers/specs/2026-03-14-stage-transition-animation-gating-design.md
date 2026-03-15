@@ -18,14 +18,15 @@ A Stimulus controller on `#stage_content` that detects phase transitions by trac
 
 ### What changes
 
-1. **Remove `animate-fade-in`** from the outer `<div>` of all 15 stage partials (14 `_stage_*.html.erb` + 1 `_game_over.html.erb` in write_and_vote).
+1. **Remove `animate-fade-in`** from the outer `<div>` of all 14 `_stage_*.html.erb` partials across all game types.
 
 2. **Create `stage_transition_controller.js`** Stimulus controller:
    - Attached to `#stage_content` in `stages/show.html.erb`
-   - On `connect`: records current child element ID, adds `animate-fade-in` to child (initial page load should animate)
+   - On `connect`: records current stage element ID, adds `animate-fade-in` to it (initial page load should animate)
+   - Uses `querySelector("[id^='stage_']")` to find the stage element (not `firstElementChild`, because some partials have `<link>` preload tags before the stage div)
    - Uses `MutationObserver` watching `childList` on `this.element`
-   - On mutation: compares new child ID to stored ID
-     - Different ID → phase transition → add `animate-fade-in` to new child, update stored ID
+   - On mutation: compares new stage element ID to stored ID
+     - Different ID → phase transition → add `animate-fade-in` to new element, update stored ID
      - Same ID → in-phase morph update → no animation added
 
 3. **Add `data-controller="stage-transition"` to `#stage_content`** in `app/views/stages/show.html.erb`.
@@ -50,7 +51,6 @@ A Stimulus controller on `#stage_content` that detects phase transitions by trac
 - `app/views/games/write_and_vote/_stage_instructions.html.erb`
 - `app/views/games/write_and_vote/_stage_voting.html.erb`
 - `app/views/games/write_and_vote/_stage_writing.html.erb`
-- `app/views/games/write_and_vote/_game_over.html.erb`
 
 **Modified — add controller:**
 - `app/views/stages/show.html.erb`
@@ -82,17 +82,21 @@ export default class extends Controller {
     }
   }
 
+  #stageElement() {
+    return this.element.querySelector("[id^='stage_']")
+  }
+
   #childId() {
-    return this.element.firstElementChild?.id
+    return this.#stageElement()?.id
   }
 
   #animateChild() {
-    const child = this.element.firstElementChild
-    if (!child) return
-    child.classList.remove("animate-fade-in")
+    const el = this.#stageElement()
+    if (!el) return
+    el.classList.remove("animate-fade-in")
     // Force reflow so animation restarts if same class is re-added
-    void child.offsetWidth
-    child.classList.add("animate-fade-in")
+    void el.offsetWidth
+    el.classList.add("animate-fade-in")
   }
 }
 ```
@@ -102,8 +106,8 @@ export default class extends Controller {
 - **Initial page load (no morph):** Controller `connect` fires, adds animation. Correct.
 - **Phase transition via morph:** Child ID changes (`stage_answering` → `stage_reviewing`), animation added to new element. Correct.
 - **In-phase morph (player answers/votes):** Child ID unchanged, no animation. Correct.
-- **Lobby → game start:** Child goes from lobby partial (no `stage_*` ID) to `stage_instructions`. ID changes, animation fires. Correct.
-- **Game end → lobby:** Similar — ID changes, animation fires. Correct.
+- **Lobby → game start:** Child goes from `stage_lobby` to `stage_instructions`. ID changes, animation fires. Correct.
+- **Game end → lobby:** Goes from `stage_finished` to `stage_lobby`. ID changes, animation fires. Correct.
 - **Reconnect controller refresh:** Full page reload via `Turbo.visit`, Stimulus reconnects fresh. Correct.
 
 ### What this does NOT change
@@ -121,5 +125,5 @@ If a future game type needs animation on within-phase round changes (stays in `s
 
 ### Testing
 
-- System spec: verify that stage fade-in animation class is present after a phase transition
-- System spec: verify that stage fade-in animation class is NOT re-added during in-phase morph updates (e.g., after a player submits an answer)
+- System spec: verify that `animate-fade-in` is present on the stage element after a phase transition (e.g., Speed Trivia `answering` → `reviewing`, which also covers the `<link>` preload edge case)
+- System spec: verify that `animate-fade-in` is NOT re-added during in-phase morph updates (e.g., a player submits a trivia answer while stage remains in `answering` phase)
