@@ -38,7 +38,8 @@ A shared partial containing:
 - Two benefit lines:
   - "Make it yours — create custom questions, prompts, and categories."
   - "Keep it clean — moderate answers before they hit the big screen."
-- CTA link styled as a button, linking to `hosts_path`
+- CTA button text: "Sign up free"
+- CTA link styled as a button, linking to `host_path`
 - Styling: `bg-white/10 backdrop-blur-md rounded-2xl border border-white/20` — matches existing glassmorphism cards
 
 ### Modified files
@@ -48,6 +49,8 @@ Add `<%= render "games/shared/login_upsell", room: room, player: player %>` to t
 1. **`app/views/games/write_and_vote/_game_over.html.erb`** — after `<%= render "shared/feedback_cta" %>`, before the "Back to Home" link
 2. **`app/views/games/speed_trivia/_game_over.html.erb`** — after the mini leaderboard (end of file)
 3. **`app/views/games/category_list/_game_over.html.erb`** — after the mini leaderboard (end of file)
+
+Note: In Write And Vote the upsell sits between feedback CTA and the "Back to Home" link. In Speed Trivia and Category List it sits after the leaderboard (no "Back to Home" link exists). This inconsistency is intentional — the upsell goes at the natural bottom of each game's layout.
 
 ### Copy voice
 
@@ -81,5 +84,5 @@ Use one game type (Speed Trivia is simplest to drive to completion via service m
 | Shared partial, not per-game | Same content for all games; one file to maintain |
 | Render inside `_game_over`, not router | Keeps router simple (8 lines); upsell is game-over-specific |
 | No dismissal tracking | Card is non-intrusive; repetition is acceptable for free users |
-| Link to `hosts_path` not OAuth directly | Hosts page has context + sign-in; destination can change later without touching the upsell |
+| Link to `host_path` not OAuth directly | Hosts page has context + sign-in; destination can change later without touching the upsell |
 | Below feedback CTA | Scores → feedback → upsell → home. Most important content first |
