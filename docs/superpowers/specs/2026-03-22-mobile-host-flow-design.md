@@ -43,12 +43,13 @@ resources :rooms, param: :code do
   # ... existing routes ...
 end
 
-# Short URL for easy Stage access — MUST be after all other routes
-# to avoid matching /host, /play, /privacy, etc.
-get "/:code", to: "shortcodes#show", constraints: { code: /[A-Z0-9]{4}/ }
+# Short URL for easy Stage access — place immediately before the
+# *unmatched catch-all route. The regex constraint prevents collisions
+# with named routes like /host, /play, /privacy, etc.
+get "/:code", to: "shortcodes#show", constraints: { code: /[A-Za-z0-9]{4}/ }
 ```
 
-The shortcode route uses a regex constraint matching exactly 4 uppercase alphanumeric characters, which matches Room's code format and won't collide with any existing routes.
+The shortcode route uses a regex constraint matching exactly 4 alphanumeric characters (case-insensitive). The controller upcases the code before lookup, so `roomrally.app/abcd` works too. Room codes are `[A-NP-Z0-9]` (4 chars, "O" excluded), so this won't collide with any existing named routes.
 
 ### MobileHostsController
 
@@ -66,12 +67,13 @@ POST /rooms/:code/mobile_host  → MobileHostsController#create
 - Looks up room by code
 - Guards: same as show — redirects if room already has host or facilitator
 - Creates a Player record:
-  - `session_id` from `session[:player_session_id]` (generates UUID if not present, same pattern as `PlayersController`)
+  - `session_id` from `session[:player_session_id]` (generates UUID if not present — must set `session[:player_session_id]` in the same request so the redirect to hand view resolves `current_player` correctly; same pattern as `PlayersController#create` lines 48-49)
   - `status: :active`
   - `name` from form params
 - Assigns player as `room.host`
 - Broadcasts player joined + host change
-- Redirects to `room_hand_path`
+- Tracks `player_joined` analytics event with `mobile_host: true` property
+- Redirects to `room_hand_path(room)` (room code is in URL via `param: :code`)
 
 **Edge cases:**
 - If session already has a player in this room: redirect to hand view (they've already joined)
@@ -85,6 +87,7 @@ GET /:code → ShortcodesController#show
 ```
 
 **`show` action:**
+- Upcases `params[:code]` before lookup (handles `roomrally.app/abcd`)
 - Looks up Room by code
 - Redirects to `room_stage_path(room)`
 - If room not found: redirects to root with alert
@@ -127,7 +130,7 @@ Added to `_lobby.html.erb`, visible when `player == room.host`:
 
 ```erb
 <% if player == room.host %>
-  <div class="..." data-controller="clipboard" data-clipboard-text-value="<%= request.base_url %>/#{room.code}">
+  <div class="..." data-controller="clipboard" data-clipboard-text-value="<%= request.base_url %>/<%= room.code %>">
     <h3>Show the Stage on a big screen</h3>
     <p class="text-2xl font-mono font-bold"><%= request.base_url %>/<%= room.code %></p>
     <button data-action="click->clipboard#copy" data-clipboard-target="button">
@@ -143,6 +146,8 @@ Added to `_lobby.html.erb`, visible when `player == room.host`:
 - Disappears naturally when game starts (lobby partial is replaced by game hand partial via Turbo Stream broadcast)
 - No manual dismiss button, no connection tracking
 - Positioned above existing host controls
+
+**Known limitation:** If host is reassigned during lobby via `reassign_host`, the banner won't update for either player until page refresh. `broadcast_host_change` only updates `player-list` and `host-controls` targets, not the full lobby. This is acceptable for v1 — host reassignment in lobby is rare, and the primary mobile host flow (create room → become host → land on hand view) always gets a fresh page load.
 
 ### Clipboard Stimulus Controller
 
@@ -185,6 +190,8 @@ copy() {
 - **Game service layer** — No changes; host is just a Player on Room, which already works
 - **Hand view host controls** — `_host_controls.html.erb` already handles `player == room.host`
 - **GameBroadcaster** — Existing `broadcast_player_joined` and `broadcast_host_change` methods used as-is
+
+**Note:** `MobileHostsController` does NOT include `GameHostAuthorization` or `RendersHand` — it creates a player, it doesn't perform game actions. The mobile host counts toward the player minimum for `enough_players?` checks, which is correct (they're a real player).
 
 ### Files Changed
 
