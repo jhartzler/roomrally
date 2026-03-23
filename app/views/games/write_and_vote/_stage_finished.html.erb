@@ -13,36 +13,36 @@
     <% best_responses = game.best_responses_for_top_players(top_players) %>
     <% if best_responses.any? { |_, r| r.votes_count > 0 } %>
       <div class="mb-[2vh]">
-        <div class="text-vh-sm uppercase tracking-[0.2em] text-yellow-400 mb-[1.5vh]">Best Lines</div>
+        <div class="text-vh-base uppercase tracking-[0.2em] text-yellow-400 mb-[1.5vh] font-bold">Best Lines</div>
         <div class="flex gap-[2vh] justify-center">
           <% top_players.each_with_index do |player, index| %>
             <% best = best_responses[player.id] %>
             <% next unless best&.votes_count&.positive? %>
-            <div class="flex-1 max-w-md <%= index == 0 ? 'bg-yellow-400/10 border-yellow-400/30' : 'bg-white/5 border-white/15' %> border rounded-2xl p-[2vh] text-center">
-              <div class="text-vh-xs text-gray-400 italic mb-[0.5vh] line-clamp-1"><%= best.prompt_instance.body %></div>
-              <div class="text-vh-lg <%= index == 0 ? 'text-yellow-100' : 'text-gray-200' %> italic font-medium mb-[1vh]">"<%= best.body %>"</div>
-              <div class="text-vh-sm <%= index == 0 ? 'text-yellow-400' : 'text-gray-400' %>"><%= index == 0 ? '🏆' : '🥈' %> <%= player.name %></div>
+            <div class="flex-1 max-w-xl <%= index == 0 ? 'bg-yellow-400/10 border-yellow-400/30' : 'bg-white/5 border-white/15' %> border rounded-2xl p-[2vh] text-center">
+              <div class="text-vh-xl text-gray-300 italic mb-[1vh] line-clamp-2"><%= best.prompt_instance.body %></div>
+              <div class="text-vh-2xl <%= index == 0 ? 'text-yellow-100' : 'text-gray-200' %> italic font-bold mb-[1vh]">"<%= best.body %>"</div>
+              <div class="text-vh-lg <%= index == 0 ? 'text-yellow-400' : 'text-gray-400' %> font-medium"><%= index == 0 ? '🏆' : '🥈' %> <%= player.name %></div>
             </div>
           <% end %>
         </div>
       </div>
     <% end %>
 
-    <div class="space-y-[2vh]">
-      <% game.room.players.active_players.order(score: :desc).each_with_index do |player, index| %>
-        <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-2 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)] animate-bounce-in' : '' %>">
-          <div class="text-vh-3xl w-[8vh] font-bold <%= index == 0 ? 'text-yellow-400' : 'text-gray-400' %>">#<%= index + 1 %></div>
-          <div class="text-vh-3xl font-bold text-white flex-grow text-left mx-[2vh]"><%= player.name %></div>
-          <div class="text-vh-4xl font-black text-yellow-400 font-mono"><%= player.score %></div>
+    <div class="space-y-[1vh]">
+      <% game.room.players.active_players.order(score: :desc).limit(3).each_with_index do |player, index| %>
+        <div class="flex items-center bg-black/40 rounded-xl p-[1.5vh] border border-white/10 <%= index == 0 ? 'border-2 border-yellow-400/50 shadow-[0_0_30px_rgba(234,179,8,0.3)] animate-bounce-in' : '' %>">
+          <div class="text-vh-xl w-[6vh] font-bold <%= index == 0 ? 'text-yellow-400' : 'text-gray-400' %>">#<%= index + 1 %></div>
+          <div class="text-vh-xl font-bold text-white flex-grow text-left mx-[1.5vh]"><%= player.name %></div>
+          <div class="text-vh-2xl font-black text-yellow-400 font-mono"><%= player.score %></div>
           <% if index == 0 %>
-            <div class="text-vh-4xl ml-[1vh]">🏆</div>
+            <div class="text-vh-2xl ml-[1vh]">🏆</div>
           <% end %>
         </div>
       <% end %>
     </div>
 
-    <div class="mt-[4vh]">
-      <p class="text-vh-xl text-gray-400">Host can start a new game anytime.</p>
+    <div class="mt-[2vh]">
+      <p class="text-vh-base text-gray-400">Host can start a new game anytime.</p>
     </div>
   </div>
 </div>
