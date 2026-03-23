@@ -107,4 +107,42 @@ RSpec.describe "Rooms", type: :request do
       end
     end
   end
+
+  describe "POST /rooms (create)" do
+    let(:game_type) { "Write And Vote" }
+
+    context "when guest user on desktop" do
+      it "redirects to stage view" do
+        post rooms_path, params: { game_type: }
+        room = Room.last
+        expect(response).to redirect_to(room_stage_path(room))
+      end
+    end
+
+    context "when guest user on mobile" do
+      it "redirects to mobile host setup" do
+        post rooms_path, params: { game_type: },
+             headers: { "HTTP_USER_AGENT" => "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148" }
+        room = Room.last
+        expect(response).to redirect_to(room_mobile_host_path(room))
+      end
+    end
+
+    context "when logged-in user" do
+      let(:user) { FactoryBot.create(:user) }
+
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+        # rubocop:enable RSpec/AnyInstance
+      end
+
+      it "redirects to backstage regardless of UA" do
+        post rooms_path, params: { game_type: },
+             headers: { "HTTP_USER_AGENT" => "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148" }
+        room = Room.last
+        expect(response).to redirect_to(room_backstage_path(room))
+      end
+    end
+  end
 end
