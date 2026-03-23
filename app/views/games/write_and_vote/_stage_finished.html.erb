@@ -10,13 +10,14 @@
     </h2>
 
     <% top_players = game.room.players.active_players.order(score: :desc).limit(2) %>
-    <% if top_players.any? { |p| p.score > 0 } %>
+    <% best_responses = game.best_responses_for_top_players(top_players) %>
+    <% if best_responses.any? { |_, r| r.votes_count > 0 } %>
       <div class="mb-[2vh]">
         <div class="text-vh-sm uppercase tracking-[0.2em] text-yellow-400 mb-[1.5vh]">Best Lines</div>
         <div class="flex gap-[2vh] justify-center">
           <% top_players.each_with_index do |player, index| %>
-            <% best = game.best_response_for(player) %>
-            <% next unless best&.votes&.any? %>
+            <% best = best_responses[player.id] %>
+            <% next unless best&.votes_count&.positive? %>
             <div class="flex-1 max-w-md <%= index == 0 ? 'bg-yellow-400/10 border-yellow-400/30' : 'bg-white/5 border-white/15' %> border rounded-2xl p-[2vh] text-center">
               <div class="text-vh-xs text-gray-400 italic mb-[0.5vh] line-clamp-1"><%= best.prompt_instance.body %></div>
               <div class="text-vh-lg <%= index == 0 ? 'text-yellow-100' : 'text-gray-200' %> italic font-medium mb-[1vh]">"<%= best.body %>"</div>

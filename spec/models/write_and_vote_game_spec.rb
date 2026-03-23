@@ -138,7 +138,7 @@ RSpec.describe WriteAndVoteGame, type: :model do
     end
   end
 
-  describe "#best_response_for" do
+  describe "#best_responses_for_top_players" do
     let(:game) { create(:write_and_vote_game) }
     let(:room) { create(:room, current_game: game) }
     let(:player) { create(:player, room:) }
@@ -146,27 +146,39 @@ RSpec.describe WriteAndVoteGame, type: :model do
     let(:prompt_b) { create(:prompt_instance, write_and_vote_game: game) }
 
     # rubocop:disable RSpec/ExampleLength
-    it "returns the response with the most votes" do
+    it "returns the response with the most votes for each player" do
       voter_a = create(:player, room:)
       voter_b = create(:player, room:)
-      low_votes = create(:response, player:, prompt_instance: prompt_a, body: "meh")
+      create(:response, player:, prompt_instance: prompt_a, body: "meh").tap do |r|
+        create(:vote, response: r, player: voter_a)
+      end
       high_votes = create(:response, player:, prompt_instance: prompt_b, body: "hilarious")
-      create(:vote, response: low_votes, player: voter_a)
       create(:vote, response: high_votes, player: voter_a)
       create(:vote, response: high_votes, player: voter_b)
 
-      expect(game.best_response_for(player)).to eq(high_votes)
+      result = game.best_responses_for_top_players([ player ])
+      expect(result[player.id]).to eq(high_votes)
     end
     # rubocop:enable RSpec/ExampleLength
 
-    it "returns nil when the player has no responses" do
-      expect(game.best_response_for(player)).to be_nil
+    it "returns empty hash when players have no responses" do
+      result = game.best_responses_for_top_players([ player ])
+      expect(result).to be_empty
     end
 
-    it "returns a response even with zero votes" do
+    it "includes responses with zero votes" do
       create(:response, player:, prompt_instance: prompt_a, body: "no votes")
 
-      expect(game.best_response_for(player)).to be_present
+      result = game.best_responses_for_top_players([ player ])
+      expect(result[player.id]).to be_present
+      expect(result[player.id].votes_count).to eq(0)
+    end
+
+    it "eager loads prompt_instance to avoid N+1" do
+      create(:response, player:, prompt_instance: prompt_a, body: "test")
+
+      result = game.best_responses_for_top_players([ player ])
+      expect(result[player.id].association(:prompt_instance)).to be_loaded
     end
   end
 
