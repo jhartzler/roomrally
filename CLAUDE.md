@@ -97,6 +97,9 @@ When making UI changes, use screenshot checkpoints to verify visual changes are 
   ```
   Each worktree needs a different number. Without the env var, the default `roomrally_test` is used. This is not yet automated — just pick a unique number per worktree.
 
+- **Active Storage uploads failing silently with Cloudflare R2?**
+  `aws-sdk-s3` v1.213+ sends multiple checksum headers by default that R2 rejects with `InvalidRequest`, but the error is swallowed — submissions save without attached blobs. Ensure `storage.yml` includes the checksum config for R2. Check Rails logs for `Aws::S3::Errors::InvalidRequest` if uploads seem to silently fail.
+
 ## Architecture
 
 ### Request Flow
@@ -128,7 +131,7 @@ This is intentionally simple. No custom Action Cable channels, no event bus betw
 
 - [ ] **Model** (`app/models/[game]_game.rb`): AASM states (must include `instructions` → playing states → `finished`), `include HasRoundTimer`, implement `process_timeout(round_number, step_number)`
 - [ ] **Service** (`app/services/games/[game].rb`): Must implement the game module contract (see below)
-- [ ] **Playtest module** nested inside service: `start`, `advance`, `bot_act`, `auto_play_step`, `progress_label`, `dashboard_actions`
+- [ ] **Playtest module** nested inside service file (co-located, NOT in a separate file): `start`, `advance`, `bot_act`, `auto_play_step`, `progress_label`, `dashboard_actions`
 - [ ] **GameStartsController** with `include GameHostAuthorization`
 - [ ] **Stage partials** for every AASM state: `_stage_[status].html.erb`
 - [ ] **Hand partials**: `_hand.html.erb` (router), `_game_over.html.erb`, plus game-phase partials
@@ -189,6 +192,8 @@ end
 
 Game logic calls `GameBroadcaster` methods directly. Convention for stage partials: `games/[game_type]/stage_[status]`
 
+**Broadcast target placement:** When adding new broadcast targets (e.g., a curation panel, custom backstage section), ensure the target element is **nested inside** the container that `broadcast_stage` / `broadcast_hand` / `broadcast_host_controls` replaces. Targets placed as siblings of the replacement container will silently never receive updates. This has caused bugs in 3+ game types.
+
 ### Timers
 
 Games with timed phases include `HasRoundTimer` concern and implement `process_timeout(round_number, step_number)`.
@@ -215,7 +220,13 @@ Controllers just call `render_hand` with no arguments.
 
 **All game action controllers must include `RendersHand`** and call `render_hand` instead of `head :no_content`. Using 204 means the turbo-frame won't update from HTTP — the player must wait for the broadcast.
 
-**Architecture note — hand_screen is a turbo-frame, not a div.** Turbo-frame submissions always use the meta CSRF token and never drift `window.location.href`. The old workarounds (avoiding `data: { turbo: false }` in broadcasted partials, using 204 vs 200) are no longer needed or relevant.
+**Architecture note — hand_screen is a turbo-frame, not a div.** Turbo-frame submissions always use the meta CSRF token and never drift `window.location.href`.
+
+### Stage Partials — DOM and Animation Rules
+
+**DOM structure:** Never assume `firstElementChild` or `children[0]` is the content element in stage partials — some partials include `<link>` preload tags before the main div. Use `querySelector("[id^='stage_']")` or target the specific element by ID/class.
+
+**Animations:** Do NOT apply animation classes (e.g., `animate-fade-in`) directly in stage partials. `broadcast_all` fires on every player action (answer submitted, vote cast), so inline animations replay constantly — not just on phase transitions. Use the `stage-transition` Stimulus controller, which detects actual state changes by comparing the stage partial's `id` and only applies animations on real transitions.
 
 ### Viewport-Relative Units (vh)
 
@@ -286,7 +297,7 @@ Before writing a helper, check if Rails already provides it in ActiveSupport or 
 
 - **No Channels Directory**: Uses Turbo Streams directly, no custom Action Cable channels
 - **Session-Based Auth**: Players identified by Rails session for reconnection, no accounts required
-- **System Tests Are Critical**: Multiplayer flows must be tested with multiple Capybara sessions
+- **System Tests Are Critical**: Multiplayer flows must be tested with multiple Capybara sessions. When testing multiplayer flows, confirm the host's state transition completed (via `expect(page).to have_content(...)`) before asserting state in other player sessions. Never assert broadcast-dependent state immediately after triggering an action in a different session — the WebSocket broadcast may not have arrived yet.
 
 ### `GameHostAuthorization` — room-scoped player lookup
 
