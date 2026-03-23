@@ -14,4 +14,18 @@ RSpec.describe Response, type: :model do
     it { is_expected.to have_db_column(:rejection_reason).of_type(:text) }
     it { is_expected.to have_db_column(:status).of_type(:string).with_options(default: 'pending', null: false) }
   end
+
+  describe 'profanity filter' do
+    it 'auto-rejects profane responses on save' do
+      response = create(:response, body: nil, status: :pending)
+      response.update!(body: "what the shit", status: :submitted)
+      expect(response.reload.status).to eq("rejected")
+    end
+
+    it 'does not reject clean responses' do
+      response = create(:response, body: nil, status: :pending)
+      response.update!(body: "a classy answer", status: :submitted)
+      expect(response.reload.status).to eq("submitted")
+    end
+  end
 end

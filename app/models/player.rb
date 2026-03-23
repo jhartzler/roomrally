@@ -7,6 +7,7 @@ class Player < ApplicationRecord
   has_many :trivia_answers, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 40 }
+  validate :name_not_profane
   validates :session_id, presence: true, uniqueness: { scope: :room_id }
 
   before_validation :generate_session_id, on: :create
@@ -37,5 +38,9 @@ class Player < ApplicationRecord
 
   def generate_session_id
     self.session_id ||= SecureRandom.uuid
+  end
+
+  def name_not_profane
+    errors.add(:name, "contains inappropriate language — try another name!") if name.present? && Obscenity.profane?(name)
   end
 end
