@@ -79,6 +79,10 @@ When making UI changes, use screenshot checkpoints to verify visual changes are 
 
 **Note:** Baseline screenshots are ephemeral and not committed to git. They exist only during active development for comparison purposes.
 
+### Ad-hoc Screenshots for Visual Changes
+
+When you make a significant visual change (new UI section, layout changes, styling updates), **offer to capture and display a screenshot** so the user can review it without running the app. Write a small system spec (`:js`) that sets up the necessary data, visits the relevant page, and calls `page.save_screenshot(Rails.root.join('tmp/<descriptive_name>.png'))`. Run the spec, then `open` the screenshot. This is faster than the full visual regression workflow for quick feedback loops during development.
+
 ## Troubleshooting
 
 - **Tailwind changes not showing up?**
