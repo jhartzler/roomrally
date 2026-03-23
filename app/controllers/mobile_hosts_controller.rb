@@ -8,35 +8,48 @@ class MobileHostsController < ApplicationController
   end
 
   def create
-    existing_player = @room.players.find_by(session_id: session[:player_session_id])
-    if existing_player
-      redirect_to room_hand_path(@room)
-      return
+    player = nil
+
+    @room.with_lock do
+      # Re-check inside lock — guard_availability is not atomic with this action
+      if @room.host.present?
+        redirect_to room_hand_path(@room), alert: "This room already has a host."
+        return
+      end
+
+      existing_player = @room.players.find_by(session_id: session[:player_session_id])
+      if existing_player
+        redirect_to room_hand_path(@room)
+        return
+      end
+
+      @player = @room.players.build(player_params)
+      session_id = SecureRandom.uuid
+      session[:player_session_id] = session_id
+      @player.session_id = session_id
+      @player.status = :active
+
+      if @player.save
+        @room.update!(host: @player)
+        player = @player
+      end
     end
 
-    @player = @room.players.build(player_params)
-    session_id = session[:player_session_id] || SecureRandom.uuid
-    session[:player_session_id] = session_id
-    @player.session_id = session_id
-    @player.status = :active
-
-    if @player.save
-      @room.update!(host: @player)
-
-      Rails.logger.info "Mobile host #{@player.name} created in room #{@room.code}"
+    if player
+      Rails.logger.info "Mobile host #{player.name} created in room #{@room.code}"
 
       Analytics.track(
-        distinct_id: "player_#{@player.session_id}",
+        distinct_id: "player_#{player.session_id}",
         event: "player_joined",
         properties: { room_code: @room.code, game_type: @room.game_type, mobile_host: true,
                       player_count_after: @room.players.active_players.count }
       )
 
-      GameBroadcaster.broadcast_player_joined(room: @room, player: @player)
+      GameBroadcaster.broadcast_player_joined(room: @room, player:)
       GameBroadcaster.broadcast_host_change(room: @room)
 
       redirect_to room_hand_path(@room)
-    else
+    elsif !performed?
       render :show, status: :unprocessable_content
     end
   end
