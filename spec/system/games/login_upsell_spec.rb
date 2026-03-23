@@ -10,8 +10,8 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
       create(:trivia_question,
         trivia_pack: default_pack,
         body: "Question #{i + 1}?",
-        correct_answers: ["Answer #{i + 1}"],
-        options: ["Answer #{i + 1}", "Wrong A", "Wrong B", "Wrong C"])
+        correct_answers: [ "Answer #{i + 1}" ],
+        options: [ "Answer #{i + 1}", "Wrong A", "Wrong B", "Wrong C" ])
     end
   end
 
@@ -55,7 +55,7 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
 
     # All players answer
     game = room.reload.current_game
-    [:host, :player2, :player3].each do |session|
+    [ :host, :player2, :player3 ].each do |session|
       Capybara.using_session(session) do
         visit current_path
         find('[data-test-id="answer-option-0"]', match: :first, wait: 5).click
@@ -70,7 +70,7 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
     game
   end
 
-  context "logged-out host" do
+  context "when host is logged out" do
     it "shows the upsell card" do
       join_and_play_to_game_over
 
@@ -83,7 +83,7 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
     end
   end
 
-  context "regular player (not host)" do
+  context "when player is not the host" do
     it "does not show the upsell card" do
       join_and_play_to_game_over
 
@@ -95,7 +95,7 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
     end
   end
 
-  context "logged-in host (facilitator-owned room)" do
+  context "when host is logged in (facilitator-owned room)" do
     let!(:facilitator) { create(:user) }
     let!(:room) { create(:room, game_type: "Speed Trivia", user: facilitator) }
 
@@ -124,9 +124,9 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
       host_player = room.players.find_by(name: "Host")
       room.update!(host: host_player)
 
-      Games::SpeedTrivia.game_started(room: room, timer_enabled: false, timer_increment: nil, show_instructions: false)
+      Games::SpeedTrivia.game_started(room:, timer_enabled: false, timer_increment: nil, show_instructions: false)
       game = room.reload.current_game
-      Games::SpeedTrivia.start_question(game: game)
+      Games::SpeedTrivia.start_question(game:)
 
       # All players answer
       game.trivia_question_instances.first.trivia_answers.create!(
