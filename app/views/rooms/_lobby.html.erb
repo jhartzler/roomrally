@@ -27,6 +27,23 @@
   </div>
 <% end %>
 
+<!-- Stage URL Banner (Host Only) -->
+<% if player == room.host %>
+  <div class="border-t-2 border-white/10 pt-6 mb-6" data-controller="clipboard" data-clipboard-text-value="<%= request.base_url %>/<%= room.code %>">
+    <div class="max-w-md mx-auto">
+      <div class="bg-indigo-500/20 backdrop-blur-md rounded-xl p-5 border border-indigo-400/30 text-center">
+        <p class="text-lg font-black text-white mb-2">Throw this up on a big screen!</p>
+        <p class="text-3xl font-black text-white font-mono tracking-wider mb-3"><%= request.base_url %>/<%= room.code %></p>
+        <button data-action="click->clipboard#copy" data-clipboard-target="button"
+                class="bg-white/20 text-white font-bold py-2 px-6 rounded-lg hover:bg-white/30 transition-all duration-200 text-sm border border-white/20 mb-2">
+          Copy Link
+        </button>
+        <p class="text-indigo-200 text-xs">Laptop, TV, projector — anything bigger than your phone</p>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <!-- Start Game Button (Host Only) -->
 <% if player == room.host %>
   <div id="host-controls" class="border-t-2 border-white/10 pt-6">

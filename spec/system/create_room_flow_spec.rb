@@ -15,7 +15,7 @@ RSpec.describe 'Room Creation Flow', type: :system do
       expect(page).to have_button('Create Room')
     end
 
-    it 'creates a room and redirects to stage' do
+    it 'creates a room and redirects to stage (desktop)' do
       visit host_path
       click_on 'Create Room'
       expect(page).to have_current_path(/\/rooms\/[A-Z0-9]{4}\/stage/, wait: 5)

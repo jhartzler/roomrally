@@ -20,6 +20,8 @@ class RoomsController < ApplicationController
     if current_user
       room.update(user: current_user)
       redirect_to room_backstage_path(room)
+    elsif mobile_request?
+      redirect_to room_mobile_host_path(room)
     else
       redirect_to room_stage_path(room)
     end
@@ -150,6 +152,10 @@ class RoomsController < ApplicationController
     return if current_player
 
     require_player
+  end
+
+  def mobile_request?
+    request.user_agent&.match?(/Mobile|Android|iPhone|iPod/i)
   end
 
   def room_not_found
