@@ -18,6 +18,17 @@ RSpec.describe Player, type: :model do
       expect(player).to be_valid
     end
 
+    it 'rejects profane names' do
+      player = build(:player, name: "shit")
+      expect(player).not_to be_valid
+      expect(player.errors[:name]).to include(match(/inappropriate language/))
+    end
+
+    it 'allows names that contain profanity as a substring' do
+      player = build(:player, name: "Sassy")
+      expect(player).to be_valid
+    end
+
     it 'validates presence of session_id' do
       player = build(:player, session_id: nil)
       expect(player).to be_valid # because the before_validation will set it

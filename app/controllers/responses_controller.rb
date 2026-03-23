@@ -4,6 +4,12 @@ class ResponsesController < ApplicationController
   def update
     @response = Response.find(params[:id])
     if @response.update(response_params)
+      # Auto-reject profane responses before they reach the Stage
+      if Obscenity.profane?(@response.body)
+        @response.update!(status: :rejected)
+        Rails.logger.info({ event: "response_auto_rejected_profanity", player_id: @response.player.id, prompt_instance_id: @response.prompt_instance.id })
+      end
+
       # Broadcast success message
       Rails.logger.info({ event: "response_submitted", player_id: @response.player.id, prompt_instance_id: @response.prompt_instance.id })
       @response.prompt_instance.update(status: "submitted")
