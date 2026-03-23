@@ -111,6 +111,13 @@ RSpec.describe "Rooms", type: :request do
   describe "POST /rooms (create)" do
     let(:game_type) { "Write And Vote" }
 
+    # Override the outer before block — create specs test unauthenticated guests
+    before do
+      # rubocop:disable RSpec/AnyInstance
+      allow_any_instance_of(ApplicationController).to receive(:current_player).and_return(nil)
+      # rubocop:enable RSpec/AnyInstance
+    end
+
     context "when guest user on desktop" do
       it "redirects to stage view" do
         post rooms_path, params: { game_type: }
