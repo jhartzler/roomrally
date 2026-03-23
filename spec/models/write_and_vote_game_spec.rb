@@ -138,6 +138,38 @@ RSpec.describe WriteAndVoteGame, type: :model do
     end
   end
 
+  describe "#best_response_for" do
+    let(:game) { create(:write_and_vote_game) }
+    let(:room) { create(:room, current_game: game) }
+    let(:player) { create(:player, room:) }
+    let(:prompt_a) { create(:prompt_instance, write_and_vote_game: game) }
+    let(:prompt_b) { create(:prompt_instance, write_and_vote_game: game) }
+
+    # rubocop:disable RSpec/ExampleLength
+    it "returns the response with the most votes" do
+      voter_a = create(:player, room:)
+      voter_b = create(:player, room:)
+      low_votes = create(:response, player:, prompt_instance: prompt_a, body: "meh")
+      high_votes = create(:response, player:, prompt_instance: prompt_b, body: "hilarious")
+      create(:vote, response: low_votes, player: voter_a)
+      create(:vote, response: high_votes, player: voter_a)
+      create(:vote, response: high_votes, player: voter_b)
+
+      expect(game.best_response_for(player)).to eq(high_votes)
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    it "returns nil when the player has no responses" do
+      expect(game.best_response_for(player)).to be_nil
+    end
+
+    it "returns a response even with zero votes" do
+      create(:response, player:, prompt_instance: prompt_a, body: "no votes")
+
+      expect(game.best_response_for(player)).to be_present
+    end
+  end
+
   describe "#all_responses_submitted?" do
     it "returns false if outstanding responses exist" do
       game = create(:write_and_vote_game)

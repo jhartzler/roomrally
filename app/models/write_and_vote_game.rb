@@ -74,6 +74,14 @@ class WriteAndVoteGame < ApplicationRecord
     end
   end
 
+  def best_response_for(player)
+    responses.where(player:)
+             .left_joins(:votes)
+             .group(:id)
+             .order("COUNT(votes.id) DESC")
+             .first
+  end
+
   def all_responses_submitted?
     !Response.joins(:prompt_instance)
              .where(prompt_instances: { write_and_vote_game_id: id, round: })
