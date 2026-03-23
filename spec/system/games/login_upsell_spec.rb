@@ -95,15 +95,57 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
     end
   end
 
-  context "logged-in host" do
+  context "logged-in host (facilitator-owned room)" do
     let!(:facilitator) { create(:user) }
     let!(:room) { create(:room, game_type: "Speed Trivia", user: facilitator) }
 
     it "does not show the upsell card" do
-      join_and_play_to_game_over
+      # Facilitator-owned rooms hide "Claim Host" — join players and set host directly
+      Capybara.using_session(:host) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Host"
+        click_on "Join Game"
+        expect(page).to have_content("Game Lobby")
+      end
+
+      Capybara.using_session(:player2) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Alice"
+        click_on "Join Game"
+      end
+
+      Capybara.using_session(:player3) do
+        visit join_room_path(room)
+        fill_in "player[name]", with: "Bob"
+        click_on "Join Game"
+      end
+
+      # Set host and drive game to finished via service methods
+      host_player = room.players.find_by(name: "Host")
+      room.update!(host: host_player)
+
+      Games::SpeedTrivia.game_started(room: room, timer_enabled: false, timer_increment: nil, show_instructions: false)
+      game = room.reload.current_game
+      Games::SpeedTrivia.start_question(game: game)
+
+      # All players answer
+      game.trivia_question_instances.first.trivia_answers.create!(
+        player: room.players.find_by(name: "Host"), selected_option: "Answer 1"
+      )
+      game.trivia_question_instances.first.trivia_answers.create!(
+        player: room.players.find_by(name: "Alice"), selected_option: "Answer 1"
+      )
+      game.trivia_question_instances.first.trivia_answers.create!(
+        player: room.players.find_by(name: "Bob"), selected_option: "Answer 1"
+      )
+
+      # Fast-forward to game over
+      game.update!(current_question_index: game.trivia_question_instances.count - 1)
+      Games::SpeedTrivia.close_round(game: game.reload)
+      Games::SpeedTrivia.next_question(game: game.reload)
 
       Capybara.using_session(:host) do
-        visit current_path
+        visit room_hand_path(room.code)
         expect(page).to have_content(/game over/i, wait: 5).or have_content("Place", wait: 5)
         expect(page).not_to have_content("You just hosted like a pro")
       end
