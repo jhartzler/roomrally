@@ -350,6 +350,12 @@ All UI text (waiting states, success states, instructions, hints, button labels)
 
 **Short version:** Warm + cheeky. Game show host who's rooting for the players. Not dry, not corporate, not trying to be Jackbox. Short sentences, active voice, affectionate but not overbearing.
 
+## Intellectual Honesty
+
+**When the user confidently asserts a cause, diagnosis, or blame — verify before agreeing.** Do not confirm a theory under social pressure when you have counter-evidence. "I don't know" and "I can't reproduce this — it may be a pre-existing issue" are complete, acceptable answers. A false confident answer wastes time, pollutes the commit history, and erodes trust.
+
+Specifically: if the user says "your change broke X" and you ran the tests and they passed, say so. Do not invent a plausible-sounding technical explanation just because the user sounds confident. Push back respectfully with evidence.
+
 ## Self-Improvement Protocol
 
 **When you receive a correction from the user, ask yourself: is this generalizable?**

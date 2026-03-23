@@ -50,7 +50,10 @@ node_modules
 .byebug_history
 
 /worktrees/
-/.claude/
+/.claude/*
+!/.claude/settings.json
+!/.claude/hooks/
+!/.claude/skills/
 /BACKLOG.md
 .superpowers/
 app/assets/images/Room Rally Logo Pack/

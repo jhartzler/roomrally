@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Git pre-commit hook for RoomRally
+# Install: ln -sf ../../bin/pre-commit .git/hooks/pre-commit
+# Or run: bin/setup (auto-installs)
+
+set -euo pipefail
+
+# 1. Branch protection — never commit to main/master
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
+  echo "ERROR: Direct commits to $BRANCH are not allowed."
+  echo "Create a feature branch: git checkout -b feature/your-feature"
+  exit 1
+fi
+
+# 2. Run rubocop auto-fix on staged Ruby files, then re-stage
+STAGED_RB=$(git diff --cached --name-only --diff-filter=ACM | grep '\.rb$' || true)
+if [[ -n "$STAGED_RB" ]]; then
+  echo "$STAGED_RB" | xargs rubocop -A --force-exclusion 2>/dev/null || true
+  echo "$STAGED_RB" | xargs git add
+fi
+
+# 3. Prevent committing credentials file
+if git diff --cached --name-only | grep -q 'config/credentials.yml.enc'; then
+  echo "WARNING: credentials.yml.enc is staged. This is usually fine (encrypted),"
+  echo "but never run git diff on it — the master key is present locally."
+fi
