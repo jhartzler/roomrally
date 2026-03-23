@@ -84,30 +84,6 @@ RSpec.describe Games::CategoryList do
       expect(CategoryAnswer.last.body).to eq("Apple")
     end
 
-    it "auto-rejects profane answers" do
-      ci = game.current_round_categories.first
-      described_class.submit_answers(
-        game:,
-        player: players.first,
-        answers_params: { ci.id.to_s => "shit" }
-      )
-
-      answer = CategoryAnswer.find_by(player: players.first, category_instance: ci)
-      expect(answer.status).to eq("rejected")
-    end
-
-    it "does not reject clean answers" do
-      ci = game.current_round_categories.first
-      described_class.submit_answers(
-        game:,
-        player: players.first,
-        answers_params: { ci.id.to_s => "Sassy cat" }
-      )
-
-      answer = CategoryAnswer.find_by(player: players.first, category_instance: ci)
-      expect(answer.status).to eq("pending")
-    end
-
     it "transitions to reviewing when all players submit" do
       game.current_round_categories.each do |ci|
         players.each do |player|

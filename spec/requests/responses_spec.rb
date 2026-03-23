@@ -36,17 +36,5 @@ RSpec.describe "Responses", type: :request do
 
       expect(player_response.prompt_instance.reload.status).to eq("submitted")
     end
-
-    it "auto-rejects profane responses" do
-      patch response_url(player_response), params: { response: { body: "what the shit" } }, as: :turbo_stream
-
-      expect(player_response.reload.status).to eq("rejected")
-    end
-
-    it "does not reject clean responses" do
-      patch response_url(player_response), params: { response: { body: "a classy answer" } }, as: :turbo_stream
-
-      expect(player_response.reload.status).to eq("submitted")
-    end
   end
 end

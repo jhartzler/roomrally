@@ -16,4 +16,12 @@ class CategoryAnswer < ApplicationRecord
   def effectively_struck?
     rejected? || duplicate? || auto_duplicate?
   end
+
+  before_save :auto_reject_if_profane
+
+  private
+
+  def auto_reject_if_profane
+    self.status = "rejected" if pending? && Obscenity.profane?(body)
+  end
 end

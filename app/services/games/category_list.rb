@@ -64,7 +64,6 @@ module Games
 
           CategoryAnswer.find_or_create_by!(player:, category_instance: ci) do |answer|
             answer.body = answer_text.to_s.strip
-            answer.status = :rejected if Obscenity.profane?(answer.body)
           end
         end
 
