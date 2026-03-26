@@ -6,11 +6,13 @@
 
 Rails.application.configure do
   config.content_security_policy do |policy|
+    r2_assets_url = config.x.r2_assets_url.presence
+
     policy.default_src :self
     policy.script_src  :self
     policy.style_src   :self, :unsafe_inline, "https://fonts.googleapis.com"
     policy.font_src    :self, "https://fonts.gstatic.com"
-    policy.img_src     :self, :data, "https://assets.roomrally.app"
+    policy.img_src     :self, :data, *[r2_assets_url].compact
     policy.connect_src :self
     policy.object_src  :none
     policy.base_uri    :self
