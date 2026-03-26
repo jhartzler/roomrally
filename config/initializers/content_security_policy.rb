@@ -14,7 +14,7 @@ Rails.application.configure do
     policy.connect_src :self
     policy.object_src  :none
     policy.base_uri    :self
-    policy.frame_ancestors :none
+    policy.frame_ancestors :self
   end
 
   # Generate nonces for importmap inline scripts.
