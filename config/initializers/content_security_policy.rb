@@ -12,7 +12,7 @@ Rails.application.configure do
     policy.script_src  :self
     policy.style_src   :self, :unsafe_inline, "https://fonts.googleapis.com"
     policy.font_src    :self, "https://fonts.gstatic.com"
-    policy.img_src     :self, :data, *[r2_assets_url].compact
+    policy.img_src     :self, :data, *[ r2_assets_url ].compact
     policy.connect_src :self
     policy.object_src  :none
     policy.base_uri    :self
