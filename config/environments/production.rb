@@ -24,6 +24,10 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :r2
 
+  # Serve Active Storage blobs through Rails (proxy) instead of redirecting to R2 signed URLs.
+  # This keeps the R2 account ID out of browser requests and avoids CSP img-src violations.
+  config.active_storage.resolve_model_to_route = :rails_storage_proxy
+
   # Cloudflare R2 asset CDN (static assets like hero image, OG images)
   config.x.r2_assets_url = "https://assets.roomrally.app"
 

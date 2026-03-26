@@ -2,7 +2,7 @@
   <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
     <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Dev Testing</h1>
 
-    <%= form_with url: "/dev/testing/create_test_game", method: :post, data: { turbo: false }, class: "mt-8 space-y-6" do |form| %>
+    <%= form_with url: "/dev/testing/create_test_game", method: :post, data: { turbo: false, controller: "pack-selector" }, class: "mt-8 space-y-6" do |form| %>
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
           <%= form.label :num_players, "Number of players:", class: "sr-only" %>
@@ -10,13 +10,13 @@
         </div>
         <div>
           <%= form.label :game_type, "Game type:", class: "sr-only" %>
-          <%= form.select :game_type, @game_types, {}, id: "game_type_select", class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" %>
+          <%= form.select :game_type, @game_types, {}, data: { pack_selector_target: "select", action: "pack-selector#update" }, class: "appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" %>
         </div>
       </div>
 
-      <%# Pack selectors — shown/hidden by JS based on selected game type %>
+      <%# Pack selectors — shown/hidden by Stimulus based on selected game type %>
       <div class="space-y-2">
-        <div id="pack-selector-Speed Trivia" class="hidden">
+        <div class="hidden" data-pack-selector-target="pack" data-game-type="Speed Trivia">
           <%= form.label :trivia_pack_id, "Trivia Pack:", class: "block text-sm font-medium text-gray-700" %>
           <%= form.select :trivia_pack_id,
                 [["— Default pack —", ""]] + @trivia_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
@@ -24,7 +24,7 @@
                 class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
         </div>
 
-        <div id="pack-selector-Write And Vote" class="hidden">
+        <div class="hidden" data-pack-selector-target="pack" data-game-type="Write And Vote">
           <%= form.label :prompt_pack_id, "Prompt Pack:", class: "block text-sm font-medium text-gray-700" %>
           <%= form.select :prompt_pack_id,
                 [["— Default pack —", ""]] + @prompt_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
@@ -32,7 +32,7 @@
                 class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
         </div>
 
-        <div id="pack-selector-Category List" class="hidden">
+        <div class="hidden" data-pack-selector-target="pack" data-game-type="Category List">
           <%= form.label :category_pack_id, "Category Pack:", class: "block text-sm font-medium text-gray-700" %>
           <%= form.select :category_pack_id,
                 [["— Default pack —", ""]] + @category_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
@@ -47,18 +47,3 @@
     <% end %>
   </div>
 </div>
-
-<script>
-  (function () {
-    var select = document.getElementById('game_type_select');
-    function updatePackSelector() {
-      document.querySelectorAll('[id^="pack-selector-"]').forEach(function (el) {
-        el.classList.add('hidden');
-      });
-      var active = document.getElementById('pack-selector-' + select.value);
-      if (active) active.classList.remove('hidden');
-    }
-    select.addEventListener('change', updatePackSelector);
-    updatePackSelector();
-  })();
-</script>
