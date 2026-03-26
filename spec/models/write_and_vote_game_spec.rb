@@ -138,6 +138,50 @@ RSpec.describe WriteAndVoteGame, type: :model do
     end
   end
 
+  describe "#best_responses_for_top_players" do
+    let(:game) { create(:write_and_vote_game) }
+    let(:room) { create(:room, current_game: game) }
+    let(:player) { create(:player, room:) }
+    let(:prompt_a) { create(:prompt_instance, write_and_vote_game: game) }
+    let(:prompt_b) { create(:prompt_instance, write_and_vote_game: game) }
+
+    # rubocop:disable RSpec/ExampleLength
+    it "returns the response with the most votes for each player" do
+      voter_a = create(:player, room:)
+      voter_b = create(:player, room:)
+      create(:response, player:, prompt_instance: prompt_a, body: "meh").tap do |r|
+        create(:vote, response: r, player: voter_a)
+      end
+      high_votes = create(:response, player:, prompt_instance: prompt_b, body: "hilarious")
+      create(:vote, response: high_votes, player: voter_a)
+      create(:vote, response: high_votes, player: voter_b)
+
+      result = game.best_responses_for_top_players([ player ])
+      expect(result[player.id]).to eq(high_votes)
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    it "returns empty hash when players have no responses" do
+      result = game.best_responses_for_top_players([ player ])
+      expect(result).to be_empty
+    end
+
+    it "includes responses with zero votes" do
+      create(:response, player:, prompt_instance: prompt_a, body: "no votes")
+
+      result = game.best_responses_for_top_players([ player ])
+      expect(result[player.id]).to be_present
+      expect(result[player.id].votes_count).to eq(0)
+    end
+
+    it "eager loads prompt_instance to avoid N+1" do
+      create(:response, player:, prompt_instance: prompt_a, body: "test")
+
+      result = game.best_responses_for_top_players([ player ])
+      expect(result[player.id].association(:prompt_instance)).to be_loaded
+    end
+  end
+
   describe "#all_responses_submitted?" do
     it "returns false if outstanding responses exist" do
       game = create(:write_and_vote_game)

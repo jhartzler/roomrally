@@ -4,37 +4,7 @@
   <%= render 'shared/topnav' %>
 <% end %>
 
-<div data-controller="mobile-warning"
-     data-mobile-warning-logged-in-value="<%= current_user.present? %>">
-
-  <dialog data-mobile-warning-target="dialog"
-          class="rounded-2xl p-0 shadow-2xl border border-white/20 backdrop:bg-black/60 max-w-sm w-full mx-auto bg-transparent">
-    <div class="bg-gradient-to-b from-blue-700 to-indigo-800 rounded-2xl p-8 text-white">
-      <h2 class="text-xl font-black mb-6 text-center">Wait — are you joining or hosting?</h2>
-
-      <div class="space-y-4">
-        <div class="bg-white/10 rounded-xl p-4 border border-white/10">
-          <p class="font-bold mb-2">I want to play</p>
-          <button data-action="mobile-warning#goToJoin"
-                  class="w-full bg-blue-600 text-white font-black py-3 px-6 rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all">
-            Go to Join Screen
-          </button>
-        </div>
-
-        <div class="bg-white/10 rounded-xl p-4 border border-white/10">
-          <p class="font-bold mb-2">I am the host</p>
-          <p class="text-blue-200 text-sm mb-3">
-            RoomRally is designed to be displayed on a TV or laptop for the room to see.
-            If you create a game here, this phone will become the main display.
-          </p>
-          <button data-action="mobile-warning#dismiss"
-                  class="w-full bg-white/20 text-white font-bold py-3 px-6 rounded-xl hover:bg-white/30 active:scale-[0.98] transition-all border border-white/20">
-            Continue Anyway
-          </button>
-        </div>
-      </div>
-    </div>
-  </dialog>
+<div>
 
 <div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
   <div class="max-w-md w-full">

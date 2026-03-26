@@ -30,6 +30,7 @@ RSpec/MultipleExpectations:
   Exclude:
     - 'spec/system/**/*'
     - 'spec/requests/dev_testing_spec.rb'
+    - 'spec/requests/mobile_hosts_spec.rb'
     - 'spec/requests/pages_spec.rb'
     - 'spec/requests/trivia_pack_images_spec.rb'
     - 'spec/services/dev_playtest/**/*'
@@ -40,6 +41,7 @@ RSpec/ExampleLength:
   Exclude:
     - 'spec/system/**/*'
     - 'spec/requests/dev_testing_spec.rb'
+    - 'spec/requests/mobile_hosts_spec.rb'
     - 'spec/requests/pages_spec.rb'
     - 'spec/requests/trivia_pack_images_spec.rb'
     - 'spec/services/dev_playtest/**/*'

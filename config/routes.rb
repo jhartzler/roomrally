@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     resource :stage, only: :show
     resource :hand, only: :show
     resource :backstage, only: :show
+    resource :mobile_host, only: %i[show create]
     resources :score_tracker_entries, only: %i[create update destroy]
     member do
       post :start_game
@@ -113,6 +114,9 @@ Rails.application.routes.draw do
     end
     resources :sessions, only: %i[index show], param: :code
   end
+
+  # Short URL: roomrally.app/ABCD → stage view (case-insensitive)
+  get "/:code", to: "shortcodes#show", as: :shortcode, constraints: { code: /[A-Za-z0-9]{4}/ }
 
   match "*unmatched", to: "errors#not_found", via: :all, constraints: ->(req) { !req.path.start_with?("/rails/") }
 end
