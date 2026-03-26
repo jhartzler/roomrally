@@ -5,10 +5,15 @@ export default class extends Controller {
   static values = { loggedIn: Boolean }
 
   connect() {
-    this.dialogTarget.addEventListener("cancel", (e) => e.preventDefault())
+    this.cancelHandler = (e) => e.preventDefault()
+    this.dialogTarget.addEventListener("cancel", this.cancelHandler)
     if (!this.loggedInValue && window.innerWidth <= 768) {
       this.dialogTarget.showModal()
     }
+  }
+
+  disconnect() {
+    this.dialogTarget.removeEventListener("cancel", this.cancelHandler)
   }
 
   goToJoin() {
