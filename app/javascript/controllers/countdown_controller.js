@@ -10,19 +10,23 @@ export default class extends Controller {
         this.startCountdown()
     }
 
+    disconnect() {
+        clearInterval(this.interval)
+    }
+
     startCountdown() {
         let count = this.durationValue
 
         // Show first number immediately
         this.showNumber(count)
 
-        const interval = setInterval(() => {
+        this.interval = setInterval(() => {
             count--
 
             if (count > 0) {
                 this.showNumber(count)
             } else {
-                clearInterval(interval)
+                clearInterval(this.interval)
                 this.fadeOut()
             }
         }, 1000)

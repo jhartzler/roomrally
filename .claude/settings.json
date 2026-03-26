@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/stage-partial-lint.sh",
+            "timeout": 10,
+            "statusMessage": "Checking stage partial conventions..."
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/game-service-lint.sh",
+            "timeout": 10,
+            "statusMessage": "Checking game service conventions..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/branch-guard.sh",
+            "timeout": 5,
+            "statusMessage": "Checking branch..."
+          }
+        ]
+      }
+    ]
+  }
+}
