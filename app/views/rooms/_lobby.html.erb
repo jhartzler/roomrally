@@ -33,12 +33,15 @@
     <div class="max-w-md mx-auto">
       <div class="bg-indigo-500/20 backdrop-blur-md rounded-xl p-5 border border-indigo-400/30 text-center">
         <p class="text-lg font-black text-white mb-2">Throw this up on a big screen!</p>
-        <p class="text-3xl font-black text-white font-mono tracking-wider mb-3"><%= request.base_url %>/<%= room.code %></p>
         <button data-action="click->clipboard#copy" data-clipboard-target="button"
-                class="bg-white/20 text-white font-bold py-2 px-6 rounded-lg hover:bg-white/30 transition-all duration-200 text-sm border border-white/20 mb-2">
-          Copy Link
+                class="w-full bg-white/20 text-white font-bold py-3 px-4 rounded-lg hover:bg-white/30 transition-all duration-200 border border-white/20 mb-2 flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+            <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+          </svg>
+          <span class="truncate text-sm font-mono" data-clipboard-target="label"><%= request.base_url %>/<%= room.code %></span>
         </button>
-        <p class="text-indigo-200 text-xs">Laptop, TV, projector — anything bigger than your phone</p>
+        <p class="text-indigo-200 text-xs">Tap to copy · Open on a laptop, TV, or projector</p>
       </div>
     </div>
   </div>

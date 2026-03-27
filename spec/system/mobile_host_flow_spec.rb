@@ -11,7 +11,6 @@ RSpec.describe "Mobile Host Flow", type: :system do
       visit room_hand_path(room)
       expect(page).to have_content("Throw this up on a big screen")
       expect(page).to have_content(room.code)
-      expect(page).to have_button("Copy Link")
     end
 
     it "does not show the banner to non-host players" do
