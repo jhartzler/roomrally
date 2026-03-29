@@ -19,6 +19,39 @@ RSpec.describe "GameFinishes", type: :request do
         expect(room.reload.status).to eq("finished")
       end
 
+      it "finishes a write and vote game with data" do
+        room = create(:room, game_type: "Write And Vote", status: "playing")
+        game = create(:write_and_vote_game, status: "voting")
+        host = create(:player, room:, name: "Host")
+        room.update!(current_game: game, host:)
+        player = create(:player, room:, name: "Player1")
+        prompt_instance = create(:prompt_instance, write_and_vote_game: game, round: 1)
+        response = create(:response, player:, prompt_instance:, body: "Funny answer")
+        create(:vote, response:, player: host)
+
+        get set_player_session_path(host)
+        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
+
+        expect(game.reload.status).to eq("finished")
+        expect(room.reload.status).to eq("finished")
+      end
+
+      it "finishes a category list game with data" do
+        room = create(:room, game_type: "Category List", status: "playing")
+        game = create(:category_list_game, status: "scoring")
+        host = create(:player, room:, name: "Host")
+        room.update!(current_game: game, host:)
+        player = create(:player, room:, name: "Player1")
+        ci = create(:category_instance, category_list_game: game, round: 1)
+        create(:category_answer, category_instance: ci, player:, body: "Apple", points_awarded: 1)
+
+        get set_player_session_path(host)
+        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
+
+        expect(game.reload.status).to eq("finished")
+        expect(room.reload.status).to eq("finished")
+      end
+
       it "resets to lobby when no scoreable data" do
         create(:trivia_pack, :default)
         room = create(:room, game_type: "Speed Trivia", status: "playing")
