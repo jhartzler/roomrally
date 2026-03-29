@@ -452,44 +452,23 @@ export default class extends Controller {
         const rows = container.querySelectorAll("[data-trivia-editor-target='optionRow']")
         if (rows.length >= 4) return
 
-        const index = rows.length
-        const letter = String.fromCharCode(65 + index)
-
-        // Derive field name from an existing option input
-        const existingInput = rows[0].querySelector("input[type='text']")
-        const baseName = existingInput.name // e.g. "trivia_pack[trivia_questions_attributes][0][options][]"
-
-        const row = document.createElement("div")
-        row.className = "flex items-center gap-2"
-        row.setAttribute("data-trivia-editor-target", "optionRow")
-        row.innerHTML = `
-            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded flex-shrink-0" data-trivia-editor-target="optionLetter">${letter}</span>
-            <input type="text"
-                   name="${this.escapeHtml(baseName)}"
-                   placeholder="Option ${letter}"
-                   data-trivia-editor-target="optionField"
-                   data-action="input->trivia-editor#optionChanged"
-                   class="flex-1 rounded-lg bg-white/10 border border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 transition-all px-3 py-2">
-            <button type="button"
-                    data-action="trivia-editor#removeOption"
-                    class="text-white/20 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-colors"
-                    aria-label="Remove option">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-        `
+        // Clone the last existing option row — markup stays in ERB
+        const row = rows[rows.length - 1].cloneNode(true)
+        const input = row.querySelector("input[type='text']")
+        input.value = ""
 
         // Insert before the "Add Option" button
         const addBtn = container.querySelector("[data-trivia-editor-target='addOptionButton']")
         container.insertBefore(row, addBtn)
 
-        // Add corresponding correct answer button
-        this.addCorrectAnswerButton(wrapper, index, letter)
+        // Clone the last correct answer button too
+        this.cloneCorrectAnswerButton(wrapper)
 
         this.updateOptionState(wrapper)
         this.syncCorrectAnswersFields(wrapper)
 
         // Focus the new input
-        row.querySelector("input[type='text']").focus()
+        input.focus()
     }
 
     removeOption(event) {
@@ -511,23 +490,12 @@ export default class extends Controller {
         this.syncCorrectAnswersFields(wrapper)
     }
 
-    addCorrectAnswerButton(wrapper, index, letter) {
+    cloneCorrectAnswerButton(wrapper) {
         const container = wrapper.querySelector("[data-trivia-editor-target='correctAnswerButtons']")
-        const existingCheckbox = container.querySelector("input[type='checkbox']")
-
-        const label = document.createElement("label")
-        label.className = "flex-1 cursor-pointer"
-        label.innerHTML = `
-            <input type="checkbox"
-                   name="${this.escapeHtml(existingCheckbox.name)}"
-                   value="${index}"
-                   data-action="change->trivia-editor#updateCorrectAnswers"
-                   class="sr-only peer">
-            <div class="text-center py-2 px-3 rounded-lg bg-white/10 border-2 border-white/10 peer-checked:border-green-500 peer-checked:bg-green-500/20 peer-checked:text-green-300 text-blue-200 font-bold text-xs transition-all hover:bg-white/20">
-                ${letter}
-            </div>
-        `
-        container.appendChild(label)
+        const labels = container.querySelectorAll("label")
+        const clone = labels[labels.length - 1].cloneNode(true)
+        clone.querySelector("input[type='checkbox']").checked = false
+        container.appendChild(clone)
     }
 
     removeCorrectAnswerButton(wrapper, removedIndex) {
