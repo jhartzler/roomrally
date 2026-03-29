@@ -57,8 +57,8 @@ def self.finish_game!(game:)
     room.update!(current_game: nil)
     game_to_destroy.destroy!
     room.reset_to_lobby!
-    GameBroadcaster.broadcast_stage(room)
-    GameBroadcaster.broadcast_hand(room)
+    GameBroadcaster.broadcast_stage_lobby(room:)
+    GameBroadcaster.broadcast_hand(room:)
     GameBroadcaster.update_all_host_controls(room)
   end
 end
