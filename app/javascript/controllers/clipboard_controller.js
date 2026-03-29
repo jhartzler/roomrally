@@ -11,19 +11,16 @@ export default class extends Controller {
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
-        this.#showFeedback(target, original, "clipboard")
-      }).catch((err) => {
-        console.warn("[clipboard] writeText failed, trying fallback:", err.message)
+        this.#showFeedback(target, original)
+      }).catch(() => {
         this.#fallbackCopy(text, target, original)
       })
     } else {
-      console.warn("[clipboard] navigator.clipboard unavailable, using fallback")
       this.#fallbackCopy(text, target, original)
     }
   }
 
-  #showFeedback(target, original, method) {
-    if (method) console.debug(`[clipboard] copied via ${method}`)
+  #showFeedback(target, original) {
     target.textContent = "Copied!"
     setTimeout(() => { target.textContent = original }, 2000)
   }
@@ -39,9 +36,8 @@ export default class extends Controller {
     document.body.removeChild(textarea)
 
     if (success) {
-      this.#showFeedback(target, original, "execCommand")
+      this.#showFeedback(target, original)
     } else {
-      console.error("[clipboard] both writeText and execCommand failed")
       target.textContent = "Couldn't copy"
       setTimeout(() => { target.textContent = original }, 2000)
     }
