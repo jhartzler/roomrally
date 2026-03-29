@@ -50,10 +50,15 @@
     <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 h-fit relative">
       <div class="flex justify-between items-center mb-4 sticky top-0 z-10 bg-white/10 backdrop-blur-md -mx-8 -mt-8 px-8 pt-8 pb-4 rounded-t-3xl border-b border-white/10">
         <h3 class="text-xl font-black text-white tracking-wide">Questions</h3>
-         <button type="button" data-action="trivia-editor#addQuestion" class="text-sm text-white font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-white/10">
+        <div class="flex items-center gap-2">
+          <button type="button" data-action="trivia-editor#toggleCollapseAll" data-trivia-editor-target="collapseAllButton" class="text-sm text-white/60 hover:text-white font-bold bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors border border-white/10">
+            Collapse All
+          </button>
+          <button type="button" data-action="trivia-editor#addQuestion" class="text-sm text-white font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-white/10">
             <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
             Add Question
-         </button>
+          </button>
+        </div>
       </div>
 
       <%# Image count info + live counter %>
@@ -71,13 +76,20 @@
         <%= form.fields_for :trivia_questions do |q| %>
           <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="<%= q.object.new_record? %>" draggable="true" data-action="dragstart->trivia-editor#dragStart dragend->trivia-editor#dragEnd dragover->trivia-editor#dragOver dragenter->trivia-editor#dragEnter dragleave->trivia-editor#dragLeave drop->trivia-editor#drop">
             <%= q.hidden_field :position, data: { trivia_editor_target: "positionField" } %>
-            <!-- Question Header with drag handle, position, and move buttons -->
+            <!-- Question Header with drag handle, position, collapse toggle, and move buttons -->
             <div class="flex items-center gap-2 mb-3">
               <div class="drag-handle cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60 transition-colors" aria-label="Drag to reorder">
                 <%= lucide_icon('grip-vertical', class: "w-4 h-4", "aria-hidden": true) %>
               </div>
+              <button type="button" data-action="trivia-editor#toggleCollapse" class="text-white/30 hover:text-white/70 p-0.5 rounded transition-colors" aria-label="Toggle collapse">
+                <%= lucide_icon('chevron-down', class: "w-4 h-4 collapse-icon transition-transform", "aria-hidden": true) %>
+              </button>
               <span class="position-badge inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full" data-trivia-editor-target="positionBadge"><%= (q.object.position || q.index + 1) %></span>
+              <span class="text-sm text-white/50 truncate max-w-[200px]"><%= q.object.body.presence&.truncate(40) %></span>
               <div class="flex gap-0.5 ml-auto">
+                <button type="button" data-action="trivia-editor#insertQuestionBelow" class="text-white/30 hover:text-white/70 p-1 rounded hover:bg-white/10 transition-colors" aria-label="Insert question below" title="Insert question below">
+                  <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
+                </button>
                 <button type="button" data-action="trivia-editor#moveUp" class="text-white/30 hover:text-white/70 p-1 rounded hover:bg-white/10 transition-colors" aria-label="Move up">
                   <%= lucide_icon('chevron-up', class: "w-4 h-4", "aria-hidden": true) %>
                 </button>
@@ -86,6 +98,8 @@
                 </button>
               </div>
             </div>
+            <!-- Collapsible Content -->
+            <div data-trivia-editor-target="collapsibleContent">
             <!-- Question Body -->
             <div class="mb-4">
               <%= q.text_area :body, rows: 2, class: "block w-full rounded-lg bg-white/10 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 resize-none transition-all px-3 py-2", data: { trivia_editor_target: "questionField", action: "input->trivia-editor#updateCount" }, placeholder: "Enter trivia question..." %>
@@ -187,6 +201,7 @@
                 Remove
               </button>
             </div>
+            </div><%# end collapsibleContent %>
           </div>
         <% end %>
       </div>
@@ -197,13 +212,20 @@
   <template data-trivia-editor-target="questionTemplate">
     <div class="question-field-wrapper bg-white/5 rounded-xl p-4 border border-white/10 group" data-new-record="true" draggable="true" data-action="dragstart->trivia-editor#dragStart dragend->trivia-editor#dragEnd dragover->trivia-editor#dragOver dragenter->trivia-editor#dragEnter dragleave->trivia-editor#dragLeave drop->trivia-editor#drop">
       <input type="hidden" name="trivia_pack[trivia_questions_attributes][NEW_RECORD][position]" data-trivia-editor-target="positionField" />
-      <!-- Question Header with drag handle, position, and move buttons -->
+      <!-- Question Header with drag handle, position, collapse toggle, and move buttons -->
       <div class="flex items-center gap-2 mb-3">
         <div class="drag-handle cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60 transition-colors" aria-label="Drag to reorder">
           <%= lucide_icon('grip-vertical', class: "w-4 h-4", "aria-hidden": true) %>
         </div>
+        <button type="button" data-action="trivia-editor#toggleCollapse" class="text-white/30 hover:text-white/70 p-0.5 rounded transition-colors" aria-label="Toggle collapse">
+          <%= lucide_icon('chevron-down', class: "w-4 h-4 collapse-icon transition-transform", "aria-hidden": true) %>
+        </button>
         <span class="position-badge inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full" data-trivia-editor-target="positionBadge"></span>
+        <span class="text-sm text-white/50 truncate max-w-[200px]"></span>
         <div class="flex gap-0.5 ml-auto">
+          <button type="button" data-action="trivia-editor#insertQuestionBelow" class="text-white/30 hover:text-white/70 p-1 rounded hover:bg-white/10 transition-colors" aria-label="Insert question below" title="Insert question below">
+            <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
+          </button>
           <button type="button" data-action="trivia-editor#moveUp" class="text-white/30 hover:text-white/70 p-1 rounded hover:bg-white/10 transition-colors" aria-label="Move up">
             <%= lucide_icon('chevron-up', class: "w-4 h-4", "aria-hidden": true) %>
           </button>
@@ -212,6 +234,8 @@
           </button>
         </div>
       </div>
+      <!-- Collapsible Content -->
+      <div data-trivia-editor-target="collapsibleContent">
       <!-- Question Body -->
       <div class="mb-4">
         <textarea name="trivia_pack[trivia_questions_attributes][NEW_RECORD][body]" rows="2" class="block w-full rounded-lg bg-white/10 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/30 resize-none transition-all px-3 py-2" data-trivia-editor-target="questionField" data-action="input->trivia-editor#updateCount" placeholder="Enter trivia question..."></textarea>
@@ -290,6 +314,7 @@
           Remove
         </button>
       </div>
+      </div><%# end collapsibleContent %>
     </div>
   </template>
 <% end %>
