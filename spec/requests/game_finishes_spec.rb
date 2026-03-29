@@ -2,160 +2,157 @@ require "rails_helper"
 
 RSpec.describe "GameFinishes", type: :request do
   describe "POST /game_finishes" do
-    context "as the host player" do
-      it "finishes a speed trivia game with data" do
-        room = create(:room, game_type: "Speed Trivia", status: "playing")
-        game = create(:speed_trivia_game, status: "answering")
-        host = create(:player, room:, name: "Host")
-        room.update!(current_game: game, host:)
+    let(:room) { create(:room, game_type: "Speed Trivia", status: "playing") }
+    let(:game) { create(:speed_trivia_game, status: "answering") }
+    let(:host) { create(:player, room:, name: "Host") }
+
+    before { room.update!(current_game: game, host:) }
+
+    def end_game(game_record = game)
+      post game_finishes_path, params: { game_type: game_record.class.name, game_id: game_record.id,
+                                         code: room.code }
+    end
+
+    context "with scoreable speed trivia data" do
+      before do
+        get set_player_session_path(host)
         player = create(:player, room:, name: "Player1")
         question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
         create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
+      end
 
-        get set_player_session_path(host)
-        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-
+      it "finishes the game and room" do
+        end_game
         expect(game.reload.status).to eq("finished")
         expect(room.reload.status).to eq("finished")
       end
+    end
 
-      it "finishes a write and vote game with data" do
-        room = create(:room, game_type: "Write And Vote", status: "playing")
-        game = create(:write_and_vote_game, status: "voting")
-        host = create(:player, room:, name: "Host")
-        room.update!(current_game: game, host:)
+    context "with scoreable write and vote data" do
+      let(:room) { create(:room, game_type: "Write And Vote", status: "playing") }
+      let(:game) { create(:write_and_vote_game, status: "voting") }
+
+      before do
+        get set_player_session_path(host)
         player = create(:player, room:, name: "Player1")
         prompt_instance = create(:prompt_instance, write_and_vote_game: game, round: 1)
-        response = create(:response, player:, prompt_instance:, body: "Funny answer")
-        create(:vote, response:, player: host)
+        resp = create(:response, player:, prompt_instance:, body: "Funny answer")
+        create(:vote, response: resp, player: host)
+      end
 
-        get set_player_session_path(host)
-        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-
+      it "finishes the game and room" do
+        end_game
         expect(game.reload.status).to eq("finished")
         expect(room.reload.status).to eq("finished")
       end
+    end
 
-      it "finishes a category list game with data" do
-        room = create(:room, game_type: "Category List", status: "playing")
-        game = create(:category_list_game, status: "scoring")
-        host = create(:player, room:, name: "Host")
-        room.update!(current_game: game, host:)
+    context "with scoreable category list data" do
+      let(:room) { create(:room, game_type: "Category List", status: "playing") }
+      let(:game) { create(:category_list_game, status: "scoring") }
+
+      before do
+        get set_player_session_path(host)
         player = create(:player, room:, name: "Player1")
         ci = create(:category_instance, category_list_game: game, round: 1)
         create(:category_answer, category_instance: ci, player:, body: "Apple", points_awarded: 1)
+      end
 
-        get set_player_session_path(host)
-        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-
+      it "finishes the game and room" do
+        end_game
         expect(game.reload.status).to eq("finished")
         expect(room.reload.status).to eq("finished")
       end
+    end
 
-      it "resets to lobby when no scoreable data" do
+    context "without scoreable data" do
+      let(:game) { create(:speed_trivia_game, status: "instructions") }
+
+      before do
         create(:trivia_pack, :default)
-        room = create(:room, game_type: "Speed Trivia", status: "playing")
-        game = create(:speed_trivia_game, status: "instructions")
-        host = create(:player, room:, name: "Host")
-        room.update!(current_game: game, host:)
-
         get set_player_session_path(host)
-        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
+      end
 
+      it "resets to lobby" do
+        end_game
         expect(room.reload.status).to eq("lobby")
         expect(room.current_game).to be_nil
       end
     end
 
-    context "as a non-host player" do
+    context "when a non-host player attempts to end a game" do
+      let(:non_host) { create(:player, room:, name: "Regular") }
+
+      before { get set_player_session_path(non_host) }
+
       it "rejects the request" do
-        room = create(:room, game_type: "Speed Trivia", status: "playing")
-        game = create(:speed_trivia_game, status: "answering")
-        host = create(:player, room:, name: "Host")
-        non_host = create(:player, room:, name: "Regular")
-        room.update!(current_game: game, host:)
-
-        get set_player_session_path(non_host)
-        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-
+        end_game
         expect(response).to redirect_to(room_hand_path(room))
         expect(game.reload.status).to eq("answering")
       end
     end
 
-    context "as a backstage host (logged-in User)" do
-      it "finishes the game" do
-        user = create(:user)
-        sign_in(user)
-        room = create(:room, game_type: "Speed Trivia", status: "playing", user:)
-        game = create(:speed_trivia_game, status: "answering")
+    context "when a backstage host ends a game" do
+      let(:user) { create(:user) }
+      let(:room) { create(:room, game_type: "Speed Trivia", status: "playing", user:) }
+
+      before do
         room.update!(current_game: game)
+        sign_in(user)
         player = create(:player, room:, name: "Player1")
         question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
         create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
+      end
 
-        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-
+      it "finishes the game and room" do
+        end_game
         expect(game.reload.status).to eq("finished")
         expect(room.reload.status).to eq("finished")
       end
     end
 
-    context "race conditions (double-click / duplicate request)" do
-      context "double-click: game already finished by first request" do
-        it "handles the second request gracefully" do
-          room = create(:room, game_type: "Speed Trivia", status: "playing")
-          game = create(:speed_trivia_game, status: "answering")
-          host = create(:player, room:, name: "Host")
-          room.update!(current_game: game, host:)
-          player = create(:player, room:, name: "Player1")
-          question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
-          create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
-
-          get set_player_session_path(host)
-
-          # First request finishes the game
-          post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-          expect(game.reload.status).to eq("finished")
-
-          # Second request should not error — game stays finished
-          post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
-          expect(game.reload.status).to eq("finished")
-        end
+    # rubocop:disable RSpec/ExampleLength
+    context "when the host double-clicks end game on a finished game" do
+      before do
+        player = create(:player, room:, name: "Player1")
+        question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+        create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
+        get set_player_session_path(host)
       end
 
-      context "double-click: game already destroyed by first request" do
-        it "returns not found on the second request" do
-          create(:trivia_pack, :default)
-          room = create(:room, game_type: "Speed Trivia", status: "playing")
-          game = create(:speed_trivia_game, status: "instructions")
-          host = create(:player, room:, name: "Host")
-          room.update!(current_game: game, host:)
-          game_id = game.id
+      it "handles the second request gracefully" do
+        end_game
+        expect(game.reload.status).to eq("finished")
 
-          get set_player_session_path(host)
-
-          # First request resets to lobby and destroys the game
-          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id:, code: room.code }
-          expect(room.reload.status).to eq("lobby")
-
-          # Second request — game is gone, should 404
-          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id:, code: room.code }
-          expect(response).to have_http_status(:not_found)
-        end
+        end_game
+        expect(game.reload.status).to eq("finished")
       end
     end
 
-    context "with invalid game type" do
-      it "returns not found" do
-        room = create(:room, game_type: "Speed Trivia", status: "playing")
-        game = create(:speed_trivia_game, status: "answering")
-        host = create(:player, room:, name: "Host")
-        room.update!(current_game: game, host:)
+    context "when the host double-clicks end game on a destroyed game" do
+      let(:game) { create(:speed_trivia_game, status: "instructions") }
 
+      before do
+        create(:trivia_pack, :default)
         get set_player_session_path(host)
-        post game_finishes_path, params: { game_type: "User", game_id: 1, code: room.code }
+      end
 
+      it "returns not found on the second request" do
+        game_id = game.id
+        end_game
+        expect(room.reload.status).to eq("lobby")
+
+        post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id:, code: room.code }
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    context "with an invalid game type" do
+      before { get set_player_session_path(host) }
+
+      it "returns not found" do
+        post game_finishes_path, params: { game_type: "User", game_id: 1, code: room.code }
         expect(response).to have_http_status(:not_found)
       end
     end

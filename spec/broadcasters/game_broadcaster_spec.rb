@@ -93,6 +93,7 @@ RSpec.describe GameBroadcaster do
   end
   # rubocop:enable RSpec/ExampleLength
 
+  # rubocop:disable RSpec/ExampleLength
   describe '.broadcast_stage_lobby' do
     let(:room) { create(:room) }
 
@@ -114,6 +115,7 @@ RSpec.describe GameBroadcaster do
       expect(Rails.logger).to have_received(:info).with(hash_including(event: "broadcast_stage_lobby"))
     end
   end
+  # rubocop:enable RSpec/ExampleLength
 
   # rubocop:disable RSpec/ExampleLength
   describe '.broadcast_player_left' do
