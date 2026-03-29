@@ -87,7 +87,7 @@ RSpec.describe "GameFinishes", type: :request do
       it "finishes the game" do
         user = create(:user)
         sign_in(user)
-        room = create(:room, game_type: "Speed Trivia", status: "playing", user: user)
+        room = create(:room, game_type: "Speed Trivia", status: "playing", user:)
         game = create(:speed_trivia_game, status: "answering")
         room.update!(current_game: game)
         player = create(:player, room:, name: "Player1")
@@ -136,11 +136,11 @@ RSpec.describe "GameFinishes", type: :request do
           get set_player_session_path(host)
 
           # First request resets to lobby and destroys the game
-          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id: game_id, code: room.code }
+          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id:, code: room.code }
           expect(room.reload.status).to eq("lobby")
 
           # Second request — game is gone, should 404
-          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id: game_id, code: room.code }
+          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id:, code: room.code }
           expect(response).to have_http_status(:not_found)
         end
       end
