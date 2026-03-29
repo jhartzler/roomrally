@@ -37,6 +37,19 @@ module GameBroadcaster
     )
   end
 
+  def self.broadcast_stage_lobby(room:)
+    Rails.logger.info({ event: "broadcast_stage_lobby", room_code: room.code })
+
+    Turbo::StreamsChannel.broadcast_action_to(
+      room,
+      action: :update,
+      attributes: { method: :morph },
+      target: "stage_content",
+      partial: "rooms/stage_lobby",
+      locals: { room: }
+    )
+  end
+
   def self.broadcast_game_start(room:)
     Rails.logger.info({ event: "broadcast_game_start", room_code: room.code })
 
