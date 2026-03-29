@@ -270,6 +270,78 @@ RSpec.describe Games::SpeedTrivia do
     end
   end
 
+  describe '.finish_game!' do
+    let(:game) { create(:speed_trivia_game, status: "answering") }
+    let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia", status: "playing") }
+
+    before do
+      create(:player, room:).tap { |p| room.update!(host: p) }
+      allow(GameBroadcaster).to receive(:broadcast_stage)
+      allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
+      allow(GameBroadcaster).to receive(:broadcast_stage_lobby)
+    end
+
+    context 'with scoreable data' do
+      let!(:question) { create(:trivia_question_instance, speed_trivia_game: game, position: 0) }
+      let!(:player) { create(:player, room:, score: 0) }
+
+      before do
+        create(:trivia_answer, player:, trivia_question_instance: question, points_awarded: 800)
+      end
+
+      it 'finishes the game' do
+        described_class.finish_game!(game:)
+        expect(game.reload.status).to eq("finished")
+      end
+
+      it 'finishes the room' do
+        described_class.finish_game!(game:)
+        expect(room.reload.status).to eq("finished")
+      end
+
+      it 'calculates scores' do
+        described_class.finish_game!(game:)
+        expect(player.reload.score).to eq(800)
+      end
+
+      it 'logs a game_finished event' do
+        described_class.finish_game!(game:)
+        event = GameEvent.find_by(eventable: game, event_name: "game_finished")
+        expect(event).to be_present
+        expect(event.metadata["details"]).to eq("ended by host")
+      end
+
+      it 'broadcasts game state' do
+        described_class.finish_game!(game:)
+        expect(GameBroadcaster).to have_received(:broadcast_stage)
+      end
+    end
+
+    context 'without scoreable data' do
+      it 'destroys the game' do
+        expect { described_class.finish_game!(game:) }.to change(SpeedTriviaGame, :count).by(-1)
+      end
+
+      it 'resets room to lobby' do
+        described_class.finish_game!(game:)
+        expect(room.reload.status).to eq("lobby")
+      end
+
+      it 'nils out current_game' do
+        described_class.finish_game!(game:)
+        expect(room.reload.current_game).to be_nil
+      end
+
+      it 'broadcasts lobby state', :aggregate_failures do
+        described_class.finish_game!(game:)
+        expect(GameBroadcaster).to have_received(:broadcast_stage_lobby).with(room:)
+        expect(GameBroadcaster).to have_received(:broadcast_hand).with(room:)
+        expect(GameBroadcaster).to have_received(:broadcast_host_controls).with(room:)
+      end
+    end
+  end
+
   describe '.next_question' do
     let(:game) { create(:speed_trivia_game, status: "reviewing", current_question_index: 0) }
     let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
