@@ -50,6 +50,12 @@ module GameBroadcaster
     )
   end
 
+  def self.broadcast_lobby(room:)
+    broadcast_stage_lobby(room:)
+    broadcast_hand(room:)
+    update_all_host_controls(room)
+  end
+
   def self.broadcast_game_start(room:)
     Rails.logger.info({ event: "broadcast_game_start", room_code: room.code })
 

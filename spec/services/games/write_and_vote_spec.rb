@@ -119,6 +119,7 @@ RSpec.describe Games::WriteAndVote do
       allow(GameBroadcaster).to receive(:broadcast_hand)
       allow(GameBroadcaster).to receive(:broadcast_host_controls)
       allow(GameBroadcaster).to receive(:broadcast_stage_lobby)
+      allow(GameBroadcaster).to receive(:broadcast_lobby)
     end
 
     context 'with scoreable data' do
@@ -178,12 +179,10 @@ RSpec.describe Games::WriteAndVote do
         expect(room.reload.current_game).to be_nil
       end
 
-      it 'broadcasts lobby state', :aggregate_failures do
+      it 'broadcasts lobby state' do
         room
         described_class.finish_game!(game:)
-        expect(GameBroadcaster).to have_received(:broadcast_stage_lobby).with(room:)
-        expect(GameBroadcaster).to have_received(:broadcast_hand).with(room:)
-        expect(GameBroadcaster).to have_received(:broadcast_host_controls).with(room:)
+        expect(GameBroadcaster).to have_received(:broadcast_lobby).with(room:)
       end
     end
   end

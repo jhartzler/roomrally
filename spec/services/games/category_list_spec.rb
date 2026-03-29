@@ -62,6 +62,7 @@ RSpec.describe Games::CategoryList do
       allow(GameBroadcaster).to receive(:broadcast_host_controls)
       allow(GameBroadcaster).to receive(:broadcast_game_start)
       allow(GameBroadcaster).to receive(:broadcast_stage_lobby)
+      allow(GameBroadcaster).to receive(:broadcast_lobby)
     end
 
     context "with scoreable data" do
@@ -172,9 +173,7 @@ RSpec.describe Games::CategoryList do
       it "broadcasts lobby state" do
         game = room.reload.current_game
         described_class.finish_game!(game:)
-        expect(GameBroadcaster).to have_received(:broadcast_stage_lobby).with(room:).once
-        expect(GameBroadcaster).to have_received(:broadcast_hand).with(room:).at_least(:once)
-        expect(GameBroadcaster).to have_received(:broadcast_host_controls).with(room:).at_least(:once)
+        expect(GameBroadcaster).to have_received(:broadcast_lobby).with(room:)
       end
     end
   end
