@@ -226,6 +226,16 @@ Controllers just call `render_hand` with no arguments.
 
 **Architecture note — hand_screen is a turbo-frame, not a div.** Turbo-frame submissions always use the meta CSRF token and never drift `window.location.href`.
 
+**Links inside `#hand_screen` that navigate away from the hand view must use `data: { turbo_frame: "_top" }`** — without it, Turbo tries to load the destination page *into* the frame. If the destination page doesn't contain a matching `hand_screen` frame, Turbo shows "Content Missing". Any link in a hand partial that takes the player to a different page (e.g. sign-up, marketing pages, external URLs) needs this attribute.
+
+```erb
+<%# ✅ DO — breaks out of the frame for full-page navigation %>
+<%= link_to "Sign up free", host_path, data: { turbo_frame: "_top" } %>
+
+<%# ❌ DON'T — Turbo loads /host into hand_screen, gets "Content Missing" %>
+<%= link_to "Sign up free", host_path %>
+```
+
 ### Stage Partials — DOM and Animation Rules
 
 **DOM structure:** Never assume `firstElementChild` or `children[0]` is the content element in stage partials — some partials include `<link>` preload tags before the main div. Use `querySelector("[id^='stage_']")` or target the specific element by ID/class.
