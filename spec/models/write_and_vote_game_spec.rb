@@ -294,6 +294,23 @@ RSpec.describe WriteAndVoteGame, type: :model do
     end
   end
 
+  describe "#has_scoreable_data?" do
+    let(:game) { create(:write_and_vote_game) }
+
+    it "returns false when no votes exist" do
+      expect(game.has_scoreable_data?).to be false
+    end
+
+    it "returns true when votes exist" do
+      room = create(:room, current_game: game)
+      player = create(:player, room:)
+      prompt = create(:prompt_instance, write_and_vote_game: game)
+      response = create(:response, player:, prompt_instance: prompt)
+      create(:vote, response:, player: create(:player, room:))
+      expect(game.has_scoreable_data?).to be true
+    end
+  end
+
   describe ".supports_response_moderation?" do
     it "returns true" do
       expect(described_class.supports_response_moderation?).to be true

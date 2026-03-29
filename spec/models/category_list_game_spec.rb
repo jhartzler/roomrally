@@ -82,4 +82,20 @@ RSpec.describe CategoryListGame, type: :model do
       expect(game.last_round?).to be false
     end
   end
+
+  describe "#has_scoreable_data?" do
+    let(:game) { create(:category_list_game) }
+
+    it "returns false when no category answers exist" do
+      expect(game.has_scoreable_data?).to be false
+    end
+
+    it "returns true when category answers exist" do
+      room = create(:room, current_game: game)
+      player = create(:player, room:)
+      ci = create(:category_instance, category_list_game: game)
+      create(:category_answer, player:, category_instance: ci)
+      expect(game.has_scoreable_data?).to be true
+    end
+  end
 end

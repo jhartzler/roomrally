@@ -44,8 +44,12 @@ class CategoryListGame < ApplicationRecord
     end
 
     event :finish_game do
-      transitions from: :scoring, to: :finished
+      transitions from: [:instructions, :filling, :reviewing, :scoring], to: :finished
     end
+  end
+
+  def has_scoreable_data?
+    category_answers.exists?
   end
 
   def current_round_categories

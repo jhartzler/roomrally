@@ -340,6 +340,22 @@ RSpec.describe SpeedTriviaGame, type: :model do
     # rubocop:enable RSpec/MultipleExpectations, RSpec/ExampleLength
   end
 
+  describe '#has_scoreable_data?' do
+    let(:game) { create(:speed_trivia_game) }
+
+    it 'returns false when no trivia answers exist' do
+      expect(game.has_scoreable_data?).to be false
+    end
+
+    it 'returns true when trivia answers exist' do
+      room = create(:room, current_game: game)
+      player = create(:player, room:)
+      question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+      create(:trivia_answer, player:, trivia_question_instance: question)
+      expect(game.has_scoreable_data?).to be true
+    end
+  end
+
   describe ".supports_response_moderation?" do
     it "returns false" do
       expect(described_class.supports_response_moderation?).to be false

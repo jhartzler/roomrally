@@ -44,8 +44,14 @@ class WriteAndVoteGame < ApplicationRecord
     end
 
     event :finish_game do
-      transitions from: [ :writing, :voting ], to: :finished
+      transitions from: [:instructions, :writing, :voting], to: :finished
     end
+  end
+
+  def has_scoreable_data?
+    Vote.joins(response: :prompt_instance)
+        .where(prompt_instances: { write_and_vote_game_id: id })
+        .exists?
   end
 
   def process_timeout(job_round_number, job_step_number)

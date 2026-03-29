@@ -45,8 +45,12 @@ class SpeedTriviaGame < ApplicationRecord
     end
 
     event :finish_game do
-      transitions from: [ :waiting, :answering, :reviewing ], to: :finished
+      transitions from: [:instructions, :waiting, :answering, :reviewing], to: :finished
     end
+  end
+
+  def has_scoreable_data?
+    trivia_answers.exists?
   end
 
   def current_question
