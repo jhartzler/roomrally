@@ -15,4 +15,12 @@ class TriviaQuestionInstance < ApplicationRecord
   def total_votes
     trivia_answers.count
   end
+
+  def vote_percentage(option)
+    total = total_votes
+    return 0 if total.zero?
+
+    count = vote_counts[option] || 0
+    (count.to_f / total * 100).round
+  end
 end
