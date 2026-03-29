@@ -9,11 +9,28 @@ RSpec.describe TriviaQuestion, type: :model do
     it { is_expected.to validate_presence_of(:body) }
     it { is_expected.to validate_presence_of(:options) }
 
-    it 'validates options must be array of four' do
+    it 'validates options must have 1-4 entries' do # rubocop:disable RSpec/MultipleExpectations
       trivia_pack = create(:trivia_pack)
-      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C" ])
+
+      question = build(:trivia_question, trivia_pack:, options: [])
       expect(question).not_to be_valid
-      expect(question.errors[:options]).to include("must contain exactly 4 choices")
+      expect(question.errors[:options]).to include("must contain between 1 and 4 choices")
+
+      question = build(:trivia_question, trivia_pack:, options: [ "A" ], correct_answers: [ "A" ])
+      expect(question).to be_valid
+
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B" ], correct_answers: [ "A" ])
+      expect(question).to be_valid
+
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C" ], correct_answers: [ "A" ])
+      expect(question).to be_valid
+
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answers: [ "A" ])
+      expect(question).to be_valid
+
+      question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D", "E" ])
+      expect(question).not_to be_valid
+      expect(question.errors[:options]).to include("must contain between 1 and 4 choices")
     end
 
     it 'rejects options with blank entries' do
@@ -47,6 +64,12 @@ RSpec.describe TriviaQuestion, type: :model do
     it 'allows multiple correct answers' do
       trivia_pack = create(:trivia_pack)
       question = build(:trivia_question, trivia_pack:, options: [ "A", "B", "C", "D" ], correct_answers: [ "A", "B" ])
+      expect(question).to be_valid
+    end
+
+    it 'allows all options marked correct (poll-style)' do
+      trivia_pack = create(:trivia_pack)
+      question = build(:trivia_question, trivia_pack:, options: [ "John", "Janice" ], correct_answers: [ "John", "Janice" ])
       expect(question).to be_valid
     end
   end

@@ -6,7 +6,7 @@ class TriviaQuestion < ApplicationRecord
 
   validates :body, presence: true
   validates :options, presence: true
-  validate :options_must_be_array_of_four
+  validate :options_must_have_valid_count
   validate :correct_answers_must_be_valid
   validate :image_content_type_acceptable
   validate :image_size_acceptable
@@ -15,7 +15,8 @@ class TriviaQuestion < ApplicationRecord
 
   private
 
-  OPTIONS_COUNT = 4
+  MIN_OPTIONS = 1
+  MAX_OPTIONS = 4
   ALLOWED_IMAGE_TYPES = %w[image/jpeg image/png image/webp image/gif].freeze
 
   def purge_image_if_marked
@@ -40,9 +41,9 @@ class TriviaQuestion < ApplicationRecord
     end
   end
 
-  def options_must_be_array_of_four
-    unless options.is_a?(Array) && options.length == OPTIONS_COUNT
-      errors.add(:options, "must contain exactly #{OPTIONS_COUNT} choices")
+  def options_must_have_valid_count
+    unless options.is_a?(Array) && options.length.between?(MIN_OPTIONS, MAX_OPTIONS)
+      errors.add(:options, "must contain between #{MIN_OPTIONS} and #{MAX_OPTIONS} choices")
       return
     end
 
