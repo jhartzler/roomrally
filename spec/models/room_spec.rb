@@ -151,6 +151,26 @@ RSpec.describe Room, type: :model do
       end
     end
 
+    describe "reset_to_lobby" do
+      it "transitions from playing to lobby" do
+        room = create(:room)
+        room.update!(status: "playing")
+        room.reset_to_lobby!
+        expect(room.status).to eq("lobby")
+      end
+
+      it "does not transition from lobby" do
+        room = create(:room)
+        expect(room.may_reset_to_lobby?).to be false
+      end
+
+      it "does not transition from finished" do
+        room = create(:room)
+        room.update!(status: "finished")
+        expect(room.may_reset_to_lobby?).to be false
+      end
+    end
+
     describe '#finish!' do
       let(:playing_room) { create(:room, status: 'playing') }
 

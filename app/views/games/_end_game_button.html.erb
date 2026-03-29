@@ -1,0 +1,15 @@
+<%# Shared "End Game" link for host controls. %>
+<%# Include in any game's host controls when game is active (not finished). %>
+
+<div class="mt-4 pt-3 border-t border-white/10 text-center">
+  <%= form_with url: game_finishes_path, method: :post,
+      data: { controller: "confirm-action",
+              confirm_action_message_value: "Are you sure? This will end the game for all players." } do |f| %>
+    <%= f.hidden_field :game_type, value: game.class.name %>
+    <%= f.hidden_field :game_id, value: game.id %>
+    <%= f.hidden_field :code, value: room.code %>
+    <%= f.submit "End Game",
+        class: "text-sm text-red-300/60 hover:text-red-300 underline decoration-dotted cursor-pointer bg-transparent border-none transition",
+        data: { turbo_submits_with: "Ending…" } %>
+  <% end %>
+</div>

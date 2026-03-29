@@ -60,6 +60,10 @@ class Room < ApplicationRecord
     event :finish do
       transitions from: :playing, to: :finished
     end
+
+    event :reset_to_lobby do
+      transitions from: :playing, to: :lobby
+    end
   end
 
   def enough_players?

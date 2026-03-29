@@ -51,6 +51,133 @@ RSpec.describe Games::CategoryList do
     end
   end
 
+  describe ".finish_game!" do
+    let(:room) { create(:room, game_type: "Category List", status: "playing") }
+    let!(:players) { 3.times.map { create(:player, room:) } }
+
+    before do
+      room.update!(host: players.first)
+      allow(GameBroadcaster).to receive(:broadcast_stage)
+      allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
+      allow(GameBroadcaster).to receive(:broadcast_game_start)
+      allow(GameBroadcaster).to receive(:broadcast_stage_lobby)
+      allow(GameBroadcaster).to receive(:broadcast_lobby)
+    end
+
+    context "with scoreable data" do
+      let(:game) do
+        described_class.game_started(room:, show_instructions: false, categories_per_round: 2)
+        room.reload.current_game
+      end
+
+      before do
+        # Submit answers for all players on all categories
+        game.current_round_categories.each do |ci|
+          players.each do |player|
+            described_class.submit_answers(
+              game: game.reload,
+              player:,
+              answers_params: { ci.id.to_s => "Unique #{player.id} #{ci.id}" }
+            )
+          end
+        end
+      end
+
+      it "finishes the game" do
+        described_class.finish_game!(game: game.reload)
+        expect(game.reload.status).to eq("finished")
+      end
+
+      it "finishes the room" do
+        described_class.finish_game!(game: game.reload)
+        expect(room.reload.status).to eq("finished")
+      end
+
+      it "calculates total scores" do
+        described_class.finish_game!(game: game.reload)
+        scored_players = room.players.active_players.where("score > 0")
+        expect(scored_players).to exist
+      end
+
+      it "logs a game_finished event" do
+        described_class.finish_game!(game: game.reload)
+        event = GameEvent.find_by(eventable: game, event_name: "game_finished")
+        expect(event).to be_present
+        expect(event.metadata["details"]).to eq("ended by host")
+      end
+    end
+
+    context "with scoreable data in filling state" do
+      let(:game) do
+        described_class.game_started(room:, show_instructions: false, categories_per_round: 2)
+        room.reload.current_game
+      end
+
+      before do
+        # Submit answers for only one player — game stays in filling (not all submitted)
+        ci = game.current_round_categories.first
+        described_class.submit_answers(
+          game: game.reload,
+          player: players.first,
+          answers_params: { ci.id.to_s => "Partial Answer" }
+        )
+        # Confirm game is still in filling state (not all players submitted)
+        expect(game.reload).to be_filling
+        # Confirm answers exist but round scoring hasn't run (points_awarded defaults to 0, not set by scoring logic)
+        expect(CategoryAnswer.where(player: players.first).count).to be > 0
+      end
+
+      it "does not raise an error" do
+        expect { described_class.finish_game!(game: game.reload) }.not_to raise_error
+      end
+
+      it "finishes the game" do
+        described_class.finish_game!(game: game.reload)
+        expect(game.reload.status).to eq("finished")
+      end
+
+      it "finishes the room" do
+        described_class.finish_game!(game: game.reload)
+        expect(room.reload.status).to eq("finished")
+      end
+
+      it "scores the current round and calculates totals" do
+        described_class.finish_game!(game: game.reload)
+        expect(players.first.reload.score).to be > 0
+      end
+    end
+
+    context "without scoreable data" do
+      before do
+        described_class.game_started(room:, show_instructions: true)
+      end
+
+      it "destroys the game" do
+        game = room.reload.current_game
+        expect { described_class.finish_game!(game:) }.to change(CategoryListGame, :count).by(-1)
+      end
+
+      it "resets room to lobby" do
+        game = room.reload.current_game
+        described_class.finish_game!(game:)
+        expect(room.reload.status).to eq("lobby")
+      end
+
+      it "nils out current_game" do
+        game = room.reload.current_game
+        described_class.finish_game!(game:)
+        expect(room.reload.current_game).to be_nil
+      end
+
+      it "broadcasts lobby state" do
+        game = room.reload.current_game
+        described_class.finish_game!(game:)
+        expect(GameBroadcaster).to have_received(:broadcast_lobby).with(room:)
+      end
+    end
+  end
+
   describe ".start_from_instructions" do
     let(:room) { create(:room, game_type: "Category List") }
     let!(:players) { 3.times.map { create(:player, room:) } }

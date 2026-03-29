@@ -108,6 +108,85 @@ RSpec.describe Games::WriteAndVote do
     end
   end
 
+  describe '.finish_game!' do
+    let!(:default_pack) { create(:prompt_pack, :default) }
+    let(:game) { create(:write_and_vote_game, status: "voting", prompt_pack: default_pack) }
+    let(:room) { create(:room, current_game: game, game_type: "Write And Vote", status: "playing") }
+
+    before do
+      create(:player, room:).tap { |p| room.update!(host: p) }
+      allow(GameBroadcaster).to receive(:broadcast_stage)
+      allow(GameBroadcaster).to receive(:broadcast_hand)
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
+      allow(GameBroadcaster).to receive(:broadcast_stage_lobby)
+      allow(GameBroadcaster).to receive(:broadcast_lobby)
+    end
+
+    context 'with scoreable data' do
+      let!(:player) { create(:player, room:, score: 0) }
+      let!(:voter) { create(:player, room:) }
+
+      before do
+        prompt = create(:prompt_instance, write_and_vote_game: game)
+        response = create(:response, player:, prompt_instance: prompt, body: "Funny answer")
+        create(:vote, response:, player: voter)
+      end
+
+      it 'finishes the game' do
+        described_class.finish_game!(game:)
+        expect(game.reload.status).to eq("finished")
+      end
+
+      it 'finishes the room' do
+        described_class.finish_game!(game:)
+        expect(room.reload.status).to eq("finished")
+      end
+
+      it 'calculates scores' do
+        described_class.finish_game!(game:)
+        expect(player.reload.score).to eq(500)
+      end
+
+      it 'logs a game_finished event' do
+        described_class.finish_game!(game:)
+        event = GameEvent.find_by(eventable: game, event_name: "game_finished")
+        expect(event).to be_present
+        expect(event.metadata["details"]).to eq("ended by host")
+      end
+
+      it 'broadcasts game state' do
+        described_class.finish_game!(game:)
+        expect(GameBroadcaster).to have_received(:broadcast_stage)
+      end
+    end
+
+    context 'without scoreable data' do
+      it 'destroys the game' do
+        # Ensure game and room are created
+        room
+        expect { described_class.finish_game!(game:) }.to change(WriteAndVoteGame, :count).by(-1)
+      end
+
+      it 'resets room to lobby' do
+        room
+        described_class.finish_game!(game:)
+        expect(room.reload.status).to eq("lobby")
+      end
+
+      it 'nils out current_game' do
+        room
+        described_class.finish_game!(game:)
+        expect(room.reload.current_game).to be_nil
+      end
+
+      it 'broadcasts lobby state' do
+        room
+        described_class.finish_game!(game:)
+        expect(GameBroadcaster).to have_received(:broadcast_lobby).with(room:)
+      end
+    end
+  end
+
   describe '.process_vote' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     let!(:default_pack) { create(:prompt_pack, :default) }
     let(:game) { create(:write_and_vote_game, status: 'voting', prompt_pack: default_pack, timer_enabled: true) }

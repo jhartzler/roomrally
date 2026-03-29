@@ -43,4 +43,8 @@
       </div>
     <% end %>
   <% end %>
+
+  <% unless game.finished? %>
+    <%= render "games/end_game_button", game: game, room: room %>
+  <% end %>
 </div>

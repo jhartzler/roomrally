@@ -1,5 +1,7 @@
 module Games
   module CategoryList
+    extend Finishable
+
     DEFAULT_TOTAL_ROUNDS = 3
     DEFAULT_CATEGORIES_PER_ROUND = 6
 
@@ -291,11 +293,22 @@ module Games
       game.start_timer!(game.timer_increment)
     end
 
-    def self.broadcast_all(game)
-      room = game.room
-      GameBroadcaster.broadcast_stage(room:)
-      GameBroadcaster.broadcast_hand(room:)
-      GameBroadcaster.broadcast_host_controls(room:)
+    def self.broadcast_all(game_or_room, lobby: false)
+      if lobby
+        GameBroadcaster.broadcast_lobby(room: game_or_room)
+      else
+        room = game_or_room.room
+        GameBroadcaster.broadcast_stage(room:)
+        GameBroadcaster.broadcast_hand(room:)
+        GameBroadcaster.broadcast_host_controls(room:)
+      end
+    end
+
+    def self.calculate_final_scores(game)
+      unless game.finished?
+        calculate_round_scores(game:)
+      end
+      calculate_total_scores(game:)
     end
 
     private_class_method :setup_round, :fill_missing_answers, :calculate_round_scores,

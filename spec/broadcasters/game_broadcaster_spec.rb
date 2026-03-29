@@ -94,6 +94,30 @@ RSpec.describe GameBroadcaster do
   # rubocop:enable RSpec/ExampleLength
 
   # rubocop:disable RSpec/ExampleLength
+  describe '.broadcast_stage_lobby' do
+    let(:room) { create(:room) }
+
+    it 'broadcasts the lobby partial to the stage_content target' do
+      described_class.broadcast_stage_lobby(room:)
+
+      expect(Turbo::StreamsChannel).to have_received(:broadcast_action_to).with(
+        room,
+        action: :update,
+        attributes: { method: :morph },
+        target: "stage_content",
+        partial: "rooms/stage_lobby",
+        locals: { room: }
+      )
+    end
+
+    it 'logs the broadcast event' do
+      described_class.broadcast_stage_lobby(room:)
+      expect(Rails.logger).to have_received(:info).with(hash_including(event: "broadcast_stage_lobby"))
+    end
+  end
+  # rubocop:enable RSpec/ExampleLength
+
+  # rubocop:disable RSpec/ExampleLength
   describe '.broadcast_player_left' do
     let(:room) { create(:room) }
     let(:player) { create(:player, room:) }

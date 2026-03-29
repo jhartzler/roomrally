@@ -1,7 +1,7 @@
 module GameBroadcaster
   def self.broadcast_hand(room:)
-    room.players.each do |player|
-    Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
+    room.reload.players.each do |player|
+      Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
 
       Turbo::StreamsChannel.broadcast_action_to(
         player,
@@ -9,7 +9,7 @@ module GameBroadcaster
         attributes: { method: :morph },
         target: "hand_screen",
         partial: "rooms/hand_screen_content",
-        locals: { room: room.reload, player: }
+        locals: { room:, player: }
       )
     end
   end
@@ -35,6 +35,25 @@ module GameBroadcaster
       partial: partial_name,
       locals:
     )
+  end
+
+  def self.broadcast_stage_lobby(room:)
+    Rails.logger.info({ event: "broadcast_stage_lobby", room_code: room.code })
+
+    Turbo::StreamsChannel.broadcast_action_to(
+      room,
+      action: :update,
+      attributes: { method: :morph },
+      target: "stage_content",
+      partial: "rooms/stage_lobby",
+      locals: { room: }
+    )
+  end
+
+  def self.broadcast_lobby(room:)
+    broadcast_stage_lobby(room:)
+    broadcast_hand(room:)
+    update_all_host_controls(room)
   end
 
   def self.broadcast_game_start(room:)
