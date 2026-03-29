@@ -48,6 +48,31 @@ RSpec.describe "End Game", :js, type: :system do
     end
   end
 
+  describe "confirmation dialog" do
+    it "does not end the game when host declines confirmation" do
+      room = create(:room, game_type: "Speed Trivia", status: "playing")
+      game = create(:speed_trivia_game, status: "answering")
+      host = create(:player, room:, name: "QuizHost")
+      player1 = create(:player, room:, name: "Smarty")
+      room.update!(current_game: game, host:)
+      question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+      create(:trivia_answer, trivia_question_instance: question, player: player1, points_awarded: 1000)
+
+      visit set_player_session_path(host)
+      visit room_hand_path(room)
+
+      dismiss_confirm do
+        click_on "End Game"
+      end
+
+      # Game should still be in progress
+      expect(game.reload.status).to eq("answering")
+      expect(room.reload.status).to eq("playing")
+      # End Game button should still be visible
+      expect(page).to have_button("End Game")
+    end
+  end
+
   describe "non-host cannot end game" do
     it "does not show the End Game button to regular players" do
       room = create(:room, game_type: "Speed Trivia", status: "playing")
