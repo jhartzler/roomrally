@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning", "positionField", "positionBadge"]
+    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning", "positionField", "positionBadge", "optionRow", "optionLetter", "optionsContainer", "addOptionButton", "correctAnswerButtons"]
     static values = { ratio: { type: Number, default: 1 }, imageLimit: { type: Number, default: 20 } }
 
     connect() {
@@ -376,6 +376,9 @@ export default class extends Controller {
             this.syncCorrectAnswersFields(wrapper)
         }
 
+        // Initialize option add/remove state
+        this.updateOptionState(wrapper)
+
         this.updatePositions()
         this.updateCount()
 
@@ -438,6 +441,111 @@ export default class extends Controller {
     optionChanged(event) {
         const questionWrapper = event.target.closest(".question-field-wrapper")
         this.syncCorrectAnswersFields(questionWrapper)
+    }
+
+    // --- Add / Remove Options ---
+
+    addOption(event) {
+        event.preventDefault()
+        const wrapper = event.target.closest(".question-field-wrapper")
+        const container = wrapper.querySelector("[data-trivia-editor-target='optionsContainer']")
+        const rows = container.querySelectorAll("[data-trivia-editor-target='optionRow']")
+        if (rows.length >= 4) return
+
+        // Clone the last existing option row — markup stays in ERB
+        const row = rows[rows.length - 1].cloneNode(true)
+        const input = row.querySelector("input[type='text']")
+        input.value = ""
+
+        // Insert before the "Add Option" button
+        const addBtn = container.querySelector("[data-trivia-editor-target='addOptionButton']")
+        container.insertBefore(row, addBtn)
+
+        // Clone the last correct answer button too
+        this.cloneCorrectAnswerButton(wrapper)
+
+        this.updateOptionState(wrapper)
+        this.syncCorrectAnswersFields(wrapper)
+
+        // Focus the new input
+        input.focus()
+    }
+
+    removeOption(event) {
+        event.preventDefault()
+        const wrapper = event.target.closest(".question-field-wrapper")
+        const container = wrapper.querySelector("[data-trivia-editor-target='optionsContainer']")
+        const rows = container.querySelectorAll("[data-trivia-editor-target='optionRow']")
+        if (rows.length <= 1) return
+
+        const row = event.target.closest("[data-trivia-editor-target='optionRow']")
+        const rowIndex = Array.from(rows).indexOf(row)
+        row.remove()
+
+        // Remove corresponding correct answer button
+        this.removeCorrectAnswerButton(wrapper, rowIndex)
+
+        // Re-letter remaining options and correct answer buttons
+        this.updateOptionState(wrapper)
+        this.syncCorrectAnswersFields(wrapper)
+    }
+
+    cloneCorrectAnswerButton(wrapper) {
+        const container = wrapper.querySelector("[data-trivia-editor-target='correctAnswerButtons']")
+        const labels = container.querySelectorAll("label")
+        const clone = labels[labels.length - 1].cloneNode(true)
+        clone.querySelector("input[type='checkbox']").checked = false
+        container.appendChild(clone)
+    }
+
+    removeCorrectAnswerButton(wrapper, removedIndex) {
+        const container = wrapper.querySelector("[data-trivia-editor-target='correctAnswerButtons']")
+        const labels = container.querySelectorAll("label")
+        if (labels[removedIndex]) {
+            labels[removedIndex].remove()
+        }
+    }
+
+    updateOptionState(wrapper) {
+        const container = wrapper.querySelector("[data-trivia-editor-target='optionsContainer']")
+        const rows = container.querySelectorAll("[data-trivia-editor-target='optionRow']")
+        const addBtn = container.querySelector("[data-trivia-editor-target='addOptionButton']")
+
+        // Re-letter option rows
+        rows.forEach((row, i) => {
+            const letter = String.fromCharCode(65 + i)
+            const letterEl = row.querySelector("[data-trivia-editor-target='optionLetter']")
+            if (letterEl) letterEl.textContent = letter
+
+            const input = row.querySelector("input[type='text']")
+            if (input) input.placeholder = `Option ${letter}`
+
+            // Disable remove button if only 1 option remains
+            const removeBtn = row.querySelector("[data-action='trivia-editor#removeOption']")
+            if (removeBtn) {
+                removeBtn.disabled = rows.length <= 1
+                removeBtn.classList.toggle("opacity-10", rows.length <= 1)
+                removeBtn.classList.toggle("pointer-events-none", rows.length <= 1)
+            }
+        })
+
+        // Show/hide add button
+        if (addBtn) {
+            addBtn.classList.toggle("hidden", rows.length >= 4)
+        }
+
+        // Re-letter and re-index correct answer buttons
+        const correctContainer = wrapper.querySelector("[data-trivia-editor-target='correctAnswerButtons']")
+        if (correctContainer) {
+            const labels = correctContainer.querySelectorAll("label")
+            labels.forEach((label, i) => {
+                const letter = String.fromCharCode(65 + i)
+                const checkbox = label.querySelector("input[type='checkbox']")
+                if (checkbox) checkbox.value = i
+                const div = label.querySelector("div")
+                if (div) div.textContent = letter
+            })
+        }
     }
 
     // --- Image Management ---

@@ -10,7 +10,7 @@
 
   <% if current_question&.image&.attached? %>
     <!-- Question Image -->
-    <div class="w-full max-w-6xl mb-[2vh] px-[2vh]">
+    <div class="w-full max-w-[120vh] mb-[2vh] px-[2vh]">
       <%= image_tag rails_blob_path(current_question.image.blob),
             class: "w-full h-[35vh] object-contain rounded-2xl shadow-2xl",
             alt: "" %>
@@ -32,7 +32,12 @@
   <% end %>
 
   <!-- Options Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-[2vh] w-full max-w-6xl px-[2vh]">
+  <% grid_class = case current_question&.options&.size
+                  when 1 then "grid-cols-1 max-w-md mx-auto"
+                  when 3 then "grid-cols-3"
+                  else "grid-cols-1 md:grid-cols-2"
+                  end %>
+  <div class="grid <%= grid_class %> gap-[2vh] w-full max-w-[120vh] px-[2vh]">
     <% if current_question %>
       <% current_question.options&.each_with_index do |option, index| %>
         <div class="bg-gray-800/80 backdrop-blur-md border-2 border-gray-600 rounded-2xl p-[2vh] flex items-center shadow-lg">
@@ -48,6 +53,6 @@
   </div>
 
   <div class="mt-[3vh]">
-    <p class="text-vh-2xl text-blue-200 animate-pulse font-semibold">Answer on your device!</p>
+    <p class="text-vh-2xl text-blue-200 font-semibold">Answer on your device!</p>
   </div>
 </div>

@@ -9,6 +9,78 @@ RSpec.describe "TriviaPack CRUD", type: :system do
   end
 
   describe "creating a trivia pack" do
+    it "saves a 2-option poll question after removing options" do
+      visit new_trivia_pack_path
+      fill_in "Name", with: "Baby Shower Trivia"
+
+      # Fill question body
+      find("textarea[data-trivia-editor-target='questionField']").set("Who will change more diapers?")
+
+      # Fill all 4 options initially
+      wrapper = find(".question-field-wrapper")
+      option_inputs = wrapper.all("input[name*='[options]']")
+      option_inputs[0].set("John")
+      option_inputs[1].set("Janice")
+      option_inputs[2].set("Neither")
+      option_inputs[3].set("Both")
+
+      # Should have 4 option rows, Add Option button hidden
+      expect(wrapper).to have_css("[data-trivia-editor-target='optionRow']", count: 4)
+      expect(wrapper).not_to have_css("[data-trivia-editor-target='addOptionButton']", visible: :visible)
+
+      # Remove option D ("Both") — click the X button on the last row
+      rows = wrapper.all("[data-trivia-editor-target='optionRow']")
+      rows[3].find("button[data-action='trivia-editor#removeOption']").click
+      expect(wrapper).to have_css("[data-trivia-editor-target='optionRow']", count: 3)
+
+      # Remove option C ("Neither")
+      rows = wrapper.all("[data-trivia-editor-target='optionRow']")
+      rows[2].find("button[data-action='trivia-editor#removeOption']").click
+      expect(wrapper).to have_css("[data-trivia-editor-target='optionRow']", count: 2)
+
+      # Add Option button should now be visible
+      expect(wrapper).to have_css("[data-trivia-editor-target='addOptionButton']", visible: :visible)
+
+      # Mark both A and B as correct (poll-style)
+      wrapper.all("input[name*='[correct_answer_indices]']").each do |cb|
+        page.execute_script("arguments[0].click();", cb)
+      end
+
+      click_button "Save Pack"
+      expect(page).to have_content("Trivia pack created.")
+
+      # Verify the question persisted with exactly 2 options
+      pack = TriviaPack.last
+      question = pack.trivia_questions.first
+      expect(question.options).to eq([ "John", "Janice" ])
+      expect(question.correct_answers).to contain_exactly("John", "Janice")
+    end
+
+    it "can add options back after removing them" do
+      visit new_trivia_pack_path
+      fill_in "Name", with: "Test Pack"
+
+      wrapper = find(".question-field-wrapper")
+
+      # Remove 2 options to get down to 2
+      2.times do
+        rows = wrapper.all("[data-trivia-editor-target='optionRow']")
+        rows.last.find("button[data-action='trivia-editor#removeOption']").click
+      end
+      expect(wrapper).to have_css("[data-trivia-editor-target='optionRow']", count: 2)
+
+      # Add one back
+      wrapper.find("[data-trivia-editor-target='addOptionButton']").click
+      expect(wrapper).to have_css("[data-trivia-editor-target='optionRow']", count: 3)
+
+      # The new option should be labeled "C"
+      rows = wrapper.all("[data-trivia-editor-target='optionRow']")
+      expect(rows[2]).to have_css("[data-trivia-editor-target='optionLetter']", text: "C")
+
+      # Correct answer buttons should also have 3 entries
+      expect(wrapper).to have_css("[data-trivia-editor-target='correctAnswerButtons'] label", count: 3)
+    end
+
     it "allows adding and removing questions" do
       visit new_trivia_pack_path
       screenshot_checkpoint("new_trivia_pack")

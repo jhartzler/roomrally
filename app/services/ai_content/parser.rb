@@ -28,7 +28,7 @@ module AiContent
         options = item["options"]
         correct = item["correct_answers"]
         return nil unless item["body"].is_a?(String) && item["body"].present?
-        return nil unless options.is_a?(Array) && options.length == TriviaQuestion::OPTIONS_COUNT
+        return nil unless options.is_a?(Array) && options.length == TriviaQuestion::MAX_OPTIONS
         return nil unless correct.is_a?(Array) && correct.any?
         return nil unless correct.all? { |c| options.include?(c) }
       end
