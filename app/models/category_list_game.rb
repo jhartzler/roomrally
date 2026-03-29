@@ -44,7 +44,7 @@ class CategoryListGame < ApplicationRecord
     end
 
     event :finish_game do
-      transitions from: [:instructions, :filling, :reviewing, :scoring], to: :finished
+      transitions from: [ :instructions, :filling, :reviewing, :scoring ], to: :finished
     end
   end
 

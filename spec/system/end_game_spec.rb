@@ -1,13 +1,13 @@
 require "rails_helper"
 
-RSpec.describe "End Game", type: :system, js: true do
+RSpec.describe "End Game", :js, type: :system do
   describe "ending a game with scoreable data" do
     it "finishes speed trivia and shows game over screen" do
       room = create(:room, game_type: "Speed Trivia", status: "playing")
       game = create(:speed_trivia_game, status: "answering")
-      host = create(:player, room: room, name: "QuizHost")
-      player1 = create(:player, room: room, name: "Smarty")
-      room.update!(current_game: game, host: host)
+      host = create(:player, room:, name: "QuizHost")
+      player1 = create(:player, room:, name: "Smarty")
+      room.update!(current_game: game, host:)
 
       question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
       create(:trivia_answer, trivia_question_instance: question, player: player1, points_awarded: 1000)
@@ -30,8 +30,8 @@ RSpec.describe "End Game", type: :system, js: true do
       create(:trivia_pack, :default)
       room = create(:room, game_type: "Speed Trivia", status: "playing")
       game = create(:speed_trivia_game, status: "answering")
-      host = create(:player, room: room, name: "QuizHost")
-      room.update!(current_game: game, host: host)
+      host = create(:player, room:, name: "QuizHost")
+      room.update!(current_game: game, host:)
 
       # No trivia answers — game has no scoreable data
 
@@ -52,10 +52,10 @@ RSpec.describe "End Game", type: :system, js: true do
     it "does not show the End Game button to regular players" do
       room = create(:room, game_type: "Speed Trivia", status: "playing")
       game = create(:speed_trivia_game, status: "answering")
-      host = create(:player, room: room, name: "QuizHost")
-      room.update!(current_game: game, host: host)
+      host = create(:player, room:, name: "QuizHost")
+      room.update!(current_game: game, host:)
 
-      player = create(:player, room: room, name: "Regular")
+      player = create(:player, room:, name: "Regular")
 
       visit set_player_session_path(player)
       visit room_hand_path(room)

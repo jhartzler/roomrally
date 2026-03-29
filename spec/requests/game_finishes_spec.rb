@@ -6,11 +6,11 @@ RSpec.describe "GameFinishes", type: :request do
       it "finishes a speed trivia game with data" do
         room = create(:room, game_type: "Speed Trivia", status: "playing")
         game = create(:speed_trivia_game, status: "answering")
-        host = create(:player, room: room, name: "Host")
-        room.update!(current_game: game, host: host)
-        player = create(:player, room: room, name: "Player1")
+        host = create(:player, room:, name: "Host")
+        room.update!(current_game: game, host:)
+        player = create(:player, room:, name: "Player1")
         question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
-        create(:trivia_answer, trivia_question_instance: question, player: player, points_awarded: 500)
+        create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
 
         get set_player_session_path(host)
         post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
@@ -23,8 +23,8 @@ RSpec.describe "GameFinishes", type: :request do
         create(:trivia_pack, :default)
         room = create(:room, game_type: "Speed Trivia", status: "playing")
         game = create(:speed_trivia_game, status: "instructions")
-        host = create(:player, room: room, name: "Host")
-        room.update!(current_game: game, host: host)
+        host = create(:player, room:, name: "Host")
+        room.update!(current_game: game, host:)
 
         get set_player_session_path(host)
         post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
@@ -38,9 +38,9 @@ RSpec.describe "GameFinishes", type: :request do
       it "rejects the request" do
         room = create(:room, game_type: "Speed Trivia", status: "playing")
         game = create(:speed_trivia_game, status: "answering")
-        host = create(:player, room: room, name: "Host")
-        non_host = create(:player, room: room, name: "Regular")
-        room.update!(current_game: game, host: host)
+        host = create(:player, room:, name: "Host")
+        non_host = create(:player, room:, name: "Regular")
+        room.update!(current_game: game, host:)
 
         get set_player_session_path(non_host)
         post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
@@ -54,8 +54,8 @@ RSpec.describe "GameFinishes", type: :request do
       it "returns not found" do
         room = create(:room, game_type: "Speed Trivia", status: "playing")
         game = create(:speed_trivia_game, status: "answering")
-        host = create(:player, room: room, name: "Host")
-        room.update!(current_game: game, host: host)
+        host = create(:player, room:, name: "Host")
+        room.update!(current_game: game, host:)
 
         get set_player_session_path(host)
         post game_finishes_path, params: { game_type: "User", game_id: 1, code: room.code }
