@@ -83,6 +83,24 @@ RSpec.describe "GameFinishes", type: :request do
       end
     end
 
+    context "as a backstage host (logged-in User)" do
+      it "finishes the game" do
+        user = create(:user)
+        sign_in(user)
+        room = create(:room, game_type: "Speed Trivia", status: "playing", user: user)
+        game = create(:speed_trivia_game, status: "answering")
+        room.update!(current_game: game)
+        player = create(:player, room:, name: "Player1")
+        question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+        create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
+
+        post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
+
+        expect(game.reload.status).to eq("finished")
+        expect(room.reload.status).to eq("finished")
+      end
+    end
+
     context "with invalid game type" do
       it "returns not found" do
         room = create(:room, game_type: "Speed Trivia", status: "playing")
