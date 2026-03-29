@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning", "positionField", "positionBadge", "optionRow", "optionLetter", "optionsContainer", "addOptionButton", "correctAnswerButtons"]
+    static targets = ["questionList", "questionTemplate", "countDisplay", "questionField", "optionField", "correctAnswersContainer", "imagePreview", "imageInput", "existingImageContainer", "imageCountDisplay", "imageCountWarning", "positionField", "positionBadge", "optionRow", "optionLetter", "optionsContainer", "addOptionButton", "correctAnswerButtons", "collapseAllButton", "collapsibleContent"]
     static values = { ratio: { type: Number, default: 1 }, imageLimit: { type: Number, default: 20 } }
 
     connect() {
@@ -336,17 +336,27 @@ export default class extends Controller {
         this.createQuestionField({ body: "", options: ["", "", "", ""], correct_answers: [] })
     }
 
-    createQuestionField(data) {
+    insertQuestionBelow(event) {
+        event.preventDefault()
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper) return
+        this.createQuestionField({ body: "", options: ["", "", "", ""], correct_answers: [] }, wrapper)
+    }
+
+    createQuestionField(data, afterWrapper = null) {
         const timestamp = new Date().getTime() + Math.floor(Math.random() * 1000)
         const content = this.questionTemplateTarget.innerHTML.replace(
             /NEW_RECORD/g,
             timestamp
         )
 
-        // Add to bottom instead of top
-        this.questionListTarget.insertAdjacentHTML('beforeend', content)
+        if (afterWrapper) {
+            afterWrapper.insertAdjacentHTML('afterend', content)
+        } else {
+            this.questionListTarget.insertAdjacentHTML('beforeend', content)
+        }
 
-        const wrapper = this.questionListTarget.lastElementChild
+        const wrapper = afterWrapper ? afterWrapper.nextElementSibling : this.questionListTarget.lastElementChild
 
         // Set question body
         const bodyField = wrapper.querySelector("textarea[name*='[body]']")
@@ -618,6 +628,64 @@ export default class extends Controller {
         if (this.hasImageCountWarningTarget) {
             this.imageCountWarningTarget.classList.toggle("hidden", count < limit)
         }
+    }
+
+    // --- Collapse / Expand ---
+
+    toggleCollapse(event) {
+        const wrapper = event.target.closest(".question-field-wrapper")
+        if (!wrapper) return
+        const content = wrapper.querySelector("[data-trivia-editor-target='collapsibleContent']")
+        if (!content) return
+
+        const isCollapsed = content.classList.contains("hidden")
+        content.classList.toggle("hidden", !isCollapsed)
+
+        const icon = wrapper.querySelector(".collapse-icon")
+        if (icon) icon.style.transform = isCollapsed ? "" : "rotate(-90deg)"
+
+        this.updateCollapseAllButton()
+    }
+
+    collapseAll() {
+        this.collapsibleContentTargets.forEach(content => {
+            const wrapper = content.closest(".question-field-wrapper")
+            if (wrapper && wrapper.style.display !== "none") {
+                content.classList.add("hidden")
+                const icon = wrapper.querySelector(".collapse-icon")
+                if (icon) icon.style.transform = "rotate(-90deg)"
+            }
+        })
+        this.updateCollapseAllButton()
+    }
+
+    expandAll() {
+        this.collapsibleContentTargets.forEach(content => {
+            const wrapper = content.closest(".question-field-wrapper")
+            if (wrapper && wrapper.style.display !== "none") {
+                content.classList.remove("hidden")
+                const icon = wrapper.querySelector(".collapse-icon")
+                if (icon) icon.style.transform = ""
+            }
+        })
+        this.updateCollapseAllButton()
+    }
+
+    toggleCollapseAll() {
+        const hasExpanded = this.collapsibleContentTargets.some(content => {
+            const wrapper = content.closest(".question-field-wrapper")
+            return wrapper && wrapper.style.display !== "none" && !content.classList.contains("hidden")
+        })
+        hasExpanded ? this.collapseAll() : this.expandAll()
+    }
+
+    updateCollapseAllButton() {
+        if (!this.hasCollapseAllButtonTarget) return
+        const hasExpanded = this.collapsibleContentTargets.some(content => {
+            const wrapper = content.closest(".question-field-wrapper")
+            return wrapper && wrapper.style.display !== "none" && !content.classList.contains("hidden")
+        })
+        this.collapseAllButtonTarget.textContent = hasExpanded ? "Collapse All" : "Expand All"
     }
 
     // --- Counts ---
