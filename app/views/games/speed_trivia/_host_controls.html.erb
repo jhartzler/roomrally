@@ -89,4 +89,8 @@
       <%= link_to "Start a new game?", host_path, class: "inline-block mt-3 text-blue-300 hover:text-blue-100 underline text-sm font-medium transition" %>
     </div>
   <% end %>
+
+  <% unless game.finished? %>
+    <%= render "games/end_game_button", game: game, room: room %>
+  <% end %>
 </div>
