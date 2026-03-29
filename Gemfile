@@ -67,7 +67,7 @@ group :development, :test do
   gem "rubocop-rspec", require: false
 
   # Testing framework
-  gem "rspec-rails", "~> 8.0.3"
+  gem "rspec-rails", "~> 8.0.4"
   # System testing
   gem "capybara"
   gem "selenium-webdriver"
