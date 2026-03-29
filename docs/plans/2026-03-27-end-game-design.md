@@ -98,6 +98,7 @@ An "End Game" button added to each game type's `_host_controls.html.erb`:
 
 - Visible in all active game states (not in `finished`)
 - Styled as secondary/destructive (muted color, not the primary action button)
+- Visually deprioritized — small text link or collapsed into a menu/footer area, not a full-width button. Host controls are used on phones; the primary game action (Next Question, Start Voting, etc.) must remain the dominant tap target without the End Game button crowding it.
 - Uses a `confirm-action` Stimulus controller (or similar) for the confirmation dialog
 - Passes `code: room.code` in params (defense-in-depth per project conventions)
 
