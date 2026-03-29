@@ -95,6 +95,7 @@ Rails.application.routes.draw do
     end
   end
   resources :category_answers, only: :update
+  resources :game_finishes, only: :create
 
   get "/auth/:provider/callback", to: "sessions#omniauth"
   get "/auth/failure", to: redirect("/")

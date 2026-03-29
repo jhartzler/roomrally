@@ -4,21 +4,21 @@
     <p class="text-gray-400 text-vh-lg font-bold tracking-wider mb-[1vh]">Join via your phone!</p>
     <div class="bg-white rounded-2xl p-3 inline-flex items-center justify-center mb-[1vh]">
       <div class="w-[150px] h-[150px]">
-        <%= qr_code_svg(join_room_url(@room.code), size: 150) %>
+        <%= qr_code_svg(join_room_url(room.code), size: 150) %>
       </div>
     </div>
     <p class="text-gray-400 text-vh-sm font-bold tracking-wider mt-1">Room Code</p>
-    <p class="text-vh-3xl font-black font-mono tracking-widest"><%= @room.code %></p>
+    <p class="text-vh-3xl font-black font-mono tracking-widest"><%= room.code %></p>
   </div>
 
   <!-- Player list -->
   <div id="stage_player_list" class="flex flex-wrap justify-center content-start gap-[1vh] max-w-7xl flex-1 min-h-0 overflow-hidden pt-[2vh]">
-    <% @room.players.active_players.order(created_at: :desc).each do |player| %>
-      <%= render "players/stage_player", player: player, room: @room %>
+    <% room.players.active_players.order(created_at: :desc).each do |player| %>
+      <%= render "players/stage_player", player: player, room: room %>
     <% end %>
   </div>
 
-  <div class="mt-[2vh] animate-pulse shrink-0">
+  <div class="mt-[2vh] shrink-0">
     <p class="text-vh-xl text-blue-100/90 font-bold tracking-wide drop-shadow-md">The crowd is gathering...</p>
   </div>
 </div>
