@@ -302,7 +302,7 @@ module Games
       if game.has_scoreable_data?
         game.with_lock do
           # Score the current round if it hasn't been scored yet
-          if game.reviewing? || game.scoring?
+          unless game.finished?
             calculate_round_scores(game:)
           end
           calculate_total_scores(game:)

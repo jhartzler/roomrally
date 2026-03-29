@@ -141,12 +141,9 @@ RSpec.describe Games::CategoryList do
         expect(room.reload.status).to eq("finished")
       end
 
-      it "calculates total scores (0 since round scoring was skipped)" do
+      it "scores the current round and calculates totals" do
         described_class.finish_game!(game: game.reload)
-        # Round scoring is skipped for filling state, so all scores should be 0
-        room.players.active_players.each do |player|
-          expect(player.reload.score).to eq(0)
-        end
+        expect(players.first.reload.score).to be > 0
       end
     end
 
