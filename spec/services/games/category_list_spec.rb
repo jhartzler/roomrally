@@ -107,6 +107,49 @@ RSpec.describe Games::CategoryList do
       end
     end
 
+    context "with scoreable data in filling state" do
+      let(:game) do
+        described_class.game_started(room:, show_instructions: false, categories_per_round: 2)
+        room.reload.current_game
+      end
+
+      before do
+        # Submit answers for only one player — game stays in filling (not all submitted)
+        ci = game.current_round_categories.first
+        described_class.submit_answers(
+          game: game.reload,
+          player: players.first,
+          answers_params: { ci.id.to_s => "Partial Answer" }
+        )
+        # Confirm game is still in filling state (not all players submitted)
+        expect(game.reload).to be_filling
+        # Confirm answers exist but round scoring hasn't run (points_awarded defaults to 0, not set by scoring logic)
+        expect(CategoryAnswer.where(player: players.first).count).to be > 0
+      end
+
+      it "does not raise an error" do
+        expect { described_class.finish_game!(game: game.reload) }.not_to raise_error
+      end
+
+      it "finishes the game" do
+        described_class.finish_game!(game: game.reload)
+        expect(game.reload.status).to eq("finished")
+      end
+
+      it "finishes the room" do
+        described_class.finish_game!(game: game.reload)
+        expect(room.reload.status).to eq("finished")
+      end
+
+      it "calculates total scores (0 since round scoring was skipped)" do
+        described_class.finish_game!(game: game.reload)
+        # Round scoring is skipped for filling state, so all scores should be 0
+        room.players.active_players.each do |player|
+          expect(player.reload.score).to eq(0)
+        end
+      end
+    end
+
     context "without scoreable data" do
       before do
         described_class.game_started(room:, show_instructions: true)
