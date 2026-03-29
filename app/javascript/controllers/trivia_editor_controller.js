@@ -648,6 +648,7 @@ export default class extends Controller {
     }
 
     collapseAll() {
+        document.body.style.minHeight = document.body.scrollHeight + "px"
         this.collapsibleContentTargets.forEach(content => {
             const wrapper = content.closest(".question-field-wrapper")
             if (wrapper && wrapper.style.display !== "none") {
@@ -660,6 +661,7 @@ export default class extends Controller {
     }
 
     expandAll() {
+        document.body.style.minHeight = ""
         this.collapsibleContentTargets.forEach(content => {
             const wrapper = content.closest(".question-field-wrapper")
             if (wrapper && wrapper.style.display !== "none") {
