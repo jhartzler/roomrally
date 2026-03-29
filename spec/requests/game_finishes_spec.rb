@@ -101,6 +101,51 @@ RSpec.describe "GameFinishes", type: :request do
       end
     end
 
+    context "race conditions (double-click / duplicate request)" do
+      context "double-click: game already finished by first request" do
+        it "handles the second request gracefully" do
+          room = create(:room, game_type: "Speed Trivia", status: "playing")
+          game = create(:speed_trivia_game, status: "answering")
+          host = create(:player, room:, name: "Host")
+          room.update!(current_game: game, host:)
+          player = create(:player, room:, name: "Player1")
+          question = create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+          create(:trivia_answer, trivia_question_instance: question, player:, points_awarded: 500)
+
+          get set_player_session_path(host)
+
+          # First request finishes the game
+          post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
+          expect(game.reload.status).to eq("finished")
+
+          # Second request should not error — game stays finished
+          post game_finishes_path, params: { game_type: game.class.name, game_id: game.id, code: room.code }
+          expect(game.reload.status).to eq("finished")
+        end
+      end
+
+      context "double-click: game already destroyed by first request" do
+        it "returns not found on the second request" do
+          create(:trivia_pack, :default)
+          room = create(:room, game_type: "Speed Trivia", status: "playing")
+          game = create(:speed_trivia_game, status: "instructions")
+          host = create(:player, room:, name: "Host")
+          room.update!(current_game: game, host:)
+          game_id = game.id
+
+          get set_player_session_path(host)
+
+          # First request resets to lobby and destroys the game
+          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id: game_id, code: room.code }
+          expect(room.reload.status).to eq("lobby")
+
+          # Second request — game is gone, should 404
+          post game_finishes_path, params: { game_type: "SpeedTriviaGame", game_id: game_id, code: room.code }
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
     context "with invalid game type" do
       it "returns not found" do
         room = create(:room, game_type: "Speed Trivia", status: "playing")
