@@ -17,7 +17,7 @@
 <div class="max-w-md mx-auto flex flex-col flex-1">
   <% if existing_answer %>
     <%# Already answered — show grid with selected button highlighted %>
-    <div class="grid <%= options.size <= 2 ? 'grid-cols-2' : 'grid-cols-2' %> gap-3 flex-1 mb-4">
+    <div class="grid <%= options.size == 1 ? 'grid-cols-1 max-w-[50%] mx-auto' : 'grid-cols-2' %> gap-3 flex-1 mb-4">
       <% options.each_with_index do |_option, index| %>
         <% letter = (index + 65).chr %>
         <% is_selected = letter == selected_letter %>
@@ -38,7 +38,7 @@
 
   <% elsif current_question %>
     <%# Answer grid — big tappable letter buttons %>
-    <div class="grid grid-cols-2 gap-3 flex-1" data-controller="games--speed-trivia">
+    <div class="grid <%= options.size == 1 ? 'grid-cols-1 max-w-[50%] mx-auto' : 'grid-cols-2' %> gap-3 flex-1" data-controller="games--speed-trivia">
       <% options.each_with_index do |option, index| %>
         <% letter = (index + 65).chr %>
         <div class="<%= 'col-span-2 max-w-[50%] mx-auto w-full' if options.size == 3 && index == 2 %>">
