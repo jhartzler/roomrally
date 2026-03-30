@@ -23,6 +23,7 @@ module GameHostAuthorization
   def authorize_host
     room = @game.room
     room_player = session[:player_session_id] ? room.players.find_by(session_id: session[:player_session_id]) : nil
+    @authorized_player = room_player
     authorized = (room_player && room_player == room.host) ||
                  (current_user && current_user == room.user)
 
