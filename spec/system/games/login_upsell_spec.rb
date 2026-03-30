@@ -81,6 +81,23 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
         expect(page).to have_link("Sign up free", href: host_path)
       end
     end
+
+    # Regression: "Sign up free" was inside <turbo-frame id="hand_screen">, so Turbo tried
+    # to load /host into the frame instead of doing a full-page navigation, resulting in
+    # "Content Missing". The link must use data-turbo="false" to bypass Turbo entirely
+    # and let the browser navigate normally.
+    it "navigates to the sign-up page on click, not 'content missing'" do
+      join_and_play_to_game_over
+
+      Capybara.using_session(:host) do
+        visit current_path
+        expect(page).to have_link("Sign up free", wait: 5)
+        click_link "Sign up free"
+        # Wait for a landmark on the /host page so we know navigation completed
+        expect(page).to have_content("Create your game room", wait: 10)
+        expect(page.current_path).to eq(host_path)
+      end
+    end
   end
 
   context "when player is not the host" do
