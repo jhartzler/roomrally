@@ -84,7 +84,8 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
 
     # Regression: "Sign up free" was inside <turbo-frame id="hand_screen">, so Turbo tried
     # to load /host into the frame instead of doing a full-page navigation, resulting in
-    # "Content Missing". The link must carry data-turbo-frame="_top" to break out of the frame.
+    # "Content Missing". The link must use data-turbo="false" to bypass Turbo entirely
+    # and let the browser navigate normally.
     it "navigates to the sign-up page on click, not 'content missing'" do
       join_and_play_to_game_over
 
@@ -92,7 +93,8 @@ RSpec.describe "Post-game login upsell", :js, type: :system do
         visit current_path
         expect(page).to have_link("Sign up free", wait: 5)
         click_link "Sign up free"
-        expect(page).not_to have_content("Content Missing", wait: 5)
+        # Wait for a landmark on the /host page so we know navigation completed
+        expect(page).to have_content("Create your game room", wait: 10)
         expect(page.current_path).to eq(host_path)
       end
     end
