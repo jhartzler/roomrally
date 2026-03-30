@@ -72,12 +72,27 @@
       <%= button_to "Next Question",
           speed_trivia_game_advancement_path(game),
           method: :post,
+          params: { code: room.code },
           data: { turbo_submits_with: "Loading…" },
           class: "w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+
+      <% next_q = game.trivia_question_instances.find_by(position: game.current_question_index + 1) %>
+      <div class="mt-3 text-center">
+        <%= button_to "Skip Next Question",
+            speed_trivia_game_question_skip_path(game),
+            method: :post,
+            params: { code: room.code },
+            data: { turbo_submits_with: "Skipping…" },
+            class: "text-sm text-gray-400 underline hover:text-gray-200 transition cursor-pointer" %>
+        <p class="text-xs text-gray-500 mt-1 truncate">
+          Up next: <%= next_q&.body&.truncate(60) %>
+        </p>
+      </div>
     <% else %>
       <%= button_to "Finish Game",
           speed_trivia_game_advancement_path(game),
           method: :post,
+          params: { code: room.code },
           data: { turbo_submits_with: "Finishing…" },
           class: "w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
     <% end %>
