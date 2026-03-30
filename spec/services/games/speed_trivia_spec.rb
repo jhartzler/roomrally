@@ -341,6 +341,74 @@ RSpec.describe Games::SpeedTrivia do
     end
   end
 
+  describe '.skip_next_question' do
+    let(:room) { create(:room, game_type: "Speed Trivia") }
+    let(:game) { create(:speed_trivia_game, status: "reviewing", current_question_index: 2) }
+
+    before do
+      create_list(:player, 3, room:)
+      room.update!(current_game: game)
+      5.times { |i| create(:trivia_question_instance, speed_trivia_game: game, position: i) }
+      allow(GameBroadcaster).to receive(:broadcast_host_controls)
+      allow(GameBroadcaster).to receive(:broadcast_hand)
+    end
+
+    it 'increments current_question_index' do
+      expect { described_class.skip_next_question(game:) }
+        .to change { game.reload.current_question_index }.from(2).to(3)
+    end
+
+    it 'stays in reviewing state' do
+      described_class.skip_next_question(game:)
+      expect(game.reload.status).to eq("reviewing")
+    end
+
+    it 'broadcasts host controls and hand' do
+      described_class.skip_next_question(game:)
+      expect(GameBroadcaster).to have_received(:broadcast_host_controls).with(room: game.room)
+      expect(GameBroadcaster).to have_received(:broadcast_hand).with(room: game.room)
+    end
+
+    it 'does not broadcast stage' do
+      allow(GameBroadcaster).to receive(:broadcast_stage)
+      described_class.skip_next_question(game:)
+      expect(GameBroadcaster).not_to have_received(:broadcast_stage)
+    end
+
+    it 'logs a GameEvent' do
+      described_class.skip_next_question(game:)
+      event = game.game_events.find_by(event_name: "question_skipped")
+      expect(event).to be_present
+      expect(event.metadata["question_index"]).to eq(3)
+    end
+
+    it 'tracks analytics' do
+      allow(Analytics).to receive(:track)
+      described_class.skip_next_question(game:)
+      expect(Analytics).to have_received(:track).with(
+        hash_including(event: "question_skipped")
+      )
+    end
+
+    context 'when not in reviewing state' do
+      before { game.update!(status: "answering") }
+
+      it 'does nothing' do
+        expect { described_class.skip_next_question(game:) }
+          .not_to change { game.reload.current_question_index }
+      end
+    end
+
+    context 'when no questions remaining' do
+      before { game.update!(current_question_index: 4) }
+
+      it 'does nothing' do
+        expect { described_class.skip_next_question(game:) }
+          .not_to change { game.reload.current_question_index }
+      end
+    end
+  end
+
   describe '.next_question' do
     let(:game) { create(:speed_trivia_game, status: "reviewing", current_question_index: 0) }
     let!(:room) { create(:room, current_game: game, game_type: "Speed Trivia") }
