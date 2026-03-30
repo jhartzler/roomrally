@@ -362,12 +362,20 @@ RSpec.describe Games::SpeedTrivia do
       expect(game.reload.status).to eq("reviewing")
     end
 
-    it 'broadcasts only host controls (not hand or stage)' do
-      allow(GameBroadcaster).to receive(:broadcast_stage)
-      allow(GameBroadcaster).to receive(:broadcast_hand)
+    it 'broadcasts host controls' do
       described_class.skip_next_question(game:)
       expect(GameBroadcaster).to have_received(:broadcast_host_controls).with(room: game.room)
+    end
+
+    it 'does not broadcast hand' do
+      allow(GameBroadcaster).to receive(:broadcast_hand)
+      described_class.skip_next_question(game:)
       expect(GameBroadcaster).not_to have_received(:broadcast_hand)
+    end
+
+    it 'does not broadcast stage' do
+      allow(GameBroadcaster).to receive(:broadcast_stage)
+      described_class.skip_next_question(game:)
       expect(GameBroadcaster).not_to have_received(:broadcast_stage)
     end
 
