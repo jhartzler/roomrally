@@ -174,7 +174,6 @@ module Games
         question_body: skipped_question&.body&.truncate(80))
 
       GameBroadcaster.broadcast_host_controls(room: game.room)
-      GameBroadcaster.broadcast_hand(room: game.room)
     end
 
     def self.start_timer_if_enabled(game)
