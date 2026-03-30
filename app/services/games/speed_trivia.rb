@@ -138,6 +138,44 @@ module Games
       close_round(game:)
     end
 
+    def self.skip_next_question(game:)
+      skipped_index = nil
+      skipped_question = nil
+
+      game.with_lock do
+        return unless game.reviewing?
+        return unless game.questions_remaining?
+
+        skipped_index = game.current_question_index + 1
+        skipped_question = game.trivia_question_instances.find_by(position: skipped_index)
+        game.increment!(:current_question_index)
+      end
+
+      Rails.logger.info({
+        event: "question_skipped",
+        room_code: game.room.code,
+        question_index: skipped_index,
+        question_body: skipped_question&.body&.truncate(80)
+      })
+
+      Analytics.track(
+        distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
+        event: "question_skipped",
+        properties: {
+          game_type: game.room.game_type,
+          room_code: game.room.code,
+          question_index: skipped_index,
+          questions_remaining: game.questions_remaining?
+        }
+      )
+
+      GameEvent.log(game, "question_skipped",
+        question_index: skipped_index,
+        question_body: skipped_question&.body&.truncate(80))
+
+      GameBroadcaster.broadcast_host_controls(room: game.room)
+    end
+
     def self.start_timer_if_enabled(game)
       return unless game.timer_enabled?
 
