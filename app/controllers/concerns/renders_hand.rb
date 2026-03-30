@@ -3,7 +3,7 @@
 module RendersHand
   def render_hand
     room = (@game&.room || @room || current_player&.room)&.reload
-    player = current_player&.reload
+    player = (@authorized_player || current_player)&.reload
 
     # Backstage users (authenticated as User, not Player) trigger host actions
     # that call render_hand. They don't have a #hand_screen target, and player
