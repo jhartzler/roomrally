@@ -41,7 +41,8 @@
               data: {
                 turbo_frame: "hand_screen",
                 action: "click->games--poll#disableOptions",
-                games__poll_target: "option"
+                games__poll_target: "option",
+                "test-id": "answer-option-#{index}"
               } do %>
             <span class="text-6xl font-black leading-none"><%= (index + 65).chr %></span>
             <span class="text-xs font-semibold text-center leading-tight text-gray-300"><%= option %></span>

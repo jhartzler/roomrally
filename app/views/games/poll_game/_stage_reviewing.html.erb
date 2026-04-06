@@ -22,7 +22,7 @@
     <% end %>
   </div>
 
-  <%= render "games/poll/vote_summary", question: current_question, poll_answers:, winner: %>
+  <%= render "games/poll_game/vote_summary", question: current_question, poll_answers:, winner: %>
 
   <% if scores_ready %>
     <%= render "games/speed_trivia/score_podium",

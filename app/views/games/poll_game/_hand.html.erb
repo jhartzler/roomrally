@@ -1,10 +1,10 @@
-<%# app/views/games/poll/_hand.html.erb %>
+<%# app/views/games/poll_game/_hand.html.erb %>
 <% game = room.current_game %>
 
 <% if game.finished? %>
-  <%= render "games/poll/game_over", room:, player:, game: %>
+  <%= render "games/poll_game/game_over", room:, player:, game: %>
 <% elsif game.answering? %>
-  <%= render "games/poll/answer_form", room:, player:, game: %>
+  <%= render "games/poll_game/answer_form", room:, player:, game: %>
 <% elsif game.instructions? %>
   <%= render "games/shared/hand_instructions",
       emoji: "🗳️",
@@ -12,5 +12,5 @@
       room:,
       player: %>
 <% else %>
-  <%= render "games/poll/waiting", room:, player:, game: %>
+  <%= render "games/poll_game/waiting", room:, player:, game: %>
 <% end %>
