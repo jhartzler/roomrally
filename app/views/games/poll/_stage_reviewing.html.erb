@@ -1,0 +1,32 @@
+<div id="stage_reviewing" class="flex flex-col items-center flex-1 min-h-0 gap-[2vh]">
+  <% current_question = game.current_question %>
+  <% poll_answers = game.poll_answers.where(poll_question: current_question) %>
+  <% winner = game.majority_option(current_question) if current_question %>
+  <% winner = game.host_chosen_answer if game.host_choose? && game.host_chosen_answer.present? %>
+  <% scores_ready = !game.host_choose? || game.host_chosen_answer.present? %>
+
+  <div class="shrink-0">
+    <span class="text-vh-base text-blue-200 font-bold uppercase tracking-widest">
+      Question <%= game.current_question_index + 1 %> Results
+    </span>
+  </div>
+
+  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-[1.5vh] text-center max-w-6xl w-full shrink-0">
+    <p class="text-vh-lg text-blue-200 mb-[0.5vh]"><%= current_question&.body %></p>
+    <% if scores_ready && winner.present? %>
+      <p class="text-vh-xl font-black text-green-400">✓ <%= winner %></p>
+    <% elsif game.host_choose? && game.host_chosen_answer.blank? %>
+      <p class="text-vh-lg text-yellow-300 font-bold">Waiting for host to reveal the answer…</p>
+    <% else %>
+      <p class="text-vh-lg text-yellow-300 font-bold">It's a tie — no points this round!</p>
+    <% end %>
+  </div>
+
+  <%= render "games/poll/vote_summary", question: current_question, poll_answers:, winner: %>
+
+  <% if scores_ready %>
+    <%= render "games/speed_trivia/score_podium",
+          game:, room:,
+          previous_top_player_ids: local_assigns[:previous_top_player_ids] || [] %>
+  <% end %>
+</div>

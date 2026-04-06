@@ -1,0 +1,34 @@
+<div id="stage_instructions" class="flex flex-col items-center justify-center flex-1">
+  <div class="shrink-0 mb-[3vh] text-center">
+    <h1 class="text-vh-5xl font-black text-white tracking-tight">Bandwagon</h1>
+    <p class="text-vh-lg text-blue-200 mt-[1vh]">
+      <%= case game.scoring_mode
+          when "majority"    then "Go with the crowd. Score if you pick the most popular answer."
+          when "minority"    then "Be the odd one out. Score if you pick the least popular answer."
+          when "host_choose" then "Match the right answer. The host will reveal it after you vote."
+          end %>
+    </p>
+  </div>
+
+  <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-[3vh] max-w-2xl w-full text-center">
+    <p class="text-vh-2xl text-white font-bold mb-[2vh]">How to play</p>
+    <ul class="text-vh-lg text-blue-200 space-y-[1vh] text-left">
+      <li>✦ Each round shows a question with multiple answers</li>
+      <li>✦ Answer on your phone before time runs out</li>
+      <li>✦ Faster answers earn bigger bonuses</li>
+      <% if game.majority? %>
+        <li>✦ Only players who picked the <span class="text-white font-bold">most popular</span> answer score</li>
+      <% elsif game.minority? %>
+        <li>✦ Only players who picked a <span class="text-white font-bold">less popular</span> answer score</li>
+      <% else %>
+        <li>✦ The host will reveal the <span class="text-white font-bold">correct answer</span> after voting</li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="mt-[3vh] shrink-0">
+    <p class="text-vh-xl text-blue-200 font-semibold">
+      <%= room.players.active_players.count %> players ready
+    </p>
+  </div>
+</div>
