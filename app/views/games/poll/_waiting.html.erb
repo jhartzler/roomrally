@@ -1,0 +1,97 @@
+<%# app/views/games/poll/_waiting.html.erb %>
+<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
+  <div class="flex flex-col">
+    <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">
+      <%= game.waiting? ? "Get Ready" : "Results" %>
+    </span>
+  </div>
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
+  </div>
+</header>
+
+<div class="max-w-md mx-auto">
+  <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
+    <% if game.waiting? %>
+      <div class="text-6xl mb-6">🗳️</div>
+      <p class="text-2xl text-white font-bold mb-4">Get Ready!</p>
+      <p class="text-lg text-blue-200">
+        <%= game.poll_pack&.poll_questions&.count %> questions ahead
+      </p>
+      <p class="text-blue-300 mt-4">
+        <% if game.majority? %>
+          Go with the crowd for points!
+        <% elsif game.minority? %>
+          Be the odd one out for points!
+        <% else %>
+          Match the host's answer for points!
+        <% end %>
+      </p>
+
+    <% elsif game.reviewing? %>
+      <% reveal = game.score_reveal_for(player:) %>
+
+      <% if game.host_choose? && game.host_chosen_answer.blank? %>
+        <div class="text-5xl mb-3">⏳</div>
+        <p class="text-2xl text-white font-bold mb-1">Waiting…</p>
+        <p class="text-sm text-blue-200">Host is picking the answer.</p>
+      <% elsif reveal[:did_win] %>
+        <div class="text-5xl mb-3">🎉</div>
+        <p class="text-2xl text-green-400 font-bold mb-1">
+          <%= game.majority? ? "With the crowd!" : game.minority? ? "Against the crowd!" : "That's the one!" %>
+        </p>
+      <% elsif reveal[:answer] %>
+        <div class="text-5xl mb-3">😅</div>
+        <p class="text-2xl text-red-400 font-bold mb-1">
+          <%= game.majority? ? "Not the popular choice." : game.minority? ? "Too mainstream." : "Not quite." %>
+        </p>
+        <% if reveal[:winner].present? %>
+          <p class="text-sm text-white mb-1">
+            The answer was: <span class="font-bold text-green-400"><%= reveal[:winner] %></span>
+          </p>
+        <% else %>
+          <p class="text-sm text-white mb-1">It was a tie — no points this round.</p>
+        <% end %>
+      <% else %>
+        <div class="text-5xl mb-3">⏱</div>
+        <p class="text-2xl text-gray-400 font-bold mb-1">And... time.</p>
+      <% end %>
+
+      <% if reveal[:answer].present? && !(game.host_choose? && game.host_chosen_answer.blank?) %>
+        <hr class="border-white/20 my-4">
+
+        <% if reveal[:round_points] == 0 %>
+          <div class="text-xl font-black text-white mb-4">Next one's yours.</div>
+        <% elsif reveal[:rank_improved] %>
+          <div class="text-xl font-black text-white mb-4">Nice one!</div>
+        <% else %>
+          <div class="text-xl font-black text-white mb-4">Still in it!</div>
+        <% end %>
+
+        <div data-controller="score-tally"
+             data-score-tally-from-value="<%= reveal[:score_from] %>"
+             data-score-tally-to-value="<%= reveal[:score_to] %>">
+          <p class="text-blue-200 text-sm font-bold uppercase tracking-widest mb-1">
+            <%= reveal[:rank].ordinalize %> Place
+          </p>
+          <p class="text-5xl font-black text-white font-mono mb-2"
+             data-score-tally-target="display">
+            <%= reveal[:score_from] %>
+          </p>
+          <% if reveal[:round_points] > 0 %>
+            <p class="text-green-400 font-bold text-lg">+<%= reveal[:round_points] %> this round</p>
+          <% else %>
+            <p class="text-gray-400 font-bold text-lg">+0 this round</p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<% if player == room.host %>
+  <div id="host-controls" class="max-w-md mx-auto mt-4 border-t-2 border-white/10 pt-6">
+    <%= render "rooms/host_controls", room: room %>
+  </div>
+<% end %>
