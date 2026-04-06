@@ -7,6 +7,7 @@ class Room < ApplicationRecord
   belongs_to :prompt_pack, optional: true
   belongs_to :trivia_pack, optional: true
   belongs_to :category_pack, optional: true
+  belongs_to :poll_pack, optional: true
   belongs_to :game_template, optional: true
   has_many :score_tracker_entries, dependent: :destroy
 
@@ -15,14 +16,16 @@ class Room < ApplicationRecord
   WRITE_AND_VOTE = "Write And Vote".freeze
   SPEED_TRIVIA = "Speed Trivia".freeze
   CATEGORY_LIST = "Category List".freeze
+  POLL_GAME = "Poll Game".freeze
 
-  GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST ].freeze
+  GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST, POLL_GAME ].freeze
 
   # Default display names for each game type (used for whitelabeling)
   GAME_DISPLAY_NAMES = {
     WRITE_AND_VOTE => "Comedy Clash",
     SPEED_TRIVIA => "Think Fast",
-    CATEGORY_LIST => "A-List"
+    CATEGORY_LIST => "A-List",
+    POLL_GAME => "Bandwagon"
   }.freeze
 
   # Convenience method for getting default display name

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_06_110212) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_06_123705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -222,7 +222,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_110212) do
     t.string "selected_option"
     t.datetime "submitted_at"
     t.datetime "updated_at", null: false
-    t.index ["player_id", "poll_question_id"], name: "index_poll_answers_on_player_id_and_poll_question_id", unique: true
+    t.index ["player_id", "poll_question_id", "poll_game_id"], name: "index_poll_answers_on_player_question_and_game", unique: true
     t.index ["player_id"], name: "index_poll_answers_on_player_id"
     t.index ["poll_game_id"], name: "index_poll_answers_on_poll_game_id"
     t.index ["poll_question_id"], name: "index_poll_answers_on_poll_question_id"
@@ -321,6 +321,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_110212) do
     t.bigint "host_id"
     t.bigint "hunt_pack_id"
     t.datetime "last_host_claim_at"
+    t.bigint "poll_pack_id"
     t.bigint "prompt_pack_id"
     t.boolean "stage_only", default: false, null: false
     t.string "status"
