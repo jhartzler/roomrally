@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_06_032013) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_06_110212) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -211,6 +211,40 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_032013) do
     t.index ["room_id"], name: "index_players_on_room_id"
     t.index ["session_id", "room_id"], name: "index_players_on_session_id_and_room_id", unique: true
     t.index ["status"], name: "index_players_on_status"
+  end
+
+  create_table "poll_answers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "player_id", null: false
+    t.integer "points_awarded", default: 0
+    t.bigint "poll_game_id", null: false
+    t.bigint "poll_question_id", null: false
+    t.string "selected_option"
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["player_id", "poll_question_id"], name: "index_poll_answers_on_player_id_and_poll_question_id", unique: true
+    t.index ["player_id"], name: "index_poll_answers_on_player_id"
+    t.index ["poll_game_id"], name: "index_poll_answers_on_poll_game_id"
+    t.index ["poll_question_id"], name: "index_poll_answers_on_poll_question_id"
+  end
+
+  create_table "poll_games", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "current_question_index", default: 0
+    t.string "host_chosen_answer"
+    t.bigint "poll_pack_id"
+    t.integer "question_count", default: 5
+    t.datetime "round_closed_at"
+    t.datetime "round_ends_at"
+    t.datetime "round_started_at"
+    t.string "scoring_mode", default: "majority", null: false
+    t.string "status"
+    t.integer "time_limit", default: 20
+    t.integer "timer_duration"
+    t.boolean "timer_enabled", default: false
+    t.integer "timer_increment"
+    t.datetime "updated_at", null: false
+    t.index ["poll_pack_id"], name: "index_poll_games_on_poll_pack_id"
   end
 
   create_table "poll_packs", force: :cascade do |t|
@@ -451,6 +485,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_032013) do
   add_foreign_key "hunt_submissions", "hunt_prompt_instances"
   add_foreign_key "hunt_submissions", "players"
   add_foreign_key "players", "rooms"
+  add_foreign_key "poll_answers", "players"
+  add_foreign_key "poll_answers", "poll_games"
+  add_foreign_key "poll_answers", "poll_questions"
+  add_foreign_key "poll_games", "poll_packs"
   add_foreign_key "poll_packs", "users"
   add_foreign_key "poll_questions", "poll_packs"
   add_foreign_key "prompt_instances", "prompts"
