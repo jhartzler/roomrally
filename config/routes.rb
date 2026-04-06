@@ -96,6 +96,16 @@ Rails.application.routes.draw do
     end
   end
   resources :category_answers, only: :update
+  resources :poll_games, only: [] do
+    scope module: :poll_games do
+      resource :game_start, only: :create
+      resource :question, only: :create
+      resource :round_closure, only: :create
+      resource :advancement, only: :create
+      resources :host_answers, only: :create
+    end
+    resources :poll_answers, only: :create
+  end
   resources :game_finishes, only: :create
 
   get "/auth/:provider/callback", to: "sessions#omniauth"
