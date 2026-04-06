@@ -1,0 +1,17 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-black text-white"><%= @poll_pack.name %></h1>
+    <%= link_to "Edit", edit_poll_pack_path(@poll_pack), class: "bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-xl transition" %>
+  </div>
+  <% @poll_pack.poll_questions.order(:position).each_with_index do |q, i| %>
+    <div class="bg-white/10 rounded-xl p-4 mb-3 border border-white/10">
+      <p class="text-blue-200 text-xs font-bold uppercase tracking-widest mb-1">Q<%= i + 1 %></p>
+      <p class="text-white font-bold mb-2"><%= q.body %></p>
+      <div class="flex gap-2 flex-wrap">
+        <% q.options&.each_with_index do |opt, oi| %>
+          <span class="px-2 py-1 bg-white/5 rounded text-sm text-blue-200"><%= ('A'.ord + oi).chr %>: <%= opt %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
