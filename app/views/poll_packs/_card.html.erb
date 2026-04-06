@@ -2,7 +2,7 @@
   <div class="flex items-start justify-between">
     <div>
       <h3 class="text-white font-black text-lg"><%= poll_pack.name %></h3>
-      <p class="text-blue-200 text-sm mt-1"><%= pluralize(poll_pack.poll_questions.count, "question") %></p>
+      <p class="text-blue-200 text-sm mt-1"><%= pluralize(poll_pack.poll_questions.size, "question") %></p>
     </div>
     <span class="px-2 py-1 rounded-full text-xs font-bold <%= poll_pack.live? ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300' %>">
       <%= poll_pack.status.titleize %>
@@ -10,6 +10,6 @@
   </div>
   <div class="flex gap-2 mt-4">
     <%= link_to "Edit", edit_poll_pack_path(poll_pack), class: "text-sm text-blue-300 hover:text-white font-bold underline" %>
-    <%= button_to "Delete", poll_pack_path(poll_pack), method: :delete, data: { confirm: "Delete this pack?" }, class: "text-sm text-red-400 hover:text-red-200 font-bold underline cursor-pointer bg-transparent border-0 p-0" %>
+    <%= button_to "Delete", poll_pack_path(poll_pack), method: :delete, data: { turbo_confirm: "Delete this pack?" }, class: "text-sm text-red-400 hover:text-red-200 font-bold underline cursor-pointer bg-transparent border-0 p-0" %>
   </div>
 </div>
