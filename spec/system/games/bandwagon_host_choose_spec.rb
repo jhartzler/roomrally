@@ -5,7 +5,7 @@ RSpec.describe "Bandwagon host_choose mode", :js, type: :system do
     pack = PollPack.create!(name: "Wedding Pack", status: :live)
     pack.poll_questions.create!(
       body: "Who takes longer to get ready?",
-      options: ["Alex", "Jordan"],
+      options: [ "Alex", "Jordan" ],
       position: 0
     )
     pack

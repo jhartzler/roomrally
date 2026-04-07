@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
   let!(:pack) do
     pack = PollPack.create!(name: "Test Pack", status: :live)
-    pack.poll_questions.create!(body: "Dogs or cats?", options: ["Dogs", "Cats"], position: 0)
-    pack.poll_questions.create!(body: "Pizza or tacos?", options: ["Pizza", "Tacos"], position: 1)
+    pack.poll_questions.create!(body: "Dogs or cats?", options: [ "Dogs", "Cats" ], position: 0)
+    pack.poll_questions.create!(body: "Pizza or tacos?", options: [ "Pizza", "Tacos" ], position: 1)
     pack
   end
 

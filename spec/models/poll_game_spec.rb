@@ -47,8 +47,8 @@ RSpec.describe PollGame, type: :model do
   end
 
   describe "#majority_option" do
-    let(:question) { create(:poll_question, poll_pack: pack, options: ["dogs", "cats", "neither"]) }
-    let(:players) { create_list(:player, 3, room: room) }
+    let(:question) { create(:poll_question, poll_pack: pack, options: [ "dogs", "cats", "neither" ]) }
+    let(:players) { create_list(:player, 3, room:) }
 
     it "returns the option with the most votes" do
       create(:poll_answer, poll_game: game, poll_question: question, player: players[0], selected_option: "dogs")

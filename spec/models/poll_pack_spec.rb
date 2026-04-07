@@ -12,8 +12,8 @@ RSpec.describe PollPack, type: :model do
 
   describe ".default" do
     it "returns a default pack when none exists" do
-      pack = PollPack.default
-      expect(pack).to be_a(PollPack)
+      pack = described_class.default
+      expect(pack).to be_a(described_class)
     end
   end
 end
