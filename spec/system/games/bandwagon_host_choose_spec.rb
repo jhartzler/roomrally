@@ -16,31 +16,24 @@ RSpec.describe "Bandwagon host_choose mode", :js, type: :system do
   it "host reveals the answer and only matching players score" do
     room = create(:room, game_type: "Poll Game", user: nil)
     room.update!(poll_pack: pack)
-    host_player = nil
-    p1 = nil
-    p2 = nil
-
     Capybara.using_session(:host) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Host"
       click_on "Join Game"
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
-      host_player = Player.find_by(name: "Host", room: room)
     end
 
     Capybara.using_session(:player1) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player1"
       click_on "Join Game"
-      p1 = Player.find_by(name: "Player1", room: room)
     end
 
     Capybara.using_session(:player2) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player2"
       click_on "Join Game"
-      p2 = Player.find_by(name: "Player2", room: room)
     end
 
     Games::Poll.game_started(
@@ -90,12 +83,10 @@ RSpec.describe "Bandwagon host_choose mode", :js, type: :system do
       expect(page).to have_content("Answer: Jordan")
     end
 
-    # Verify scoring: only p2 (picked Jordan) scored
+    # Verify scoring: Jordan pickers scored, Alex pickers did not
     q = pack.poll_questions.first
-    p1_answer = PollAnswer.find_by(player: p1, poll_question: q)
-    p2_answer = PollAnswer.find_by(player: p2, poll_question: q)
-    expect(p1_answer.points_awarded).to eq(0)
-    expect(p2_answer.points_awarded).to be > 0
+    expect(PollAnswer.where(poll_question: q, selected_option: "Alex").sum(:points_awarded)).to eq(0)
+    expect(PollAnswer.where(poll_question: q, selected_option: "Jordan").sum(:points_awarded)).to be > 0
 
     Capybara.using_session(:player2) do
       expect(page).to have_content("That's the one!")

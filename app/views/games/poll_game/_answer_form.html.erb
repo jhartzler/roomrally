@@ -14,6 +14,10 @@
   </div>
 </header>
 
+<% if current_question&.body.present? %>
+  <p class="max-w-md mx-auto text-center text-white font-bold text-xl mb-4 px-2"><%= current_question.body %></p>
+<% end %>
+
 <div class="max-w-md mx-auto flex flex-col flex-1">
   <% if existing_answer %>
     <div class="grid <%= options.size == 1 ? 'grid-cols-1 max-w-[50%] mx-auto' : 'grid-cols-2' %> gap-3 flex-1 mb-4">

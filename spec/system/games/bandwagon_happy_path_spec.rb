@@ -14,10 +14,6 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
     room = create(:room, game_type: "Poll Game", user: nil)
     room.update!(poll_pack: pack)
 
-    host_player = nil
-    p1 = nil
-    p2 = nil
-
     # Host joins and claims host via UI
     Capybara.using_session(:host) do
       visit join_room_path(room)
@@ -25,21 +21,18 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
       click_on "Join Game"
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
-      host_player = Player.find_by(name: "Host", room: room)
     end
 
     Capybara.using_session(:player1) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player1"
       click_on "Join Game"
-      p1 = Player.find_by(name: "Player1", room: room)
     end
 
     Capybara.using_session(:player2) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player2"
       click_on "Join Game"
-      p2 = Player.find_by(name: "Player2", room: room)
     end
 
     # Start game via service
@@ -101,18 +94,16 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
       expect(page).to have_content("Not the popular choice.")
     end
 
-    # Verify DB
+    # Verify DB — majority (Dogs) scored, minority (Cats) did not
     q1 = pack.poll_questions.find_by(position: 0)
-    p1_answer = PollAnswer.find_by(player: p1, poll_question: q1)
-    host_answer = PollAnswer.find_by(player: host_player, poll_question: q1)
-    expect(p1_answer.points_awarded).to be > 0
-    expect(host_answer.points_awarded).to eq(0)
+    expect(PollAnswer.where(poll_question: q1, selected_option: "Dogs").sum(:points_awarded)).to be > 0
+    expect(PollAnswer.where(poll_question: q1, selected_option: "Cats").sum(:points_awarded)).to eq(0)
 
     # Advance to Q2
+    # "Next Question" advances immediately to answering (no waiting state between rounds)
     Capybara.using_session(:host) do
       click_button "Next Question"
       expect(page).to have_content("Pizza or tacos?")
-      click_button "Start Question"
     end
 
     Capybara.using_session(:player1) do
@@ -128,7 +119,7 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
       click_button "Close Voting"
       expect(page).to have_content(/results/i)
       click_button "Finish Game"
-      expect(page).to have_content("Game Complete!")
+      expect(page).to have_content("That's a wrap!")
     end
 
     Capybara.using_session(:player1) do
@@ -139,7 +130,6 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
   it "awards no points on a perfect tie" do
     room = create(:room, game_type: "Poll Game", user: nil)
     room.update!(poll_pack: pack)
-    host_player = nil
 
     Capybara.using_session(:host) do
       visit join_room_path(room)
@@ -147,15 +137,12 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
       click_on "Join Game"
       click_on "Claim Host"
       expect(page).to have_content("You're the host!")
-      host_player = Player.find_by(name: "Host", room: room)
     end
 
-    p1 = nil
     Capybara.using_session(:player1) do
       visit join_room_path(room)
       fill_in "player[name]", with: "Player1"
       click_on "Join Game"
-      p1 = Player.find_by(name: "Player1", room: room)
     end
 
     Games::Poll.game_started(
