@@ -3,6 +3,7 @@ class GameTemplate < ApplicationRecord
   belongs_to :prompt_pack, optional: true
   belongs_to :trivia_pack, optional: true
   belongs_to :category_pack, optional: true
+  belongs_to :hunt_pack, optional: true
   has_many :rooms, dependent: :nullify
 
   validates :name, presence: true, length: { maximum: 100 }
@@ -39,6 +40,7 @@ class GameTemplate < ApplicationRecord
     when Room::WRITE_AND_VOTE then prompt_pack
     when Room::SPEED_TRIVIA then trivia_pack
     when Room::CATEGORY_LIST then category_pack
+    when Room::SCAVENGER_HUNT then hunt_pack
     end
   end
 
@@ -51,6 +53,7 @@ class GameTemplate < ApplicationRecord
       prompt_pack:,
       trivia_pack:,
       category_pack:,
+      hunt_pack:,
       stage_only: merged_settings["stage_only"]
     )
   end
@@ -81,6 +84,9 @@ class GameTemplate < ApplicationRecord
     if category_pack_id.present? && game_type != Room::CATEGORY_LIST
       errors.add(:category_pack, "doesn't match game type")
     end
+    if hunt_pack_id.present? && game_type != Room::SCAVENGER_HUNT
+      errors.add(:hunt_pack, "doesn't match game type")
+    end
   end
 
   def settings_within_bounds
@@ -97,7 +103,7 @@ class GameTemplate < ApplicationRecord
   end
 
   def pack_accessible_to_user
-    [ prompt_pack, trivia_pack, category_pack ].compact.each do |pack|
+    [ prompt_pack, trivia_pack, category_pack, hunt_pack ].compact.each do |pack|
       unless pack.user_id.nil? || pack.user_id == user_id
         errors.add(:base, "You don't have access to the selected pack")
       end

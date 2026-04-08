@@ -85,6 +85,21 @@
         <% end %>
       </div>
     </div>
+
+    <div data-game-template-form-target="packSelect" data-pack-type="hunt_pack" class="<%= 'hidden' unless game_template.game_type == Room::SCAVENGER_HUNT %>">
+      <%= f.select :hunt_pack_id,
+        options_for_select(@hunt_packs.map { |p| [p.name, p.id] }, game_template.hunt_pack_id),
+        { include_blank: "(default hunt prompts)" },
+        class: "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <div class="mt-2">
+        <%= link_to new_hunt_pack_path(return_to: request.fullpath),
+          class: "text-sm text-blue-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors w-fit",
+          data: { action: "click->game-template-form#saveAndNavigate" } do %>
+          <%= lucide_icon('plus-circle', class: "w-4 h-4", "aria-hidden": true) %>
+          Create a new hunt pack
+        <% end %>
+      </div>
+    </div>
   </div>
 
   <%# Settings %>

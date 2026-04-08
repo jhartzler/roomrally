@@ -1,0 +1,78 @@
+<%# app/views/games/scavenger_hunt/_host_controls.html.erb %>
+<% game = room.current_game %>
+
+<% if game.instructions? %>
+  <p class="text-white/60 text-sm mb-3">Players are viewing the instructions.</p>
+  <%= button_to "Start Hunt",
+      scavenger_hunt_game_game_start_path(game),
+      method: :post,
+      params: { code: room.code },
+      data: { turbo_submits_with: "Starting..." },
+      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg cursor-pointer border border-white/10" %>
+
+<% elsif game.hunting? || game.times_up? %>
+  <% submitted = HuntSubmission.joins(:hunt_prompt_instance).where(hunt_prompt_instances: { scavenger_hunt_game_id: game.id }).count %>
+  <p class="text-white/60 text-sm mb-3"><%= submitted %> <%= 'submission'.pluralize(submitted) %></p>
+
+  <% if game.hunting? && game.timer_enabled? && game.round_ends_at %>
+    <div data-controller="timer" data-timer-end-value="<%= game.timer_expires_at_iso8601 %>" class="mb-3">
+      <p class="text-white font-mono text-lg" data-timer-target="output"><% mins = (game.time_remaining / 60).floor; secs = (game.time_remaining % 60).floor %><%= mins > 0 ? "#{mins}m #{secs}s remaining" : "#{secs}s remaining" %></p>
+    </div>
+  <% end %>
+
+  <% if game.times_up? %>
+    <p class="text-amber-300 text-sm font-bold mb-3">Time's up! Late entries still rolling in.</p>
+  <% end %>
+
+  <div class="flex gap-2">
+    <% if game.hunting? %>
+      <%= button_to "End Hunting",
+          scavenger_hunt_game_submission_lock_path(game),
+          method: :post,
+          params: { code: room.code },
+          class: "flex-1 bg-amber-600 text-white font-bold py-3 px-4 rounded-xl" %>
+    <% end %>
+    <%= button_to "Start Presentation",
+        scavenger_hunt_game_reveal_path(game),
+        method: :post,
+        params: { code: room.code },
+        data: game.hunting? ? { turbo_confirm: "Start presentation? This will cut off submissions." } : {},
+        class: "flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl" %>
+  </div>
+
+<% elsif game.revealing? %>
+  <%= render "games/scavenger_hunt/card_picker", game:, room: %>
+  <%= button_to "Start Awards",
+      scavenger_hunt_game_awards_path(game),
+      method: :post,
+      params: { code: room.code },
+      class: "w-full bg-gradient-to-r from-yellow-600 to-amber-600 text-white font-bold py-3 px-4 rounded-xl mt-3" %>
+
+<% elsif game.awarding? %>
+  <p class="text-white/60 text-sm mb-3">Pick the best submission for each prompt:</p>
+  <% game.hunt_prompt_instances.includes(:hunt_submissions, :winner_submission, hunt_submissions: [:player, { media_attachment: :blob }]).each do |instance| %>
+    <div class="bg-white/5 rounded-xl p-3 mb-2 border border-white/10">
+      <p class="text-white font-bold text-sm mb-2"><%= instance.body %></p>
+      <div class="flex flex-wrap gap-2">
+        <% instance.hunt_submissions.select { |s| s.media.attached? }.each do |sub| %>
+          <% is_winner = instance.winner_submission == sub %>
+          <%= button_to scavenger_hunt_game_award_path(game, instance),
+              method: :patch,
+              params: { winner_submission_id: sub.id, code: room.code },
+              class: "flex items-center gap-2 px-2 py-1 rounded-lg text-sm font-bold border-2 #{is_winner ? 'bg-yellow-500/20 border-yellow-400 text-yellow-300' : 'bg-white/10 border-transparent text-white hover:border-white/30'}" do %>
+            <%= image_tag url_for(sub.media), class: "w-10 h-8 object-cover rounded", alt: "" %>
+            <span><%= sub.player.team_name.presence || sub.player.name %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <%= button_to "Finish Game",
+      scavenger_hunt_game_finish_path(game),
+      method: :post,
+      params: { code: room.code },
+      class: "w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl mt-3" %>
+
+<% elsif game.finished? %>
+  <p class="text-white/60 text-sm">Game complete!</p>
+<% end %>

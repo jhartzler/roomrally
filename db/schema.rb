@@ -139,6 +139,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "category_pack_id"
     t.datetime "created_at", null: false
     t.string "game_type", null: false
+    t.bigint "hunt_pack_id"
     t.string "name", null: false
     t.bigint "prompt_pack_id"
     t.jsonb "settings", default: {}
@@ -146,9 +147,56 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["category_pack_id"], name: "index_game_templates_on_category_pack_id"
+    t.index ["hunt_pack_id"], name: "index_game_templates_on_hunt_pack_id"
     t.index ["prompt_pack_id"], name: "index_game_templates_on_prompt_pack_id"
     t.index ["trivia_pack_id"], name: "index_game_templates_on_trivia_pack_id"
     t.index ["user_id"], name: "index_game_templates_on_user_id"
+  end
+
+  create_table "hunt_packs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "game_type", default: "Scavenger Hunt"
+    t.boolean "is_default", default: false, null: false
+    t.string "name"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_hunt_packs_on_user_id"
+  end
+
+  create_table "hunt_prompt_instances", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "hunt_prompt_id", null: false
+    t.integer "position", default: 0, null: false
+    t.bigint "scavenger_hunt_game_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "winner_submission_id"
+    t.index ["hunt_prompt_id"], name: "index_hunt_prompt_instances_on_hunt_prompt_id"
+    t.index ["scavenger_hunt_game_id"], name: "index_hunt_prompt_instances_on_scavenger_hunt_game_id"
+  end
+
+  create_table "hunt_prompts", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "hunt_pack_id", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "weight", default: 5, null: false
+    t.index ["hunt_pack_id"], name: "index_hunt_prompts_on_hunt_pack_id"
+  end
+
+  create_table "hunt_submissions", force: :cascade do |t|
+    t.boolean "completed", default: false, null: false
+    t.datetime "created_at", null: false
+    t.boolean "favorite", default: false, null: false
+    t.text "host_notes"
+    t.bigint "hunt_prompt_instance_id", null: false
+    t.boolean "late", default: false, null: false
+    t.bigint "player_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hunt_prompt_instance_id", "player_id"], name: "idx_hunt_submissions_prompt_player", unique: true
+    t.index ["hunt_prompt_instance_id"], name: "index_hunt_submissions_on_hunt_prompt_instance_id"
+    t.index ["player_id"], name: "index_hunt_submissions_on_player_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -158,6 +206,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.integer "score", default: 0, null: false
     t.string "session_id", null: false
     t.string "status", default: "active", null: false
+    t.string "team_name"
     t.datetime "updated_at", null: false
     t.index ["room_id"], name: "index_players_on_room_id"
     t.index ["session_id", "room_id"], name: "index_players_on_session_id_and_room_id", unique: true
@@ -217,6 +266,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "game_template_id"
     t.string "game_type", default: "Write And Vote"
     t.bigint "host_id"
+    t.bigint "hunt_pack_id"
     t.datetime "last_host_claim_at"
     t.bigint "prompt_pack_id"
     t.boolean "stage_only", default: false, null: false
@@ -229,9 +279,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["current_game_type", "current_game_id"], name: "index_rooms_on_current_game"
     t.index ["game_template_id"], name: "index_rooms_on_game_template_id"
     t.index ["host_id"], name: "index_rooms_on_host_id"
+    t.index ["hunt_pack_id"], name: "index_rooms_on_hunt_pack_id"
     t.index ["prompt_pack_id"], name: "index_rooms_on_prompt_pack_id"
     t.index ["trivia_pack_id"], name: "index_rooms_on_trivia_pack_id"
     t.index ["user_id"], name: "index_rooms_on_user_id"
+  end
+
+  create_table "scavenger_hunt_games", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "currently_showing_submission_id"
+    t.bigint "hunt_pack_id"
+    t.integer "round", default: 1, null: false
+    t.datetime "round_ends_at"
+    t.string "status"
+    t.integer "timer_duration", default: 1800
+    t.boolean "timer_enabled", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["hunt_pack_id"], name: "index_scavenger_hunt_games_on_hunt_pack_id"
   end
 
   create_table "score_tracker_entries", force: :cascade do |t|
@@ -357,9 +421,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "category_list_games", "category_packs"
   add_foreign_key "category_packs", "users"
   add_foreign_key "game_templates", "category_packs", on_delete: :nullify
+  add_foreign_key "game_templates", "hunt_packs"
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
   add_foreign_key "game_templates", "users"
+  add_foreign_key "hunt_packs", "users"
+  add_foreign_key "hunt_prompt_instances", "hunt_prompts"
+  add_foreign_key "hunt_prompt_instances", "scavenger_hunt_games"
+  add_foreign_key "hunt_prompts", "hunt_packs"
+  add_foreign_key "hunt_submissions", "hunt_prompt_instances"
+  add_foreign_key "hunt_submissions", "players"
   add_foreign_key "players", "rooms"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
@@ -369,10 +440,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "category_packs"
   add_foreign_key "rooms", "game_templates", on_delete: :nullify
+  add_foreign_key "rooms", "hunt_packs"
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "trivia_packs"
   add_foreign_key "rooms", "users"
+  add_foreign_key "scavenger_hunt_games", "hunt_packs"
   add_foreign_key "score_tracker_entries", "rooms"
   add_foreign_key "speed_trivia_games", "trivia_packs"
   add_foreign_key "trivia_answers", "players"

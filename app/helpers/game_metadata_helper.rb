@@ -35,6 +35,18 @@ module GameMetadataHelper
         "Players fill in answers starting with that letter",
         "Unique answers score higher — duplicates score less"
       ]
+    },
+    "Scavenger Hunt" => {
+      emoji: "📸",
+      tagline: "Race to complete photo challenges",
+      description: "Teams race to snap photos matching creative prompts. The host curates the best moments and reveals them on the big screen.",
+      player_count: "2–30 players",
+      duration: "30–60 min",
+      how_it_works: [
+        "Teams get a list of photo prompts to complete",
+        "Race around to snap and upload photos before time runs out",
+        "The host picks the best photos and awards winners"
+      ]
     }
   }.freeze
 

@@ -22,6 +22,13 @@
           <%= form.text_field :name, autofocus: true, class: "w-full px-4 py-4 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-lg", placeholder: "Enter your name" %>
         </div>
 
+        <% if @room.game_type == "Scavenger Hunt" %>
+          <div>
+            <%= form.label :team_name, "Team name", class: "block text-blue-200 font-bold text-xs tracking-widest mb-3" %>
+            <%= form.text_field :team_name, class: "w-full px-4 py-4 bg-white/20 border-2 border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-lg", placeholder: "Enter your team name" %>
+          </div>
+        <% end %>
+
         <%= form.submit "Join Game", class: "w-full bg-orange-500 text-white font-black py-4 px-6 rounded-xl hover:bg-orange-600 active:scale-[0.98] transform hover:shadow-lg shadow-orange-900/20 transition-all duration-200 text-lg tracking-tight" %>
       <% end %>
     </div>

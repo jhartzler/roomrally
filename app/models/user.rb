@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :prompt_packs
   has_many :trivia_packs
   has_many :category_packs
+  has_many :hunt_packs
   has_many :game_templates, dependent: :destroy
   has_many :ai_generation_requests, dependent: :destroy
 

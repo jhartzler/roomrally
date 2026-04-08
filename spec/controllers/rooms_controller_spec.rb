@@ -3,13 +3,19 @@ require 'rails_helper'
 RSpec.describe RoomsController, type: :controller do
   describe 'POST #create' do
     it 'creates a new room' do
-      expect { post :create }.to change(Room, :count).by(1)
+      expect { post :create, params: { game_type: "Write And Vote" } }.to change(Room, :count).by(1)
     end
 
-    it 'redirects to the join room path' do
-      post :create
+    it 'redirects to the stage path' do
+      post :create, params: { game_type: "Write And Vote" }
       room = Room.last
       expect(response).to redirect_to(room_stage_path(room))
+    end
+
+    it 'rejects restricted game types for guests' do
+      post :create, params: { game_type: "Scavenger Hunt" }
+      expect(response).to redirect_to(host_path)
+      expect(Room.count).to eq(0)
     end
   end
 
@@ -173,7 +179,7 @@ RSpec.describe RoomsController, type: :controller do
       it 'publishes the :game_started event' do
         allow(controller).to receive(:publish)
         post :start_game, params: { code: room.code }
-        expect(controller).to have_received(:publish).with(:game_started, room: anything, timer_enabled: false, timer_increment: 0, question_count: 0, show_instructions: true, total_rounds: 0, categories_per_round: 0)
+        expect(controller).to have_received(:publish).with(:game_started, room: anything, timer_enabled: false, timer_increment: 0, timer_duration: 0, question_count: 0, show_instructions: true, total_rounds: 0, categories_per_round: 0)
       end
 
       it 'redirects to the hand view' do

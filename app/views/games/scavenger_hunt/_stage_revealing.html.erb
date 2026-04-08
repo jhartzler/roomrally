@@ -1,0 +1,28 @@
+<%# app/views/games/scavenger_hunt/_stage_revealing.html.erb %>
+<div id="stage_revealing" class="flex flex-col items-center justify-center flex-1">
+  <% submission = game.currently_showing_submission_id ? HuntSubmission.find_by(id: game.currently_showing_submission_id) : nil %>
+
+  <% if submission&.media&.attached? %>
+    <div class="flex flex-col items-center w-full h-full p-[2vh]">
+      <div class="bg-black/40 rounded-xl p-[1.5vh] mb-[1vh] w-full text-center">
+        <p class="text-vh-2xl font-bold text-white"><%= submission.hunt_prompt_instance.body %></p>
+      </div>
+
+      <div class="flex-1 flex items-center justify-center w-full">
+        <%= image_tag url_for(submission.media),
+              class: "max-h-[65vh] max-w-full object-contain rounded-2xl",
+              alt: "" %>
+      </div>
+
+      <div class="bg-black/40 rounded-xl p-[1.5vh] mt-[1vh] w-full text-center">
+        <p class="text-vh-xl font-bold text-white"><%= submission.player.team_name.presence || submission.player.name %></p>
+      </div>
+    </div>
+  <% else %>
+    <div class="text-center">
+      <p class="text-[8vh] mb-[2vh]">🎬</p>
+      <h1 class="text-vh-4xl font-black text-white">Let's see what you've got!</h1>
+      <p class="text-vh-xl text-white/70 mt-[2vh]">The host is picking the first photo...</p>
+    </div>
+  <% end %>
+</div>
