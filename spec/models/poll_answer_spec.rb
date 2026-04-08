@@ -15,13 +15,9 @@ RSpec.describe PollAnswer, type: :model do
     end
 
     it "returns MINIMUM_POINTS for a late answer" do
-      answer = build(:poll_answer, poll_game: game, poll_question: question, player:)
-      round_started_at = 20.seconds.ago
-      round_closed_at = Time.current
-      answer.submitted_at = round_closed_at - 0.1.seconds
-      points = answer.calculate_points(round_started_at:, round_closed_at:)
-      expect(points).to be >= PollGame::MINIMUM_POINTS
-      expect(points).to be <= PollGame::MAXIMUM_POINTS
+      answer = build(:poll_answer, poll_game: game, poll_question: question, player:, submitted_at: 1.second.ago)
+      points = answer.calculate_points(round_started_at: 20.seconds.ago, round_closed_at: Time.current)
+      expect(points).to be_between(PollGame::MINIMUM_POINTS, PollGame::MAXIMUM_POINTS).inclusive
     end
   end
 end
