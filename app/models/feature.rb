@@ -18,7 +18,7 @@ class Feature < ApplicationRecord
       find_by(name:)&.enabled? || false
     end
   rescue ArgumentError
-    raise
+    raise # Re-raise so unknown-flag errors surface; don't let the generic handler swallow them
   rescue => e
     Rails.logger.error("Feature flag lookup failed for #{name}: #{e.message}")
     false

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_102708) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_102709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -485,6 +485,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_102708) do
   add_foreign_key "category_instances", "category_list_games"
   add_foreign_key "category_list_games", "category_packs"
   add_foreign_key "category_packs", "users"
+  add_foreign_key "feature_events", "features", column: "feature_name", primary_key: "name"
   add_foreign_key "game_templates", "category_packs", on_delete: :nullify
   add_foreign_key "game_templates", "hunt_packs"
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify

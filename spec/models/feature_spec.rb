@@ -34,6 +34,8 @@ RSpec.describe Feature do
     end
 
     context "when caching is active" do
+      # Test env uses :null_store which never caches. Swap in MemoryStore
+      # for this example so we can verify the cache short-circuits the DB.
       around do |example|
         # Swap in a real memory store so cache.fetch actually caches in this example
         original_cache = Rails.cache

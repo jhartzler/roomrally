@@ -15,5 +15,12 @@ RSpec.describe FeatureEvent do
       expect(event).not_to be_valid
       expect(event.errors[:feature]).to be_present
     end
+
+    it "validates enabled is a boolean" do
+      feature = Feature.create!(name: "write_and_vote", enabled: false)
+      event = described_class.new(feature_name: feature.name, enabled: nil)
+      expect(event).not_to be_valid
+      expect(event.errors[:enabled]).to be_present
+    end
   end
 end
