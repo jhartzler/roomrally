@@ -3,6 +3,30 @@ require 'rails_helper'
 RSpec.describe "Players", type: :request do
   let(:room) { FactoryBot.create(:room) }
 
+  describe "GET /rooms/:code/join (new)" do
+    it "tracks join_page_viewed with a non-empty distinct_id" do
+      expect(Analytics).to receive(:track) do |args|
+        expect(args[:event]).to eq("join_page_viewed")
+        expect(args[:distinct_id]).to be_present
+        expect(args[:distinct_id]).not_to eq("session_")
+        expect(args[:distinct_id]).not_to match(/session_$/)
+      end
+      get join_room_path(code: room.code)
+    end
+  end
+
+  describe "POST /players (create)" do
+    it "tracks player_joined with player_name" do
+      expect(Analytics).to receive(:track).at_least(:once) do |args|
+        next unless args[:event] == "player_joined"
+
+        expect(args[:properties][:player_name]).to eq("TestPlayer")
+      end
+      post players_path,
+           params: { player: { name: "TestPlayer" }, code: room.code }
+    end
+  end
+
   describe "POST /players" do
     context "with valid params" do
       let(:player_params) { { name: "Alice" } }
