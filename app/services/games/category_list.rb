@@ -139,7 +139,12 @@ module Games
         Analytics.track(
           distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
           event: "game_completed",
-          properties: { game_type: game.room.game_type, room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
+          properties: {
+            game_type: game.room.game_type,
+            room_code: game.room.code,
+            player_count: game.room.players.active_players.count,
+            duration_seconds: (Time.current - game.created_at).to_i
+          }.merge(Analytics.pack_properties(game.room))
         )
         game.room.finish!
         broadcast_all(game)
