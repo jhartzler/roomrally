@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Room, type: :model do
+  before do
+    Feature::FEATURES.each { |name| Feature.find_or_create_by!(name: name.to_s) { |f| f.enabled = true } }
+    Rails.cache.clear
+  end
+
   describe 'validations' do
     subject(:room) { create(:room) }
 
@@ -197,6 +202,38 @@ RSpec.describe Room, type: :model do
         }.not_to change(finished_room, :status)
       end
     end
+  end
+
+  describe ".available_game_types" do
+    before do
+      Feature.delete_all
+      Rails.cache.clear
+    end
+
+    it "returns all game types when all flags are enabled" do
+      Feature::FEATURES.each { |name| Feature.create!(name: name.to_s, enabled: true) }
+      expect(described_class.available_game_types).to eq(Room::GAME_TYPES)
+    end
+
+    # rubocop:disable RSpec/ExampleLength
+    it "excludes game types with disabled flags" do
+      Feature.create!(name: "write_and_vote", enabled: false)
+      Feature.create!(name: "speed_trivia", enabled: true)
+      Feature.create!(name: "category_list", enabled: true)
+      result = described_class.available_game_types
+      expect(result).not_to include("Write And Vote")
+      expect(result).to include("Speed Trivia", "Category List")
+    end
+
+    it "rejects a room whose game type flag is disabled" do
+      Feature.create!(name: "write_and_vote", enabled: false)
+      Feature.create!(name: "speed_trivia", enabled: true)
+      Feature.create!(name: "category_list", enabled: true)
+      room = build(:room, game_type: "Write And Vote")
+      expect(room).not_to be_valid
+      expect(room.errors[:game_type]).to be_present
+    end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   describe 'scopes' do
