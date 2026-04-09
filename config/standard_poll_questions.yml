@@ -1,0 +1,63 @@
+# Standard poll questions for the Bandwagon (Poll Game) game type.
+# Each entry has a body and a list of options.
+# Questions are designed for in-person group play — fun, fast, opinionated.
+
+- body: "Dogs or cats?"
+  options:
+    - "Dogs 🐶"
+    - "Cats 🐱"
+
+- body: "Morning person or night owl?"
+  options:
+    - "Morning person ☀️"
+    - "Night owl 🦉"
+
+- body: "Pizza or tacos?"
+  options:
+    - "Pizza 🍕"
+    - "Tacos 🌮"
+
+- body: "Beach or mountains?"
+  options:
+    - "Beach 🏖️"
+    - "Mountains 🏔️"
+
+- body: "Sweet or salty?"
+  options:
+    - "Sweet 🍬"
+    - "Salty 🧂"
+
+- body: "Summer or winter?"
+  options:
+    - "Summer ☀️"
+    - "Winter ❄️"
+
+- body: "Movies or TV shows?"
+  options:
+    - "Movies 🎬"
+    - "TV shows 📺"
+
+- body: "Coffee or tea?"
+  options:
+    - "Coffee ☕"
+    - "Tea 🍵"
+
+- body: "City life or countryside?"
+  options:
+    - "City life 🏙️"
+    - "Countryside 🌾"
+
+- body: "Text or call?"
+  options:
+    - "Text 💬"
+    - "Call 📞"
+
+- body: "Early bird gets the worm, or sleep is sacred?"
+  options:
+    - "Early bird 🐦"
+    - "Sleep is sacred 😴"
+
+- body: "Cooking at home or eating out?"
+  options:
+    - "Cooking at home 🍳"
+    - "Eating out 🍽️"
