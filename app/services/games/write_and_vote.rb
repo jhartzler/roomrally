@@ -12,7 +12,13 @@ module Games
       Analytics.track(
         distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
         event: "game_started",
-        properties: { game_type: room.game_type, room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, show_instructions: }
+        properties: {
+          game_type: room.game_type,
+          room_code: room.code,
+          player_count: room.players.active_players.count,
+          timer_enabled:,
+          show_instructions:
+        }.merge(Analytics.pack_properties(room))
       )
 
       return if room.current_game.present?
