@@ -53,7 +53,7 @@ RSpec.describe "Admin::Features" do
       patch toggle_admin_feature_path(feature)
       patch toggle_admin_feature_path(feature)
       events = FeatureEvent.where(feature_name: "write_and_vote").order(:created_at)
-      expect(events.map(&:enabled)).to eq([true, false])
+      expect(events.map(&:enabled)).to eq([ true, false ])
     end
 
     it "redirects to admin_features_path with a notice" do

@@ -4,4 +4,6 @@ Rails.application.config.after_initialize do
   Feature::FEATURES.each do |name|
     Feature.find_or_create_by!(name:) { |f| f.enabled = false }
   end
+rescue ActiveRecord::NoDatabaseError
+  # Database doesn't exist yet (e.g., during db:create); skip sync
 end
