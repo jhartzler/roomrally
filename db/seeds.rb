@@ -61,8 +61,7 @@ standard_categories.each do |category_name|
   Category.find_or_create_by!(name: category_name, category_pack:)
 end
 
-# Enable feature flags for existing game types
-%w[write_and_vote speed_trivia category_list].each do |name|
-  Feature.find_or_create_by!(name:) { |f| f.enabled = true }
-  Feature.where(name:).update_all(enabled: true)
+# Sync feature flags — creates missing rows, leaves existing enabled state alone
+Feature::FEATURES.each do |name|
+  Feature.find_or_create_by!(name:) { |f| f.enabled = false }
 end

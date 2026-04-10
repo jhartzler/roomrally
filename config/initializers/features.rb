@@ -1,9 +1,2 @@
-Rails.application.config.after_initialize do
-  next unless ActiveRecord::Base.connection.table_exists?(:features)
-
-  Feature::FEATURES.each do |name|
-    Feature.find_or_create_by!(name:) { |f| f.enabled = false }
-  end
-rescue ActiveRecord::NoDatabaseError
-  # Database doesn't exist yet (e.g., during db:create); skip sync
-end
+# Feature flags are seeded via db/seeds.rb (bin/rails db:seed).
+# See app/models/feature.rb for the canonical list of flags.
