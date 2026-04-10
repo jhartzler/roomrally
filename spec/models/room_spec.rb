@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Room, type: :model do
+  # Feature flags must exist for Room#game_type validation to pass. Without these,
+  # any `create(:room)` call fails because available_game_types returns [].
   before do
     Feature::FEATURES.each { |name| Feature.find_or_create_by!(name: name.to_s) { |f| f.enabled = true } }
     Rails.cache.clear
@@ -215,25 +217,30 @@ RSpec.describe Room, type: :model do
       expect(described_class.available_game_types).to eq(Room::GAME_TYPES)
     end
 
-    # rubocop:disable RSpec/ExampleLength
-    it "excludes game types with disabled flags" do
-      Feature.create!(name: "write_and_vote", enabled: false)
-      Feature.create!(name: "speed_trivia", enabled: true)
-      Feature.create!(name: "category_list", enabled: true)
-      result = described_class.available_game_types
-      expect(result).not_to include("Write And Vote")
-      expect(result).to include("Speed Trivia", "Category List")
+    it "excludes game types with no feature row" do
+      # No Feature rows exist — enabled? returns false for all
+      expect(described_class.available_game_types).to be_empty
     end
 
-    it "rejects a room whose game type flag is disabled" do
-      Feature.create!(name: "write_and_vote", enabled: false)
-      Feature.create!(name: "speed_trivia", enabled: true)
-      Feature.create!(name: "category_list", enabled: true)
-      room = build(:room, game_type: "Write And Vote")
-      expect(room).not_to be_valid
-      expect(room.errors[:game_type]).to be_present
+    context "when write_and_vote is disabled" do
+      before do
+        Feature.create!(name: "write_and_vote", enabled: false)
+        Feature.create!(name: "speed_trivia", enabled: true)
+        Feature.create!(name: "category_list", enabled: true)
+      end
+
+      it "excludes Write And Vote from available types" do
+        result = described_class.available_game_types
+        expect(result).not_to include("Write And Vote")
+        expect(result).to include("Speed Trivia", "Category List")
+      end
+
+      it "rejects a room with game type Write And Vote" do
+        room = build(:room, game_type: "Write And Vote")
+        expect(room).not_to be_valid
+        expect(room.errors[:game_type]).to be_present
+      end
     end
-    # rubocop:enable RSpec/ExampleLength
   end
 
   describe 'scopes' do
