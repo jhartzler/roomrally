@@ -2,28 +2,39 @@ require 'rails_helper'
 
 RSpec.describe "Players", type: :request do
   let(:room) { FactoryBot.create(:room) }
+  let(:join_page_event) do
+    hash_including(
+      event: "join_page_viewed",
+      distinct_id: a_string_matching(/\Asession_.+\z/)
+    )
+  end
+  let(:player_joined_event) do
+    hash_including(
+      event: "player_joined",
+      properties: hash_including(player_name: "TestPlayer")
+    )
+  end
 
   describe "GET /rooms/:code/join (new)" do
-    it "tracks join_page_viewed with a non-empty distinct_id" do
-      expect(Analytics).to receive(:track) do |args|
-        expect(args[:event]).to eq("join_page_viewed")
-        expect(args[:distinct_id]).to be_present
-        expect(args[:distinct_id]).not_to eq("session_")
-        expect(args[:distinct_id]).not_to match(/session_$/)
-      end
+    before do
+      allow(Analytics).to receive(:track)
       get join_room_path(code: room.code)
+    end
+
+    it "tracks join_page_viewed with a non-empty distinct_id" do
+      expect(Analytics).to have_received(:track).with(join_page_event)
     end
   end
 
   describe "POST /players (create)" do
-    it "tracks player_joined with player_name" do
-      expect(Analytics).to receive(:track).at_least(:once) do |args|
-        next unless args[:event] == "player_joined"
-
-        expect(args[:properties][:player_name]).to eq("TestPlayer")
-      end
+    before do
+      allow(Analytics).to receive(:track)
       post players_path,
            params: { player: { name: "TestPlayer" }, code: room.code }
+    end
+
+    it "tracks player_joined with player_name" do
+      expect(Analytics).to have_received(:track).with(player_joined_event)
     end
   end
 

@@ -34,6 +34,17 @@ module Analytics
     end
   end
 
+  def self.room_distinct_id(room)
+    room.user_id ? "user_#{room.user_id}" : "room_#{room.code}"
+  end
+
+  def self.room_properties(room, properties = {})
+    {
+      game_type: room.game_type,
+      room_code: room.code
+    }.merge(properties)
+  end
+
   def self.referrer_domain(request)
     return nil if request.referer.blank?
 

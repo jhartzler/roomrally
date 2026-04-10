@@ -12,15 +12,13 @@ module Games
       categories_per_round = DEFAULT_CATEGORIES_PER_ROUND if categories_per_round.to_i <= 0
 
       Analytics.track(
-        distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+        distinct_id: Analytics.room_distinct_id(room),
         event: "game_started",
-        properties: {
-          game_type: room.game_type,
-          room_code: room.code,
+        properties: Analytics.room_properties(room,
           player_count: room.players.active_players.count,
           timer_enabled:,
           show_instructions:
-        }.merge(Analytics.pack_properties(room))
+        ).merge(Analytics.pack_properties(room))
       )
 
       return if room.current_game.present?
@@ -43,9 +41,9 @@ module Games
       unless show_instructions
         game.start_game!
         Analytics.track(
-          distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+          distinct_id: Analytics.room_distinct_id(room),
           event: "instructions_skipped",
-          properties: { game_type: room.game_type, room_code: room.code }
+          properties: Analytics.room_properties(room)
         )
       end
 
@@ -137,14 +135,12 @@ module Games
         game.finish_game!
         GameEvent.log(game, "game_finished", duration_seconds: (Time.current - game.created_at).to_i, player_count: game.room.players.active_players.count)
         Analytics.track(
-          distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
+          distinct_id: Analytics.room_distinct_id(game.room),
           event: "game_completed",
-          properties: {
-            game_type: game.room.game_type,
-            room_code: game.room.code,
+          properties: Analytics.room_properties(game.room,
             player_count: game.room.players.active_players.count,
             duration_seconds: (Time.current - game.created_at).to_i
-          }.merge(Analytics.pack_properties(game.room))
+          ).merge(Analytics.pack_properties(game.room))
         )
         game.room.finish!
         broadcast_all(game)

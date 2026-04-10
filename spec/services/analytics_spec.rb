@@ -3,18 +3,46 @@ require "rails_helper"
 RSpec.describe Analytics do
   describe ".referrer_domain" do
     it "returns the host from a valid referer URL" do
-      request = double("request", referer: "https://www.google.com/search?q=room+rally")
+      request = instance_double(ActionDispatch::Request, referer: "https://www.google.com/search?q=room+rally")
       expect(described_class.referrer_domain(request)).to eq("www.google.com")
     end
 
     it "returns nil when referer is blank" do
-      request = double("request", referer: nil)
+      request = instance_double(ActionDispatch::Request, referer: nil)
       expect(described_class.referrer_domain(request)).to be_nil
     end
 
     it "returns nil for an invalid URI" do
-      request = double("request", referer: "not a url %%")
+      request = instance_double(ActionDispatch::Request, referer: "not a url %%")
       expect(described_class.referrer_domain(request)).to be_nil
+    end
+  end
+
+  describe ".room_distinct_id" do
+    it "uses the user id when the room belongs to a user" do
+      room = build(:room, code: "ABCD", user_id: 12)
+
+      expect(described_class.room_distinct_id(room)).to eq("user_12")
+    end
+
+    it "falls back to the room code for anonymous rooms" do
+      room = build(:room, code: "ABCD", user_id: nil)
+
+      expect(described_class.room_distinct_id(room)).to eq("room_ABCD")
+    end
+  end
+
+  describe ".room_properties" do
+    subject(:room_properties) { described_class.room_properties(room, player_count: 4) }
+
+    let(:room) { build(:room, code: "ABCD", game_type: Room::SPEED_TRIVIA) }
+
+    it "returns the shared room analytics properties merged with extra values" do
+      expect(room_properties).to eq(
+        game_type: Room::SPEED_TRIVIA,
+        room_code: "ABCD",
+        player_count: 4
+      )
     end
   end
 
