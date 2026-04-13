@@ -13,9 +13,9 @@ class RoomsController < ApplicationController
   def create
     room = Room.create!(room_params)
     Analytics.track(
-      distinct_id: current_user ? "user_#{current_user.id}" : "room_#{room.code}",
+      distinct_id: current_user ? "user_#{current_user.id}" : Analytics.room_distinct_id(room),
       event: "room_created",
-      properties: { game_type: room.game_type, room_code: room.code, from_template: false }
+      properties: Analytics.room_properties(room, from_template: false)
     )
     if current_user
       room.update(user: current_user)

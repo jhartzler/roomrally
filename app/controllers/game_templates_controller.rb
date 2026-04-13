@@ -24,10 +24,17 @@ class GameTemplatesController < ApplicationController
     @game_template = current_user.game_templates.new(game_template_params)
 
     if @game_template.save
+      pack = @game_template.pack
       Analytics.track(
         distinct_id: "user_#{current_user.id}",
         event: "game_template_created",
-        properties: { game_type: @game_template.game_type, template_id: @game_template.id }
+        properties: {
+          template_id: @game_template.id,
+          template_name: @game_template.name,
+          game_type: @game_template.game_type,
+          pack_id: pack&.id,
+          pack_name: pack&.name
+        }
       )
       redirect_to game_templates_path, notice: "Game saved successfully."
     else
@@ -45,10 +52,22 @@ class GameTemplatesController < ApplicationController
 
   def update
     if @game_template.update(game_template_params)
+      pack = @game_template.pack
+      item_count = if pack&.respond_to?(:prompts) then pack.prompts.count
+      elsif pack&.respond_to?(:trivia_questions) then pack.trivia_questions.count
+      elsif pack&.respond_to?(:categories) then pack.categories.count
+      end
       Analytics.track(
         distinct_id: "user_#{current_user.id}",
-        event: "template_edited",
-        properties: { game_type: @game_template.game_type, template_id: @game_template.id }
+        event: "pack_saved",
+        properties: {
+          template_id: @game_template.id,
+          template_name: @game_template.name,
+          game_type: @game_template.game_type,
+          pack_id: pack&.id,
+          pack_name: pack&.name,
+          item_count:
+        }
       )
       redirect_to game_templates_path, notice: "Game updated successfully."
     else
