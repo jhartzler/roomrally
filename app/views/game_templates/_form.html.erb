@@ -22,7 +22,11 @@
   <div>
     <label class="block text-sm font-bold text-blue-200 mb-3">Game Type</label>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <% Room::GAME_TYPES.each do |type| %>
+      <% available_types = Room.available_game_types.dup
+         if game_template.persisted? && game_template.game_type.present? && !available_types.include?(game_template.game_type)
+           available_types << game_template.game_type
+         end
+         available_types.each do |type| %>
         <% info = game_info(type) %>
         <label class="cursor-pointer">
           <%= f.radio_button :game_type, type, class: "peer hidden", data: { action: "change->game-template-form#gameTypeChanged" } %>

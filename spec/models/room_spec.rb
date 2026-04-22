@@ -1,13 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Room, type: :model do
-  # Feature flags must exist for Room#game_type validation to pass. Without these,
-  # any `create(:room)` call fails because available_game_types returns [].
-  before do
-    Feature::FEATURES.each { |name| Feature.find_or_create_by!(name: name.to_s) { |f| f.enabled = true } }
-    Rails.cache.clear
-  end
-
   describe 'validations' do
     subject(:room) { create(:room) }
 

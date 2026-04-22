@@ -44,7 +44,7 @@
         <div>
           <span class="block text-blue-200 font-bold text-xs tracking-widest mb-3">Select Game</span>
           <div class="space-y-2">
-            <% Room::GAME_TYPES.each_with_index do |game_type, index| %>
+            <% Room.available_game_types.each_with_index do |game_type, index| %>
               <% info = game_info(game_type) %>
               <label class="block cursor-pointer">
                 <%= form.radio_button :game_type, game_type,

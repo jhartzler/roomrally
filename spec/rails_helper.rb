@@ -65,6 +65,17 @@ RSpec.configure do |config|
     DatabaseCleaner.start
   end
 
+  # Ensure feature flags exist so Room validations don't fail across the suite.
+  # Specs that manage their own feature state (e.g. feature flag specs)
+  # can opt out with metadata: `skip_feature_seeding: true`.
+  config.before do |example|
+    next if example.metadata[:skip_feature_seeding]
+
+    Feature.where(name: Feature::FEATURES.map(&:to_s)).delete_all
+    Feature::FEATURES.each { |name| Feature.create!(name: name.to_s, enabled: true) }
+    Rails.cache.clear
+  end
+
   # Clean up after each test
   config.after do
     DatabaseCleaner.clean

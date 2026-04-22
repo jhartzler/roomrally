@@ -29,7 +29,7 @@
 
           <div>
             <%= form.label :game_type, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
-            <%= form.select :game_type, Room::GAME_TYPES, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
+            <%= form.select :game_type, Room.available_game_types, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
           </div>
 
            <div>

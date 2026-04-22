@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe FeatureEvent do
+RSpec.describe FeatureEvent, :skip_feature_seeding do
   describe "readonly after creation" do
     it "raises ActiveRecord::ReadOnlyRecord when updating after save" do
       feature = Feature.create!(name: "write_and_vote", enabled: false)

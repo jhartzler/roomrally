@@ -42,7 +42,7 @@
           <h3 class="font-black text-white text-base mb-1">Pick a game type</h3>
           <p class="text-blue-200/60 text-xs leading-relaxed mb-3">Choose from Comedy Clash, Think Fast, or A-List. Each uses different content — prompts, trivia, or categories.</p>
           <div class="space-y-1.5">
-            <% Room::GAME_TYPES.each do |game_type| %>
+            <% Room.available_game_types.each do |game_type| %>
               <% info = game_info(game_type) %>
               <div class="flex items-center gap-2 text-xs text-blue-200/70">
                 <span><%= info[:emoji] %></span>
@@ -84,7 +84,7 @@
     <div>
       <h2 class="text-xs font-bold text-blue-400/60 uppercase tracking-widest mb-3 md:mb-4">Game Types</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-        <% Room::GAME_TYPES.each do |game_type| %>
+        <% Room.available_game_types.each do |game_type| %>
           <% info = game_info(game_type) %>
           <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
             <div class="flex items-center gap-3 mb-3">

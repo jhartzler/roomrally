@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Feature do
+RSpec.describe Feature, :skip_feature_seeding do
   before { Rails.cache.clear }
 
   describe ".enabled?" do
