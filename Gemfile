@@ -93,7 +93,7 @@ gem "aasm", "~> 5.5"
 gem "omniauth-google-oauth2", "~> 1.2"
 gem "omniauth-rails_csrf_protection", "~> 2.0"
 
-gem "lucide-rails", "~> 0.7.3"
+gem "lucide-rails", "~> 0.7.4"
 
 gem "sentry-ruby"
 gem "sentry-rails"
