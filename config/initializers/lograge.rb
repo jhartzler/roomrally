@@ -6,10 +6,7 @@ if Rails.env.production?
       { time: event.time.utc.iso8601 }
     end
     config.lograge.custom_payload = lambda do |controller|
-      {
-        request_id: controller.request.request_id,
-        remote_ip: controller.request.remote_ip
-      }
+      { request_id: controller.request.request_id }
     end
   end
 end
