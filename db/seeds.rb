@@ -60,8 +60,3 @@ standard_categories = YAML.load_file(Rails.root.join("config/standard_categories
 standard_categories.each do |category_name|
   Category.find_or_create_by!(name: category_name, category_pack:)
 end
-
-# Sync feature flags — creates missing rows, leaves existing enabled state alone
-Feature::FEATURES.each do |name|
-  Feature.find_or_create_by!(name:) { |f| f.enabled = false }
-end

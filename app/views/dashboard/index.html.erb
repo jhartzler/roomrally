@@ -40,7 +40,7 @@
         <div class="relative bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5">
           <div class="w-8 h-8 rounded-full bg-orange-500 text-white text-sm font-black flex items-center justify-center mb-3 shadow-lg shadow-orange-900/30">1</div>
           <h3 class="font-black text-white text-base mb-1">Pick a game type</h3>
-          <p class="text-blue-200/60 text-xs leading-relaxed mb-3">Choose from Comedy Clash, Think Fast, or A-List. Each uses different content — prompts, trivia, or categories.</p>
+          <p class="text-blue-200/60 text-xs leading-relaxed mb-3">Choose from <%= Room.available_game_types.map { |gt| Room::GAME_DISPLAY_NAMES[gt] || gt }.to_sentence %>. Each uses different content — prompts, trivia, or categories.</p>
           <div class="space-y-1.5">
             <% Room.available_game_types.each do |game_type| %>
               <% info = game_info(game_type) %>
