@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_102709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -124,6 +124,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "user_id"
     t.index [ "user_id" ], name: "index_category_packs_on_user_id"
   end
+
+create_table "feature_events", force: :cascade do |t|
+  t.datetime "created_at", null: false
+  t.boolean "enabled", null: false
+  t.string "feature_name", null: false
+  t.index [ "feature_name" ], name: "index_feature_events_on_feature_name"
+end
+
+create_table "features", primary_key: "name", id: :string, force: :cascade do |t|
+  t.boolean "enabled", default: false, null: false
+end
 
   create_table "game_events", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -356,6 +367,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "category_instances", "category_list_games"
   add_foreign_key "category_list_games", "category_packs"
   add_foreign_key "category_packs", "users"
+  add_foreign_key "feature_events", "features", column: "feature_name", primary_key: "name"
   add_foreign_key "game_templates", "category_packs", on_delete: :nullify
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify

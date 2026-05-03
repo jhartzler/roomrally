@@ -33,6 +33,23 @@ RSpec.describe "Dashboards", type: :request do
         expect(response.body).to include("Quick Host")
       end
 
+      context "when a game type is disabled" do # rubocop:disable RSpec/NestedGroups
+        before do
+          Feature.find("speed_trivia").update!(enabled: false)
+          Rails.cache.clear
+        end
+
+        it "hides the disabled game type from the New Game section" do
+          get dashboard_path
+          expect(response.body).not_to include("Think Fast")
+        end
+
+        it "still shows enabled game types" do
+          get dashboard_path
+          expect(response.body).to include("Comedy Clash")
+          expect(response.body).to include("A-List")
+        end
+      end
 
       describe "game type filtering" do # rubocop:disable RSpec/NestedGroups
         before do
