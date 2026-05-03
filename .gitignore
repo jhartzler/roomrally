@@ -40,9 +40,6 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
-# Skylight auth token (set SKYLIGHT_AUTHENTICATION env var in production)
-/config/skylight.yml
-
 # Node modules
 node_modules
 
