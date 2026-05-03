@@ -98,6 +98,9 @@ gem "lucide-rails", "~> 0.7.4"
 gem "sentry-ruby"
 gem "sentry-rails"
 
+gem "lograge"
+gem "skylight"
+
 gem "rqrcode", "~> 3.2"
 
 gem "posthog-ruby"

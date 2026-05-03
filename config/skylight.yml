@@ -1,0 +1,5 @@
+---
+# Skylight performance monitoring configuration.
+# The authentication token is read from the SKYLIGHT_AUTHENTICATION env var.
+# Never commit a hardcoded token — use the env var or Rails credentials instead.
+authentication: <%= ENV["SKYLIGHT_AUTHENTICATION"] %>
