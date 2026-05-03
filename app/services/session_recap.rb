@@ -138,6 +138,8 @@ class SessionRecap
       "Game started (#{ge.metadata["game_type"]})"
     when "game_finished"
       "Game finished (#{ge.metadata["duration_seconds"]}s)"
+    when "question_skipped"
+      "Question #{ge.metadata["question_index"].to_i + 1} skipped"
     else
       ge.event_name.humanize
     end

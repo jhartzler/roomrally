@@ -7,10 +7,13 @@ class PlayersController < ApplicationController
 
   def new
     Rails.logger.info "Player joining room #{@room.code}"
+    join_id = session[:player_session_id] || begin
+      session[:join_analytics_id] ||= SecureRandom.hex(8)
+    end
     Analytics.track(
-      distinct_id: "session_#{session.id}",
+      distinct_id: "session_#{join_id}",
       event: "join_page_viewed",
-      properties: { room_code: @room.code }
+      properties: { room_code: @room.code, referrer_domain: Analytics.referrer_domain(request) }
     )
     @player = Player.new
   end
@@ -56,7 +59,13 @@ class PlayersController < ApplicationController
       Analytics.track(
         distinct_id: "player_#{@player.session_id}",
         event: "player_joined",
-        properties: { room_code: @room.code, game_type: @room.game_type, player_count_after: @room.players.active_players.count }
+        properties: {
+          room_code: @room.code,
+          game_type: @room.game_type,
+          player_count_after: @room.players.active_players.count,
+          player_name: @player.name,
+          referrer_domain: Analytics.referrer_domain(request)
+        }
       )
 
       # Broadcast the new player to all clients viewing this room
