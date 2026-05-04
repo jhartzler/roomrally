@@ -21,7 +21,7 @@ RSpec.describe "RendersHand concern — HTTP response updates hand", type: :requ
 
     it "returns turbo-stream update targeting hand_screen", :aggregate_failures do # rubocop:disable RSpec/ExampleLength
       post trivia_answers_path,
-           params: { trivia_answer: { selected_option: "A" } },
+           params: { trivia_answer: { selected_option: "A" }, code: room.code },
            as: :turbo_stream
 
       expect(response).to have_http_status(:ok)

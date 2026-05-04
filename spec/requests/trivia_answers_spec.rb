@@ -19,7 +19,7 @@ RSpec.describe "TriviaAnswers", type: :request do
 
     it "returns 200 with hand screen content" do
       post trivia_answers_path,
-           params: { trivia_answer: { selected_option: "A" } },
+           params: { trivia_answer: { selected_option: "A" }, code: room.code },
            as: :turbo_stream
 
       expect(response).to have_http_status(:ok)

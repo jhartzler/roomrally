@@ -17,7 +17,7 @@ RSpec.describe "Responses", type: :request do
     end
 
     it "returns turbo-stream update targeting hand_screen", :aggregate_failures do
-      patch response_url(player_response), params: { response: { body: "This is a test answer." } }, as: :turbo_stream
+      patch response_url(player_response), params: { response: { body: "This is a test answer." }, code: room.code }, as: :turbo_stream
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('action="update"')
@@ -26,13 +26,13 @@ RSpec.describe "Responses", type: :request do
     end
 
     it "updates the response body" do
-      patch response_url(player_response), params: { response: { body: "This is a test answer." } }, as: :turbo_stream
+      patch response_url(player_response), params: { response: { body: "This is a test answer." }, code: room.code }, as: :turbo_stream
 
       expect(player_response.reload.body).to eq("This is a test answer.")
     end
 
     it "updates the prompt instance status" do
-      patch response_url(player_response), params: { response: { body: "This is a test answer." } }, as: :turbo_stream
+      patch response_url(player_response), params: { response: { body: "This is a test answer." }, code: room.code }, as: :turbo_stream
 
       expect(player_response.prompt_instance.reload.status).to eq("submitted")
     end
