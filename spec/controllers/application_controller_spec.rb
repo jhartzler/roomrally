@@ -32,7 +32,7 @@ RSpec.describe ApplicationController, type: :controller do
     context "when player session exists" do
       before do
         session[:player_session_id] = player.session_id
-        get :index
+        get :index, params: { code: room.code }
       end
 
       it "sets the player_id tag" do
