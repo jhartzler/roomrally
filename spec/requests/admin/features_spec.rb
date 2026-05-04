@@ -3,7 +3,12 @@ require "rails_helper"
 RSpec.describe "Admin::Features", :skip_feature_seeding do
   let(:admin) { create(:user, :admin) }
   let(:non_admin) { create(:user) }
-  let!(:feature) { Feature.create!(name: "write_and_vote", enabled: false) }
+  let!(:feature) do
+    f = Feature.find_or_initialize_by(name: "write_and_vote")
+    f.enabled = false
+    f.save!
+    f
+  end
 
   describe "GET /admin/features" do
     it "requires admin access" do
