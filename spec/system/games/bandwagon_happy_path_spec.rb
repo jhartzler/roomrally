@@ -48,6 +48,7 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
     Capybara.using_session(:host) do
       visit room_hand_path(room.code)
       expect(page).to have_content("Get ready!")
+      expect(page).to have_selector("#start-from-instructions-btn", wait: 5)
       find("#start-from-instructions-btn").click
       expect(page).to have_content(/get ready/i)
     end
