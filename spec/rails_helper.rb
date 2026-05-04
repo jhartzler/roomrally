@@ -65,26 +65,6 @@ RSpec.configure do |config|
     DatabaseCleaner.start
   end
 
-  # Ensure feature flags exist so Room validations don't fail across the suite.
-  # Specs that manage their own feature state (e.g. feature flag specs)
-  # can opt out with metadata: `skip_feature_seeding: true`.
-  #
-  # Boot-time initializers (config/initializers/features.rb) also create these rows,
-  # so this must be idempotent — shared setup cannot rely on a clean table because
-  # different DatabaseCleaner strategies (transaction vs truncation) leave the DB
-  # in different states across consecutive examples.
-  config.before do |example|
-    next if example.metadata[:skip_feature_seeding]
-
-    Feature::FEATURES.each do |name|
-      feature = Feature.find_or_initialize_by(name: name.to_s)
-      feature.enabled = true
-      feature.save!
-    end
-    Feature.where.not(name: Feature::FEATURES.map(&:to_s)).delete_all
-    Rails.cache.clear
-  end
-
   # Clean up after each test
   config.after do
     DatabaseCleaner.clean

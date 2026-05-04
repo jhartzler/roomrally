@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Feature, :skip_feature_seeding do
+RSpec.describe Feature do
   before { Rails.cache.clear }
 
   describe ".sync!" do

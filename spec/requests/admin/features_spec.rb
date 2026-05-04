@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Admin::Features", :skip_feature_seeding do
+RSpec.describe "Admin::Features" do
   let(:admin) { create(:user, :admin) }
   let(:non_admin) { create(:user) }
   let!(:feature) do

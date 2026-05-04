@@ -313,6 +313,29 @@ Before writing a helper, check if Rails already provides it in ActiveSupport or 
 - **Session-Based Auth**: Players identified by Rails session for reconnection, no accounts required
 - **System Tests Are Critical**: Multiplayer flows must be tested with multiple Capybara sessions. When testing multiplayer flows, confirm the host's state transition completed (via `expect(page).to have_content(...)`) before asserting state in other player sessions. Never assert broadcast-dependent state immediately after triggering an action in a different session — the WebSocket broadcast may not have arrived yet.
 
+### Don't put feature-flag or runtime-env guards in model validations
+
+Feature flags are UI concerns — they control which game types appear in dropdowns, not which values are structurally valid for a `Room`. When `Feature.enabled?` ended up in `Room`'s `validates :game_type, inclusion: { in: ->(_) { Room.available_game_types } }`, it forced every factory, background job, and test that created a `Room` to ensure the feature row existed in the database.
+
+That table was populated by a boot-time initializer (`Feature.sync!`) outside any test transaction. Mixed DatabaseCleaner strategies (`:transaction` vs `:truncation`) then caused intermittent full-suite failures that were painful to diagnose because the dependency was hidden.
+
+**The fix:**
+```ruby
+# ❌ DON'T — runtime env check in model validation
+validates :game_type, inclusion: { in: ->(_) { Room.available_game_types } }
+
+# ✅ DO — static set for structural validity, feature flags control the UI
+validates :game_type, presence: true, inclusion: { in: Room::GAME_TYPES }
+```
+
+Gate at the controller layer where the user is making the choice:
+```ruby
+# controller
+@available_types = Room.available_game_types # checks Feature flags
+```
+
+This principle generalizes: **model validations should be static and deterministic.** If a validation depends on mutable runtime state (feature flags, env vars, current time), it will leak that dependency into every factory, test, and background job that touches the model.
+
 ### `GameHostAuthorization` — room-scoped player lookup
 
 `authorize_host` in `app/controllers/concerns/game_host_authorization.rb` looks up the player directly via `@game.room.players.find_by(session_id:)`, **not** via `current_player`. This is intentional: `set_current_player` in `ApplicationController` requires `params[:code]` to scope its lookup; without it, it returns the first player with that `session_id` across all rooms, causing false authorization failures for players who joined via room code.

@@ -11,6 +11,11 @@ class RoomsController < ApplicationController
   end
 
   def create
+    if params[:game_type].present? && !Room.available_game_types.include?(params[:game_type])
+      render plain: "Game type not available", status: :unprocessable_content
+      return
+    end
+
     room = Room.create!(room_params)
     Analytics.track(
       distinct_id: current_user ? "user_#{current_user.id}" : Analytics.room_distinct_id(room),

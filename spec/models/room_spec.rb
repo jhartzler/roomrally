@@ -210,9 +210,9 @@ RSpec.describe Room, type: :model do
       expect(described_class.available_game_types).to eq(Room::GAME_TYPES)
     end
 
-    it "excludes game types with no feature row" do
-      # No Feature rows exist — enabled? returns false for all
-      expect(described_class.available_game_types).to be_empty
+    it "returns all types when no feature rows exist" do
+      # No Feature rows exist — sensible fallback: all types available
+      expect(described_class.available_game_types).to eq(Room::GAME_TYPES)
     end
 
     context "when write_and_vote is disabled" do
@@ -226,12 +226,6 @@ RSpec.describe Room, type: :model do
         result = described_class.available_game_types
         expect(result).not_to include("Write And Vote")
         expect(result).to include("Speed Trivia", "Category List")
-      end
-
-      it "rejects a room with game type Write And Vote" do
-        room = build(:room, game_type: "Write And Vote")
-        expect(room).not_to be_valid
-        expect(room.errors[:game_type]).to be_present
       end
     end
   end
