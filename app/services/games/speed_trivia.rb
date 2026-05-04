@@ -22,9 +22,13 @@ module Games
       })
 
       Analytics.track(
-        distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+        distinct_id: Analytics.room_distinct_id(room),
         event: "game_started",
-        properties: { game_type: room.game_type, room_code: room.code, player_count: room.players.active_players.count, timer_enabled:, show_instructions: }
+        properties: Analytics.room_properties(room,
+          player_count: room.players.active_players.count,
+          timer_enabled:,
+          show_instructions:
+        ).merge(Analytics.pack_properties(room))
       )
 
       return if room.current_game.present?
@@ -41,9 +45,9 @@ module Games
       unless show_instructions
         game.start_game!
         Analytics.track(
-          distinct_id: room.user_id ? "user_#{room.user_id}" : "room_#{room.code}",
+          distinct_id: Analytics.room_distinct_id(room),
           event: "instructions_skipped",
-          properties: { game_type: room.game_type, room_code: room.code }
+          properties: Analytics.room_properties(room)
         )
       end
 
@@ -110,6 +114,7 @@ module Games
     end
 
     def self.next_question(game:)
+      finished = false
       game.with_lock do
         if game.questions_remaining?
           game.next_question!
@@ -121,14 +126,18 @@ module Games
           game.finish_game!
           GameEvent.log(game, "game_finished", duration_seconds: (Time.current - game.created_at).to_i, player_count: game.room.players.active_players.count)
           Analytics.track(
-            distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
+            distinct_id: Analytics.room_distinct_id(game.room),
             event: "game_completed",
-            properties: { game_type: game.room.game_type, room_code: game.room.code, player_count: game.room.players.active_players.count, duration_seconds: (Time.current - game.created_at).to_i }
+            properties: Analytics.room_properties(game.room,
+              player_count: game.room.players.active_players.count,
+              duration_seconds: (Time.current - game.created_at).to_i
+            ).merge(Analytics.pack_properties(game.room))
           )
           game.room.finish!
-          broadcast_all(game)
+          finished = true
         end
       end
+      broadcast_all(game) if finished
     end
 
     def self.handle_timeout(game:)
@@ -159,14 +168,12 @@ module Games
       })
 
       Analytics.track(
-        distinct_id: game.room.user_id ? "user_#{game.room.user_id}" : "room_#{game.room.code}",
+        distinct_id: Analytics.room_distinct_id(game.room),
         event: "question_skipped",
-        properties: {
-          game_type: game.room.game_type,
-          room_code: game.room.code,
+        properties: Analytics.room_properties(game.room,
           question_index: skipped_index,
           questions_remaining: game.questions_remaining?
-        }
+        )
       )
 
       GameEvent.log(game, "question_skipped",

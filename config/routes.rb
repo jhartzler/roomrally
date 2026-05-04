@@ -126,6 +126,9 @@ Rails.application.routes.draw do
       end
     end
     resources :sessions, only: %i[index show], param: :code
+    resources :features, only: [ :index ] do
+      member { patch :toggle }
+    end
   end
 
   # Short URL: roomrally.app/ABCD → stage view (case-insensitive)

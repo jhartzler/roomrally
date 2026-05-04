@@ -151,5 +151,17 @@ RSpec.describe "Rooms", type: :request do
         expect(response).to redirect_to(room_backstage_path(room))
       end
     end
+
+    context "when a game type is disabled" do
+      before do
+        Feature.find("speed_trivia").update!(enabled: false)
+        Rails.cache.clear
+      end
+
+      it "rejects the disabled game type" do
+        post rooms_path, params: { game_type: "Speed Trivia" }
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
   end
 end

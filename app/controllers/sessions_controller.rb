@@ -14,7 +14,7 @@ class SessionsController < ApplicationController
       Analytics.track(
         distinct_id: "user_#{user.id}",
         event: is_new_user ? "user_signed_up" : "user_logged_in",
-        properties: { provider: "google" }
+        properties: { provider: "google", referrer_domain: Analytics.referrer_domain(request) }
       )
       redirect_to dashboard_path, notice: "Logged in successfully!"
     else

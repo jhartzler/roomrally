@@ -41,8 +41,13 @@ class MobileHostsController < ApplicationController
       Analytics.track(
         distinct_id: "player_#{player.session_id}",
         event: "player_joined",
-        properties: { room_code: @room.code, game_type: @room.game_type, mobile_host: true,
-                      player_count_after: @room.players.active_players.count }
+        properties: {
+          room_code: @room.code,
+          game_type: @room.game_type,
+          mobile_host: true,
+          player_count_after: @room.players.active_players.count,
+          player_name: player.name
+        }
       )
 
       GameBroadcaster.broadcast_player_joined(room: @room, player:)

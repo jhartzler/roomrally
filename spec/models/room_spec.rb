@@ -199,6 +199,43 @@ RSpec.describe Room, type: :model do
     end
   end
 
+  describe ".available_game_types" do
+    before do
+      Feature.delete_all
+      Rails.cache.clear
+    end
+
+    it "returns all game types when all flags are enabled" do
+      Feature::FEATURES.each { |name| Feature.create!(name: name.to_s, enabled: true) }
+      expect(described_class.available_game_types).to eq(Room::GAME_TYPES)
+    end
+
+    it "excludes game types with no feature row" do
+      # No Feature rows exist — enabled? returns false for all
+      expect(described_class.available_game_types).to be_empty
+    end
+
+    context "when write_and_vote is disabled" do
+      before do
+        Feature.create!(name: "write_and_vote", enabled: false)
+        Feature.create!(name: "speed_trivia", enabled: true)
+        Feature.create!(name: "category_list", enabled: true)
+      end
+
+      it "excludes Write And Vote from available types" do
+        result = described_class.available_game_types
+        expect(result).not_to include("Write And Vote")
+        expect(result).to include("Speed Trivia", "Category List")
+      end
+
+      it "rejects a room with game type Write And Vote" do
+        room = build(:room, game_type: "Write And Vote")
+        expect(room).not_to be_valid
+        expect(room.errors[:game_type]).to be_present
+      end
+    end
+  end
+
   describe 'scopes' do
     let!(:active_lobby) { create(:room, status: 'lobby') }
     let!(:active_playing) { create(:room, status: 'playing') }
