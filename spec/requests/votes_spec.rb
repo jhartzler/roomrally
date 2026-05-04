@@ -72,11 +72,14 @@ RSpec.describe "Votes", type: :request do
     end
 
     it "prevents voting for a response in another room" do
-      # Attempt to vote for a response in Room B while being in Room A
+      # Attempt to vote for a response in Room B while being in Room A.
+      # Without room B's code, current_player resolves to nil → 401.
+      # Even with room B's code, the session_id doesn't exist there → 401.
       post votes_path, params: { vote: { response_id: response_b.id } }, as: :turbo_stream
 
-      # Expect failure
-      expect(response).to have_http_status(:unprocessable_content).or have_http_status(:forbidden)
+      expect(response).to have_http_status(:unauthorized)
+                             .or have_http_status(:unprocessable_content)
+                             .or have_http_status(:forbidden)
     end
   end
 end

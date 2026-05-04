@@ -7,6 +7,7 @@ class SessionsController < ApplicationController
       is_new_user = user.previously_new_record?
       reset_session
       session[:user_id] = user.id
+      cookies.signed[:user_id] = { value: user.id, expires: 1.week }
       Analytics.identify(
         distinct_id: "user_#{user.id}",
         properties: { name: user.name, email: user.email }
@@ -24,6 +25,7 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
+    cookies.delete(:user_id)
     redirect_to root_path, notice: "Logged out successfully."
   end
 end

@@ -265,6 +265,14 @@ body.hacker-theme a.text-indigo-700:hover {
 }
 
 /* --- Status dots --- */
+body.hacker-theme .bg-gray-100 {
+  background: #1a3a1a !important;
+  color: #c0ffc0 !important;
+}
+body.hacker-theme .hover\:bg-gray-200:hover {
+  background: #2a5a2a !important;
+  color: #00ff41 !important;
+}
 body.hacker-theme .bg-green-500 {
   background: #00ff41 !important;
   box-shadow: 0 0 6px rgba(0, 255, 65, 0.6);
