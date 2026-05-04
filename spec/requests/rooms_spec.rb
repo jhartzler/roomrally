@@ -154,6 +154,8 @@ RSpec.describe "Rooms", type: :request do
 
     context "when a game type is disabled" do
       before do
+        Feature.sync!
+        Feature::FEATURES.each { |name| Feature.find(name.to_s).update!(enabled: true) }
         Feature.find("speed_trivia").update!(enabled: false)
         Rails.cache.clear
       end

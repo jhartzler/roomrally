@@ -31,12 +31,14 @@ class Room < ApplicationRecord
   end
 
   def self.available_game_types
+    return GAME_TYPES if Feature.count.zero?
+
     GAME_TYPES.select { |type| Feature.enabled?(type.downcase.tr(" ", "_").to_sym) }
   end
 
 
   validates :code, uniqueness: { case_sensitive: false }
-  validates :game_type, presence: true, inclusion: { in: ->(_) { Room.available_game_types } }
+  validates :game_type, presence: true, inclusion: { in: Room::GAME_TYPES }
 
   # Returns the user-facing game name, with fallback to configured default
   def display_name
