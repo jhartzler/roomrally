@@ -17,7 +17,7 @@ class GameFinishesController < ApplicationController
   private
 
   def set_game
-    allowed_types = %w[SpeedTriviaGame WriteAndVoteGame CategoryListGame]
+    allowed_types = %w[SpeedTriviaGame WriteAndVoteGame CategoryListGame PollGame]
     raise ActiveRecord::RecordNotFound unless allowed_types.include?(params[:game_type])
 
     @game = params[:game_type].constantize.find(params[:game_id])

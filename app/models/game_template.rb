@@ -3,6 +3,7 @@ class GameTemplate < ApplicationRecord
   belongs_to :prompt_pack, optional: true
   belongs_to :trivia_pack, optional: true
   belongs_to :category_pack, optional: true
+  belongs_to :poll_pack, optional: true
   has_many :rooms, dependent: :nullify
 
   validates :name, presence: true, length: { maximum: 100 }
@@ -27,7 +28,8 @@ class GameTemplate < ApplicationRecord
     "question_count" => 5,
     "total_rounds" => 3,
     "categories_per_round" => 6,
-    "stage_only" => false
+    "stage_only" => false,
+    "scoring_mode" => "majority"
   }.freeze
 
   def merged_settings
@@ -39,6 +41,7 @@ class GameTemplate < ApplicationRecord
     when Room::WRITE_AND_VOTE then prompt_pack
     when Room::SPEED_TRIVIA then trivia_pack
     when Room::CATEGORY_LIST then category_pack
+    when Room::POLL_GAME then poll_pack
     end
   end
 
@@ -51,6 +54,7 @@ class GameTemplate < ApplicationRecord
       prompt_pack:,
       trivia_pack:,
       category_pack:,
+      poll_pack:,
       stage_only: merged_settings["stage_only"]
     )
   end
@@ -81,6 +85,9 @@ class GameTemplate < ApplicationRecord
     if category_pack_id.present? && game_type != Room::CATEGORY_LIST
       errors.add(:category_pack, "doesn't match game type")
     end
+    if poll_pack_id.present? && game_type != Room::POLL_GAME
+      errors.add(:poll_pack, "doesn't match game type")
+    end
   end
 
   def settings_within_bounds
@@ -97,7 +104,7 @@ class GameTemplate < ApplicationRecord
   end
 
   def pack_accessible_to_user
-    [ prompt_pack, trivia_pack, category_pack ].compact.each do |pack|
+    [ prompt_pack, trivia_pack, category_pack, poll_pack ].compact.each do |pack|
       unless pack.user_id.nil? || pack.user_id == user_id
         errors.add(:base, "You don't have access to the selected pack")
       end

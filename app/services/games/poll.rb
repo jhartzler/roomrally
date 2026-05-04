@@ -1,5 +1,7 @@
 module Games
   module Poll
+    extend Finishable
+
     DEFAULT_QUESTION_COUNT = 5
     DEFAULT_TIME_LIMIT = 20
 
@@ -137,13 +139,8 @@ module Games
 
     def self.assign_questions(game:, question_count:)
       pack = game.poll_pack || PollPack.default
-      questions = pack.poll_questions.order(:position).limit(question_count).to_a
-
-      raise "Not enough poll questions to start game." if questions.size < question_count
-
-      questions.each_with_index do |question, index|
-        question.update!(position: index) if question.position != index
-      end
+      available = pack.poll_questions.count
+      raise "Not enough poll questions to start game." if available < question_count
     end
 
     def self.score_current_round(game)

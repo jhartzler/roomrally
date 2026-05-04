@@ -94,14 +94,14 @@ class GameTemplatesController < ApplicationController
 
   def new_template_params
     params.fetch(:game_template, {}).permit(
-      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id,
+      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id,
       settings: GameTemplate::SETTING_DEFAULTS.keys
     )
   end
 
   def game_template_params
     params.require(:game_template).permit(
-      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id,
+      :name, :game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id,
       settings: GameTemplate::SETTING_DEFAULTS.keys
     )
   end
@@ -110,5 +110,6 @@ class GameTemplatesController < ApplicationController
     @prompt_packs = PromptPack.accessible_by(current_user).alphabetical
     @trivia_packs = TriviaPack.accessible_by(current_user).alphabetical
     @category_packs = CategoryPack.accessible_by(current_user).alphabetical
+    @poll_packs = PollPack.accessible_by(current_user).alphabetical
   end
 end

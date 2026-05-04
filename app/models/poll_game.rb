@@ -49,11 +49,15 @@ class PollGame < ApplicationRecord
   end
 
   def current_question
-    questions_for_game.find_by(position: current_question_index)
+    questions_for_game.offset(current_question_index).first
   end
 
   def questions_remaining?
-    current_question_index < questions_for_game.count - 1
+    current_question_index < question_count - 1
+  end
+
+  def has_scoreable_data?
+    poll_answers.where.not(selected_option: nil).exists?
   end
 
   def all_answers_submitted?
@@ -139,7 +143,7 @@ class PollGame < ApplicationRecord
   private
 
   def questions_for_game
-    poll_pack&.poll_questions&.order(:position) || PollQuestion.none
+    poll_pack&.poll_questions&.order(:position)&.limit(question_count) || PollQuestion.none
   end
 
   def record_round_start
