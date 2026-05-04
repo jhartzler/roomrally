@@ -10,6 +10,7 @@ class ResponsesController < ApplicationController
 
       player = @response.player
       @room = player.room
+      @authorized_player = player
 
       # Check if all responses are in to start voting
       game = @response.prompt_instance.write_and_vote_game
