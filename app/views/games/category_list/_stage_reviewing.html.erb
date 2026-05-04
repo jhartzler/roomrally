@@ -1,4 +1,4 @@
-<div id="stage_reviewing" class="flex flex-col items-center justify-center flex-1">
+<div id="stage_reviewing" class="flex flex-col items-center justify-start flex-1 w-full min-h-0">
   <div class="mb-[2vh]">
     <span class="text-vh-2xl text-blue-200 font-bold uppercase tracking-widest">
       Round <%= game.current_round %> &mdash; Letter "<%= game.current_letter %>"
@@ -14,7 +14,7 @@
   </p>
 
   <% if ci %>
-    <div class="w-full max-w-4xl px-[2vh] mb-[3vh] max-h-[60vh] overflow-y-auto">
+    <div class="w-full px-[2vh] mb-[3vh] max-h-[75vh] overflow-y-auto">
       <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[2vh]">
         <h3 class="text-vh-xl font-bold text-yellow-400 mb-[2vh]"><%= ci.name %></h3>
         <div class="space-y-[1vh]">
