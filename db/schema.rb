@@ -279,6 +279,7 @@ end
     t.string "game_type", default: "Write And Vote"
     t.bigint "host_id"
     t.datetime "last_host_claim_at"
+    t.bigint "poll_pack_id"
     t.bigint "prompt_pack_id"
     t.boolean "stage_only", default: false, null: false
     t.string "status"
@@ -290,6 +291,7 @@ end
     t.index [ "current_game_type", "current_game_id" ], name: "index_rooms_on_current_game"
     t.index [ "game_template_id" ], name: "index_rooms_on_game_template_id"
     t.index [ "host_id" ], name: "index_rooms_on_host_id"
+    t.index [ "poll_pack_id" ], name: "index_rooms_on_poll_pack_id"
     t.index [ "prompt_pack_id" ], name: "index_rooms_on_prompt_pack_id"
     t.index [ "trivia_pack_id" ], name: "index_rooms_on_trivia_pack_id"
     t.index [ "user_id" ], name: "index_rooms_on_user_id"
