@@ -24,76 +24,92 @@
         </div>
       </div>
     <% else %>
-      <!-- Stage-only: Show categories + scoring message -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1vh] w-full max-w-6xl px-[2vh] mb-[2vh]">
-        <% game.current_round_categories.each do |ci| %>
-          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-[2vh] text-center">
-            <p class="text-vh-xl text-white font-bold"><%= ci.name %></p>
-          </div>
-        <% end %>
-      </div>
+      <!-- Stage-only: Round recap + standings -->
+      <div class="w-full max-w-6xl px-[2vh] mb-[2vh] flex-1 min-h-0 overflow-y-auto">
+        <!-- Category Winners -->
+        <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">This Round's Best Answers</h3>
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-[1.5vh] mb-[3vh]">
+          <% game.current_round_categories.each do |ci| %>
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[1.5vh]">
+              <h4 class="text-vh-lg font-bold text-yellow-400 mb-[1vh] truncate"><%= ci.name %></h4>
+              <div class="space-y-[0.5vh]">
+                <% ci.category_answers.includes(:player).where(points_awarded: 1..).order(points_awarded: :desc).each do |answer| %>
+                  <div class="flex items-center justify-between bg-black/30 rounded-lg px-[1.5vh] py-[0.75vh] border border-yellow-400/30">
+                    <div class="flex items-center gap-[1vh] min-w-0">
+                      <span class="text-vh-base text-white font-medium shrink-0"><%= answer.player.name %></span>
+                      <span class="text-vh-base truncate text-blue-200"><%= answer.body %></span>
+                      <% if answer.alliterative? %>
+                        <span class="text-vh-xs bg-yellow-400/20 text-yellow-300 px-2 py-0.5 rounded-full font-bold shrink-0">2x</span>
+                      <% end %>
+                    </div>
+                    <span class="text-vh-base font-black font-mono text-green-400 shrink-0">+<%= answer.points_awarded %></span>
+                  </div>
+                <% end %>
+                <% if ci.category_answers.where(points_awarded: 1..).none? %>
+                  <p class="text-vh-sm text-gray-500 italic px-[1vh]">No valid answers</p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
 
-      <div class="text-center">
-        <p class="text-vh-2xl text-yellow-400 font-black">Scoring Time!</p>
+        <!-- Round Standings -->
+        <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">Round Standings</h3>
+        <% total_scores = game.players_with_total_scores.index_by { |e| e[:player].id } %>
+        <div class="space-y-[1vh]">
+          <% game.players_with_round_scores.each_with_index do |entry, index| %>
+            <% total = total_scores[entry[:player].id]&.[](:total_score) || 0 %>
+            <div class="flex items-center bg-black/40 rounded-xl p-[1.5vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
+              <div class="text-vh-2xl w-[5vh] font-bold text-gray-400">#<%= index + 1 %></div>
+              <div class="text-vh-lg font-bold text-white flex-grow text-left mx-[2vh]"><%= entry[:player].name %></div>
+              <div class="text-vh-lg text-green-400 font-mono mr-[2vh]">+<%= entry[:round_score] %></div>
+              <div class="text-vh-2xl font-black text-yellow-400 font-mono"><%= total %></div>
+            </div>
+          <% end %>
+        </div>
       </div>
     <% end %>
   <% else %>
-    <!-- Phone mode: Show category results -->
-    <div class="w-full px-[2vh] mb-[2vh] flex-1 min-h-0 overflow-y-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-[1.5vh]">
+    <!-- Phone mode: Round recap + standings -->
+    <div class="w-full max-w-6xl px-[2vh] mb-[2vh] flex-1 min-h-0 overflow-y-auto">
+      <!-- Category Winners -->
+      <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">This Round's Best Answers</h3>
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-[1.5vh] mb-[3vh]">
         <% game.current_round_categories.each do |ci| %>
           <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-[1.5vh]">
-            <h3 class="text-vh-base font-bold text-yellow-400 mb-[0.75vh] truncate"><%= ci.name %></h3>
+            <h4 class="text-vh-lg font-bold text-yellow-400 mb-[1vh] truncate"><%= ci.name %></h4>
             <div class="space-y-[0.5vh]">
-              <% ci.category_answers.includes(:player).each do |answer| %>
-                <div class="flex items-center justify-between bg-black/30 rounded-lg px-[1.5vh] py-[0.75vh]
-                  <%= if answer.rejected?
-                        'border border-red-500/50 opacity-50'
-                      elsif answer.duplicate?
-                        'border border-gray-500/50 opacity-60'
-                      elsif answer.alliterative?
-                        'border border-yellow-400/50'
-                      else
-                        'border border-white/10'
-                      end %>">
+              <% ci.category_answers.includes(:player).where(points_awarded: 1..).order(points_awarded: :desc).each do |answer| %>
+                <div class="flex items-center justify-between bg-black/30 rounded-lg px-[1.5vh] py-[0.75vh] border border-yellow-400/30">
                   <div class="flex items-center gap-[1vh] min-w-0">
-                    <span class="text-vh-sm text-white font-medium shrink-0"><%= answer.player.name %></span>
-                    <span class="text-vh-sm truncate <%= answer.body.present? ? 'text-blue-200' : 'text-gray-500 italic' %>
-                      <%= 'line-through' if answer.duplicate? || answer.rejected? %>">
-                      <%= answer.body.present? ? answer.body : "No answer" %>
-                    </span>
+                    <span class="text-vh-base text-white font-medium shrink-0"><%= answer.player.name %></span>
+                    <span class="text-vh-base truncate text-blue-200"><%= answer.body %></span>
                     <% if answer.alliterative? %>
                       <span class="text-vh-xs bg-yellow-400/20 text-yellow-300 px-2 py-0.5 rounded-full font-bold shrink-0">2x</span>
                     <% end %>
-                    <% if answer.duplicate? %>
-                      <span class="text-vh-xs bg-gray-400/20 text-gray-400 px-2 py-0.5 rounded-full font-bold shrink-0">DUP</span>
-                    <% end %>
-                    <% if answer.rejected? %>
-                      <span class="text-vh-xs bg-red-400/20 text-red-400 px-2 py-0.5 rounded-full font-bold shrink-0">REJ</span>
-                    <% end %>
                   </div>
-                  <span class="text-vh-base font-black font-mono ml-[1vh] shrink-0 <%= answer.points_awarded > 0 ? 'text-green-400' : 'text-gray-500' %>">
-                    +<%= answer.points_awarded %>
-                  </span>
+                  <span class="text-vh-base font-black font-mono text-green-400 shrink-0">+<%= answer.points_awarded %></span>
                 </div>
+              <% end %>
+              <% if ci.category_answers.where(points_awarded: 1..).none? %>
+                <p class="text-vh-sm text-gray-500 italic px-[1vh]">No valid answers</p>
               <% end %>
             </div>
           </div>
         <% end %>
       </div>
-    </div>
 
-    <!-- Running leaderboard -->
-    <div class="w-full px-[2vh] shrink-0">
-      <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">Leaderboard</h3>
+      <!-- Round Standings -->
+      <h3 class="text-vh-2xl text-white font-bold mb-[2vh] text-center">Round Standings</h3>
+      <% total_scores = game.players_with_total_scores.index_by { |e| e[:player].id } %>
       <div class="space-y-[1vh]">
-        <% game.players_with_total_scores.each_with_index do |entry, index| %>
-          <% player = entry[:player] %>
-          <% player_score = entry[:total_score] %>
-          <div class="flex items-center bg-black/40 rounded-xl p-[2vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
-            <div class="text-vh-3xl w-[6vh] font-bold text-gray-400">#<%= index + 1 %></div>
-            <div class="text-vh-xl font-bold text-white flex-grow text-left mx-[2vh]"><%= player.name %></div>
-            <div class="text-vh-3xl font-black text-yellow-400 font-mono"><%= player_score %></div>
+        <% game.players_with_round_scores.each_with_index do |entry, index| %>
+          <% total = total_scores[entry[:player].id]&.[](:total_score) || 0 %>
+          <div class="flex items-center bg-black/40 rounded-xl p-[1.5vh] border border-white/10 <%= index == 0 ? 'border-yellow-400/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]' : '' %>">
+            <div class="text-vh-2xl w-[5vh] font-bold text-gray-400">#<%= index + 1 %></div>
+            <div class="text-vh-lg font-bold text-white flex-grow text-left mx-[2vh]"><%= entry[:player].name %></div>
+            <div class="text-vh-lg text-green-400 font-mono mr-[2vh]">+<%= entry[:round_score] %></div>
+            <div class="text-vh-2xl font-black text-yellow-400 font-mono"><%= total %></div>
           </div>
         <% end %>
       </div>
