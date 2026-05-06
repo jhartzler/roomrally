@@ -1,9 +1,11 @@
 class CategoryPacksController < ApplicationController
   include PackReturnNavigation
+  include PackAuthorization
   include StudioLayout
 
   before_action :authenticate_user!
-  before_action :set_owned_category_pack, only: %i[show edit update destroy]
+  before_action :set_viewable_pack, only: :show
+  before_action :set_owned_pack,   only: %i[edit update destroy]
 
   def index
     @studio_active_section = :packs
@@ -68,10 +70,6 @@ class CategoryPacksController < ApplicationController
   end
 
   private
-
-  def set_owned_category_pack
-    @category_pack = current_user.category_packs.find(params[:id])
-  end
 
   def category_pack_params
     params.require(:category_pack).permit(

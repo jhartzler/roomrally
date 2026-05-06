@@ -81,8 +81,13 @@ module Games
         end
       end
 
-      # Broadcast outside lock to reduce contention
-      broadcast_all(game)
+      if all_submitted
+        broadcast_all(game)
+      else
+        room = game.room
+        GameBroadcaster.broadcast_stage(room:)
+        GameBroadcaster.broadcast_host_controls(room:)
+      end
     end
 
     def self.finish_review(game:)

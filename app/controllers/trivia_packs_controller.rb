@@ -1,9 +1,11 @@
 class TriviaPacksController < ApplicationController
   include PackReturnNavigation
+  include PackAuthorization
   include StudioLayout
 
   before_action :authenticate_user!
-  before_action :set_owned_trivia_pack, only: %i[edit update destroy]
+  before_action :set_viewable_pack, only: :show
+  before_action :set_owned_pack,   only: %i[edit update destroy]
 
   def index
     @studio_active_section = :packs
@@ -14,7 +16,6 @@ class TriviaPacksController < ApplicationController
   end
 
   def show
-    @trivia_pack = TriviaPack.accessible_by(current_user).find(params[:id])
     @studio_active_section = :packs
     studio_breadcrumb("Content Packs", customize_path)
     studio_breadcrumb("Trivia Packs", trivia_packs_path)
@@ -69,10 +70,6 @@ class TriviaPacksController < ApplicationController
   end
 
   private
-
-  def set_owned_trivia_pack
-    @trivia_pack = current_user.trivia_packs.find(params[:id])
-  end
 
   def trivia_pack_params
     params.require(:trivia_pack).permit(
