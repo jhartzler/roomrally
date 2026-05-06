@@ -12,6 +12,24 @@ RSpec.describe "CategoryPacks", type: :request do
     end
   end
 
+  describe "GET /show" do
+    let!(:global_pack) { create(:category_pack, :global) }
+
+    it "returns http success for global packs" do
+      get category_pack_path(global_pack)
+      expect(response).to have_http_status(:success)
+    end
+
+    context "with another user's private pack" do
+      let!(:private_pack) { create(:category_pack, user: create(:user)) }
+
+      it "returns a 404" do
+        get category_pack_path(private_pack)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
   describe "GET /new" do
     it "returns http success" do
       get new_category_pack_path

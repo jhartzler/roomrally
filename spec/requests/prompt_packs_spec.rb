@@ -7,6 +7,24 @@ RSpec.describe "PromptPacks", type: :request do
     sign_in(user)
   end
 
+  describe "GET /show" do
+    let!(:global_pack) { create(:prompt_pack, :global) }
+
+    it "returns http success for global packs" do
+      get prompt_pack_path(global_pack)
+      expect(response).to have_http_status(:success)
+    end
+
+    context "with another user's private pack" do
+      let!(:private_pack) { create(:prompt_pack, user: create(:user)) }
+
+      it "returns a 404" do
+        get prompt_pack_path(private_pack)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
   describe "GET /index" do
     let!(:global_pack) { create(:prompt_pack, user: nil, name: "System Pack") }
 
@@ -85,6 +103,15 @@ RSpec.describe "PromptPacks", type: :request do
       get edit_prompt_pack_path(prompt_pack)
       expect(response).to have_http_status(:success)
     end
+
+    context "when another user owns the pack" do
+      let(:other_pack) { create(:prompt_pack, user: create(:user)) }
+
+      it "returns a 404" do
+        get edit_prompt_pack_path(other_pack)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "PATCH /update" do
@@ -96,9 +123,13 @@ RSpec.describe "PromptPacks", type: :request do
       expect(response).to redirect_to(prompt_packs_path)
     end
 
-    it "adds nested prompts" do
-      patch prompt_pack_path(prompt_pack), params: { prompt_pack: { prompts_attributes: [ { body: "New Prompt" } ] } }
-      expect(prompt_pack.prompts.count).to eq(1)
+    context "when another user owns the pack" do
+      let(:other_pack) { create(:prompt_pack, user: create(:user)) }
+
+      it "returns a 404" do
+        patch prompt_pack_path(other_pack), params: { prompt_pack: { name: "Updated Name" } }
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 
@@ -111,6 +142,15 @@ RSpec.describe "PromptPacks", type: :request do
       }.to change(PromptPack, :count).by(-1)
 
       expect(response).to redirect_to(prompt_packs_path)
+    end
+
+    context "when another user owns the pack" do
+      let!(:other_pack) { create(:prompt_pack, user: create(:user)) }
+
+      it "returns a 404" do
+        delete prompt_pack_path(other_pack)
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end

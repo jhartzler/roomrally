@@ -1,9 +1,11 @@
 class PromptPacksController < ApplicationController
   include PackReturnNavigation
+  include PackAuthorization
   include StudioLayout
 
   before_action :authenticate_user!
-  before_action :set_owned_prompt_pack, only: %i[edit update destroy]
+  before_action :set_viewable_pack, only: :show
+  before_action :set_owned_pack,   only: %i[edit update destroy]
 
   def index
     @studio_active_section = :packs
@@ -14,7 +16,6 @@ class PromptPacksController < ApplicationController
   end
 
   def show
-    @prompt_pack = PromptPack.accessible_by(current_user).find(params[:id])
     @studio_active_section = :packs
     studio_breadcrumb("Content Packs", customize_path)
     studio_breadcrumb("Prompt Packs", prompt_packs_path)
@@ -68,10 +69,6 @@ class PromptPacksController < ApplicationController
   end
 
   private
-
-  def set_owned_prompt_pack
-    @prompt_pack = current_user.prompt_packs.find(params[:id])
-  end
 
   def prompt_pack_params
     params.require(:prompt_pack).permit(
