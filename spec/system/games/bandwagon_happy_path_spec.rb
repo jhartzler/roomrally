@@ -77,6 +77,7 @@ RSpec.describe "Bandwagon happy path — majority mode", :js, type: :system do
     # Host answers Cats (minority — option 1)
     Capybara.using_session(:host) do
       find("[data-test-id='answer-option-1']").click
+      expect(page).to have_content("Locked in!")
     end
 
     # Host closes voting
