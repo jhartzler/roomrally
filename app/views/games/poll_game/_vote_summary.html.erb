@@ -1,0 +1,48 @@
+<%# locals: question, poll_answers, winner %>
+<% total = poll_answers.count %>
+<% option_count = question.options.size %>
+
+<% if option_count <= 2 %>
+  <% colors = [
+    { bg: "bg-blue-500/20", border: "border-blue-500", text: "text-blue-400" },
+    { bg: "bg-purple-500/20", border: "border-purple-500", text: "text-purple-400" }
+  ] %>
+  <div class="flex gap-[2vh] max-w-4xl w-full shrink-0 justify-center">
+    <% question.options.each_with_index do |option, index| %>
+      <% votes = poll_answers.where(selected_option: option).count %>
+      <% pct   = total > 0 ? ((votes.to_f / total) * 100).round : 0 %>
+      <% is_winner = option == winner %>
+      <% color = colors[index] || colors[0] %>
+
+      <div class="<%= color[:bg] %> backdrop-blur-md border-2 <%= is_winner ? 'border-green-500 bg-green-500/10' : color[:border] %> rounded-2xl p-[2vh] flex flex-col items-center text-center gap-[1vh] flex-1 max-w-sm">
+        <div class="bg-white text-black font-black text-vh-2xl h-[5vh] w-[5vh] rounded-full flex items-center justify-center shrink-0">
+          <%= (index + 65).chr %>
+        </div>
+        <p class="text-vh-lg text-white font-bold"><%= option %></p>
+        <div class="text-vh-4xl font-black <%= is_winner ? 'text-green-400' : color[:text] %> font-mono">
+          <%= total > 0 ? "#{pct}%" : "—" %>
+        </div>
+        <div class="text-vh-sm text-gray-400"><%= votes %> <%= votes == 1 ? "vote" : "votes" %></div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="grid grid-cols-<%= option_count %> gap-[1.5vh] max-w-6xl w-full shrink-0">
+    <% question.options.each_with_index do |option, index| %>
+      <% votes = poll_answers.where(selected_option: option).count %>
+      <% pct   = total > 0 ? ((votes.to_f / total) * 100).round : 0 %>
+      <% is_winner = option == winner %>
+
+      <div class="bg-black/40 backdrop-blur-md border-2 <%= is_winner ? 'border-green-500 bg-green-500/10' : 'border-gray-600' %> rounded-xl p-[1.5vh] flex flex-col items-center text-center gap-[0.5vh]">
+        <div class="bg-white text-black font-black text-vh-lg h-[4vh] w-[4vh] rounded-full flex items-center justify-center shrink-0">
+          <%= (index + 65).chr %>
+        </div>
+        <p class="text-vh-sm text-white font-bold line-clamp-2 flex-grow"><%= option %></p>
+        <div class="text-vh-2xl font-black <%= is_winner ? 'text-green-400' : 'text-blue-300' %> font-mono">
+          <%= total > 0 ? "#{pct}%" : "—" %>
+        </div>
+        <div class="text-vh-xs text-gray-400"><%= votes %> <%= votes == 1 ? "vote" : "votes" %></div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

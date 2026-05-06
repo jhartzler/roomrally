@@ -46,6 +46,18 @@ standard_trivia.each do |question_data|
   end
 end
 
+# Poll Game: "This or That" pack
+poll_pack = PollPack.find_or_create_by!(name: "This or That", user_id: nil, status: :live)
+
+standard_poll_questions = YAML.load_file(Rails.root.join("config/standard_poll_questions.yml"))
+
+standard_poll_questions.each_with_index do |question_data, index|
+  PollQuestion.find_or_create_by!(body: question_data["body"], poll_pack:) do |q|
+    q.options = question_data["options"]
+    q.position = index
+  end
+end
+
 # Category List: "Standard Categories" pack
 category_pack = CategoryPack.find_or_create_by!(
   name: "Standard Categories",

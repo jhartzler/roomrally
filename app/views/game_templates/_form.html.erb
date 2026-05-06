@@ -89,6 +89,21 @@
         <% end %>
       </div>
     </div>
+
+    <div data-game-template-form-target="packSelect" data-pack-type="poll_pack" class="<%= 'hidden' unless game_template.game_type == Room::POLL_GAME %>">
+      <%= f.select :poll_pack_id,
+        options_for_select(@poll_packs.map { |p| [p.name, p.id] }, game_template.poll_pack_id),
+        { include_blank: "(default polls)" },
+        class: "w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <div class="mt-2">
+        <%= link_to new_poll_pack_path(return_to: request.fullpath),
+          class: "text-sm text-blue-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors w-fit",
+          data: { action: "click->game-template-form#saveAndNavigate" } do %>
+          <%= lucide_icon('plus-circle', class: "w-4 h-4", "aria-hidden": true) %>
+          Create a new poll pack
+        <% end %>
+      </div>
+    </div>
   </div>
 
   <%# Settings %>
@@ -161,6 +176,23 @@
             <%= number_field_tag "game_template[settings][categories_per_round]", settings["categories_per_round"],
               min: 1, max: 12,
               class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          </div>
+        </div>
+      </div>
+      <%# Poll Game specific %>
+      <div data-game-template-form-target="settingsGroup" data-game-type="Poll Game" class="<%= 'hidden' unless game_template.game_type == Room::POLL_GAME %>">
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-blue-300 mb-1"><%= setting_description(:question_count) %></label>
+            <%= number_field_tag "game_template[settings][question_count]", settings["question_count"],
+              min: 1, max: 50,
+              class: "w-32 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-blue-300 mb-1">Scoring Mode</label>
+            <%= select_tag "game_template[settings][scoring_mode]",
+              options_for_select([%w[Majority majority], %w[Minority minority], ["Host Chooses", "host_choose"]], settings["scoring_mode"]),
+              class: "w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" %>
           </div>
         </div>
       </div>

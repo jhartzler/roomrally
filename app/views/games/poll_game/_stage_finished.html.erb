@@ -1,0 +1,10 @@
+<div id="stage_finished" class="flex flex-col items-center justify-center flex-1 gap-[2vh]">
+  <div class="shrink-0 text-center">
+    <h2 class="text-vh-4xl font-black text-white mb-[1vh]">Final Results</h2>
+    <p class="text-vh-lg text-blue-200">Thanks for playing Bandwagon!</p>
+  </div>
+
+  <%= render "games/speed_trivia/score_podium",
+        game:, room:,
+        previous_top_player_ids: local_assigns[:previous_top_player_ids] || [] %>
+</div>

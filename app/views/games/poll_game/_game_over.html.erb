@@ -1,0 +1,29 @@
+<%# app/views/games/poll/_game_over.html.erb %>
+<header class="max-w-md mx-auto flex justify-between items-center mb-6 px-2">
+  <span class="text-blue-100/80 text-xs font-bold tracking-widest uppercase">Game Over</span>
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 text-center shadow-sm">
+    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Code</p>
+    <p class="text-xl font-black text-white font-mono leading-none"><%= room.code %></p>
+  </div>
+</header>
+
+<div class="max-w-md mx-auto">
+  <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 text-center">
+    <div class="text-6xl mb-4">🏁</div>
+    <p class="text-2xl text-white font-bold mb-2">That's a wrap!</p>
+
+    <% rank = room.players.active_players.order(score: :desc).to_a.index { |p| p.id == player.id }.to_i + 1 %>
+    <% total_points = game.total_points_for(player) %>
+
+    <p class="text-blue-200 text-lg mb-4">
+      You finished <span class="font-black text-white"><%= rank.ordinalize %></span>
+      with <span class="font-black text-yellow-400"><%= total_points %> pts</span>
+    </p>
+
+    <% unless player == room.host || current_user %>
+      <%= link_to "Sign up free", host_path,
+            class: "inline-block mt-2 text-blue-300 hover:text-white underline font-semibold text-sm transition",
+            data: { turbo: false } %>
+    <% end %>
+  </div>
+</div>

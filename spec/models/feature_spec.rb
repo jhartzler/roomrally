@@ -9,7 +9,7 @@ RSpec.describe Feature do
     it "creates missing rows disabled" do
       expect { described_class.sync! }
         .to change { described_class.pluck(:name).sort }
-        .from([]).to(%w[category_list speed_trivia write_and_vote])
+        .from([]).to(%w[category_list poll_game speed_trivia write_and_vote])
       expect(described_class.where(enabled: true)).to be_none
     end
 
@@ -17,7 +17,7 @@ RSpec.describe Feature do
       described_class.create!(name: "speed_trivia", enabled: true)
       described_class.sync!
       expect(described_class.find("speed_trivia")).to be_enabled
-      expect(described_class.where(enabled: false).count).to eq(2)
+      expect(described_class.where(enabled: false).count).to eq(3)
     end
   end
 
