@@ -3,10 +3,10 @@ module DevPlaytest
     @handlers = {}
     @game_type_names = {}
 
-    def self.register(game_class, handler)
+    def self.register(game_class, handler, display_name: nil)
       @handlers[game_class.name] = handler
       # Derive display name from class: "WriteAndVoteGame" → "Write And Vote"
-      @game_type_names[game_class.name] = game_class.name.delete_suffix("Game").gsub(/([a-z])([A-Z])/, '\1 \2')
+      @game_type_names[game_class.name] = display_name || game_class.name.delete_suffix("Game").gsub(/([a-z])([A-Z])/, '\1 \2')
     end
 
     def self.handler_for(game)
