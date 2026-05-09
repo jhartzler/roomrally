@@ -39,6 +39,14 @@
                 { selected: "" },
                 class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
         </div>
+
+        <div class="hidden" data-pack-selector-target="pack" data-game-type="Poll Game">
+          <%= form.label :poll_pack_id, "Poll Pack:", class: "block text-sm font-medium text-gray-700" %>
+          <%= form.select :poll_pack_id,
+                [["— Default pack —", ""]] + @poll_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
+                { selected: "" },
+                class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
       </div>
 
       <div>

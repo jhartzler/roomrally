@@ -6,6 +6,7 @@ class DevTestingController < ApplicationController
     @trivia_packs = TriviaPack.accessible_by(current_user).order(:name)
     @prompt_packs = PromptPack.accessible_by(current_user).order(:name)
     @category_packs = CategoryPack.accessible_by(current_user).order(:name)
+    @poll_packs = PollPack.accessible_by(current_user).order(:name)
   end
 
   def set_player_session
@@ -33,7 +34,8 @@ class DevTestingController < ApplicationController
       user: current_user,
       trivia_pack_id: params[:trivia_pack_id].presence,
       prompt_pack_id: params[:prompt_pack_id].presence,
-      category_pack_id: params[:category_pack_id].presence
+      category_pack_id: params[:category_pack_id].presence,
+      poll_pack_id: params[:poll_pack_id].presence
     )
     players = []
     num_players.times do |i|
