@@ -1,8 +1,9 @@
 class ResponsesController < ApplicationController
   include RendersHand
 
+  before_action :set_response, only: [ :update ]
+
   def update
-    @response = Response.find(params[:id])
     if @response.update(response_params)
       # Broadcast success message
       Rails.logger.info({ event: "response_submitted", player_id: @response.player.id, prompt_instance_id: @response.prompt_instance.id })
@@ -37,6 +38,13 @@ class ResponsesController < ApplicationController
   end
 
   private
+
+  def set_response
+    @response = Response.joins(:player)
+                        .find_by(players: { session_id: session[:player_session_id] }, id: params[:id])
+
+    head :not_found unless @response
+  end
 
   def response_params
     params.require(:response).permit(:body).merge(status: "submitted")

@@ -53,10 +53,12 @@ module Games
     end
 
     def self.start_from_instructions(game:)
-      previous_status = game.status
-      game.start_game!
-      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
-      start_timer_if_enabled(game)
+      game.with_lock do
+        previous_status = game.status
+        game.start_game!
+        GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
+        start_timer_if_enabled(game)
+      end
       broadcast_all(game)
     end
 
@@ -163,30 +165,34 @@ module Games
     def self.handle_timeout(game:)
       return unless game.filling?
 
-      # Fill empty answers for players who haven't submitted
-      fill_missing_answers(game:)
+      game.with_lock do
+        return unless game.filling?
 
-      if game.room.stage_only?
-        # Stage-only: skip reviewing, go straight to scoring
-        game.begin_review!
-        calculate_round_scores(game:)
-        game.begin_scoring!
-      else
-        game.begin_review!
+        fill_missing_answers(game:)
+
+        if game.room.stage_only?
+          game.begin_review!
+          calculate_round_scores(game:)
+          game.begin_scoring!
+        else
+          game.begin_review!
+        end
       end
       broadcast_all(game)
     end
 
     def self.show_scores(game:)
-      # Stage-only mode: skip reviewing, go straight to scoring
-      if game.filling?
-        fill_missing_answers(game:)
-        game.begin_review!
-        calculate_round_scores(game:)
-        game.begin_scoring!
-      elsif game.reviewing?
-        calculate_round_scores(game:)
-        game.begin_scoring!
+      game.with_lock do
+        # Stage-only mode: skip reviewing, go straight to scoring
+        if game.filling?
+          fill_missing_answers(game:)
+          game.begin_review!
+          calculate_round_scores(game:)
+          game.begin_scoring!
+        elsif game.reviewing?
+          calculate_round_scores(game:)
+          game.begin_scoring!
+        end
       end
       broadcast_all(game)
     end

@@ -53,10 +53,12 @@ module Games
     end
 
     def self.start_from_instructions(game:)
-      previous_status = game.status
-      game.start_game!
-      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
-      assign_prompts_for_round(game:, round_number: 1)
+      game.with_lock do
+        previous_status = game.status
+        game.start_game!
+        GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
+        assign_prompts_for_round(game:, round_number: 1)
+      end
       broadcast_all(game)
     end
 
