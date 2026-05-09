@@ -37,9 +37,11 @@ module Games
     end
 
     def self.start_from_instructions(game:)
-      previous_status = game.status
-      game.start_game!
-      GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
+      game.with_lock do
+        previous_status = game.status
+        game.start_game!
+        GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
+      end
       broadcast_all(game)
     end
 
