@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_04_023000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_09_044500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -489,13 +489,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_023000) do
   add_foreign_key "category_packs", "users"
   add_foreign_key "feature_events", "features", column: "feature_name", primary_key: "name"
   add_foreign_key "game_templates", "category_packs", on_delete: :nullify
-  add_foreign_key "game_templates", "hunt_packs"
+  add_foreign_key "game_templates", "hunt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "poll_packs", on_delete: :nullify
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
   add_foreign_key "game_templates", "users"
   add_foreign_key "hunt_packs", "users"
   add_foreign_key "hunt_prompt_instances", "hunt_prompts"
+  add_foreign_key "hunt_prompt_instances", "hunt_submissions", column: "winner_submission_id", on_delete: :nullify
   add_foreign_key "hunt_prompt_instances", "scavenger_hunt_games"
   add_foreign_key "hunt_prompts", "hunt_packs"
   add_foreign_key "hunt_submissions", "hunt_prompt_instances"
@@ -515,7 +516,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_023000) do
   add_foreign_key "responses", "prompt_instances"
   add_foreign_key "rooms", "category_packs"
   add_foreign_key "rooms", "game_templates", on_delete: :nullify
-  add_foreign_key "rooms", "hunt_packs"
+  add_foreign_key "rooms", "hunt_packs", on_delete: :nullify
   add_foreign_key "rooms", "players", column: "host_id"
   add_foreign_key "rooms", "prompt_packs"
   add_foreign_key "rooms", "trivia_packs"

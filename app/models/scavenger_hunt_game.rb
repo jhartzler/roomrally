@@ -4,6 +4,7 @@ class ScavengerHuntGame < ApplicationRecord
 
   has_one :room, as: :current_game
   belongs_to :hunt_pack, optional: true
+  belongs_to :currently_showing_submission, class_name: "HuntSubmission", optional: true
   has_many :hunt_prompt_instances, dependent: :destroy
 
   aasm column: :status, whiny_transitions: false do

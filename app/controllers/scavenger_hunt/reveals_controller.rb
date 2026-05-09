@@ -8,7 +8,12 @@ module ScavengerHunt
 
     def create
       if params[:submission_id]
-        submission = HuntSubmission.find(params[:submission_id])
+        # Scope to the current game to prevent cross-game submission access.
+        submission = HuntSubmission.joins(:hunt_prompt_instance)
+                                   .find_by!(
+                                     id: params[:submission_id],
+                                     hunt_prompt_instances: { scavenger_hunt_game_id: @game.id }
+                                   )
         Games::ScavengerHunt.show_submission_on_stage(game: @game, submission:)
       else
         Games::ScavengerHunt.start_reveal(game: @game)

@@ -99,7 +99,7 @@ module Games
     def self.show_submission_on_stage(game:, submission:)
       game.with_lock do
         return unless game.revealing?
-        game.update!(currently_showing_submission_id: submission.id)
+        game.update!(currently_showing_submission: submission)
       end
 
       broadcast_all(game)
@@ -130,8 +130,8 @@ module Games
         game.finish_game!
       end
 
-      game.room.finish!
       broadcast_all(game)
+      game.room.finish!
     end
 
     def self.mark_completed(game:, submission:, completed:)
