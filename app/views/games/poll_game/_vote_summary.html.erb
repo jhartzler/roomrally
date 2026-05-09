@@ -1,4 +1,5 @@
 <%# locals: question, poll_answers, winner %>
+<% return unless question %>
 <% total = poll_answers.count %>
 <% option_count = question.options.size %>
 
