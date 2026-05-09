@@ -44,11 +44,19 @@ export default class extends Controller {
           this.barTarget.style.width = "70%"
 
           const form = this.element.closest("form") || this.element
-          if (form.requestSubmit) {
-            form.requestSubmit()
-          } else {
-            form.submit()
-          }
+
+          // Defer submission to the next tick so the browser has time to
+          // register the mutated file input before Turbo serializes FormData.
+          // Without this, some browsers (WebKit) may submit the old file or
+          // an empty field because .files mutation is not instantly reflected
+          // in the form's submit payload.
+          setTimeout(() => {
+            if (form.requestSubmit) {
+              form.requestSubmit()
+            } else {
+              form.submit()
+            }
+          }, 0)
 
           this.barTarget.style.width = "100%"
           this.statusTarget.textContent = "Done!"

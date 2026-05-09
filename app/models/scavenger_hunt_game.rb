@@ -36,8 +36,9 @@ class ScavengerHuntGame < ApplicationRecord
     end
   end
 
-  def process_timeout(round_number, _step_number)
-    return unless round_number == round
+  # Scavenger Hunt is single-round; the round guard is unnecessary but harmless.
+  # If we ever add multi-round support, re-enable: return unless round_number == round
+  def process_timeout(_round_number, _step_number)
     return unless hunting?
     Games::ScavengerHunt.handle_timeout(game: self)
   end
@@ -54,10 +55,9 @@ class ScavengerHuntGame < ApplicationRecord
     hunt_prompt_instances.count
   end
 
-  def completed_submissions_count
+  def submissions_count
     HuntSubmission.joins(:hunt_prompt_instance)
                   .where(hunt_prompt_instances: { scavenger_hunt_game_id: id })
-                  .where(completed: true)
                   .count
   end
 end

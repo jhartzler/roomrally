@@ -5,7 +5,7 @@
     <h1 class="text-vh-4xl font-black text-white mb-[2vh]">Time's Up!</h1>
     <p class="text-vh-2xl text-white/70 mb-[3vh]">Get back here — the show's about to start.</p>
 
-    <% submitted = HuntSubmission.joins(:hunt_prompt_instance).where(hunt_prompt_instances: { scavenger_hunt_game_id: game.id }).count %>
+    <% submitted = game.submissions_count %>
     <div class="bg-white/10 backdrop-blur-md rounded-2xl p-[3vh] border border-white/20">
       <p class="text-vh-3xl font-bold text-white"><%= submitted %> photos submitted</p>
     </div>
