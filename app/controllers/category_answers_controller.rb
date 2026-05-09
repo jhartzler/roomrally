@@ -27,7 +27,9 @@ class CategoryAnswersController < ApplicationController
   private
 
   def set_answer
-    @answer = CategoryAnswer.find(params[:id])
+    @answer = CategoryAnswer.joins(category_instance: { category_list_game: :room })
+                            .where(rooms: { code: params[:code] })
+                            .find(params[:id])
   end
 
   def set_game
