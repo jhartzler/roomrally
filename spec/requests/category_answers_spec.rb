@@ -7,6 +7,13 @@ RSpec.describe "CategoryAnswers", type: :request do
     let(:host_player) { create(:player, room:) }
     let(:category_instance) { create(:category_instance, category_list_game: game) }
     let!(:category_answer) { create(:category_answer, player: host_player, category_instance:) }
+    let!(:other_answer) do
+      other_room = create(:room, game_type: "Category List")
+      other_game = create(:category_list_game, status: "reviewing")
+      other_room.update!(current_game: other_game)
+      other_ci = create(:category_instance, category_list_game: other_game)
+      create(:category_answer, category_instance: other_ci)
+    end
 
     before do
       room.update!(host: host_player)
@@ -22,13 +29,7 @@ RSpec.describe "CategoryAnswers", type: :request do
       expect(category_answer.reload).to be_rejected
     end
 
-    it "returns 404 when the answer belongs to another room" do
-      other_room = create(:room, game_type: "Category List")
-      other_game = create(:category_list_game, status: "reviewing")
-      other_room.update!(current_game: other_game)
-      other_ci = create(:category_instance, category_list_game: other_game)
-      other_answer = create(:category_answer, category_instance: other_ci)
-
+    it "returns 404 when the answer belongs to another room", :aggregate_failures do
       patch category_answer_url(other_answer),
             params: { category_answer: { status: "rejected" }, code: room.code },
             as: :turbo_stream
