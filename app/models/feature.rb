@@ -6,6 +6,7 @@ class Feature < ApplicationRecord
     speed_trivia
     category_list
     poll_game
+    scavenger_hunt
   ].freeze
 
   has_many :feature_events, foreign_key: :feature_name, primary_key: :name, inverse_of: :feature

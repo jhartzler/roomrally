@@ -1,0 +1,39 @@
+<%# app/views/hunt_packs/_card.html.erb %>
+<%# locals: (pack:, variant: :user) %>
+<% is_system = variant == :system %>
+
+<div class="bg-white/10 backdrop-blur-md rounded-3xl <%= is_system ? 'p-6' : '' %> border border-white/20 hover:border-white/40 shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col h-full cursor-pointer">
+  <div class="<%= is_system ? '' : 'p-6 flex-grow' %>">
+    <div class="flex justify-between items-start mb-4">
+      <div class="bg-white/5 p-3 rounded-2xl text-blue-200 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 border border-white/10">
+        <%= lucide_icon(is_system ? 'sparkles' : 'camera', class: is_system ? "w-6 h-6" : "w-8 h-8", "aria-hidden": true) %>
+      </div>
+
+      <% unless is_system %>
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <%= pack.live? ? 'bg-green-500/20 text-green-300' : 'bg-white/5 text-blue-200' %> border border-white/10">
+          <div class="w-2 h-2 rounded-full <%= pack.live? ? 'bg-green-400' : 'bg-blue-300/50' %> animate-pulse"></div>
+          <%= pack.status.humanize %>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
+      <h3 class="<%= is_system ? 'text-lg' : 'text-xl' %> font-black text-white mb-1 group-hover:text-blue-300 transition-colors">
+        <%= link_to pack.name, hunt_pack_path(pack), class: "before:absolute before:inset-0 before:z-0" %>
+      </h3>
+      <p class="text-sm text-blue-200/70 mb-4 font-medium"><%= pluralize(pack.hunt_prompts.size, "prompt") %></p>
+    </div>
+  </div>
+
+  <% if is_system %>
+    <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
+      <span class="text-xs font-bold bg-white/5 text-blue-200 px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">System Pack</span>
+      <span class="text-sm font-bold text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity">View Pack &rarr;</span>
+    </div>
+  <% else %>
+    <div class="bg-white/5 p-4 border-t border-white/10 flex items-center justify-between gap-3 relative z-10 backdrop-blur-sm">
+      <%= link_to "View", hunt_pack_path(pack), class: "flex-1 text-center py-2 rounded-lg bg-white/10 border border-white/20 text-white font-bold text-sm hover:bg-white/20 transition-all shadow-sm" %>
+      <%= link_to "Edit", edit_hunt_pack_path(pack), class: "flex-1 text-center py-2 rounded-lg bg-blue-600 text-white font-black text-sm hover:bg-blue-700 transition-all shadow-lg active:scale-95" %>
+    </div>
+  <% end %>
+</div>

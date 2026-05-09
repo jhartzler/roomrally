@@ -1,0 +1,15 @@
+<%# app/views/games/scavenger_hunt/_game_over.html.erb %>
+<div class="text-center py-6">
+  <p class="text-5xl mb-4">🎉</p>
+  <h2 class="text-2xl font-black text-white mb-4">Game Over!</h2>
+
+  <% players_ranked = room.players.active_players.order(score: :desc) %>
+  <div class="space-y-2">
+    <% players_ranked.each_with_index do |p, index| %>
+      <div class="flex items-center justify-between bg-white/10 rounded-xl p-3 border border-white/20 <%= 'ring-2 ring-yellow-400' if index == 0 %>">
+        <span class="text-white font-bold"><%= (index + 1).ordinalize %> — <%= p.team_name.presence || p.name %></span>
+        <span class="text-yellow-300 font-black"><%= p.score %> pts</span>
+      </div>
+    <% end %>
+  </div>
+</div>

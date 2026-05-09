@@ -1,0 +1,118 @@
+<%# app/views/hunt_packs/_form.html.erb %>
+<%# locals: (hunt_pack:, return_to: nil) %>
+<%= form_with(model: hunt_pack, class: "contents", data: { controller: "content-editor" }) do |form| %>
+  <% if hunt_pack.errors.any? %>
+    <div class="bg-red-500/20 text-red-200 px-6 py-4 font-medium rounded-2xl mb-8 border border-red-500/30 backdrop-blur-md">
+      <h2 class="font-bold mb-2"><%= pluralize(hunt_pack.errors.count, "error") %> prohibited this pack from being saved:</h2>
+      <ul class="list-disc list-inside text-sm">
+        <% hunt_pack.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= hidden_field_tag :return_to, return_to if return_to.present? %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Left Column: Settings -->
+    <div class="space-y-6">
+      <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20">
+        <h3 class="text-xl font-black text-white mb-6 flex items-center gap-2 tracking-wide">
+          <%= lucide_icon('settings', class: "w-5 h-5 text-blue-200", "aria-hidden": true) %>
+          Pack Settings
+        </h3>
+
+        <div class="space-y-5">
+          <div>
+            <%= form.label :name, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
+            <%= form.text_field :name, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white placeholder-white/30" %>
+          </div>
+
+          <div>
+            <%= form.label :status, class: "block text-sm font-bold text-blue-200 mb-2 uppercase tracking-widest" %>
+            <%= form.select :status, HuntPack.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-medium py-3 px-4 text-white [&>option]:text-gray-900" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <%= form.submit "Save Pack", class: "w-full rounded-xl py-4 px-6 bg-orange-500 hover:bg-orange-600 text-white block font-black text-lg shadow-lg shadow-orange-900/20 transition-all cursor-pointer transform hover:scale-[1.02] active:scale-95" %>
+        <%= link_to "Cancel", (return_to.present? ? return_to : hunt_packs_path), class: "block w-full text-center mt-4 text-blue-200/50 hover:text-white font-bold text-sm transition-colors" %>
+      </div>
+    </div>
+
+    <!-- Right Column: Prompts -->
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-white/20 h-fit">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-black text-white tracking-wide">Prompts</h3>
+        <button type="button" data-action="content-editor#addItem" class="text-sm text-white font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 border border-white/10">
+          <%= lucide_icon('plus', class: "w-4 h-4", "aria-hidden": true) %>
+          Add Prompt
+        </button>
+      </div>
+
+      <!-- Bulk Import -->
+      <details class="mb-6 bg-white/5 rounded-xl border border-white/10 group overflow-hidden" data-content-editor-target="bulkSection">
+        <summary class="list-none flex justify-between items-center p-4 cursor-pointer hover:bg-white/10 transition-colors">
+          <span class="font-bold text-blue-200 flex items-center gap-2">
+            <%= lucide_icon('file-plus', class: "w-4 h-4", "aria-hidden": true) %>
+            Bulk Import
+          </span>
+          <%= lucide_icon('chevron-down', class: "w-4 h-4 text-blue-300 group-open:rotate-180 transition-transform", "aria-hidden": true) %>
+        </summary>
+        <div class="p-4 border-t border-white/10">
+          <p class="text-xs text-blue-200/70 mb-3 font-medium">Paste your prompts below, one per line.</p>
+          <textarea data-content-editor-target="bulkText" rows="6" class="block w-full rounded-xl bg-white/5 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/20 resize-y mb-3 p-3" placeholder="Take a team photo in an elevator&#10;Recreate a famous painting&#10;Find something purple" aria-label="Bulk prompts input"></textarea>
+          <button type="button" data-action="content-editor#bulkAdd" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow-md transition-all active:scale-95">
+            Import Prompts
+          </button>
+        </div>
+      </details>
+
+      <div data-content-editor-target="itemList" class="space-y-3">
+        <%= form.fields_for :hunt_prompts do |prompt_form| %>
+          <div class="item-field-wrapper flex gap-3 items-start group" data-new-record="<%= prompt_form.object.new_record? %>">
+            <div class="flex-1 space-y-2">
+              <%= prompt_form.text_field :body,
+                class: "block w-full rounded-xl bg-white/5 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/20 transition-all px-4 py-3",
+                data: { content_editor_target: "itemField" },
+                placeholder: "Photo prompt..." %>
+              <div class="flex items-center gap-2">
+                <label class="text-xs text-blue-200/50 font-bold">Points:</label>
+                <%= prompt_form.number_field :weight, min: 1, max: 50, class: "w-16 rounded-lg bg-white/5 border border-white/10 text-sm text-white text-center py-1 px-2 focus:border-orange-500" %>
+                <%= prompt_form.hidden_field :position %>
+              </div>
+            </div>
+            <%= prompt_form.hidden_field :_destroy %>
+            <button type="button" data-action="content-editor#removeItem" class="text-white/20 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110 shrink-0 mt-3" aria-label="Remove prompt">
+              <%= lucide_icon('trash-2', class: "w-5 h-5", "aria-hidden": true) %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Template for New Prompt Fields -->
+  <template data-content-editor-target="itemTemplate">
+    <div class="item-field-wrapper flex gap-3 items-start group" data-new-record="true">
+      <div class="flex-1 space-y-2">
+        <input type="text"
+               name="hunt_pack[hunt_prompts_attributes][NEW_RECORD][body]"
+               data-content-editor-target="itemField"
+               placeholder="Photo prompt..."
+               class="block w-full rounded-xl bg-white/5 border-2 border-white/10 focus:border-orange-500 focus:ring focus:ring-orange-500/20 text-sm font-medium text-white placeholder-white/20 transition-all px-4 py-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-blue-200/50 font-bold">Points:</label>
+          <input type="number" name="hunt_pack[hunt_prompts_attributes][NEW_RECORD][weight]" value="5" min="1" max="50" class="w-16 rounded-lg bg-white/5 border border-white/10 text-sm text-white text-center py-1 px-2 focus:border-orange-500">
+          <input type="hidden" name="hunt_pack[hunt_prompts_attributes][NEW_RECORD][position]" value="0">
+        </div>
+      </div>
+      <input type="hidden" name="hunt_pack[hunt_prompts_attributes][NEW_RECORD][_destroy]" value="false">
+      <button type="button" data-action="content-editor#removeItem" class="text-white/20 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-all transform hover:scale-110 shrink-0 mt-3" aria-label="Remove prompt">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+      </button>
+    </div>
+  </template>
+<% end %>

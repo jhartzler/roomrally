@@ -4,9 +4,11 @@ Rails.application.config.to_prepare do
   GameEventRouter.register_game("Speed Trivia", Games::SpeedTrivia)
   GameEventRouter.register_game("Category List", Games::CategoryList)
   GameEventRouter.register_game("Poll Game", Games::Poll)
+  GameEventRouter.register_game("Scavenger Hunt", Games::ScavengerHunt)
 
   DevPlaytest::Registry.register(WriteAndVoteGame, Games::WriteAndVote::Playtest)
   DevPlaytest::Registry.register(SpeedTriviaGame, Games::SpeedTrivia::Playtest)
   DevPlaytest::Registry.register(CategoryListGame, Games::CategoryList::Playtest)
   DevPlaytest::Registry.register(PollGame, Games::Poll::Playtest)
+  DevPlaytest::Registry.register(ScavengerHuntGame, Games::ScavengerHunt::Playtest)
 end

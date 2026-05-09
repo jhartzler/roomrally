@@ -1,0 +1,15 @@
+<%# app/views/games/scavenger_hunt/_hand.html.erb %>
+<% game = room.current_game %>
+
+<% if game.instructions? %>
+  <%= render "games/shared/hand_instructions",
+      emoji: "📸",
+      start_game_path: scavenger_hunt_game_game_start_path(game),
+      room:, player: %>
+<% elsif game.hunting? || game.times_up? %>
+  <%= render "games/scavenger_hunt/prompt_list", room:, player:, game: %>
+<% elsif game.revealing? || game.awarding? %>
+  <%= render "games/scavenger_hunt/spectator", room:, player:, game: %>
+<% elsif game.finished? %>
+  <%= render "games/scavenger_hunt/game_over", room:, player:, game: %>
+<% end %>

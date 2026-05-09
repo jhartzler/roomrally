@@ -39,6 +39,17 @@
     </div>
   </div>
 
+  <%# Scavenger Hunt curation panel — full-width, outside host controls grid %>
+  <%# Target is morphed by GameBroadcaster.update_scavenger_hunt_curation %>
+  <% if @room.current_game.is_a?(ScavengerHuntGame) %>
+    <div class="mt-8 bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl">
+      <h2 class="text-xl font-bold mb-4 text-white tracking-wide border-b border-white/10 pb-2">Submissions</h2>
+      <div id="scavenger-hunt-curation">
+        <%= render "games/scavenger_hunt/curation_panel", game: @room.current_game, room: @room %>
+      </div>
+    </div>
+  <% end %>
+
   <!-- Waiting Room Section (always rendered so Turbo Stream appends have a target) -->
   <% pending_players = @room.players.pending_approval %>
   <div class="mt-8 bg-orange-500/10 backdrop-blur-md rounded-3xl p-6 border-2 border-orange-400/50 shadow-xl">

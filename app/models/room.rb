@@ -8,6 +8,7 @@ class Room < ApplicationRecord
   belongs_to :trivia_pack, optional: true
   belongs_to :category_pack, optional: true
   belongs_to :poll_pack, optional: true
+  belongs_to :hunt_pack, optional: true
   belongs_to :game_template, optional: true
   has_many :score_tracker_entries, dependent: :destroy
 
@@ -17,15 +18,18 @@ class Room < ApplicationRecord
   SPEED_TRIVIA = "Speed Trivia".freeze
   CATEGORY_LIST = "Category List".freeze
   POLL_GAME = "Poll Game".freeze
+  SCAVENGER_HUNT = "Scavenger Hunt".freeze
 
-  GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST, POLL_GAME ].freeze
+  GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST, POLL_GAME, SCAVENGER_HUNT ].freeze
+  GUEST_GAME_TYPES = [ WRITE_AND_VOTE, SPEED_TRIVIA, CATEGORY_LIST, POLL_GAME ].freeze
 
   # Default display names for each game type (used for whitelabeling)
   GAME_DISPLAY_NAMES = {
     WRITE_AND_VOTE => "Comedy Clash",
     SPEED_TRIVIA => "Think Fast",
     CATEGORY_LIST => "A-List",
-    POLL_GAME => "Bandwagon"
+    POLL_GAME => "Bandwagon",
+    SCAVENGER_HUNT => "Photo Scavenger Hunt (Beta)"
   }.freeze
 
   # Convenience method for getting default display name

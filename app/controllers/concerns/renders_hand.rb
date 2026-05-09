@@ -10,7 +10,7 @@ module RendersHand
     # is nil. The game service already broadcast to all actual players, so just
     # acknowledge the request.
     unless player
-      head :ok
+      head :no_content
       return
     end
 
