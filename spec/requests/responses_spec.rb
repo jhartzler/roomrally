@@ -36,5 +36,18 @@ RSpec.describe "Responses", type: :request do
 
       expect(player_response.prompt_instance.reload.status).to eq("submitted")
     end
+    it "returns 404 when updating another player's response" do
+      other_room = create(:room, game_type: "Write And Vote")
+      other_game = create(:write_and_vote_game, status: "writing")
+      other_room.update!(current_game: other_game)
+      other_player = create(:player, room: other_room)
+      other_prompt = create(:prompt_instance, write_and_vote_game: other_game)
+      other_response = create(:response, player: other_player, prompt_instance: other_prompt, body: nil)
+
+      patch response_url(other_response), params: { response: { body: "Hacked!" }, code: room.code }, as: :turbo_stream
+
+      expect(response).to have_http_status(:not_found)
+      expect(other_response.reload.body).to be_nil
+    end
   end
 end
