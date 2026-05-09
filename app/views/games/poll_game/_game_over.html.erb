@@ -20,7 +20,7 @@
       with <span class="font-black text-yellow-400"><%= total_points %> pts</span>
     </p>
 
-    <% unless player == room.host || current_user %>
+    <% unless player == room.host %>
       <%= link_to "Sign up free", host_path,
             class: "inline-block mt-2 text-blue-300 hover:text-white underline font-semibold text-sm transition",
             data: { turbo: false } %>
