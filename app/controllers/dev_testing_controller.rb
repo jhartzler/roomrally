@@ -1,12 +1,20 @@
 class DevTestingController < ApplicationController
   before_action :ensure_dev_environment!
 
+  # Maps each game type to its content pack model, form param, and label.
+  # Add one entry here when adding a new game type that uses a content pack.
+  PACK_CONFIG = {
+    "Speed Trivia"   => { model: TriviaPack,   param: :trivia_pack_id,   label: "Trivia Pack" },
+    "Write And Vote" => { model: PromptPack,   param: :prompt_pack_id,   label: "Prompt Pack" },
+    "Category List"  => { model: CategoryPack, param: :category_pack_id, label: "Category Pack" },
+    "Poll Game"      => { model: PollPack,     param: :poll_pack_id,     label: "Poll Pack" }
+  }.freeze
+
   def index
     @game_types = DevPlaytest::Registry.game_types
-    @trivia_packs = TriviaPack.accessible_by(current_user).order(:name)
-    @prompt_packs = PromptPack.accessible_by(current_user).order(:name)
-    @category_packs = CategoryPack.accessible_by(current_user).order(:name)
-    @poll_packs = PollPack.accessible_by(current_user).order(:name)
+    @packs_by_type = PACK_CONFIG.transform_values do |config|
+      config[:model].accessible_by(current_user).order(:name)
+    end
   end
 
   def set_player_session
@@ -29,14 +37,11 @@ class DevTestingController < ApplicationController
     num_players = params[:num_players].to_i
     game_type = params[:game_type]
 
-    room = Room.create!(
-      game_type:,
-      user: current_user,
-      trivia_pack_id: params[:trivia_pack_id].presence,
-      prompt_pack_id: params[:prompt_pack_id].presence,
-      category_pack_id: params[:category_pack_id].presence,
-      poll_pack_id: params[:poll_pack_id].presence
-    )
+    pack_params = PACK_CONFIG.each_with_object({}) do |(_, config), h|
+      h[config[:param]] = params[config[:param]].presence
+    end
+
+    room = Room.create!(game_type:, user: current_user, **pack_params)
     players = []
     num_players.times do |i|
       players << Player.create!(room:, name: "Player #{i + 1}")
