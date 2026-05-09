@@ -41,18 +41,6 @@
   </div>
 
 <% elsif game.revealing? %>
-  <%#
-    UX TENSION: Card Picker vs. Curation Panel
-    The card picker (below) shows every submission with media for the host to pick
-    what appears on the big screen. The curation panel (in _curation_panel.html.erb)
-    has "complete / favorite / notes" toggles that are meant to filter or annotate
-    submissions — but the card picker ignores the "completed" status entirely.
-    We need to decide:
-    1) Is curation a backstage-only flow, and the card picker is the casual-host flow?
-    2) Should the card picker only show "completed" submissions?
-    3) Should the curation panel even exist if the card picker is the primary host UI?
-    Resolve this before removing the feature flag.
-  %>
   <%= render "games/scavenger_hunt/card_picker", game:, room: %>
   <%= button_to "Start Awards",
       scavenger_hunt_game_awards_path(game),
@@ -73,7 +61,7 @@
               params: { winner_submission_id: sub.id, code: room.code },
               class: "flex items-center gap-2 px-2 py-1 rounded-lg text-sm font-bold border-2 #{is_winner ? 'bg-yellow-500/20 border-yellow-400 text-yellow-300' : 'bg-white/10 border-transparent text-white hover:border-white/30'}" do %>
             <%= image_tag url_for(sub.media), class: "w-10 h-8 object-cover rounded", alt: "" %>
-            <span><%= sub.player.team_name.presence || sub.player.name %></span>
+            <span><%= sub.player.display_name %></span>
           <% end %>
         <% end %>
       </div>

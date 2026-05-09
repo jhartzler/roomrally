@@ -18,7 +18,7 @@
     </div>
   <% end %>
 
-  <% game.hunt_prompt_instances.includes(:hunt_prompt, :hunt_submissions).each do |instance| %>
+  <% game.hunt_prompt_instances.includes(:hunt_prompt, hunt_submissions: [:player, { media_attachment: :blob }]).each do |instance| %>
     <% submission = instance.hunt_submissions.find { |s| s.player_id == player.id } %>
     <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
       <div class="flex items-start justify-between gap-3">

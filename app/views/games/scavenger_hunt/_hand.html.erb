@@ -1,5 +1,8 @@
 <%# app/views/games/scavenger_hunt/_hand.html.erb %>
 <% game = room.current_game %>
+<% if game.is_a?(ScavengerHuntGame) %>
+  <% game = ScavengerHuntGame.with_hand_preloads.find(game.id) %>
+<% end %>
 
 <% if game.instructions? %>
   <%= render "games/shared/hand_instructions",

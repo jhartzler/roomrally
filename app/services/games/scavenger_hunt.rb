@@ -157,18 +157,22 @@ module Games
     end
 
     def self.calculate_scores(game)
+      score_changes = Hash.new(0)
+
       game.hunt_prompt_instances.includes(:hunt_submissions, :winner_submission, :hunt_prompt).find_each do |instance|
         weight = instance.weight
 
-        # Completion points for all submissions with media
         instance.hunt_submissions.joins(:media_attachment).each do |sub|
-          sub.player.increment!(:score, weight)
+          score_changes[sub.player_id] += weight
         end
 
-        # Winner bonus
         if instance.winner_submission
-          instance.winner_submission.player.increment!(:score, weight)
+          score_changes[instance.winner_submission.player_id] += weight
         end
+      end
+
+      score_changes.each do |player_id, delta|
+        Player.where(id: player_id).update_all(Player.sanitize_sql_array(["score = score + ?", delta]))
       end
     end
 

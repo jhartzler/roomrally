@@ -7,6 +7,22 @@ export default class extends Controller {
     const file = event.target.files[0]
     if (!file) return
 
+    // iPhone HEIC and other unsupported formats silently fail canvas decode.
+    // Skip client-side compression for anything that isn't a plain JPEG or PNG.
+    const canCompress = /^image\/(jpeg|png)$/.test(file.type)
+    if (!canCompress) {
+      this.inputTarget.files = event.target.files
+      const form = this.element.closest("form") || this.element
+      setTimeout(() => {
+        if (form.requestSubmit) {
+          form.requestSubmit()
+        } else {
+          form.submit()
+        }
+      }, 0)
+      return
+    }
+
     this.progressTarget.classList.remove("hidden")
     this.labelTarget.textContent = "Compressing..."
     this.barTarget.style.width = "10%"
@@ -17,6 +33,20 @@ export default class extends Controller {
     const reader = new FileReader()
     reader.onload = (e) => {
       const img = new Image()
+      img.onerror = () => {
+        this.barTarget.style.width = "0%"
+        this.statusTarget.textContent = "Upload failed: unsupported photo format."
+        this.progressTarget.classList.add("hidden")
+        this.labelTarget.textContent = "Replace Photo"
+        const form = this.element.closest("form") || this.element
+        setTimeout(() => {
+          if (form.requestSubmit) {
+            form.requestSubmit()
+          } else {
+            form.submit()
+          }
+        }, 0)
+      }
       img.onload = () => {
         const canvas = document.createElement("canvas")
         let width = img.width

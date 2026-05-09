@@ -51,6 +51,9 @@ class ScavengerHuntGame < ApplicationRecord
     hunting? || times_up?
   end
 
+  scope :with_hand_preloads, -> { includes(hunt_prompt_instances: [ :hunt_prompt, { hunt_submissions: [ :player, { media_attachment: :blob } ] } ]) }
+  scope :with_stage_preloads, -> { includes(currently_showing_submission: [ :player, :hunt_prompt_instance, { media_attachment: :blob } ]) }
+
   def total_prompts
     hunt_prompt_instances.count
   end

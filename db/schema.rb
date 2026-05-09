@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_09_044500) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_09_044501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -183,7 +183,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_044500) do
     t.integer "position", default: 0, null: false
     t.bigint "scavenger_hunt_game_id", null: false
     t.datetime "updated_at", null: false
-    t.integer "winner_submission_id"
+    t.bigint "winner_submission_id"
     t.index ["hunt_prompt_id"], name: "index_hunt_prompt_instances_on_hunt_prompt_id"
     t.index ["scavenger_hunt_game_id"], name: "index_hunt_prompt_instances_on_scavenger_hunt_game_id"
   end
@@ -354,7 +354,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_044500) do
 
   create_table "scavenger_hunt_games", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "currently_showing_submission_id"
+    t.bigint "currently_showing_submission_id"
     t.bigint "hunt_pack_id"
     t.integer "round", default: 1, null: false
     t.datetime "round_ends_at"
@@ -362,6 +362,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_044500) do
     t.integer "timer_duration", default: 1800
     t.boolean "timer_enabled", default: true, null: false
     t.datetime "updated_at", null: false
+    t.index ["currently_showing_submission_id"], name: "index_scavenger_hunt_games_on_currently_showing_submission_id"
     t.index ["hunt_pack_id"], name: "index_scavenger_hunt_games_on_hunt_pack_id"
   end
 
@@ -522,6 +523,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_09_044500) do
   add_foreign_key "rooms", "trivia_packs"
   add_foreign_key "rooms", "users"
   add_foreign_key "scavenger_hunt_games", "hunt_packs"
+  add_foreign_key "scavenger_hunt_games", "hunt_submissions", column: "currently_showing_submission_id", on_delete: :nullify
   add_foreign_key "score_tracker_entries", "rooms"
   add_foreign_key "speed_trivia_games", "trivia_packs"
   add_foreign_key "trivia_answers", "players"

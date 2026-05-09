@@ -12,7 +12,7 @@
           <p class="text-vh-xs text-white/60 mb-[0.5vh] line-clamp-1"><%= instance.body %></p>
           <% if instance.winner_submission %>
             <p class="text-vh-base font-bold text-yellow-300">
-              <%= instance.winner_submission.player.team_name.presence || instance.winner_submission.player.name %>
+              <%= instance.winner_submission.player.display_name %>
             </p>
           <% else %>
             <p class="text-vh-sm text-white/40">Awaiting...</p>

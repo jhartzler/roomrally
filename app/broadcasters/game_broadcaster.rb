@@ -18,6 +18,10 @@ module GameBroadcaster
     game ||= room.current_game
     return unless game
 
+    if game.is_a?(ScavengerHuntGame)
+      game = ScavengerHuntGame.with_stage_preloads.find(game.id)
+    end
+
     partial_name = "games/#{game_folder_name(room.game_type)}/stage_#{game.status}"
 
     Rails.logger.info({ event: "broadcast_stage", room_code: room.code, partial: partial_name })
@@ -269,7 +273,7 @@ module GameBroadcaster
 
   def self.broadcast_host_controls(room:)
     update_all_host_controls(room)
-    update_scavenger_hunt_curation(room) if room.current_game.is_a?(ScavengerHuntGame)
+    update_scavenger_hunt_curation(room) if room.game_type == Room::SCAVENGER_HUNT
   end
 
   def self.update_scavenger_hunt_curation(room)

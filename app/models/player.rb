@@ -34,6 +34,10 @@ class Player < ApplicationRecord
     destroy!
   end
 
+  def display_name
+    team_name.presence || name
+  end
+
   private
 
   def generate_session_id

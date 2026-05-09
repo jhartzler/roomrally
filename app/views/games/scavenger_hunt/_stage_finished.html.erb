@@ -11,7 +11,7 @@
       <div class="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-xl p-[1.5vh] mb-[1vh] border border-white/20 <%= 'ring-2 ring-yellow-400' if index == 0 %>">
         <div class="flex items-center gap-[1.5vh]">
           <span class="text-vh-xl font-black text-white/60"><%= (index + 1).ordinalize %></span>
-          <span class="text-vh-lg font-bold text-white"><%= player.team_name.presence || player.name %></span>
+          <span class="text-vh-lg font-bold text-white"><%= player.display_name %></span>
         </div>
         <span class="text-vh-xl font-black text-yellow-300"><%= player.score %> pts</span>
       </div>
