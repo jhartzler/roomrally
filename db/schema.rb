@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_04_023000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -125,14 +125,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["user_id"], name: "index_category_packs_on_user_id"
   end
 
+  create_table "feature_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "enabled", null: false
+    t.string "feature_name", null: false
+    t.index ["feature_name"], name: "index_feature_events_on_feature_name"
+  end
+
+  create_table "features", primary_key: "name", id: :string, force: :cascade do |t|
+    t.boolean "enabled", default: false, null: false
+  end
+
   create_table "game_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "event_name", null: false
     t.bigint "eventable_id", null: false
     t.string "eventable_type", null: false
     t.jsonb "metadata", default: {}
-    t.index [ "eventable_type", "eventable_id", "created_at" ], name: "index_game_events_on_eventable_and_created_at"
-    t.index [ "eventable_type", "eventable_id" ], name: "index_game_events_on_eventable"
+    t.index ["eventable_type", "eventable_id", "created_at"], name: "index_game_events_on_eventable_and_created_at"
+    t.index ["eventable_type", "eventable_id"], name: "index_game_events_on_eventable"
   end
 
   create_table "game_templates", force: :cascade do |t|
@@ -141,6 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.string "game_type", null: false
     t.bigint "hunt_pack_id"
     t.string "name", null: false
+    t.bigint "poll_pack_id"
     t.bigint "prompt_pack_id"
     t.jsonb "settings", default: {}
     t.bigint "trivia_pack_id"
@@ -148,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "user_id", null: false
     t.index ["category_pack_id"], name: "index_game_templates_on_category_pack_id"
     t.index ["hunt_pack_id"], name: "index_game_templates_on_hunt_pack_id"
+    t.index ["poll_pack_id"], name: "index_game_templates_on_poll_pack_id"
     t.index ["prompt_pack_id"], name: "index_game_templates_on_prompt_pack_id"
     t.index ["trivia_pack_id"], name: "index_game_templates_on_trivia_pack_id"
     t.index ["user_id"], name: "index_game_templates_on_user_id"
@@ -213,6 +226,59 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.index ["status"], name: "index_players_on_status"
   end
 
+  create_table "poll_answers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "player_id", null: false
+    t.integer "points_awarded", default: 0
+    t.bigint "poll_game_id", null: false
+    t.bigint "poll_question_id", null: false
+    t.string "selected_option"
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.index ["player_id", "poll_question_id", "poll_game_id"], name: "index_poll_answers_on_player_question_and_game", unique: true
+    t.index ["player_id"], name: "index_poll_answers_on_player_id"
+    t.index ["poll_game_id"], name: "index_poll_answers_on_poll_game_id"
+    t.index ["poll_question_id"], name: "index_poll_answers_on_poll_question_id"
+  end
+
+  create_table "poll_games", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "current_question_index", default: 0
+    t.string "host_chosen_answer"
+    t.bigint "poll_pack_id"
+    t.integer "question_count", default: 5
+    t.datetime "round_closed_at"
+    t.datetime "round_ends_at"
+    t.datetime "round_started_at"
+    t.string "scoring_mode", default: "majority", null: false
+    t.string "status"
+    t.integer "time_limit", default: 20
+    t.integer "timer_duration"
+    t.boolean "timer_enabled", default: false
+    t.integer "timer_increment"
+    t.datetime "updated_at", null: false
+    t.index ["poll_pack_id"], name: "index_poll_games_on_poll_pack_id"
+  end
+
+  create_table "poll_packs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_poll_packs_on_user_id"
+  end
+
+  create_table "poll_questions", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.jsonb "options"
+    t.bigint "poll_pack_id", null: false
+    t.integer "position"
+    t.datetime "updated_at", null: false
+    t.index ["poll_pack_id"], name: "index_poll_questions_on_poll_pack_id"
+  end
+
   create_table "prompt_instances", force: :cascade do |t|
     t.string "body"
     t.datetime "created_at", null: false
@@ -268,6 +334,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
     t.bigint "host_id"
     t.bigint "hunt_pack_id"
     t.datetime "last_host_claim_at"
+    t.bigint "poll_pack_id"
     t.bigint "prompt_pack_id"
     t.boolean "stage_only", default: false, null: false
     t.string "status"
@@ -420,8 +487,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "category_instances", "category_list_games"
   add_foreign_key "category_list_games", "category_packs"
   add_foreign_key "category_packs", "users"
+  add_foreign_key "feature_events", "features", column: "feature_name", primary_key: "name"
   add_foreign_key "game_templates", "category_packs", on_delete: :nullify
   add_foreign_key "game_templates", "hunt_packs"
+  add_foreign_key "game_templates", "poll_packs", on_delete: :nullify
   add_foreign_key "game_templates", "prompt_packs", on_delete: :nullify
   add_foreign_key "game_templates", "trivia_packs", on_delete: :nullify
   add_foreign_key "game_templates", "users"
@@ -432,6 +501,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_032828) do
   add_foreign_key "hunt_submissions", "hunt_prompt_instances"
   add_foreign_key "hunt_submissions", "players"
   add_foreign_key "players", "rooms"
+  add_foreign_key "poll_answers", "players"
+  add_foreign_key "poll_answers", "poll_games"
+  add_foreign_key "poll_answers", "poll_questions"
+  add_foreign_key "poll_games", "poll_packs"
+  add_foreign_key "poll_packs", "users"
+  add_foreign_key "poll_questions", "poll_packs"
   add_foreign_key "prompt_instances", "prompts"
   add_foreign_key "prompt_instances", "write_and_vote_games"
   add_foreign_key "prompt_packs", "users"

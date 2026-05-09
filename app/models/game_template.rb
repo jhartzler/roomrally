@@ -94,7 +94,6 @@ class GameTemplate < ApplicationRecord
     if hunt_pack_id.present? && game_type != Room::SCAVENGER_HUNT
       errors.add(:hunt_pack, "doesn't match game type")
     end
-    end
   end
 
   def settings_within_bounds
