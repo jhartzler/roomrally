@@ -138,7 +138,7 @@ class RoomsController < ApplicationController
   end
 
   def room_params
-    permitted = params.permit(:game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id)
+    permitted = params.permit(:game_type, :prompt_pack_id, :trivia_pack_id, :category_pack_id, :poll_pack_id)
     # Only allow display_name customization for logged-in users
     permitted[:display_name] = params[:display_name] if current_user && params[:display_name].present?
     # Only allow stage_only for logged-in users

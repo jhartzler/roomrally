@@ -16,29 +16,15 @@
 
       <%# Pack selectors — shown/hidden by Stimulus based on selected game type %>
       <div class="space-y-2">
-        <div class="hidden" data-pack-selector-target="pack" data-game-type="Speed Trivia">
-          <%= form.label :trivia_pack_id, "Trivia Pack:", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :trivia_pack_id,
-                [["— Default pack —", ""]] + @trivia_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
-                { selected: "" },
-                class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
-        </div>
-
-        <div class="hidden" data-pack-selector-target="pack" data-game-type="Write And Vote">
-          <%= form.label :prompt_pack_id, "Prompt Pack:", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :prompt_pack_id,
-                [["— Default pack —", ""]] + @prompt_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
-                { selected: "" },
-                class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
-        </div>
-
-        <div class="hidden" data-pack-selector-target="pack" data-game-type="Category List">
-          <%= form.label :category_pack_id, "Category Pack:", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :category_pack_id,
-                [["— Default pack —", ""]] + @category_packs.map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
-                { selected: "" },
-                class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
-        </div>
+        <% DevTestingController::PACK_CONFIG.each do |game_type, config| %>
+          <div class="hidden" data-pack-selector-target="pack" data-game-type="<%= game_type %>">
+            <%= form.label config[:param], "#{config[:label]}:", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.select config[:param],
+                  [["— Default pack —", ""]] + @packs_by_type[game_type].map { |p| ["#{p.name}#{p.user_id.nil? ? ' (global)' : ''}", p.id] },
+                  { selected: "" },
+                  class: "mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+          </div>
+        <% end %>
       </div>
 
       <div>

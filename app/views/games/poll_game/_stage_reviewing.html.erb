@@ -22,7 +22,11 @@
     <% end %>
   </div>
 
-  <%= render "games/poll_game/vote_summary", question: current_question, poll_answers:, winner: %>
+  <% if current_question %>
+    <%= render "games/poll_game/vote_summary", question: current_question, poll_answers:, winner: %>
+  <% else %>
+    <p class="text-vh-lg text-gray-400 italic">No question available.</p>
+  <% end %>
 
   <% if scores_ready %>
     <%= render "games/speed_trivia/score_podium",
