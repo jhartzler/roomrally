@@ -50,6 +50,7 @@ RSpec/ExampleLength:
     - 'spec/services/games/**/playtest_spec.rb'
     - 'spec/models/trivia_pack_spec.rb'
     - 'spec/models/trivia_question_spec.rb'
+    - 'spec/support/shared_examples/**/*'
 
 RSpec/LetSetup:
   Exclude:

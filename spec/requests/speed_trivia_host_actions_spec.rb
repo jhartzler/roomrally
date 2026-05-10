@@ -1,0 +1,131 @@
+require "rails_helper"
+require "support/shared_examples/host_only_actions"
+
+RSpec.describe "Speed Trivia host actions", type: :request do
+  let(:trivia_pack) { create(:trivia_pack) }
+  let(:room) { create(:room, game_type: "Speed Trivia", trivia_pack:) }
+  let(:host_player) { create(:player, room:) }
+  let(:non_host) { create(:player, room:) }
+
+  before { room.update!(host: host_player) }
+
+  describe "POST /speed_trivia_games/:id/game_start (GameStartsController)" do
+    let(:game) { create(:speed_trivia_game, status: "instructions", trivia_pack:) }
+
+    before { room.update!(current_game: game) }
+
+    it_behaves_like "a host-only action", :speed_trivia_game_game_start_path
+
+    context "when caller is the host" do
+      include_context "when authenticated as host"
+
+      it "transitions the game from instructions to waiting" do
+        post speed_trivia_game_game_start_path(game), params: { code: room.code }, as: :turbo_stream
+
+        expect(game.reload.status).to eq("waiting")
+      end
+    end
+  end
+
+  describe "POST /speed_trivia_games/:id/question (QuestionsController)" do
+    let(:game) { create(:speed_trivia_game, status: "waiting", trivia_pack:) }
+
+    before do
+      room.update!(current_game: game)
+      create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+    end
+
+    it_behaves_like "a host-only action", :speed_trivia_game_question_path
+
+    context "when caller is the host" do
+      include_context "when authenticated as host"
+
+      it "transitions the game from waiting to answering" do
+        post speed_trivia_game_question_path(game), params: { code: room.code }, as: :turbo_stream
+
+        expect(game.reload.status).to eq("answering")
+      end
+    end
+  end
+
+  describe "POST /speed_trivia_games/:id/round_closure (RoundClosuresController)" do
+    let(:game) { create(:speed_trivia_game, status: "answering", trivia_pack:) }
+
+    before do
+      room.update!(current_game: game)
+      create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+    end
+
+    it_behaves_like "a host-only action", :speed_trivia_game_round_closure_path
+
+    context "when caller is the host" do
+      include_context "when authenticated as host"
+
+      it "transitions the game from answering to reviewing" do
+        post speed_trivia_game_round_closure_path(game), params: { code: room.code }, as: :turbo_stream
+
+        expect(game.reload.status).to eq("reviewing")
+      end
+    end
+  end
+
+  describe "POST /speed_trivia_games/:id/advancement (AdvancementsController)" do
+    let(:game) { create(:speed_trivia_game, status: "reviewing", trivia_pack:, current_question_index: 0) }
+
+    before { room.update!(current_game: game) }
+
+    it_behaves_like "a host-only action", :speed_trivia_game_advancement_path
+
+    context "when caller is the host and questions remain" do
+      include_context "when authenticated as host"
+
+      before do
+        create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+        create(:trivia_question_instance, speed_trivia_game: game, position: 1)
+      end
+
+      it "advances to the next question (reviewing → answering)" do
+        post speed_trivia_game_advancement_path(game), params: { code: room.code }, as: :turbo_stream
+
+        expect(game.reload.status).to eq("answering")
+        expect(game.current_question_index).to eq(1)
+      end
+    end
+
+    context "when caller is the host and no questions remain" do
+      include_context "when authenticated as host"
+
+      before do
+        create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+      end
+
+      it "finishes the game" do
+        post speed_trivia_game_advancement_path(game), params: { code: room.code }, as: :turbo_stream
+
+        expect(game.reload.status).to eq("finished")
+      end
+    end
+  end
+
+  describe "POST /speed_trivia_games/:id/question_skip (QuestionSkipsController)" do
+    let(:game) { create(:speed_trivia_game, status: "reviewing", trivia_pack:, current_question_index: 0) }
+
+    before do
+      room.update!(current_game: game)
+      create(:trivia_question_instance, speed_trivia_game: game, position: 0)
+      create(:trivia_question_instance, speed_trivia_game: game, position: 1)
+    end
+
+    it_behaves_like "a host-only action", :speed_trivia_game_question_skip_path
+
+    context "when caller is the host" do
+      include_context "when authenticated as host"
+
+      it "increments current_question_index" do
+        post speed_trivia_game_question_skip_path(game), params: { code: room.code }, as: :turbo_stream
+
+        expect(game.reload.current_question_index).to eq(1)
+      end
+    end
+  end
+end
