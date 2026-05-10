@@ -1,6 +1,8 @@
 module Games
   module Poll
     extend Finishable
+    extend Broadcastable
+    extend Startable
 
     DEFAULT_QUESTION_COUNT = 5
     DEFAULT_TIME_LIMIT = 20
@@ -34,15 +36,6 @@ module Games
       GameBroadcaster.broadcast_game_start(room:)
       GameBroadcaster.broadcast_stage(room:)
       GameBroadcaster.broadcast_hand(room:)
-    end
-
-    def self.start_from_instructions(game:)
-      game.with_lock do
-        previous_status = game.status
-        game.start_game!
-        GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
-      end
-      broadcast_all(game)
     end
 
     def self.start_question(game:)
@@ -188,13 +181,6 @@ module Games
       return unless game.timer_enabled?
 
       game.start_timer!(game.time_limit)
-    end
-
-    def self.broadcast_all(game)
-      room = game.room
-      GameBroadcaster.broadcast_stage(room:, game:)
-      GameBroadcaster.broadcast_hand(room:)
-      GameBroadcaster.broadcast_host_controls(room:)
     end
 
     private_class_method :assign_questions, :score_current_round, :determine_winner,
