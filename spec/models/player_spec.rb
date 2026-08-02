@@ -21,7 +21,7 @@ RSpec.describe Player, type: :model do
     it 'rejects profane names' do
       player = build(:player, name: "shit")
       expect(player).not_to be_valid
-      expect(player.errors[:name]).to include(match(/inappropriate language/))
+      expect(player.errors[:name]).to include(include('inappropriate language'))
     end
 
     it 'allows names that contain profanity as a substring' do
