@@ -3,14 +3,16 @@ module GameBroadcaster
     room.reload.players.each do |player|
       Rails.logger.info({ event: "broadcast_hand", player_id: player.id, room_code: room.code })
 
-      Turbo::StreamsChannel.broadcast_action_to(
-        player,
-        action: :update,
-        attributes: { method: :morph },
-        target: "hand_screen",
-        partial: "rooms/hand_screen_content",
-        locals: { room:, player: }
-      )
+      safe_broadcast do
+        Turbo::StreamsChannel.broadcast_action_to(
+          player,
+          action: :update,
+          attributes: { method: :morph },
+          target: "hand_screen",
+          partial: "rooms/hand_screen_content",
+          locals: { room:, player: }
+        )
+      end
     end
   end
 
@@ -27,27 +29,31 @@ module GameBroadcaster
       locals[:previous_top_player_ids] = game.previous_top_player_ids
     end
 
-    Turbo::StreamsChannel.broadcast_action_to(
-      room,
-      action: :update,
-      attributes: { method: :morph },
-      target: "stage_content",
-      partial: partial_name,
-      locals:
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_action_to(
+        room,
+        action: :update,
+        attributes: { method: :morph },
+        target: "stage_content",
+        partial: partial_name,
+        locals:
+      )
+    end
   end
 
   def self.broadcast_stage_lobby(room:)
     Rails.logger.info({ event: "broadcast_stage_lobby", room_code: room.code })
 
-    Turbo::StreamsChannel.broadcast_action_to(
-      room,
-      action: :update,
-      attributes: { method: :morph },
-      target: "stage_content",
-      partial: "rooms/stage_lobby",
-      locals: { room: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_action_to(
+        room,
+        action: :update,
+        attributes: { method: :morph },
+        target: "stage_content",
+        partial: "rooms/stage_lobby",
+        locals: { room: }
+      )
+    end
   end
 
   def self.broadcast_lobby(room:)
@@ -64,20 +70,24 @@ module GameBroadcaster
 
     # 2. Reset Backstage Moderation Queue
     # We just reload the queue container to refresh context to empty state
-    Turbo::StreamsChannel.broadcast_update_to(
-        room,
-        target: "moderation-queue",
-        html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_update_to(
+          room,
+          target: "moderation-queue",
+          html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
+      )
+    end
   end
 
   def self.clear_moderation_queue(room:)
     Rails.logger.info({ event: "clear_moderation_queue", room_code: room.code })
-    Turbo::StreamsChannel.broadcast_update_to(
-      room,
-      target: "moderation-queue",
-      html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_update_to(
+        room,
+        target: "moderation-queue",
+        html: '<p class="text-gray-400 text-center italic">No active responses to moderate.</p>'
+      )
+    end
   end
 
   def self.broadcast_player_joined(room:, player:)
@@ -99,20 +109,24 @@ module GameBroadcaster
     update_all_player_lists(room, player:, action: :remove)
 
     # Add to waiting room
-    Turbo::StreamsChannel.broadcast_append_to(
-      room,
-      target: "waiting-room-list",
-      partial: "players/waiting_player",
-      locals: { player: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_append_to(
+        room,
+        target: "waiting-room-list",
+        partial: "players/waiting_player",
+        locals: { player: }
+      )
+    end
 
     # Update hand view to show waiting message
-    Turbo::StreamsChannel.broadcast_update_to(
-      player,
-      target: "hand_screen",
-      partial: "rooms/waiting_for_approval",
-      locals: { room:, player: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_update_to(
+        player,
+        target: "hand_screen",
+        partial: "rooms/waiting_for_approval",
+        locals: { room:, player: }
+      )
+    end
 
     update_all_host_controls(room)
     update_backstage_meta(room)
@@ -121,10 +135,12 @@ module GameBroadcaster
   def self.broadcast_player_approved(room:, player:)
     Rails.logger.info({ event: "broadcast_player_approved", room_code: room.code, player_id: player.id })
     # Remove from waiting room
-    Turbo::StreamsChannel.broadcast_remove_to(
-      room,
-      target: "waiting_player_#{player.id}"
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_remove_to(
+        room,
+        target: "waiting_player_#{player.id}"
+      )
+    end
 
     # Add to active lists
     update_all_player_lists(room, player:, action: :append)
@@ -139,54 +155,64 @@ module GameBroadcaster
   def self.broadcast_waiting_player_updated(room:, player:)
     Rails.logger.info({ event: "broadcast_waiting_player_updated", room_code: room.code, player_id: player.id })
     # Update the waiting room card with new name in backstage
-    Turbo::StreamsChannel.broadcast_replace_to(
-      room,
-      target: "waiting_player_#{player.id}",
-      partial: "players/waiting_player",
-      locals: { player: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        room,
+        target: "waiting_player_#{player.id}",
+        partial: "players/waiting_player",
+        locals: { player: }
+      )
+    end
 
     # Update the player's own hand view to show updated name
-    Turbo::StreamsChannel.broadcast_update_to(
-      player,
-      target: "hand_screen",
-      partial: "rooms/waiting_for_approval",
-      locals: { room:, player: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_update_to(
+        player,
+        target: "hand_screen",
+        partial: "rooms/waiting_for_approval",
+        locals: { room:, player: }
+      )
+    end
   end
 
   def self.broadcast_host_change(room:)
     Rails.logger.info({ event: "broadcast_host_change", room_code: room.code })
     # Replace the entire player list to update host status indicators
-    Turbo::StreamsChannel.broadcast_replace_to(
-      room,
-      target: "player-list",
-      partial: "rooms/player_list",
-      locals: { room: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        room,
+        target: "player-list",
+        partial: "rooms/player_list",
+        locals: { room: }
+      )
+    end
     update_all_host_controls(room)
   end
 
   def self.broadcast_response_rejection(response:)
     Rails.logger.info({ event: "broadcast_response_rejection", response_id: response.id, player_id: response.player.id })
-    Turbo::StreamsChannel.broadcast_replace_to(
-      response.player,
-      target: "prompt-instance-#{response.prompt_instance.id}",
-      partial: "responses/form",
-      locals: { response:, prompt: response.prompt_instance }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        response.player,
+        target: "prompt-instance-#{response.prompt_instance.id}",
+        partial: "responses/form",
+        locals: { response:, prompt: response.prompt_instance }
+      )
+    end
   end
 
   def self.broadcast_response_submitted(response:)
     Rails.logger.info({ event: "broadcast_response_submitted", response_id: response.id, player_id: response.player.id })
 
     # Broadcast to backstage moderation queue
-    Turbo::StreamsChannel.broadcast_prepend_to(
-      response.player.room,
-      target: "moderation-queue",
-      partial: "responses/backstage_response",
-      locals: { response: }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_prepend_to(
+        response.player.room,
+        target: "moderation-queue",
+        partial: "responses/backstage_response",
+        locals: { response: }
+      )
+    end
   end
 
   def self.game_folder_name(game_type)
@@ -206,13 +232,15 @@ module GameBroadcaster
       if action == :append
         # Prepend to stage so newest players appear at the top of the cloud
         broadcast_method = target_info[:id] == "stage_player_list" ? :broadcast_prepend_to : :broadcast_append_to
-        Turbo::StreamsChannel.public_send(
-          broadcast_method,
-          room,
-          target: target_info[:id],
-          partial: target_info[:partial],
-          locals: { player: }
-        )
+        safe_broadcast do
+          Turbo::StreamsChannel.public_send(
+            broadcast_method,
+            room,
+            target: target_info[:id],
+            partial: target_info[:partial],
+            locals: { player: }
+          )
+        end
       elsif action == :remove
         remove_target = nil
 
@@ -226,7 +254,9 @@ module GameBroadcaster
         end
 
         if remove_target
-           Turbo::StreamsChannel.broadcast_remove_to(room, target: remove_target)
+          safe_broadcast do
+            Turbo::StreamsChannel.broadcast_remove_to(room, target: remove_target)
+          end
         end
       end
     end
@@ -234,42 +264,57 @@ module GameBroadcaster
 
   def self.update_all_host_controls(room)
     # Hand (Host) Controls
-    Turbo::StreamsChannel.broadcast_action_to(
-      room,
-      action: :update,
-      attributes: { method: :morph },
-      target: "host-controls",
-      partial: "rooms/host_controls",
-      locals: { room: room.reload, backstage: false }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_action_to(
+        room,
+        action: :update,
+        attributes: { method: :morph },
+        target: "host-controls",
+        partial: "rooms/host_controls",
+        locals: { room: room.reload, backstage: false }
+      )
+    end
 
     # Backstage Host Controls
-    Turbo::StreamsChannel.broadcast_action_to(
-      room,
-      action: :update,
-      attributes: { method: :morph },
-      target: "backstage-host-controls",
-      partial: "rooms/host_controls",
-      locals: { room:, backstage: true }
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_action_to(
+        room,
+        action: :update,
+        attributes: { method: :morph },
+        target: "backstage-host-controls",
+        partial: "rooms/host_controls",
+        locals: { room:, backstage: true }
+      )
+    end
   end
 
   def self.update_backstage_meta(room)
-    Turbo::StreamsChannel.broadcast_update_to(
-      room,
-      target: "player-count",
-      html: "#{room.players.active_players.count} connected"
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_update_to(
+        room,
+        target: "player-count",
+        html: "#{room.players.active_players.count} connected"
+      )
+    end
 
-    Turbo::StreamsChannel.broadcast_remove_to(
-      room,
-      target: "no-players-placeholder"
-    )
+    safe_broadcast do
+      Turbo::StreamsChannel.broadcast_remove_to(
+        room,
+        target: "no-players-placeholder"
+      )
+    end
   end
 
   def self.broadcast_host_controls(room:)
     update_all_host_controls(room)
   end
 
-  private_class_method :update_all_player_lists, :update_all_host_controls, :update_backstage_meta
+  def self.safe_broadcast
+    yield
+  rescue Redis::BaseConnectionError, Redis::CannotConnectError, Socket::ResolutionError, SocketError => e
+    Rails.logger.error("[GameBroadcaster] Broadcast failed: #{e.class} - #{e.message}")
+    defined?(Sentry) && Sentry.capture_exception(e)
+  end
+
+  private_class_method :update_all_player_lists, :update_all_host_controls, :update_backstage_meta, :safe_broadcast
 end
