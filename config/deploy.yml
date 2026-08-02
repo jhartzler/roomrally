@@ -123,9 +123,43 @@ accessories:
 
     directories:
       - data:/var/lib/postgresql/data
+    # Healthcheck: makes container health visible via `docker inspect` / `docker ps`.
+    # Kamal has no native `healthcheck:` block for accessories (only for proxy);
+    # we pass Docker healthcheck flags through `options:` instead.
+    options:
+      health-cmd: "pg_isready -U roomrally"
+      health-interval: 10s
+      health-timeout: 5s
+      health-retries: 3
+      health-start-period: 10s
+    # Restart policy: Kamal 2.11.0 already sets `--restart unless-stopped` on
+    # every `docker run` for accessories (see lib/kamal/commands/accessory.rb).
+    # The validator blocks any custom `restart` in `options:`.
+    # If you ever `docker update --restart=… roomrally-db` manually, note that
+    # `kamal accessory reboot db` recreates the container and re-applies the default.
+
   redis:
     image: redis:7
     host: 5.161.185.15
     port: 6379
+    # Persistence is deliberately disabled: this Redis is pubsub + cache only
+    # (Postgres is the source of truth). Without --save/appendonly, Redis
+    # cannot produce a corrupt dump.rdb after an ungraceful kill, preventing the
+    # crash-loop we experienced.
+    cmd: 'redis-server --save "" --appendonly no'
     directories:
       - data:/data
+    # Healthcheck: makes container health visible via `docker inspect` / `docker ps`.
+    # Kamal has no native `healthcheck:` block for accessories (only for proxy);
+    # we pass Docker healthcheck flags through `options:` instead.
+    options:
+      health-cmd: "redis-cli ping"
+      health-interval: 10s
+      health-timeout: 5s
+      health-retries: 3
+      health-start-period: 5s
+    # Restart policy: Kamal 2.11.0 already sets `--restart unless-stopped` on
+    # every `docker run` for accessories (see lib/kamal/commands/accessory.rb).
+    # The validator blocks any custom `restart` in `options:`.
+    # If you ever `docker update --restart=… roomrally-redis` manually, note that
+    # `kamal accessory reboot redis` recreates the container and re-applies the default.
