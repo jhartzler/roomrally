@@ -1,6 +1,8 @@
 module Games
   module SpeedTrivia
     extend Finishable
+    extend Broadcastable
+    extend Startable
 
     DEFAULT_QUESTION_COUNT = 5
     DEFAULT_TIME_LIMIT = 20
@@ -54,15 +56,6 @@ module Games
       GameBroadcaster.broadcast_game_start(room:)
       GameBroadcaster.broadcast_stage(room:)
       GameBroadcaster.broadcast_hand(room:)
-    end
-
-    def self.start_from_instructions(game:)
-      game.with_lock do
-        previous_status = game.status
-        game.start_game!
-        GameEvent.log(game, "state_changed", from: previous_status, to: game.status)
-      end
-      broadcast_all(game)
     end
 
     def self.start_question(game:)
@@ -191,17 +184,6 @@ module Games
       game.start_timer!(game.time_limit)
     end
 
-    def self.broadcast_all(game_or_room, lobby: false)
-      if lobby
-        GameBroadcaster.broadcast_lobby(room: game_or_room)
-      else
-        room = game_or_room.room
-        GameBroadcaster.broadcast_stage(room:, game: game_or_room)
-        GameBroadcaster.broadcast_hand(room:)
-        GameBroadcaster.broadcast_host_controls(room:)
-      end
-    end
-
     def self.assign_questions(game:, question_count:)
       pack = game.trivia_pack || TriviaPack.default
       available_questions = pack.trivia_questions.to_a
@@ -242,7 +224,7 @@ module Games
       game.calculate_scores!
     end
 
-    private_class_method :assign_questions, :start_timer_if_enabled, :broadcast_all, :score_current_round
+    private_class_method :assign_questions, :start_timer_if_enabled, :score_current_round, :broadcast_all
 
     module Playtest
       def self.start(room:)
