@@ -11,7 +11,7 @@ gem "pg", "~> 1.6"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use Redis for caching, Action Cable, and Sidekiq
-gem "redis", ">= 4.0", "< 6"  # Rails 8.1 ActionCable Redis adapter requires < 6
+gem "redis", ">= 4.0", "< 7"  # Rails 8.1 ActionCable Redis adapter requires < 6
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
