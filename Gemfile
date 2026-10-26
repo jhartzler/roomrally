@@ -88,7 +88,7 @@ group :development do
   gem "web-console"
 end
 
-gem "aasm", "~> 5.5"
+gem "aasm", "~> 6.0"
 
 gem "omniauth-google-oauth2", "~> 1.2"
 gem "omniauth-rails_csrf_protection", "~> 2.0"
