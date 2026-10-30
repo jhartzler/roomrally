@@ -1,6 +1,7 @@
 module Games
   module CategoryList
     extend Finishable
+    extend Broadcastable
 
     DEFAULT_TOTAL_ROUNDS = 3
     DEFAULT_CATEGORIES_PER_ROUND = 6
@@ -309,17 +310,6 @@ module Games
       return unless game.timer_enabled?
 
       game.start_timer!(game.timer_increment)
-    end
-
-    def self.broadcast_all(game_or_room, lobby: false)
-      if lobby
-        GameBroadcaster.broadcast_lobby(room: game_or_room)
-      else
-        room = game_or_room.room
-        GameBroadcaster.broadcast_stage(room:)
-        GameBroadcaster.broadcast_hand(room:)
-        GameBroadcaster.broadcast_host_controls(room:)
-      end
     end
 
     def self.calculate_final_scores(game)
