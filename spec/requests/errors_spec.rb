@@ -41,14 +41,16 @@ RSpec.describe "Error Pages", type: :request do
   end
 
   describe "Handling unmapped routes" do
+    # PARKED: unmapped routes redirect to the parked page instead of rendering 404
     before { get "/some/random/path/that/does/not/exist" }
 
-    it "returns the correct status" do
-      expect(response).to have_http_status(:not_found)
+    it "redirects to the parked page" do
+      expect(response).to redirect_to("/parked.html")
     end
 
-    it "renders the not found content" do
-      expect(response.body).to include("Page Not Found")
+    it "parked page renders the not found replacement content" do
+      follow_redirect!
+      expect(response.body).to include("paused")
     end
   end
 end

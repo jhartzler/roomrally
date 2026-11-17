@@ -41,7 +41,9 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "pages#landing"
+  # PARKED: app is paused for maintenance. Serve the static parked page at the root
+  # (public/parked.html); move this file to nginx later and point the domain at it.
+  root to: redirect("/parked.html")
   get "play", to: "home#index"
   get "host", to: "hosts#index", as: :host
 
@@ -131,8 +133,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # Short URL: roomrally.app/ABCD → stage view (case-insensitive)
-  get "/:code", to: "shortcodes#show", as: :shortcode, constraints: { code: /[A-Za-z0-9]{4}/ }
-
-  match "*unmatched", to: "errors#not_found", via: :all, constraints: ->(req) { !req.path.start_with?("/rails/") }
+  # PARKED: keep the privacy/terms pages reachable for reference, send everything
+  # else (including old 4-letter room codes) to the parked page.
+  match "*unmatched", to: redirect("/parked.html"), via: :all, constraints: ->(req) { !req.path.start_with?("/rails/") }
 end

@@ -20,11 +20,10 @@ RSpec.describe "Backstages", type: :request do
         # rubocop:enable RSpec/AnyInstance
       end
 
-      it "redirects to root with alert" do
+      it "redirects to the parked page with alert" do
         get room_backstage_path(room.code)
-        expect(response).to redirect_to(root_path)
-        follow_redirect!
-        expect(response.body).to include("You are not authorized")
+        expect(response).to redirect_to(root_path) # root → /parked.html
+        expect(flash[:alert]).to include("You are not authorized")
       end
     end
 
