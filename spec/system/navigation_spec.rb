@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Top navigation', type: :system do
-  it 'landing page has nav links to host and join' do
+  # PARKED: root redirects to the static parked page, which has no topnav —
+  # the remaining pages (/play, /host) are still served, but the app is paused.
+  it 'landing page redirects to the parked page' do
     visit root_path
-    within('nav[data-testid="topnav"]') do
-      expect(page).to have_link('Host a Game', href: host_path)
-      expect(page).to have_link('Join a Game', href: play_path)
-    end
+    expect(page).to have_current_path("/parked.html")
+    expect(page).to have_content("paused")
   end
 
   it '/play has nav links to host and join' do
@@ -26,11 +26,9 @@ RSpec.describe 'Top navigation', type: :system do
   end
 
   context 'when logged out' do
-    it 'landing page nav shows login button' do
+    it 'parked page is reachable and shows the contact form link' do
       visit root_path
-      within('nav[data-testid="topnav"]') do
-        expect(page).to have_button('Login with Google')
-      end
+      expect(page).to have_link(href: "https://forms.gle/xyHntsW9Kku1yaBw6")
     end
   end
 
@@ -39,11 +37,10 @@ RSpec.describe 'Top navigation', type: :system do
 
     before { sign_in(user) }
 
-    it 'landing page nav shows studio link' do
+    it 'parked page is reachable' do
       visit root_path
-      within('nav[data-testid="topnav"]') do
-        expect(page).to have_link('Studio', href: dashboard_path)
-      end
+      expect(page).to have_current_path("/parked.html")
+      expect(page).to have_content("Comedy Clash")
     end
   end
 end

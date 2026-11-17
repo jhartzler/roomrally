@@ -28,28 +28,45 @@ RSpec.describe "Pages", type: :request do
   end
 
   describe "GET /" do
-    before { get root_path }
+    # PARKED: root now redirects to the static parked page (public/parked.html)
+    it "redirects to the parked page" do
+      get root_path
+      expect(response).to redirect_to("/parked.html")
+    end
+  end
+
+  describe "GET /parked.html" do
+    before { get "/parked.html" }
 
     it "returns http success" do
       expect(response).to have_http_status(:success)
     end
 
-    it "displays all three game mode tiles" do
+    it "explains the app is paused" do
+      expect(response.body).to include("paused")
+    end
+
+    it "describes all four game modes" do
       aggregate_failures do
         expect(response.body).to include("Comedy Clash")
         expect(response.body).to include("A-List")
         expect(response.body).to include("Think Fast")
+        expect(response.body).to include("Bandwagon")
       end
     end
 
-    it "displays the How It Works section with four steps" do
-      aggregate_failures do
-        expect(response.body).to include("How It Works")
-        expect(response.body).to include("Pick Your Game Mode")
-        expect(response.body).to include("Make It Yours")
-        expect(response.body).to include("Launch &amp; Display")
-        expect(response.body).to include("Everyone Joins")
-      end
+    it "links to the contact Google form" do
+      expect(response.body).to include("https://forms.gle/xyHntsW9Kku1yaBw6")
+    end
+  end
+
+  describe "unmatched routes" do
+    it "redirects to the parked page (including old room codes)" do
+      get "/ABCD"
+      expect(response).to redirect_to("/parked.html")
+
+      get "/some/old/path"
+      expect(response).to redirect_to("/parked.html")
     end
   end
 end

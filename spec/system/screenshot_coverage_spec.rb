@@ -5,11 +5,11 @@ RSpec.describe "Screenshot Coverage", :js, type: :system do
     skip "Screenshot-only spec; run with SCREENSHOTS=1" unless ENV["SCREENSHOTS"] == "1"
   end
 
-  describe "Landing page" do
-    it "captures the landing page" do
+  describe "Parked page" do
+    it "captures the parked page" do
       visit root_path
-      expect(page).to have_content("Join a Game")
-      screenshot_checkpoint("landing_page")
+      expect(page).to have_content("paused")
+      screenshot_checkpoint("parked_page")
     end
   end
 
